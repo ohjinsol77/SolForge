@@ -2,14 +2,8 @@
   "name": "solforge",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "description": "Static developer tools for MySQL query formatting and EXPLAIN visualization.",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "versions:upload": "wrangler versions upload",
-    "check": "wrangler deploy --dry-run"
-  },
-  "devDependencies": {
-    "wrangler": "^4.0.0"
+    "check": "node --check assets/js/app.js"
   }
 }
