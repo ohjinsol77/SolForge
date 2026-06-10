@@ -4,6 +4,7 @@
   "private": true,
   "description": "Static developer tools for MySQL query formatting and EXPLAIN visualization.",
   "scripts": {
-    "check": "node --check assets/js/app.js"
+    "check": "node --check assets/js/app.js && node --check public/assets/js/app.js",
+    "deploy": "wrangler deploy"
   }
 }
