@@ -1,0 +1,65 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>기능소개 - SolForge</title>
+    <meta name="description" content="SolForge가 제공하는 MySQL Query Prettier와 EXPLAIN Visual 기능의 목적, 처리 방식, 지원 입력 형식을 소개합니다.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://solforge.pages.dev/features.html">
+    <link rel="stylesheet" href="assets/css/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴">
+        <a class="brand" href="index.html" aria-label="SolForge 홈"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small>Developer Tools</small></span></a>
+        <nav class="side-nav">
+          <p class="nav-title">DBA</p>
+          <a href="tools/mysql-query-prettier.html" class="nav-link" data-nav-link><span class="nav-icon">Q</span><span>Query Prettier</span></a>
+          <a href="tools/mysql-explain-visual.html" class="nav-link" data-nav-link><span class="nav-icon">E</span><span>EXPLAIN Visual</span></a>
+          <p class="nav-title">계산기</p>
+          <a href="calculators/date.html" class="nav-link" data-nav-link><span class="nav-icon">D</span><span>날짜 계산기</span></a>
+          <a href="calculators/age.html" class="nav-link" data-nav-link><span class="nav-icon">A</span><span>나이 계산기</span></a>
+          <a href="calculators/anniversary.html" class="nav-link" data-nav-link><span class="nav-icon">N</span><span>기념일 계산기</span></a>
+          <a href="calculators/school.html" class="nav-link" data-nav-link><span class="nav-icon">S</span><span>입학·졸업 계산기</span></a>
+        </nav>
+      </aside>
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보"><a href="features.html" data-top-link>기능소개</a><a href="about.html" data-top-link>사이트소개</a><a href="privacy.html" data-top-link>개인정보처리방침</a></nav>
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+        </header>
+        <section class="info-section">
+          <p class="eyebrow">Features</p>
+          <h1>SolForge 기능소개</h1>
+          <p>SolForge는 MySQL 작업 중 자주 반복되는 “쿼리 읽기”와 “실행 계획 해석”을 빠르게 돕는 도구입니다. 모든 기능은 정적 파일로 제공되며, 사용자가 입력한 쿼리와 EXPLAIN 결과는 브라우저 안에서 처리됩니다.</p>
+          <div class="card-grid">
+            <article class="article-card">
+              <h2>MySQL Query Prettier</h2>
+              <p>예약어, 함수, 문자열, 숫자, 변수, 테이블명을 구분해 강조하고 SELECT 목록, WHERE 조건, JOIN 조건, GROUP BY, ORDER BY, CTE와 서브쿼리를 줄 단위로 정리합니다. 복사 버튼을 통해 정리된 결과를 바로 가져갈 수 있습니다.</p>
+            </article>
+            <article class="article-card">
+              <h2>MySQL EXPLAIN Visual</h2>
+              <p>탭으로 구분된 EXPLAIN 결과, mysqlsh 또는 CLI에서 복사한 ASCII 표, JSON 형식의 실행 계획을 분석합니다. 테이블 접근 순서, 조인 흐름, 인덱스 사용 여부, rows와 filtered 기반의 예상 비용을 카드와 표로 표시합니다.</p>
+            </article>
+            <article class="article-card">
+              <h2>다크모드와 도구별 페이지</h2>
+              <p>코드와 실행 계획을 오래 보는 사용자를 위해 다크모드를 지원합니다. 각 기능은 별도 URL에서 독립적으로 동작하므로 즐겨찾기, 공유, 추후 기능 확장이 쉽습니다.</p>
+            </article>
+            <article class="article-card">
+              <h2>생활 계산기</h2>
+              <p>참고 사이트의 계산기 중심 흐름을 SolForge에 맞게 재구성해 날짜 차이, D-Day, 날짜 더하기/빼기, 만나이, 기념일, 입학·졸업 예상 연도 계산을 제공합니다.</p>
+            </article>
+            <article class="article-card">
+              <h2>광고와 운영 준비</h2>
+              <p>사이트에는 AdSense 심사를 고려한 소개 문서, 기능 설명, 개인정보처리방침, 광고 예약 영역이 포함되어 있습니다. 실제 광고 코드가 추가되면 개인정보처리방침과 쿠키 고지를 함께 갱신할 수 있습니다.</p>
+            </article>
+          </div>
+        </section>
+        <footer class="footer"><p>© 2026 SolForge.</p><div><a href="features.html">기능소개</a><a href="about.html">사이트소개</a><a href="privacy.html">개인정보처리방침</a></div></footer>
+      </main>
+    </div>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

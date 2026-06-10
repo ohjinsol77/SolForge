@@ -1,221 +1,107 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SolForge - MySQL Query Prettier 및 EXPLAIN Visual 개발자 도구</title>
-    <meta name="description" content="SolForge는 개발자를 위한 무료 MySQL 쿼리 정렬, 문법 강조, EXPLAIN 결과 시각화 도구입니다. 브라우저에서 바로 동작하는 정적 HTML과 JavaScript 서비스입니다.">
-    <meta name="keywords" content="MySQL Query Prettier, MySQL Formatter, MySQL EXPLAIN Visual, SQL Formatter, 개발자 도구, Cloudflare Pages">
+    <title>SolForge - MySQL 개발자를 위한 정적 웹 도구</title>
+    <meta name="description" content="SolForge는 MySQL Query Prettier와 EXPLAIN Visual을 제공하는 개발자용 정적 웹 도구입니다. HTML, CSS, JavaScript만으로 Cloudflare Pages와 Workers Assets에서 실행됩니다.">
+    <meta name="keywords" content="MySQL formatter, MySQL query prettier, MySQL explain visual, SQL formatter, 개발자 도구">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="SolForge">
-    <meta name="theme-color" content="#f8fbff">
+    <meta name="theme-color" content="#f5f8fc">
     <link rel="canonical" href="https://solforge.pages.dev/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
-    <meta property="og:title" content="SolForge - 개발자를 위한 MySQL 도구">
-    <meta property="og:description" content="MySQL 쿼리 정렬과 EXPLAIN 결과 시각화를 브라우저에서 빠르게 처리하세요.">
-    <meta property="og:url" content="https://solforge.pages.dev/">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SolForge - MySQL Query Prettier 및 EXPLAIN Visual">
-    <meta name="twitter:description" content="설치 없이 사용하는 정적 MySQL 개발자 도구 모음입니다.">
+    <meta property="og:title" content="SolForge - MySQL 개발자 도구">
+    <meta property="og:description" content="쿼리 정렬과 EXPLAIN 시각화를 브라우저 안에서 처리하는 정적 개발자 도구입니다.">
     <link rel="stylesheet" href="assets/css/styles.css">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
+        "@type": "WebSite",
         "name": "SolForge",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Any",
         "url": "https://solforge.pages.dev/",
-        "description": "SolForge provides static browser-based MySQL query formatting and EXPLAIN visualization tools for developers.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
+        "description": "Static MySQL developer tools for query formatting and EXPLAIN visualization."
       }
     </script>
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 이동</a>
     <div class="site-shell">
-      <aside class="sidebar" aria-label="주요 메뉴">
-        <a class="brand" href="#top" aria-label="SolForge 홈">
+      <aside class="sidebar" aria-label="기능 메뉴">
+        <a class="brand" href="index.html" aria-label="SolForge 홈">
           <span class="brand-mark">SF</span>
-          <span>
-            <strong>SolForge</strong>
-            <small>Developer Tools</small>
-          </span>
+          <span><strong>SolForge</strong><small>Developer Tools</small></span>
         </a>
-
         <nav class="side-nav">
-          <p class="nav-title">도구 메뉴</p>
-          <a href="#formatter" class="nav-link active" data-nav-link>
-            <span class="nav-icon">Q</span>
-            <span>MySQL Query Prettier</span>
-          </a>
-          <a href="#explain" class="nav-link" data-nav-link>
-            <span class="nav-icon">E</span>
-            <span>MySQL EXPLAIN Visual</span>
-          </a>
-          <p class="nav-title">사이트 정보</p>
-          <a href="#features" class="nav-link" data-nav-link>
-            <span class="nav-icon">F</span>
-            <span>기능 소개</span>
-          </a>
-          <a href="#about" class="nav-link" data-nav-link>
-            <span class="nav-icon">S</span>
-            <span>사이트 소개</span>
-          </a>
-          <a href="#privacy" class="nav-link" data-nav-link>
-            <span class="nav-icon">P</span>
-            <span>개인정보처리방침</span>
-          </a>
+          <p class="nav-title">DBA</p>
+          <a href="tools/mysql-query-prettier.html" class="nav-link" data-nav-link><span class="nav-icon">Q</span><span>Query Prettier</span></a>
+          <a href="tools/mysql-explain-visual.html" class="nav-link" data-nav-link><span class="nav-icon">E</span><span>EXPLAIN Visual</span></a>
+          <p class="nav-title">계산기</p>
+          <a href="calculators/date.html" class="nav-link" data-nav-link><span class="nav-icon">D</span><span>날짜 계산기</span></a>
+          <a href="calculators/age.html" class="nav-link" data-nav-link><span class="nav-icon">A</span><span>나이 계산기</span></a>
+          <a href="calculators/anniversary.html" class="nav-link" data-nav-link><span class="nav-icon">N</span><span>기념일 계산기</span></a>
+          <a href="calculators/school.html" class="nav-link" data-nav-link><span class="nav-icon">S</span><span>입학·졸업 계산기</span></a>
         </nav>
-
-        <div class="side-card">
-          <span class="status-dot"></span>
-          <p>정적 HTML과 JavaScript만으로 실행됩니다.</p>
-        </div>
+        <div class="side-card"><strong>Static service</strong><span>서버 저장 없이 브라우저에서 실행되는 도구입니다.</span></div>
       </aside>
-
       <main class="content" id="main">
-        <header class="topbar" id="top">
-          <div>
-            <p class="eyebrow">Free MySQL Toolkit</p>
-            <h1>개발자를 위한 빠르고 밝은 MySQL 작업대</h1>
-          </div>
-          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false">
-            <span class="theme-toggle-icon" aria-hidden="true"></span>
-            <span id="themeToggleLabel">Dark</span>
-          </button>
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보">
+            <a href="features.html" data-top-link>기능소개</a>
+            <a href="about.html" data-top-link>사이트소개</a>
+            <a href="privacy.html" data-top-link>개인정보처리방침</a>
+          </nav>
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
         </header>
 
-        <section class="hero-band" aria-labelledby="hero-title">
-          <div class="hero-copy">
-            <p class="eyebrow">SolForge</p>
-            <h2 id="hero-title">쿼리를 정리하고 실행 계획을 읽기 쉽게 바꿉니다.</h2>
-            <p>SolForge는 MySQL을 다루는 개발자가 복잡한 쿼리와 EXPLAIN 결과를 브라우저 안에서 빠르게 점검하도록 만든 정적 웹 도구입니다. 서버 전송 없이 입력한 내용은 현재 브라우저에서만 처리되며, Cloudflare Pages에 적합한 가벼운 HTML, CSS, JavaScript 구조로 구성되어 있습니다.</p>
+        <section class="page-hero">
+          <div>
+            <p class="eyebrow">Free MySQL Toolkit</p>
+            <h1>쿼리를 정리하고 실행 계획을 읽는 시간을 줄입니다.</h1>
+            <p>SolForge는 MySQL 개발자가 매일 반복하는 쿼리 정렬과 EXPLAIN 결과 해석을 브라우저에서 빠르게 처리하도록 만든 정적 웹 도구입니다. 초기 화면에는 필요한 안내만 두고, 실제 기능은 각 도구 페이지에서 독립적으로 사용할 수 있게 분리했습니다.</p>
+            <div class="hero-actions">
+              <a class="primary-link" href="tools/mysql-query-prettier.html">Query Prettier 열기</a>
+              <a class="secondary-link" href="tools/mysql-explain-visual.html">EXPLAIN Visual 열기</a>
+            </div>
           </div>
-          <div class="hero-metrics" aria-label="도구 요약">
-            <div>
-              <strong>2</strong>
-              <span>MySQL tools</span>
-            </div>
-            <div>
-              <strong>0</strong>
-              <span>server calls</span>
-            </div>
-            <div>
-              <strong>8+</strong>
-              <span>MySQL explain fields</span>
-            </div>
+          <div class="hero-panel" aria-label="서비스 요약">
+            <div class="metric-card"><strong>2</strong><span>active MySQL tools</span></div>
+            <div class="metric-card"><strong>0</strong><span>server-side parsing</span></div>
+            <div class="metric-card"><strong>100%</strong><span>static HTML, CSS, JS</span></div>
           </div>
         </section>
 
-        <div class="ad-placeholder" aria-label="광고 영역">
-          <span>Advertisement</span>
-          <p>Google AdSense 심사 및 광고 배치를 위한 반응형 영역입니다.</p>
-        </div>
+        <div class="ad-placeholder" aria-label="광고 영역"><div><strong>Advertisement</strong><p>AdSense 심사를 고려한 반응형 광고 예약 영역입니다.</p></div></div>
 
-        <section class="tool-section" id="formatter" aria-labelledby="formatter-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Tool 01</p>
-              <h2 id="formatter-title">MySQL Query Prettier</h2>
-            </div>
-            <button class="sample-button" type="button" data-load-sample="sql">Sample</button>
-          </div>
-          <div class="formatter-grid">
-            <label class="editor-card input-card">
-              <span class="editor-label">Input query</span>
-              <textarea id="sqlInput" spellcheck="false" placeholder="SELECT u.id,u.name,COUNT(o.id) total FROM users u LEFT JOIN orders o ON o.user_id=u.id WHERE u.status='active' GROUP BY u.id,u.name ORDER BY total DESC LIMIT 20;"></textarea>
-            </label>
-            <div class="editor-card output-card">
-              <div class="editor-label-row">
-                <span class="editor-label">Formatted output</span>
-                <button class="copy-button" type="button" id="copySql">Copy</button>
-              </div>
-              <pre class="code-output" id="sqlOutput" aria-live="polite"></pre>
-            </div>
-          </div>
-        </section>
-
-        <section class="tool-section" id="explain" aria-labelledby="explain-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Tool 02</p>
-              <h2 id="explain-title">MySQL EXPLAIN Visual</h2>
-            </div>
-            <button class="sample-button" type="button" data-load-sample="explain">Sample</button>
-          </div>
-          <div class="explain-grid">
-            <label class="editor-card explain-input">
-              <span class="editor-label">EXPLAIN result</span>
-              <textarea id="explainInput" spellcheck="false" placeholder="id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra"></textarea>
-            </label>
-            <div class="visual-card">
-              <div class="visual-toolbar">
-                <span class="editor-label">Visual plan</span>
-                <span id="explainSummary" class="summary-pill">Waiting for input</span>
-              </div>
-              <div id="planVisual" class="plan-visual" aria-live="polite"></div>
-              <div class="table-wrap">
-                <table id="explainTable">
-                  <thead></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="info-section" id="features" aria-labelledby="features-title">
-          <p class="eyebrow">기능 소개</p>
-          <h2 id="features-title">반복적인 데이터베이스 점검 시간을 줄이는 도구</h2>
-          <div class="feature-grid">
-            <article>
-              <h3>쿼리 정렬과 문법 강조</h3>
-              <p>SELECT, JOIN, WHERE, GROUP BY, ORDER BY 같은 MySQL 예약어를 구분하고 문자열, 숫자, 함수, 변수, 테이블 식별자를 다른 색으로 표시합니다. 긴 쿼리를 붙여넣으면 줄바꿈과 들여쓰기를 자동으로 적용해 코드 리뷰나 공유 전에 읽기 좋은 형태로 바꿉니다.</p>
+        <section class="info-section">
+          <p class="eyebrow">Tools</p>
+          <h2>기능은 페이지별로 분리되어 있습니다.</h2>
+          <div class="card-grid">
+            <article class="tool-card">
+              <h2>MySQL Query Prettier</h2>
+              <p>SELECT, JOIN, WHERE, GROUP BY, ORDER BY, CTE, CASE, 서브쿼리처럼 실무에서 자주 쓰는 구문을 줄바꿈과 들여쓰기로 정리합니다. 출력 영역은 더 크게 설계되어 리뷰와 복사가 편합니다.</p>
+              <a class="secondary-link" href="tools/mysql-query-prettier.html">도구 사용하기</a>
             </article>
-            <article>
-              <h3>EXPLAIN 결과 시각화</h3>
-              <p>MySQL Workbench에서 확인하던 실행 계획의 흐름을 웹에서 볼 수 있도록 단계 카드와 표를 함께 제공합니다. mysqlsh 스타일의 표, 일반 ASCII 테이블, 탭으로 구분된 결과, JSON 형식의 EXPLAIN FORMAT=JSON 입력을 최대한 자동 인식합니다.</p>
+            <article class="tool-card">
+              <h2>MySQL EXPLAIN Visual</h2>
+              <p>탭 구분, mysqlsh 스타일 표, JSON 형태의 EXPLAIN 결과를 받아 테이블 접근 순서, 조인 흐름, 인덱스 사용 여부, 예상 비용과 위험 지점을 시각적으로 보여줍니다.</p>
+              <a class="secondary-link" href="tools/mysql-explain-visual.html">도구 사용하기</a>
             </article>
-            <article>
-              <h3>브라우저 안에서만 처리</h3>
-              <p>SolForge의 현재 기능은 서버 API 없이 사용자의 브라우저에서 실행됩니다. 붙여넣은 쿼리와 EXPLAIN 결과는 외부 서버로 전송하지 않으며, 정적 사이트 구조라 Cloudflare Pages 같은 CDN 기반 호스팅에 적합합니다.</p>
+            <article class="tool-card">
+              <h2>생활 계산기</h2>
+              <p>날짜 차이, D-Day, 날짜 더하기/빼기, 만나이, 기념일, 입학·졸업 연도 계산을 한 번에 확인할 수 있는 정적 계산 도구를 제공합니다.</p>
+              <a class="secondary-link" href="calculators/date.html">계산기 보기</a>
             </article>
           </div>
-        </section>
-
-        <section class="info-section" id="about" aria-labelledby="about-title">
-          <p class="eyebrow">사이트 소개</p>
-          <h2 id="about-title">SolForge는 개발자 작업 흐름에 맞춘 무료 웹 도구 모음입니다.</h2>
-          <p>이 사이트는 백엔드 개발자, 데이터베이스 관리자, 풀스택 개발자가 MySQL 쿼리를 더 빠르게 검토하도록 돕기 위해 제작되었습니다. 초기 기능은 Query Prettier와 EXPLAIN Visual 두 가지이며, 이후 인덱스 설계 점검, 쿼리 비교, JSON 포맷터, 로그 분석 같은 기능을 같은 메뉴 구조 안에 확장할 수 있도록 구성했습니다.</p>
-          <p>디자인은 밝은 배경, 명확한 좌측 탐색, 도구 카드 중심의 레이아웃을 사용합니다. 기능 영역은 다크모드를 지원하므로 긴 코드와 실행 계획을 볼 때 눈의 피로를 줄일 수 있습니다. 모든 주요 텍스트는 검색엔진이 이해할 수 있도록 실제 HTML 문서 안에 배치되어 있으며, 개발자 도구라는 주제를 설명하는 소개와 기능 설명을 포함합니다.</p>
-        </section>
-
-        <section class="info-section" id="privacy" aria-labelledby="privacy-title">
-          <p class="eyebrow">개인정보처리방침</p>
-          <h2 id="privacy-title">입력 데이터는 브라우저에서 처리됩니다.</h2>
-          <p>SolForge는 현재 별도의 회원가입, 로그인, 결제, 댓글, 서버 저장 기능을 제공하지 않습니다. MySQL 쿼리와 EXPLAIN 결과는 JavaScript를 통해 사용자의 브라우저에서 처리되며, 이 정적 사이트 자체가 해당 입력값을 서버에 저장하거나 전송하지 않습니다.</p>
-          <p>향후 Google AdSense, 웹 분석, 오류 모니터링 같은 외부 서비스가 추가될 경우 해당 서비스 제공자가 쿠키, 광고 식별자, 접속 로그, 브라우저 정보 등을 처리할 수 있습니다. 광고 및 분석 기능을 적용할 때는 이 방침을 업데이트하고, 관련 법령과 플랫폼 정책에 맞는 고지와 선택권을 제공할 예정입니다.</p>
-          <p>사용자는 민감한 개인정보, 비밀번호, 토큰, 고객 데이터, 영업비밀이 포함된 쿼리를 공개 장소에서 붙여넣지 않는 것이 좋습니다. 문의나 정책 수정 요청은 사이트 운영자가 공개하는 연락 수단을 통해 접수할 수 있습니다.</p>
         </section>
 
         <footer class="footer">
-          <p>© 2026 SolForge. Developer-first static tools for MySQL workflows.</p>
-          <div>
-            <a href="#about">사이트소개</a>
-            <a href="#features">기능소개</a>
-            <a href="#privacy">개인정보처리방침</a>
-          </div>
+          <p>© 2026 SolForge. Static MySQL tools for developers.</p>
+          <div><a href="features.html">기능소개</a><a href="about.html">사이트소개</a><a href="privacy.html">개인정보처리방침</a></div>
         </footer>
       </main>
     </div>
-
-    <div class="toast" id="copyToast" role="status" aria-live="polite">copy is ok !</div>
     <script src="assets/js/app.js"></script>
   </body>
 </html>
