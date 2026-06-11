@@ -1220,6 +1220,7 @@ th {
 }
 
 .tool-search {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
@@ -1231,6 +1232,73 @@ th {
   border-radius: 12px;
   background: var(--surface);
   box-shadow: 0 16px 35px rgba(22, 119, 255, 0.14);
+}
+
+.tool-suggestions {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  overflow: hidden;
+  padding: 0.38rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  box-shadow: 0 20px 45px rgba(20, 43, 72, 0.18);
+}
+
+.tool-suggestions[hidden] {
+  display: none;
+}
+
+.tool-suggestions a {
+  display: grid;
+  grid-template-columns: minmax(80px, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 48px;
+  padding: 0.55rem 0.65rem;
+  border-radius: 7px;
+}
+
+.tool-suggestions a:hover,
+.tool-suggestions a:focus-visible {
+  background: var(--surface-soft);
+}
+
+.tool-suggestions a span {
+  color: var(--brand-strong);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.tool-suggestions a strong {
+  overflow: hidden;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-suggestions a b {
+  color: var(--muted);
+}
+
+.tool-suggestions p {
+  margin: 0;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.tool-suggestions p strong,
+.tool-suggestions p span {
+  display: block;
+}
+
+.tool-suggestions p span {
+  margin-top: 0.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .search-icon {
@@ -1917,6 +1985,18 @@ th {
 
   .tool-search button {
     grid-column: 1 / -1;
+  }
+
+  .tool-suggestions {
+    top: calc(100% + 0.4rem);
+  }
+
+  .tool-suggestions a {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tool-suggestions a span {
+    display: none;
   }
 
   .quick-launch {

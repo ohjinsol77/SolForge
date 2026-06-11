@@ -55,21 +55,31 @@
   ];
 
   function init() {
-    initTheme();
-    initNavigation();
-    markActiveLinks();
+    const initializers = [
+      initToolFinder,
+      initTheme,
+      initNavigation,
+      markActiveLinks,
+      initFormatter,
+      initExplain,
+      initLegacyCalculators,
+      initLifeCalculators
+    ];
+
+    initializers.forEach((initializer) => {
+      try {
+        initializer();
+      } catch (error) {
+        console.error(`[SolForge] ${initializer.name} failed`, error);
+      }
+    });
     window.addEventListener("hashchange", markActiveLinks);
-    initToolFinder();
-    initFormatter();
-    initExplain();
-    initLegacyCalculators();
-    initLifeCalculators();
   }
 
   function initTheme() {
     const toggle = $("#themeToggle");
     const label = $("#themeToggleLabel");
-    const saved = localStorage.getItem("solforge-theme");
+    const saved = readStorage("solforge-theme");
     const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     setTheme(saved || (systemDark ? "dark" : "light"));
     if (!toggle) return;
@@ -79,9 +89,25 @@
 
     function setTheme(theme) {
       document.documentElement.dataset.theme = theme;
-      localStorage.setItem("solforge-theme", theme);
+      writeStorage("solforge-theme", theme);
       if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
       if (label) label.textContent = theme === "dark" ? "Light" : "Dark";
+    }
+  }
+
+  function readStorage(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (_error) {
+      // Theme still works for the current page when storage is unavailable.
     }
   }
 
@@ -161,24 +187,70 @@
     const count = $("#visibleToolCount");
     const empty = $("#toolEmpty");
     const reset = $("#resetToolSearch");
+    const suggestions = $("#toolSuggestions");
     let activeFilter = "all";
 
+    const normalizeSearch = (value) => String(value || "")
+      .toLocaleLowerCase("ko")
+      .replace(/[·•._/\\-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const getMatches = () => {
+      const query = normalizeSearch(input.value);
+      const terms = query.split(" ").filter(Boolean);
+      return cards.filter((card) => {
+        const categoryMatch = activeFilter === "all" || card.dataset.category === activeFilter;
+        const searchable = normalizeSearch(`${card.textContent} ${card.dataset.keywords || ""}`);
+        const compact = searchable.replace(/\s/g, "");
+        const searchMatch = !terms.length || terms.every((term) => (
+          searchable.includes(term) || compact.includes(term.replace(/\s/g, ""))
+        ));
+        return categoryMatch && searchMatch;
+      });
+    };
+
     const applyFilters = () => {
+      const matches = new Set(getMatches());
       const query = input.value.trim().toLocaleLowerCase("ko");
-      const terms = query.split(/\s+/).filter(Boolean);
       let visible = 0;
 
       cards.forEach((card) => {
-        const categoryMatch = activeFilter === "all" || card.dataset.category === activeFilter;
-        const searchable = `${card.textContent} ${card.dataset.keywords || ""}`.toLocaleLowerCase("ko");
-        const searchMatch = !terms.length || terms.every((term) => searchable.includes(term));
-        const show = categoryMatch && searchMatch;
+        const show = matches.has(card);
         card.hidden = !show;
         if (show) visible += 1;
       });
 
       if (count) count.textContent = String(visible);
       if (empty) empty.hidden = visible !== 0;
+      return { matches: Array.from(matches), query };
+    };
+
+    const closeSuggestions = () => {
+      if (!suggestions) return;
+      suggestions.hidden = true;
+      suggestions.innerHTML = "";
+      input.setAttribute("aria-expanded", "false");
+    };
+
+    const renderSuggestions = () => {
+      if (!suggestions) return;
+      const query = input.value.trim();
+      if (!query) {
+        closeSuggestions();
+        return;
+      }
+
+      const matches = getMatches().slice(0, 6);
+      suggestions.innerHTML = matches.length
+        ? matches.map((card) => {
+          const title = $("strong", card)?.textContent?.trim() || "도구 열기";
+          const meta = $(".catalog-meta", card)?.childNodes[0]?.textContent?.trim() || "도구";
+          return `<a href="${card.getAttribute("href")}" role="option"><span>${escapeHtml(meta)}</span><strong>${escapeHtml(title)}</strong><b aria-hidden="true">→</b></a>`;
+        }).join("")
+        : '<p><strong>검색 결과가 없습니다.</strong><span>다른 검색어를 입력해 보세요.</span></p>';
+      suggestions.hidden = false;
+      input.setAttribute("aria-expanded", "true");
     };
 
     const selectFilter = (filter) => {
@@ -191,15 +263,28 @@
       applyFilters();
     };
 
-    input.addEventListener("input", applyFilters);
+    input.addEventListener("input", () => {
+      applyFilters();
+      renderSuggestions();
+    });
+    input.addEventListener("focus", renderSuggestions);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      applyFilters();
+      const { matches, query } = applyFilters();
+      closeSuggestions();
+      if (query && matches.length === 1) {
+        window.location.href = matches[0].getAttribute("href");
+        return;
+      }
       $("#all-tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     filterButtons.forEach((button) => {
-      button.addEventListener("click", () => selectFilter(button.dataset.toolFilter || "all"));
+      button.addEventListener("click", () => {
+        input.value = "";
+        closeSuggestions();
+        selectFilter(button.dataset.toolFilter || "all");
+      });
     });
 
     $$("[data-search-term]").forEach((button) => {
@@ -207,7 +292,8 @@
         input.value = button.dataset.searchTerm || "";
         selectFilter("all");
         applyFilters();
-        input.focus();
+        closeSuggestions();
+        $("#all-tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
 
@@ -215,9 +301,14 @@
       reset.addEventListener("click", () => {
         input.value = "";
         selectFilter("all");
+        closeSuggestions();
         input.focus();
       });
     }
+
+    document.addEventListener("click", (event) => {
+      if (!form.contains(event.target)) closeSuggestions();
+    });
 
     document.addEventListener("keydown", (event) => {
       const tag = document.activeElement?.tagName;
@@ -228,6 +319,7 @@
       if (event.key === "Escape" && document.activeElement === input) {
         input.value = "";
         applyFilters();
+        closeSuggestions();
         input.blur();
       }
     });

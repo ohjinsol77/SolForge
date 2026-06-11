@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="SolForge - 필요한 도구를 빠르게">
     <meta property="og:description" content="개발 도구와 생활 계산기를 검색하고 한 번에 바로 사용하세요.">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260611-2">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -66,9 +66,10 @@
             <form class="tool-search" id="toolSearchForm" role="search">
               <label class="sr-only" for="toolSearch">도구 검색</label>
               <span class="search-icon" aria-hidden="true"></span>
-              <input id="toolSearch" type="search" name="q" autocomplete="off" placeholder="예: D-Day, 만나이, 음력, SQL 정리">
+              <input id="toolSearch" type="search" name="q" autocomplete="off" placeholder="예: D-Day, 만나이, 음력, SQL 정리" aria-controls="toolSuggestions" aria-expanded="false">
               <kbd>/</kbd>
               <button type="submit">검색</button>
+              <div class="tool-suggestions" id="toolSuggestions" role="listbox" aria-label="추천 도구" hidden></div>
             </form>
             <div class="popular-searches" aria-label="인기 검색어">
               <span>인기:</span>
@@ -211,6 +212,6 @@
         </footer>
       </main>
     </div>
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.js?v=20260611-2"></script>
   </body>
 </html>
