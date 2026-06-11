@@ -1,954 +1,1031 @@
 (function () {
   "use strict";
 
-  const SQL_KEYWORDS = new Set([
-    "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "BETWEEN", "BY", "CASE",
-    "CAST", "CHANGE", "COLLATE", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "DATABASE",
-    "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "END", "EXISTS", "EXPLAIN", "FALSE",
-    "FOR", "FORCE", "FOREIGN", "FROM", "FULL", "GROUP", "HAVING", "IF", "IN", "INDEX",
-    "INNER", "INSERT", "INTERVAL", "INTO", "IS", "JOIN", "KEY", "LEFT", "LIKE", "LIMIT",
-    "LOCK", "NOT", "NULL", "ON", "OR", "ORDER", "OUTER", "PRIMARY", "PROCEDURE", "REFERENCES",
-    "REGEXP", "RIGHT", "SCHEMA", "SELECT", "SET", "STRAIGHT_JOIN", "TABLE", "THEN", "TO",
-    "TRUE", "UNION", "UNIQUE", "UPDATE", "USE", "USING", "VALUES", "WHEN", "WHERE", "WITH"
-  ]);
-
-  const MULTI_KEYWORDS = [
-    "LEFT OUTER JOIN", "RIGHT OUTER JOIN", "FULL OUTER JOIN", "UNION ALL", "GROUP BY",
-    "ORDER BY", "INSERT INTO", "DELETE FROM", "CREATE TABLE", "ALTER TABLE", "DROP TABLE",
-    "PRIMARY KEY", "FOREIGN KEY", "IS NOT", "NOT IN", "NOT LIKE"
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+  const DAY_MS = 86400000;
+  const WEEKDAYS = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+  const ZODIAC = [
+    { name: "쥐띠", branch: "자(子)" },
+    { name: "소띠", branch: "축(丑)" },
+    { name: "호랑이띠", branch: "인(寅)" },
+    { name: "토끼띠", branch: "묘(卯)" },
+    { name: "용띠", branch: "진(辰)" },
+    { name: "뱀띠", branch: "사(巳)" },
+    { name: "말띠", branch: "오(午)" },
+    { name: "양띠", branch: "미(未)" },
+    { name: "원숭이띠", branch: "신(申)" },
+    { name: "닭띠", branch: "유(酉)" },
+    { name: "개띠", branch: "술(戌)" },
+    { name: "돼지띠", branch: "해(亥)" }
   ];
-
-  const MAJOR_CLAUSES = new Set([
-    "WITH", "SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "HAVING", "LIMIT", "OFFSET",
-    "UNION", "UNION ALL", "INSERT INTO", "UPDATE", "DELETE FROM", "VALUES", "SET"
+  const AGE_TERMS = new Map([
+    [15, "지학(志學)"], [20, "약관(弱冠)"], [30, "이립(而立)"],
+    [40, "불혹(不惑)"], [50, "지천명(知天命)"], [60, "이순(耳順)"],
+    [61, "환갑(還甲)"], [70, "고희(古稀)"], [77, "희수(喜壽)"],
+    [80, "산수(傘壽)"], [88, "미수(米壽)"], [90, "졸수(卒壽)"],
+    [99, "백수(白壽)"], [100, "상수(上壽)"]
   ]);
 
-  const JOIN_CLAUSES = new Set([
-    "JOIN", "LEFT JOIN", "LEFT OUTER JOIN", "RIGHT JOIN", "RIGHT OUTER JOIN",
-    "INNER JOIN", "CROSS JOIN", "FULL JOIN", "FULL OUTER JOIN", "STRAIGHT_JOIN"
+  const SQL_SAMPLE = "WITH paid_orders AS (SELECT o.user_id, COUNT(*) AS order_count, SUM(o.total_amount) AS total_amount FROM app_db.orders o WHERE o.status IN ('paid', 'ready') AND o.deleted_at IS NULL GROUP BY o.user_id) SELECT u.id, u.name, IFNULL(p.order_count, 0) AS order_count FROM app_db.users u LEFT JOIN paid_orders p ON p.user_id = u.id WHERE u.status = 'active' ORDER BY order_count DESC LIMIT 20;";
+  const EXPLAIN_SAMPLE = [
+    "id\tselect_type\ttable\tpartitions\ttype\tpossible_keys\tkey\tkey_len\tref\trows\tfiltered\tExtra",
+    "1\tSIMPLE\tu\tNULL\tref\tidx_status\tidx_status\t82\tconst\t240\t85.00\tUsing where",
+    "1\tSIMPLE\to\tNULL\tref\tidx_user_status\tidx_user_status\t8\tapp_db.u.id\t14\t73.50\tUsing index condition",
+    "1\tSIMPLE\tp\tNULL\tALL\tNULL\tNULL\tNULL\tNULL\t120000\t18.00\tUsing temporary; Using filesort"
+  ].join("\n");
+
+  const KEYWORDS = new Set([
+    "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "BETWEEN", "BY", "CASE",
+    "CAST", "CHANGE", "COLUMN", "CONSTRAINT", "CREATE", "CROSS", "DATABASE", "DELETE",
+    "DESC", "DISTINCT", "DROP", "ELSE", "END", "EXISTS", "EXPLAIN", "FALSE", "FOR",
+    "FOREIGN", "FROM", "FULL", "GROUP", "HAVING", "IF", "IN", "INDEX", "INNER",
+    "INSERT", "INTERVAL", "INTO", "IS", "JOIN", "KEY", "LEFT", "LIKE", "LIMIT",
+    "LOCK", "NOT", "NULL", "OFFSET", "ON", "OR", "ORDER", "OUTER", "PRIMARY",
+    "REFERENCES", "REGEXP", "RIGHT", "SCHEMA", "SELECT", "SET", "STRAIGHT_JOIN",
+    "TABLE", "THEN", "TO", "TRUE", "UNION", "UNIQUE", "UPDATE", "USE", "USING",
+    "VALUES", "WHEN", "WHERE", "WITH"
   ]);
-
-  const CONDITIONALS = new Set(["AND", "OR", "WHEN", "ELSE"]);
-  const ENTITY_CONTEXT = new Set(["FROM", "JOIN", "UPDATE", "INTO", "TABLE", "DATABASE", "SCHEMA", "DESC", "DESCRIBE"]);
-  const FUNCTION_NAMES = new Set(["COUNT", "SUM", "AVG", "MIN", "MAX", "IFNULL", "COALESCE", "DATE_FORMAT", "CONCAT", "LOWER", "UPPER", "JSON_EXTRACT", "ROUND"]);
-
-  const SAMPLES = {
-    sql: "with paid_orders as (select o.user_id,count(*) order_count,sum(o.total_amount) total_amount,max(o.created_at) last_order_at from app_db.orders o where o.status in ('paid','ready') and o.deleted_at is null group by o.user_id) select u.id,u.name,ifnull(p.order_count,0) order_count,ifnull(p.total_amount,0) total_amount from app_db.users u left join paid_orders p on p.user_id=u.id where u.status='active' and (u.country='KR' or u.country='US') order by total_amount desc,u.name asc limit 20;",
-    explain: [
-      "id\tselect_type\ttable\tpartitions\ttype\tpossible_keys\tkey\tkey_len\tref\trows\tfiltered\tExtra",
-      "1\tSIMPLE\tu\tNULL\tref\tidx_status,idx_country\tidx_status\t82\tconst\t240\t85.00\tUsing where",
-      "1\tSIMPLE\to\tNULL\tref\tidx_user_status,idx_created_at\tidx_user_status\t8\tapp_db.u.id\t14\t73.50\tUsing index condition",
-      "1\tSIMPLE\tp\tNULL\tALL\tNULL\tNULL\tNULL\tNULL\t120000\t18.00\tUsing temporary; Using filesort"
-    ].join("\n")
-  };
-
-  const state = {
-    formattedSql: ""
-  };
-
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+  const MAJOR_CLAUSES = [
+    "UNION ALL", "INSERT INTO", "DELETE FROM", "GROUP BY", "ORDER BY",
+    "LEFT OUTER JOIN", "RIGHT OUTER JOIN", "FULL OUTER JOIN", "LEFT JOIN",
+    "RIGHT JOIN", "INNER JOIN", "CROSS JOIN", "FULL JOIN", "STRAIGHT_JOIN",
+    "SELECT", "FROM", "WHERE", "HAVING", "LIMIT", "OFFSET", "VALUES", "SET",
+    "UPDATE", "UNION", "WITH"
+  ];
 
   function init() {
     initTheme();
+    initNavigation();
     markActiveLinks();
+    window.addEventListener("hashchange", markActiveLinks);
     initFormatter();
     initExplain();
-    initCalculators();
+    initLegacyCalculators();
+    initLifeCalculators();
   }
 
   function initTheme() {
     const toggle = $("#themeToggle");
     const label = $("#themeToggleLabel");
-    const savedTheme = localStorage.getItem("solforge-theme");
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(savedTheme || (prefersDark ? "dark" : "light"), toggle, label);
+    const saved = localStorage.getItem("solforge-theme");
+    const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(saved || (systemDark ? "dark" : "light"));
     if (!toggle) return;
     toggle.addEventListener("click", () => {
-      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-      setTheme(next, toggle, label);
+      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
     });
+
+    function setTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem("solforge-theme", theme);
+      if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
+      if (label) label.textContent = theme === "dark" ? "Light" : "Dark";
+    }
   }
 
-  function setTheme(theme, toggle, label) {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem("solforge-theme", theme);
-    if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
-    if (label) label.textContent = theme === "dark" ? "Light" : "Dark";
+  function initNavigation() {
+    const nav = $("[data-solforge-nav]") || $(".side-nav");
+    if (!nav) return;
+    const nested = /\/(?:tools|calculators)\//.test(window.location.pathname);
+    const prefix = nested ? "../" : "";
+    const life = `${prefix}calculators/all.html`;
+    nav.innerHTML = [
+      '<p class="nav-title">개발 도구</p>',
+      navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
+      navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
+      '<p class="nav-title">생활 계산기</p>',
+      navGroup("나이 · 띠", [
+        [`${life}#age-calculator`, "나이·만나이 계산기"],
+        [`${life}#age-table`, "나이표·나이 용어"],
+        [`${life}#zodiac-tools`, "띠·띠궁합·삼재"]
+      ]),
+      navGroup("날짜", [
+        [`${life}#date-info`, "날짜 정보"],
+        [`${life}#date-difference`, "디데이·날짜 차이"],
+        [`${life}#date-move`, "날짜 더하기·빼기"],
+        [`${life}#anniversary`, "기념일·아기 100일"]
+      ]),
+      navGroup("양력 · 음력", [
+        [`${life}#lunar-converter`, "양음력 변환"],
+        [`${life}#lunar-anniversary`, "음력 기념일 변환"]
+      ]),
+      navGroup("달력 · 학교", [
+        [`${life}#holidays`, "우리나라 공휴일"],
+        [`${life}#no-hand-days`, "손없는 날"],
+        [`${life}#school-tools`, "입학·졸업·학생 나이"],
+        [`${life}#fun-names`, "재미 이름짓기"]
+      ])
+    ].join("");
+  }
+
+  function navLink(href, icon, label) {
+    return `<a href="${href}" class="nav-link" data-nav-link><span class="nav-icon">${icon}</span><span>${label}</span></a>`;
+  }
+
+  function navGroup(label, links) {
+    return [
+      '<details class="nav-group" open>',
+      `<summary>${label}</summary>`,
+      '<div class="nav-submenu">',
+      links.map(([href, text]) => `<a href="${href}" data-nav-link>${text}</a>`).join(""),
+      "</div></details>"
+    ].join("");
   }
 
   function markActiveLinks() {
-    const path = normalizePath(window.location.pathname);
+    const currentPath = normalizePath(window.location.pathname);
+    const currentHash = window.location.hash;
     $$("[data-nav-link], [data-top-link]").forEach((link) => {
-      const href = link.getAttribute("href") || "";
-      const linkPath = normalizePath(new URL(href, window.location.href).pathname);
-      link.classList.toggle("active", linkPath === path);
+      const url = new URL(link.getAttribute("href") || "", window.location.href);
+      const samePath = normalizePath(url.pathname) === currentPath;
+      const activeHash = !url.hash || url.hash === currentHash || (!currentHash && url.hash === "#age-calculator");
+      const active = samePath && activeHash;
+      link.classList.toggle("active", active);
     });
   }
 
   function normalizePath(path) {
-    if (!path || path === "/public/") return "/";
-    return path.replace(/\/index\.html$/, "/");
+    return path.replace(/\/public(?=\/|$)/, "").replace(/\/index\.html$/, "/");
   }
 
   function initFormatter() {
     const input = $("#sqlInput");
     const output = $("#sqlOutput");
-    const copy = $("#copySql");
-    const sample = $("[data-load-sample=\"sql\"]");
     if (!input || !output) return;
-
+    let formatted = "";
     const render = () => {
-      const raw = input.value.trim();
-      if (!raw) {
-        state.formattedSql = "";
-        output.innerHTML = "<span class=\"tok-comment\">정렬된 쿼리가 여기에 표시됩니다.</span>";
-        return;
-      }
-      state.formattedSql = formatSql(raw);
-      output.innerHTML = highlightSql(state.formattedSql);
+      formatted = formatSql(input.value);
+      output.innerHTML = formatted
+        ? highlightSql(formatted)
+        : '<span class="tok-comment">정렬된 쿼리가 여기에 표시됩니다.</span>';
     };
-
     input.addEventListener("input", render);
-    if (sample) {
-      sample.addEventListener("click", () => {
-        input.value = SAMPLES.sql;
-        render();
-      });
-    }
-    if (copy) copy.addEventListener("click", () => copyText(state.formattedSql));
+    const sample = $('[data-load-sample="sql"]');
+    if (sample) sample.addEventListener("click", () => {
+      input.value = SQL_SAMPLE;
+      render();
+    });
+    const copy = $("#copySql");
+    if (copy) copy.addEventListener("click", () => copyText(formatted));
     render();
   }
 
-  function initExplain() {
-    const input = $("#explainInput");
-    const visual = $("#planVisual");
-    if (!input || !visual) return;
-
-    const render = () => {
-      const raw = input.value.trim();
-      if (!raw) {
-        renderExplainState([]);
-        return;
-      }
-      const rows = parseExplain(raw);
-      renderExplainState(rows);
-    };
-
-    const sample = $("[data-load-sample=\"explain\"]");
-    if (sample) {
-      sample.addEventListener("click", () => {
-        input.value = SAMPLES.explain;
-        render();
-      });
-    }
-    input.addEventListener("input", render);
-    render();
-  }
-
-  function initCalculators() {
-    initDateCalculator();
-    initAgeCalculator();
-    initAnniversaryCalculator();
-    initSchoolCalculator();
-  }
-
-  function initDateCalculator() {
-    const form = $("#dateCalcForm");
-    if (!form) return;
-    const start = $("#dateStart");
-    const end = $("#dateEnd");
-    const includeEnd = $("#includeEnd");
-    const base = $("#dateBase");
-    const mode = $("#dateMode");
-    const years = $("#dateYears");
-    const months = $("#dateMonths");
-    const days = $("#dateDays");
-    const output = $("#dateCalcResult");
-
-    const today = toInputDate(new Date());
-    start.value ||= today;
-    end.value ||= today;
-    base.value ||= today;
-
-    const render = () => {
-      const startDate = parseInputDate(start.value);
-      const endDate = parseInputDate(end.value);
-      const baseDate = parseInputDate(base.value);
-      const diffDays = Math.round((stripTime(endDate) - stripTime(startDate)) / 86400000) + (includeEnd.checked ? 1 : 0);
-      const moved = addDateParts(baseDate, {
-        years: signedNumber(years.value, mode.value),
-        months: signedNumber(months.value, mode.value),
-        days: signedNumber(days.value, mode.value)
-      });
-      const dday = Math.round((stripTime(endDate) - stripTime(new Date())) / 86400000);
-      output.innerHTML = [
-        resultMain(`${formatNumber(diffDays)}일`, "두 날짜 사이의 차이"),
-        resultList([
-          ["D-Day 기준", dday === 0 ? "D-Day" : dday > 0 ? `D-${formatNumber(dday)}` : `D+${formatNumber(Math.abs(dday))}`],
-          ["날짜 더하기/빼기 결과", formatKoreanDate(moved)],
-          ["포함 계산", includeEnd.checked ? "종료일 포함" : "종료일 제외"]
-        ])
-      ].join("");
-    };
-
-    form.addEventListener("input", render);
-    render();
-  }
-
-  function initAgeCalculator() {
-    const form = $("#ageCalcForm");
-    if (!form) return;
-    const birth = $("#birthDate");
-    const target = $("#ageTargetDate");
-    const output = $("#ageCalcResult");
-    birth.value ||= "1995-01-01";
-    target.value ||= toInputDate(new Date());
-
-    const render = () => {
-      const birthDate = parseInputDate(birth.value);
-      const targetDate = parseInputDate(target.value);
-      const age = calculateAge(birthDate, targetDate);
-      const koreanAge = targetDate.getFullYear() - birthDate.getFullYear() + 1;
-      const adult = age.years >= 19 ? "만 19세 이상" : "만 19세 미만";
-      output.innerHTML = [
-        resultMain(`만 ${age.years}세`, "국제 기준 나이"),
-        resultList([
-          ["세부 나이", `${age.years}년 ${age.months}개월 ${age.days}일`],
-          ["한국식 세는 나이", `${koreanAge}세`],
-          ["성년 여부 참고", adult],
-          ["기준일", formatKoreanDate(targetDate)]
-        ])
-      ].join("");
-    };
-
-    form.addEventListener("input", render);
-    render();
-  }
-
-  function initAnniversaryCalculator() {
-    const form = $("#anniversaryCalcForm");
-    if (!form) return;
-    const base = $("#anniversaryBase");
-    const dayCount = $("#anniversaryDays");
-    const output = $("#anniversaryResult");
-    base.value ||= toInputDate(new Date());
-    dayCount.value ||= "100";
-
-    const render = () => {
-      const baseDate = parseInputDate(base.value);
-      const count = Math.max(1, toNumber(dayCount.value));
-      const target = addDateParts(baseDate, { days: count - 1 });
-      const left = Math.round((stripTime(target) - stripTime(new Date())) / 86400000);
-      output.innerHTML = [
-        resultMain(formatKoreanDate(target), `${formatNumber(count)}일째 되는 날`),
-        resultList([
-          ["오늘 기준", left === 0 ? "오늘" : left > 0 ? `${formatNumber(left)}일 남음` : `${formatNumber(Math.abs(left))}일 지남`],
-          ["시작일 포함", "첫날을 1일로 계산"],
-          ["추천 용도", "100일, 200일, 프로젝트 마일스톤"]
-        ])
-      ].join("");
-    };
-
-    form.addEventListener("input", render);
-    render();
-  }
-
-  function initSchoolCalculator() {
-    const form = $("#schoolCalcForm");
-    if (!form) return;
-    const birthYear = $("#schoolBirthYear");
-    const output = $("#schoolResult");
-    birthYear.value ||= String(new Date().getFullYear() - 7);
-
-    const render = () => {
-      const year = Math.max(1900, toNumber(birthYear.value));
-      const elementaryIn = year + 7;
-      const elementaryOut = elementaryIn + 6;
-      const middleIn = elementaryOut;
-      const middleOut = middleIn + 3;
-      const highIn = middleOut;
-      const highOut = highIn + 3;
-      output.innerHTML = [
-        resultMain(`${elementaryIn}년 3월`, "초등학교 입학 예상"),
-        resultList([
-          ["초등학교 졸업", `${elementaryOut}년 2월`],
-          ["중학교 입학", `${middleIn}년 3월`],
-          ["중학교 졸업", `${middleOut}년 2월`],
-          ["고등학교 입학", `${highIn}년 3월`],
-          ["고등학교 졸업", `${highOut}년 2월`]
-        ])
-      ].join("");
-    };
-
-    form.addEventListener("input", render);
-    render();
-  }
-
-  function tokenizeSql(sql, keepSpaces) {
-    const tokens = [];
-    let i = 0;
-    while (i < sql.length) {
-      const char = sql[i];
-      const next = sql[i + 1];
-
-      if (/\s/.test(char)) {
-        let value = char;
-        i += 1;
-        while (i < sql.length && /\s/.test(sql[i])) value += sql[i++];
-        if (keepSpaces) tokens.push({ type: "space", value });
-        continue;
-      }
-      if (char === "-" && next === "-") {
-        let value = "--";
-        i += 2;
-        while (i < sql.length && sql[i] !== "\n") value += sql[i++];
-        tokens.push({ type: "comment", value });
-        continue;
-      }
-      if (char === "/" && next === "*") {
-        let value = "/*";
-        i += 2;
-        while (i < sql.length && !(sql[i] === "*" && sql[i + 1] === "/")) value += sql[i++];
-        if (i < sql.length) {
-          value += "*/";
-          i += 2;
-        }
-        tokens.push({ type: "comment", value });
-        continue;
-      }
-      if (char === "'" || char === "\"" || char === "`") {
-        const quote = char;
-        let value = quote;
-        i += 1;
-        while (i < sql.length) {
-          value += sql[i];
-          if (sql[i] === "\\" && i + 1 < sql.length) {
-            i += 1;
-            value += sql[i];
-          } else if (sql[i] === quote) {
-            i += 1;
-            break;
-          }
-          i += 1;
-        }
-        tokens.push({ type: quote === "`" ? "identifier" : "string", value });
-        continue;
-      }
-      if (/[0-9]/.test(char)) {
-        let value = char;
-        i += 1;
-        while (i < sql.length && /[0-9.]/.test(sql[i])) value += sql[i++];
-        tokens.push({ type: "number", value });
-        continue;
-      }
-      if (char === "@" || char === ":" || char === "$") {
-        let value = char;
-        i += 1;
-        while (i < sql.length && /[\w$]/.test(sql[i])) value += sql[i++];
-        tokens.push({ type: "variable", value });
-        continue;
-      }
-      if (/[A-Za-z_]/.test(char)) {
-        let value = char;
-        i += 1;
-        while (i < sql.length && /[\w$]/.test(sql[i])) value += sql[i++];
-        const upper = value.toUpperCase();
-        tokens.push({ type: SQL_KEYWORDS.has(upper) ? "keyword" : "word", value: SQL_KEYWORDS.has(upper) ? upper : value });
-        continue;
-      }
-      if ("=<>!".includes(char) && "=<>".includes(next || "")) {
-        tokens.push({ type: "operator", value: char + next });
-        i += 2;
-        continue;
-      }
-      tokens.push({ type: /[+\-*/%<>.=]/.test(char) ? "operator" : "symbol", value: char });
-      i += 1;
-    }
-    return keepSpaces ? tokens : mergeSqlKeywords(tokens);
-  }
-
-  function mergeSqlKeywords(tokens) {
-    const merged = [];
-    for (let i = 0; i < tokens.length; i += 1) {
-      let matched = null;
-      for (const phrase of MULTI_KEYWORDS) {
-        const parts = phrase.split(" ");
-        const slice = tokens.slice(i, i + parts.length);
-        if (slice.length === parts.length && slice.every((token, index) => token.value.toUpperCase() === parts[index])) {
-          matched = phrase;
-          break;
-        }
-      }
-      if (matched) {
-        merged.push({ type: "keyword", value: matched });
-        i += matched.split(" ").length - 1;
-      } else {
-        merged.push(tokens[i]);
-      }
-    }
-    return merged;
+  function tokenizeSql(sql) {
+    const pattern = /(--[^\n]*|\/\*[\s\S]*?\*\/|'(?:\\.|''|[^'])*'|"(?:\\.|""|[^"])*"|`[^`]*`|@[A-Za-z0-9_$]+|:[A-Za-z0-9_$]+|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_$]*\b|<>|!=|<=|>=|:=|[(),.;+\-*/%=<>]|\s+|.)/g;
+    return sql.match(pattern) || [];
   }
 
   function formatSql(sql) {
-    const tokens = tokenizeSql(sql, true);
-    const lines = [];
-    let line = "";
-    let indent = 0;
-    let clause = "";
-    let clauseIndent = 0;
-    let parenDepth = 0;
-
-    const push = () => {
-      const text = line.trim();
-      if (text) lines.push(`${"  ".repeat(Math.max(indent + clauseIndent, 0))}${text}`);
-      line = "";
-    };
-
-    const append = (value) => {
-      if (!line) {
-        line = value;
-        return;
-      }
-      if (/^[,.;)]$/.test(value)) {
-        line += value;
-        return;
-      }
-      if (value === "(" || value === "." || line.endsWith("(") || line.endsWith(".")) {
-        line += value;
-        return;
-      }
-      line += ` ${value}`;
-    };
-
-    const setClause = (name) => {
-      if (line) push();
-      clauseIndent = 0;
-      clause = name;
-      append(name);
-      if (["SELECT", "WHERE", "GROUP BY", "ORDER BY", "HAVING", "SET", "VALUES"].includes(name)) {
-        push();
-        clauseIndent = 1;
-      }
-    };
-
-    tokens.forEach((token, index) => {
-      const value = token.value;
-      const upper = value.toUpperCase();
-      const prev = tokens[index - 1];
-      const next = tokens[index + 1];
-      const prevValue = prev ? prev.value.toUpperCase() : "";
-      const isFunctionCall = token.type === "word" && next && next.value === "(";
-
-      if (token.type === "comment") {
-        push();
-        append(value);
-        push();
-        return;
-      }
-
-      if (MAJOR_CLAUSES.has(upper)) {
-        if (upper === "UNION" || upper === "UNION ALL") {
-          push();
-          clauseIndent = 0;
-          append(upper);
-          push();
-          clause = "";
-          return;
-        }
-        setClause(upper);
-        return;
-      }
-
-      if (JOIN_CLAUSES.has(upper)) {
-        push();
-        clauseIndent = 0;
-        clause = "JOIN";
-        append(upper);
-        return;
-      }
-
-      if (upper === "ON") {
-        push();
-        clauseIndent = 1;
-        clause = "ON";
-        append("ON");
-        return;
-      }
-
-      if (CONDITIONALS.has(upper) && ["WHERE", "ON", "HAVING"].includes(clause)) {
-        push();
-        append(upper);
-        return;
-      }
-
-      if (upper === "CASE") {
-        append("CASE");
-        push();
-        indent += 1;
-        clauseIndent = 0;
-        clause = "CASE";
-        return;
-      }
-
-      if (["WHEN", "THEN", "ELSE"].includes(upper)) {
-        push();
-        append(upper);
-        return;
-      }
-
-      if (upper === "END") {
-        push();
-        indent = Math.max(indent - 1, 0);
-        append("END");
-        return;
-      }
-
-      if (value === "(") {
-        append("(");
-        if (!FUNCTION_NAMES.has(prevValue) && prevValue !== "IN" && prevValue !== "VALUES") {
-          parenDepth += 1;
-          push();
-          indent += 1;
-          clauseIndent = 0;
-        }
-        return;
-      }
-
-      if (value === ")") {
-        if (parenDepth > 0 && !line.trim().endsWith("(")) {
-          push();
-          indent = Math.max(indent - 1, 0);
-          parenDepth -= 1;
-          append(")");
-        } else {
-          append(")");
-        }
-        return;
-      }
-
-      if (value === ",") {
-        append(",");
-        if (["SELECT", "GROUP BY", "ORDER BY", "SET", "VALUES"].includes(clause) || parenDepth > 0) push();
-        return;
-      }
-
-      if (value === ";") {
-        append(";");
-        push();
-        clause = "";
-        clauseIndent = 0;
-        return;
-      }
-
-      if (token.type === "operator" && value !== ".") {
-        append(value);
-        return;
-      }
-
-      append(isFunctionCall && SQL_KEYWORDS.has(upper) ? upper : value);
+    let text = String(sql || "").trim();
+    if (!text) return "";
+    text = text.replace(/\s+/g, " ");
+    MAJOR_CLAUSES.forEach((clause) => {
+      const escaped = clause.replace(/\s+/g, "\\s+");
+      text = text.replace(new RegExp(`\\b${escaped}\\b`, "gi"), `\n${clause}`);
     });
-
-    push();
-    return lines
-      .join("\n")
-      .replace(/\n{3,}/g, "\n\n")
-      .replace(/\(\n\s*\)/g, "()")
+    text = text
+      .replace(/\s*,\s*/g, ", ")
+      .replace(/\s*([=<>!]+)\s*/g, " $1 ")
+      .replace(/\n\s+/g, "\n")
+      .replace(/\n{2,}/g, "\n")
       .trim();
+
+    const lines = [];
+    let depth = 0;
+    text.split("\n").forEach((rawLine) => {
+      let line = rawLine.trim();
+      if (!line) return;
+      const closeCount = (line.match(/^\)+/) || [""])[0].length;
+      depth = Math.max(0, depth - closeCount);
+      const upper = line.toUpperCase();
+      const isNestedClause = /^(AND|OR|WHEN|ELSE)\b/.test(upper);
+      const indent = depth + (isNestedClause ? 1 : 0);
+      lines.push(`${"  ".repeat(indent)}${uppercaseKeywords(line)}`);
+      const opens = (line.match(/\(/g) || []).length;
+      const closes = (line.match(/\)/g) || []).length;
+      depth = Math.max(0, depth + opens - closes);
+    });
+    return lines.join("\n");
+  }
+
+  function uppercaseKeywords(line) {
+    return tokenizeSql(line).map((token) => {
+      if (/^[A-Za-z_][A-Za-z0-9_$]*$/.test(token) && KEYWORDS.has(token.toUpperCase())) {
+        return token.toUpperCase();
+      }
+      return token;
+    }).join("");
   }
 
   function highlightSql(sql) {
     const tokens = tokenizeSql(sql);
-    let previousMeaningful = "";
-    let nextIsAlias = false;
     return tokens.map((token, index) => {
-      if (token.type === "space") return escapeHtml(token.value);
-      if (token.type === "comment") return wrap("tok-comment", token.value);
-      if (token.type === "string") return wrap("tok-string", token.value);
-      if (token.type === "number") return wrap("tok-number", token.value);
-      if (token.type === "variable") return wrap("tok-variable", token.value);
-      if (token.type === "identifier") return wrap("tok-entity", token.value);
-      if (token.type === "operator") return wrap("tok-operator", token.value);
-      if (token.type === "keyword") {
-        previousMeaningful = token.value;
-        nextIsAlias = token.value === "AS";
-        return wrap("tok-keyword", token.value);
+      if (/^\s+$/.test(token)) return token;
+      if (/^--|^\/\*/.test(token)) return wrap("tok-comment", token);
+      if (/^['"]/.test(token)) return wrap("tok-string", token);
+      if (/^`/.test(token)) return wrap("tok-entity", token);
+      if (/^[@:]/.test(token)) return wrap("tok-variable", token);
+      if (/^\d/.test(token)) return wrap("tok-number", token);
+      if (/^[A-Za-z_]/.test(token)) {
+        const upper = token.toUpperCase();
+        if (KEYWORDS.has(upper)) return wrap("tok-keyword", upper);
+        const next = tokens.slice(index + 1).find((item) => !/^\s+$/.test(item));
+        if (next === "(") return wrap("tok-function", token);
+        return wrap("tok-entity", token);
       }
-      if (token.type === "word") {
-        const next = tokens[index + 1];
-        if (next && next.value === "(") {
-          previousMeaningful = token.value;
-          return wrap("tok-function", token.value);
-        }
-        if (nextIsAlias) {
-          nextIsAlias = false;
-          previousMeaningful = token.value;
-          return wrap("tok-alias", token.value);
-        }
-        if (ENTITY_CONTEXT.has(previousMeaningful) || previousMeaningful === ".") {
-          previousMeaningful = token.value;
-          return wrap("tok-entity", token.value);
-        }
-        previousMeaningful = token.value;
-      }
-      if (token.value === ".") previousMeaningful = ".";
-      return escapeHtml(token.value);
+      if (/^[+\-*/%=<>!]+$/.test(token)) return wrap("tok-operator", token);
+      return escapeHtml(token);
     }).join("");
   }
 
+  function initExplain() {
+    const input = $("#explainInput");
+    if (!input) return;
+    const render = () => renderExplain(parseExplain(input.value));
+    input.addEventListener("input", render);
+    const sample = $('[data-load-sample="explain"]');
+    if (sample) sample.addEventListener("click", () => {
+      input.value = EXPLAIN_SAMPLE;
+      render();
+    });
+    render();
+  }
+
   function parseExplain(raw) {
-    const text = raw.trim();
+    const text = String(raw || "").trim();
     if (!text) return [];
-    if (text[0] === "{" || text[0] === "[") {
+    if (/^[{[]/.test(text)) {
       try {
-        return normalizeExplainRows(parseExplainJson(JSON.parse(text)));
+        return parseExplainJson(JSON.parse(text));
       } catch (error) {
         return [];
       }
     }
-    if (text.includes("\t")) return normalizeExplainRows(parseDelimited(text, "\t"));
-    if (text.includes("|")) return normalizeExplainRows(parsePipeTable(text));
-    return normalizeExplainRows(parseDelimited(text, /\s{2,}/));
-  }
-
-  function parseDelimited(text, delimiter) {
     const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     if (lines.length < 2) return [];
-    const headers = splitLine(lines[0], delimiter).map(normalizeHeader);
-    return lines.slice(1).map((line) => {
-      const cells = splitLine(line, delimiter);
-      return headers.reduce((row, header, index) => {
-        row[header] = cleanCell(cells[index] || "");
-        return row;
-      }, {});
-    }).filter((row) => Object.values(row).some(Boolean));
-  }
-
-  function splitLine(line, delimiter) {
-    return delimiter instanceof RegExp ? line.split(delimiter) : line.split(delimiter);
-  }
-
-  function parsePipeTable(text) {
-    const lines = text.split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.includes("|") && !/^\+[-+]+\+$/.test(line));
-    if (lines.length < 2) return [];
-    const headers = lines[0].split("|").map(cleanCell).filter(Boolean).map(normalizeHeader);
-    return lines.slice(1).map((line) => {
-      const cells = line.split("|").map(cleanCell).filter((cell, index, arr) => {
-        return !(index === 0 && cell === "") && !(index === arr.length - 1 && cell === "");
-      });
-      return headers.reduce((row, header, index) => {
-        row[header] = cells[index] || "";
-        return row;
-      }, {});
+    const pipe = lines[0].includes("|");
+    const delimiter = lines[0].includes("\t") ? "\t" : pipe ? "|" : /\s{2,}/;
+    const clean = (value) => String(value || "").trim().replace(/^"|"$/g, "");
+    const split = (line) => line.split(delimiter).map(clean).filter((cell, index, array) => {
+      return !(pipe && ((index === 0 && !cell) || (index === array.length - 1 && !cell)));
     });
+    const headers = split(lines[0]).map(normalizeHeader);
+    return lines.slice(1)
+      .filter((line) => !/^\+[-+]+\+$/.test(line))
+      .map((line, index) => normalizePlanRow(headers.reduce((row, header, cellIndex) => {
+        row[header] = split(line)[cellIndex] || "";
+        return row;
+      }, {}), index));
   }
 
   function parseExplainJson(json) {
     const rows = [];
-    const root = Array.isArray(json) ? json[0] : json;
-    function visit(node, depth, label) {
+    function visit(node, label) {
       if (!node || typeof node !== "object") return;
-      if (node.query_cost) {
-        rows.queryCost = Number(node.query_cost);
-      }
       if (node.table) {
         const table = node.table;
-        rows.push({
-          id: String(rows.length + 1),
+        rows.push(normalizePlanRow({
+          id: rows.length + 1,
           select_type: label || "JSON",
-          table: table.table_name || table.name || "(derived)",
+          table: table.table_name || "(derived)",
           type: table.access_type || "",
           possible_keys: Array.isArray(table.possible_keys) ? table.possible_keys.join(", ") : "",
           key: table.key || "",
           ref: table.ref || "",
-          rows: String(table.rows_examined_per_scan || table.rows_produced_per_join || ""),
-          filtered: String(table.filtered || ""),
+          rows: table.rows_examined_per_scan || table.rows_produced_per_join || "",
+          filtered: table.filtered || "",
           extra: [
             table.attached_condition ? "attached condition" : "",
             table.using_index ? "Using index" : "",
             table.using_temporary_table ? "Using temporary" : "",
             table.using_filesort ? "Using filesort" : ""
-          ].filter(Boolean).join("; "),
-          json_cost: table.cost_info && (table.cost_info.read_cost || table.cost_info.eval_cost || table.cost_info.prefix_cost),
-          depth
-        });
+          ].filter(Boolean).join("; ")
+        }, rows.length));
       }
-      ["query_block", "ordering_operation", "grouping_operation", "duplicates_removal"].forEach((key) => {
-        if (node[key]) visit(node[key], depth, key.replace(/_/g, " "));
+      Object.keys(node).forEach((key) => {
+        const value = node[key];
+        if (value && typeof value === "object") {
+          if (Array.isArray(value)) value.forEach((item) => visit(item, key.replace(/_/g, " ")));
+          else visit(value, key.replace(/_/g, " "));
+        }
       });
-      if (Array.isArray(node.nested_loop)) {
-        node.nested_loop.forEach((child, index) => visit(child, depth + 1, `nested loop ${index + 1}`));
-      }
     }
-    visit(root, 0, "query block");
+    visit(Array.isArray(json) ? json[0] : json, "query block");
     return rows;
   }
 
-  function normalizeExplainRows(rows) {
-    return rows.map((row, index) => {
-      const normalized = {};
-      Object.keys(row).forEach((key) => normalized[normalizeHeader(key)] = cleanCell(row[key]));
-      const accessType = (normalized.type || normalized.access_type || "").toLowerCase();
-      const rowCount = toNumber(normalized.rows || normalized.rows_examined_per_scan);
-      const filtered = toNumber(normalized.filtered || 100);
-      const key = normalized.key && normalized.key !== "NULL" ? normalized.key : "";
-      const possible = normalized.possible_keys && normalized.possible_keys !== "NULL" ? normalized.possible_keys : "";
-      const extra = normalized.extra || normalized.Extra || "";
-      const cost = estimateCost(accessType, rowCount, filtered, extra, normalized.json_cost);
-      return {
-        ...normalized,
-        id: normalized.id || String(index + 1),
-        table: normalized.table || normalized.table_name || `(step ${index + 1})`,
-        type: accessType || "unknown",
-        key,
-        possible_keys: possible,
-        rows: rowCount ? String(rowCount) : (normalized.rows || "?"),
-        filtered: filtered ? String(filtered) : (normalized.filtered || "?"),
-        extra,
-        estimated_cost: cost,
-        risk: classifyPlan(accessType, rowCount, extra, key),
-        join_target: inferJoinTarget(normalized.ref || ""),
-        join_kind: inferJoinKind(index, accessType, key)
-      };
-    });
+  function normalizeHeader(value) {
+    return String(value || "").trim().toLowerCase().replace(/\s+/g, "_");
   }
 
-  function renderExplainState(rows) {
-    const visual = $("#planVisual");
+  function normalizePlanRow(row, index) {
+    const type = String(row.type || row.access_type || "unknown").toLowerCase();
+    const key = row.key && row.key !== "NULL" ? row.key : "";
+    const rows = numberValue(row.rows || row.rows_examined_per_scan);
+    const filtered = numberValue(row.filtered) || 100;
+    const extra = row.extra || "";
+    const weight = ({ system: 0.2, const: 0.4, eq_ref: 0.7, ref: 1, range: 1.6, index: 2.4, all: 4.5 }[type] || 2);
+    const cost = Math.max(1, Math.round((rows || 1) * weight * Math.max(0.05, filtered / 100) * (/filesort|temporary/i.test(extra) ? 1.8 : 1)));
+    const danger = type === "all" || !key || /filesort|temporary/i.test(extra) || rows > 100000;
+    const warning = !danger && (["index", "range"].includes(type) || rows > 10000);
+    return {
+      ...row,
+      id: row.id || index + 1,
+      select_type: row.select_type || "SIMPLE",
+      table: row.table || row.table_name || `(step ${index + 1})`,
+      type,
+      key,
+      rows: rows || row.rows || "?",
+      filtered,
+      extra,
+      cost,
+      risk: danger ? "danger" : warning ? "warn" : "good"
+    };
+  }
+
+  function renderExplain(rows) {
     const summary = $("#explainSummary");
     const dashboard = $("#planDashboard");
+    const visual = $("#planVisual");
     const insights = $("#planInsights");
-    renderExplainTable(rows);
-
+    const table = $("#explainTable");
+    if (!visual) return;
     if (!rows.length) {
       if (summary) summary.textContent = "Waiting for input";
       if (dashboard) dashboard.innerHTML = "";
       if (insights) insights.innerHTML = "";
-      if (visual) visual.innerHTML = "<div class=\"plan-empty\">EXPLAIN 결과를 붙여넣으면 실행 흐름, 조인, 인덱스 사용 여부와 비용 추정이 표시됩니다.</div>";
+      visual.innerHTML = '<div class="plan-empty">EXPLAIN 결과를 붙여넣으면 실행 순서와 인덱스 사용 여부를 표시합니다.</div>';
+      if (table) {
+        $("thead", table).innerHTML = "";
+        $("tbody", table).innerHTML = "";
+      }
       return;
     }
-
-    const totalRows = rows.reduce((sum, row) => sum + toNumber(row.rows), 0);
-    const totalCost = rows.reduce((sum, row) => sum + row.estimated_cost, 0);
-    const noIndex = rows.filter((row) => !row.key || row.type === "all").length;
-    const joins = Math.max(rows.length - 1, 0);
+    const totalRows = rows.reduce((sum, row) => sum + numberValue(row.rows), 0);
+    const totalCost = rows.reduce((sum, row) => sum + row.cost, 0);
+    const scans = rows.filter((row) => row.type === "all" || !row.key).length;
     if (summary) summary.textContent = `${rows.length} steps · cost ${formatNumber(totalCost)}`;
-    if (dashboard) {
-      dashboard.innerHTML = [
-        stat("Plan steps", rows.length),
-        stat("Estimated rows", formatNumber(totalRows)),
-        stat("Estimated cost", formatNumber(totalCost)),
-        stat("No-index scans", noIndex)
-      ].join("");
-    }
-    if (visual) visual.innerHTML = renderPlanFlow(rows);
-    if (insights) insights.innerHTML = renderInsights(rows, joins);
-  }
-
-  function renderPlanFlow(rows) {
-    if (rows.length === 1) {
-      return `<div class="plan-flow"><div class="plan-node root-node">${renderNode(rows[0], 0, rows)}</div></div>`;
-    }
-    return `<div class="plan-flow">${rows.map((row, index) => {
-      if (index === 0) {
-        return `<div class="plan-node root-node">${renderNode(row, index, rows)}</div>`;
-      }
+    if (dashboard) dashboard.innerHTML = [
+      statCard("Plan steps", rows.length),
+      statCard("Estimated rows", formatNumber(totalRows)),
+      statCard("Estimated cost", formatNumber(totalCost)),
+      statCard("No-index scans", scans)
+    ].join("");
+    visual.innerHTML = `<div class="plan-flow">${rows.map((row, index) => {
+      const maxCost = Math.max(...rows.map((item) => item.cost), 1);
+      const width = Math.max(6, Math.round((row.cost / maxCost) * 100));
       return [
-        "<div class=\"plan-node-row\">",
-        `<div class="plan-node">${renderNode(rows[index - 1], index - 1, rows, true)}</div>`,
-        "<div class=\"plan-arrow\" aria-hidden=\"true\"></div>",
-        `<div class="plan-node">${renderNode(row, index, rows)}</div>`,
+        index ? '<div class="plan-arrow" aria-hidden="true"></div>' : "",
+        '<div class="plan-node">',
+        '<div class="node-top"><div>',
+        `<p class="node-title">${index + 1}. ${escapeHtml(row.table)}</p>`,
+        `<p class="node-subtitle">${escapeHtml(row.select_type)} · ${index ? "join step" : "driving table"}</p>`,
+        `</div><span class="tag ${row.risk}">${row.risk === "good" ? "Good" : row.risk === "warn" ? "Watch" : "Review"}</span></div>`,
+        '<div class="node-tags">',
+        `<span class="tag ${row.key ? "good" : "danger"}">${row.key ? `index: ${escapeHtml(row.key)}` : "no index"}</span>`,
+        `<span class="tag ${row.type === "all" ? "danger" : "good"}">access: ${escapeHtml(row.type.toUpperCase())}</span>`,
+        `<span class="tag">rows: ${escapeHtml(row.rows)}</span>`,
+        "</div>",
+        `<div class="cost-bar"><span style="--cost-width:${width}%"></span></div>`,
+        `<div class="node-detail"><span><b>possible</b> ${escapeHtml(row.possible_keys || "none")}</span><span><b>ref</b> ${escapeHtml(row.ref || "none")}</span><span><b>cost</b> ${formatNumber(row.cost)}</span><span><b>extra</b> ${escapeHtml(row.extra || "none")}</span></div>`,
         "</div>"
       ].join("");
     }).join("")}</div>`;
-  }
-
-  function renderNode(row, index, rows, compact) {
-    const totalCost = Math.max(...rows.map((item) => item.estimated_cost), 1);
-    const width = Math.min(100, Math.max(6, Math.round((row.estimated_cost / totalCost) * 100)));
-    const riskClass = row.risk.level === "danger" ? "danger" : row.risk.level === "warn" ? "warn" : "good";
-    return [
-      "<div class=\"node-top\">",
-      "<div>",
-      `<p class="node-title">${escapeHtml(index + 1)}. ${escapeHtml(row.table)}</p>`,
-      `<p class="node-subtitle">${escapeHtml(row.select_type || "SIMPLE")} · ${escapeHtml(row.join_kind)}</p>`,
-      "</div>",
-      `<span class="tag ${riskClass}">${escapeHtml(row.risk.label)}</span>`,
-      "</div>",
-      "<div class=\"node-tags\">",
-      `<span class="tag ${row.key ? "good" : "danger"}">${row.key ? `index: ${escapeHtml(row.key)}` : "no index"}</span>`,
-      `<span class="tag ${row.type === "all" ? "danger" : "good"}">access: ${escapeHtml(row.type.toUpperCase())}</span>`,
-      `<span class="tag">rows: ${escapeHtml(row.rows)}</span>`,
-      `<span class="tag">filtered: ${escapeHtml(row.filtered)}%</span>`,
-      "</div>",
-      `<div class="cost-bar" title="estimated cost ${escapeHtml(formatNumber(row.estimated_cost))}"><span style="--cost-width: ${width}%"></span></div>`,
-      compact ? "" : [
-        "<div class=\"node-detail\">",
-        `<span><b>possible</b> ${escapeHtml(row.possible_keys || "none")}</span>`,
-        `<span><b>ref</b> ${escapeHtml(row.ref || "none")}</span>`,
-        `<span><b>cost</b> ${escapeHtml(formatNumber(row.estimated_cost))}</span>`,
-        `<span><b>extra</b> ${escapeHtml(row.extra || "none")}</span>`,
-        "</div>"
-      ].join("")
-    ].join("");
-  }
-
-  function renderInsights(rows, joins) {
-    const joinItems = rows.slice(1).map((row, index) => {
-      const left = rows[index].table;
-      const condition = row.ref && row.ref !== "NULL" ? row.ref : row.join_target || "condition not copied";
-      return `<li>${escapeHtml(left)} → ${escapeHtml(row.table)} · ${escapeHtml(condition)}</li>`;
-    });
-    const indexItems = rows.map((row) => {
-      const text = row.key ? `${row.table}: ${row.key} 사용` : `${row.table}: 인덱스 미사용 또는 full scan`;
-      return `<li>${escapeHtml(text)}</li>`;
-    });
-    const hotspotItems = rows.slice().sort((a, b) => b.estimated_cost - a.estimated_cost).slice(0, 3).map((row) => {
-      return `<li>${escapeHtml(row.table)} · cost ${escapeHtml(formatNumber(row.estimated_cost))} · ${escapeHtml(row.risk.reason)}</li>`;
-    });
-    return [
-      insight("Join flow", joinItems.length ? joinItems : [`<li>조인 단계가 감지되지 않았습니다. steps: ${joins}</li>`]),
-      insight("Index usage", indexItems),
-      insight("Cost hotspots", hotspotItems)
-    ].join("");
-  }
-
-  function renderExplainTable(rows) {
-    const table = $("#explainTable");
-    if (!table) return;
-    const thead = table.querySelector("thead");
-    const tbody = table.querySelector("tbody");
-    if (!rows.length) {
-      thead.innerHTML = "";
-      tbody.innerHTML = "";
-      return;
+    if (insights) {
+      const risky = rows.filter((row) => row.risk !== "good");
+      insights.innerHTML = [
+        insightCard("실행 순서", rows.map((row, index) => `${index + 1}. ${row.table} (${row.type.toUpperCase()})`)),
+        insightCard("인덱스", rows.map((row) => `${row.table}: ${row.key || "인덱스 미사용"}`)),
+        insightCard("검토 지점", risky.length ? risky.map((row) => `${row.table}: ${row.extra || "접근 방식 확인 필요"}`) : ["뚜렷한 위험 신호가 없습니다."])
+      ].join("");
     }
-    const headers = ["id", "select_type", "table", "type", "possible_keys", "key", "ref", "rows", "filtered", "estimated_cost", "extra"];
-    thead.innerHTML = `<tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr>`;
-    tbody.innerHTML = rows.map((row) => `<tr>${headers.map((header) => `<td>${escapeHtml(row[header] || "")}</td>`).join("")}</tr>`).join("");
+    renderExplainTable(rows, table);
   }
 
-  function stat(label, value) {
+  function renderExplainTable(rows, table) {
+    if (!table) return;
+    const headers = ["id", "select_type", "table", "type", "possible_keys", "key", "ref", "rows", "filtered", "cost", "extra"];
+    $("thead", table).innerHTML = `<tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr>`;
+    $("tbody", table).innerHTML = rows.map((row) => `<tr>${headers.map((header) => `<td>${escapeHtml(row[header] ?? "")}</td>`).join("")}</tr>`).join("");
+  }
+
+  function statCard(label, value) {
     return `<div class="stat-card"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`;
   }
 
-  function insight(title, items) {
-    return `<article class="insight-card"><h3>${escapeHtml(title)}</h3><ul>${items.join("")}</ul></article>`;
+  function insightCard(title, items) {
+    return `<article class="insight-card"><h3>${title}</h3><ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></article>`;
   }
 
-  function estimateCost(accessType, rows, filtered, extra, jsonCost) {
-    if (jsonCost) return Math.max(1, Number(jsonCost));
-    const accessWeight = {
-      system: 0.2,
-      const: 0.4,
-      eq_ref: 0.7,
-      ref: 1,
-      range: 1.6,
-      index: 2.4,
-      all: 4.5,
-      unknown: 2
-    }[accessType || "unknown"] || 2;
-    const filterWeight = Math.max(0.05, Math.min(1, (filtered || 100) / 100));
-    const extraWeight = /filesort|temporary/i.test(extra || "") ? 1.8 : 1;
-    return Math.max(1, Math.round((rows || 1) * accessWeight * filterWeight * extraWeight));
+  function initLegacyCalculators() {
+    initLegacyDate();
+    initLegacyAge();
+    initLegacyAnniversary();
+    initLegacySchool();
   }
 
-  function classifyPlan(accessType, rows, extra, key) {
-    if (accessType === "all" || !key || /filesort|temporary/i.test(extra || "") || rows > 100000) {
-      return { level: "danger", label: "Review", reason: "full scan, filesort, temporary table, or high row count" };
-    }
-    if (["index", "range"].includes(accessType) || rows > 10000) {
-      return { level: "warn", label: "Watch", reason: "large index/range scan or elevated row count" };
-    }
-    return { level: "good", label: "Good", reason: "selective access path detected" };
-  }
-
-  function inferJoinTarget(ref) {
-    const match = String(ref).match(/([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)$/);
-    return match ? match[1] : "";
-  }
-
-  function inferJoinKind(index, accessType, key) {
-    if (index === 0) return "driving table";
-    if (key && ["eq_ref", "ref", "const"].includes(accessType)) return "indexed nested loop join";
-    if (key) return "indexed join step";
-    return "scan join step";
-  }
-
-  function normalizeHeader(header) {
-    const key = cleanCell(header).toLowerCase().replace(/\s+/g, "_");
-    const aliases = {
-      selecttype: "select_type",
-      table_name: "table",
-      rows_examined_per_scan: "rows",
-      access_type: "type",
-      extra: "extra"
+  function initLegacyDate() {
+    const form = $("#dateCalcForm");
+    if (!form) return;
+    const today = todayInput();
+    $("#dateStart").value ||= today;
+    $("#dateEnd").value ||= today;
+    $("#dateBase").value ||= today;
+    const render = () => {
+      const start = dateFromInput($("#dateStart").value);
+      const end = dateFromInput($("#dateEnd").value);
+      const included = $("#includeEnd").checked ? 1 : 0;
+      const diff = Math.round((end - start) / DAY_MS) + included;
+      const sign = $("#dateMode").value === "subtract" ? -1 : 1;
+      const moved = addDateParts(dateFromInput($("#dateBase").value), {
+        years: sign * numberValue($("#dateYears").value),
+        months: sign * numberValue($("#dateMonths").value),
+        days: sign * numberValue($("#dateDays").value)
+      });
+      $("#dateCalcResult").innerHTML = resultBlock(`${formatNumber(diff)}일`, "두 날짜 사이", [
+        ["오늘 기준", ddayText(end)],
+        ["더하기·빼기 결과", formatKoreanDate(moved)],
+        ["종료일 포함", included ? "포함" : "미포함"]
+      ]);
     };
-    return aliases[key] || key;
+    form.addEventListener("input", render);
+    render();
   }
 
-  function cleanCell(value) {
-    return String(value == null ? "" : value).trim().replace(/^"|"$/g, "");
+  function initLegacyAge() {
+    const form = $("#ageCalcForm");
+    if (!form) return;
+    $("#birthDate").value ||= "1995-01-01";
+    $("#ageTargetDate").value ||= todayInput();
+    const render = () => {
+      const birth = dateFromInput($("#birthDate").value);
+      const target = dateFromInput($("#ageTargetDate").value);
+      const age = calculateAge(birth, target);
+      $("#ageCalcResult").innerHTML = resultBlock(`만 ${age.years}세`, "국제 기준 나이", [
+        ["정확한 기간", `${age.years}년 ${age.months}개월 ${age.days}일`],
+        ["세는 나이", `${target.getFullYear() - birth.getFullYear() + 1}세`],
+        ["성년 여부", age.years >= 19 ? "만 19세 이상" : "만 19세 미만"]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
   }
 
-  function toNumber(value) {
-    const number = Number(String(value || "").replace(/,/g, ""));
-    return Number.isFinite(number) ? number : 0;
+  function initLegacyAnniversary() {
+    const form = $("#anniversaryCalcForm");
+    if (!form) return;
+    $("#anniversaryBase").value ||= todayInput();
+    const render = () => {
+      const count = Math.max(1, numberValue($("#anniversaryDays").value));
+      const target = addDateParts(dateFromInput($("#anniversaryBase").value), { days: count - 1 });
+      $("#anniversaryResult").innerHTML = resultBlock(formatKoreanDate(target), `${formatNumber(count)}일째`, [
+        ["오늘 기준", ddayText(target)],
+        ["계산 방식", "시작일을 1일째로 계산"]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
   }
 
-  function formatNumber(value) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return String(value);
-    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(number);
+  function initLegacySchool() {
+    const form = $("#schoolCalcForm");
+    if (!form) return;
+    $("#schoolBirthYear").value ||= String(new Date().getFullYear() - 7);
+    const render = () => {
+      const years = schoolYears(numberValue($("#schoolBirthYear").value));
+      $("#schoolResult").innerHTML = resultBlock(`${years.elementaryIn}년 3월`, "초등학교 입학 예상", [
+        ["초등학교 졸업", `${years.elementaryOut}년 2월`],
+        ["중학교 입학·졸업", `${years.middleIn}년 3월 · ${years.middleOut}년 2월`],
+        ["고등학교 입학·졸업", `${years.highIn}년 3월 · ${years.highOut}년 2월`]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
   }
 
-  function resultMain(value, label) {
-    return `<div class="result-main"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`;
+  function initLifeCalculators() {
+    if (document.body.dataset.page !== "life-calculators") return;
+    initLifeAge();
+    initAgeTable();
+    initZodiacTools();
+    initDateInfo();
+    initDateDifference();
+    initDateMove();
+    initLifeAnniversary();
+    initLunarTools();
+    initHolidayTools();
+    initSchoolTools();
+    initFunNames();
   }
 
-  function resultList(items) {
-    return `<ul class="result-list">${items.map(([label, value]) => `<li><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></li>`).join("")}</ul>`;
+  function initLifeAge() {
+    const form = $("#lifeAgeForm");
+    $("#lifeBirthDate").value = "1995-01-01";
+    $("#lifeAgeTarget").value = todayInput();
+    const render = () => {
+      const birth = dateFromInput($("#lifeBirthDate").value);
+      const target = dateFromInput($("#lifeAgeTarget").value);
+      if (birth > target) {
+        $("#lifeAgeResult").innerHTML = errorResult("생년월일은 기준일보다 늦을 수 없습니다.");
+        return;
+      }
+      const age = calculateAge(birth, target);
+      const koreanAge = target.getFullYear() - birth.getFullYear() + 1;
+      const yearAge = target.getFullYear() - birth.getFullYear();
+      const zodiac = zodiacForYear(birth.getFullYear());
+      $("#lifeAgeResult").innerHTML = resultBlock(`만 ${age.years}세`, `${age.years}년 ${age.months}개월 ${age.days}일`, [
+        ["세는 나이", `${koreanAge}세`],
+        ["연 나이", `${yearAge}세`],
+        ["띠", `${zodiac.branch} ${zodiac.name}`],
+        ["성년 여부", age.years >= 19 ? "성년(만 19세 이상)" : "미성년"],
+        ["전통 나이 용어", AGE_TERMS.get(koreanAge) || "해당 용어 없음"]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
   }
 
-  function parseInputDate(value) {
-    if (!value) return stripTime(new Date());
-    const [year, month, day] = value.split("-").map(Number);
-    return new Date(year, month - 1, day);
+  function initAgeTable() {
+    const form = $("#ageTableForm");
+    const yearInput = $("#ageTableYear");
+    yearInput.value = String(new Date().getFullYear());
+    const render = () => {
+      const year = clamp(numberValue(yearInput.value), 1000, 9999);
+      const rows = [];
+      for (let koreanAge = 1; koreanAge <= 100; koreanAge += 1) {
+        const birthYear = year - koreanAge + 1;
+        const zodiac = zodiacForYear(birthYear);
+        rows.push(`<tr><td>${birthYear}년</td><td>${Math.max(0, koreanAge - 2)}~${Math.max(0, koreanAge - 1)}세</td><td>${koreanAge}세</td><td>${zodiac.name}</td><td>${AGE_TERMS.get(koreanAge) || ""}</td></tr>`);
+      }
+      $("#ageTableBody").innerHTML = rows.join("");
+    };
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      render();
+    });
+    render();
   }
 
-  function stripTime(date) {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  function initZodiacTools() {
+    const options = ZODIAC.map((sign, index) => `<option value="${index}">${sign.branch} ${sign.name}</option>`).join("");
+    $("#zodiacA").innerHTML = options;
+    $("#zodiacB").innerHTML = options;
+    $("#samjaeSign").innerHTML = options;
+    $("#zodiacA").value = "0";
+    $("#zodiacB").value = "4";
+    $("#samjaeSign").value = "6";
+    $("#zodiacBirthYear").value = "1990";
+    $("#samjaeYear").value = String(new Date().getFullYear());
+
+    const renderYear = () => {
+      const year = numberValue($("#zodiacBirthYear").value);
+      const sign = zodiacForYear(year);
+      const years = [];
+      for (let value = year - 60; value <= year + 60; value += 12) {
+        if (value >= 1000 && value <= 9999) years.push(value);
+      }
+      $("#zodiacYearResult").innerHTML = resultBlock(`${sign.branch} ${sign.name}`, `${year}년생`, [
+        ["띠동갑 연도", years.join(", ")]
+      ]);
+    };
+
+    const renderMatch = () => {
+      const a = numberValue($("#zodiacA").value);
+      const b = numberValue($("#zodiacB").value);
+      const result = zodiacCompatibility(a, b);
+      $("#zodiacMatchResult").innerHTML = resultBlock(`${result.score}점`, result.label, [
+        ["조합", `${ZODIAC[a].name} · ${ZODIAC[b].name}`],
+        ["풀이", result.description]
+      ]);
+    };
+
+    const renderSamjae = () => {
+      const year = numberValue($("#samjaeYear").value);
+      const sign = numberValue($("#samjaeSign").value);
+      const phase = samjaePhase(sign, zodiacIndex(year));
+      const yearSign = zodiacForYear(year);
+      $("#samjaeResult").innerHTML = resultBlock(phase ? phase : "삼재 아님", `${year}년 ${yearSign.name}`, [
+        ["확인한 띠", ZODIAC[sign].name],
+        ["안내", phase ? "민속적 분류에 따른 참고 정보입니다." : "해당 연도는 전통적인 삼재 해에 속하지 않습니다."]
+      ]);
+    };
+
+    ["zodiacBirthYear"].forEach((id) => $(`#${id}`).addEventListener("input", renderYear));
+    ["zodiacA", "zodiacB"].forEach((id) => $(`#${id}`).addEventListener("change", renderMatch));
+    ["samjaeYear", "samjaeSign"].forEach((id) => $(`#${id}`).addEventListener("input", renderSamjae));
+    renderYear();
+    renderMatch();
+    renderSamjae();
   }
 
-  function toInputDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+  function zodiacCompatibility(a, b) {
+    if (a === b) return { score: 82, label: "닮은 궁합", description: "기질과 생활 리듬이 비슷해 서로를 빠르게 이해하는 조합입니다." };
+    const harmonies = [[0, 4, 8], [1, 5, 9], [2, 6, 10], [3, 7, 11]];
+    const pairs = [[0, 1], [2, 11], [3, 10], [4, 9], [5, 8], [6, 7]];
+    if (harmonies.some((group) => group.includes(a) && group.includes(b))) {
+      return { score: 95, label: "삼합", description: "전통적으로 서로의 장점을 살려 주는 매우 조화로운 관계로 봅니다." };
+    }
+    if (pairs.some((pair) => pair.includes(a) && pair.includes(b))) {
+      return { score: 90, label: "육합", description: "서로 다른 성향이 자연스럽게 맞물려 균형을 이루는 관계로 봅니다." };
+    }
+    if ((a + 6) % 12 === b) {
+      return { score: 48, label: "상충", description: "관점 차이가 큰 조합입니다. 대화 방식과 생활 리듬을 의식적으로 맞추는 것이 좋습니다." };
+    }
+    return { score: 70, label: "보통 궁합", description: "띠만으로 좋고 나쁨을 단정하기 어렵고 서로의 태도와 환경이 더 중요합니다." };
   }
 
-  function addDateParts(date, parts) {
-    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    next.setFullYear(next.getFullYear() + (parts.years || 0));
-    next.setMonth(next.getMonth() + (parts.months || 0));
-    next.setDate(next.getDate() + (parts.days || 0));
-    return next;
+  function samjaePhase(personSign, yearSign) {
+    const groups = [
+      { people: [8, 0, 4], years: [2, 3, 4] },
+      { people: [2, 6, 10], years: [8, 9, 10] },
+      { people: [11, 3, 7], years: [5, 6, 7] },
+      { people: [5, 9, 1], years: [11, 0, 1] }
+    ];
+    const group = groups.find((item) => item.people.includes(personSign));
+    const index = group ? group.years.indexOf(yearSign) : -1;
+    return ["들삼재(첫해)", "눌삼재(둘째 해)", "날삼재(셋째 해)"][index] || "";
   }
 
-  function signedNumber(value, mode) {
-    const number = toNumber(value);
-    return mode === "subtract" ? -number : number;
+  function initDateInfo() {
+    const input = $("#dateInfoValue");
+    input.value = todayInput();
+    const render = () => {
+      const date = dateFromInput(input.value);
+      const start = new Date(date.getFullYear(), 0, 1);
+      const end = new Date(date.getFullYear() + 1, 0, 1);
+      const ordinal = Math.floor((date - start) / DAY_MS) + 1;
+      const remaining = Math.floor((end - date) / DAY_MS) - 1;
+      const lunar = solarToLunar(date);
+      const zodiac = zodiacForYear(date.getFullYear());
+      $("#dateInfoResult").innerHTML = resultBlock(formatKoreanDate(date), WEEKDAYS[date.getDay()], [
+        ["올해의 날짜", `${ordinal}번째 날`],
+        ["연말까지", `${remaining}일 남음`],
+        ["윤년", isLeapYear(date.getFullYear()) ? "윤년(366일)" : "평년(365일)"],
+        ["음력", lunar ? `${lunar.year}년 ${lunar.month}월 ${lunar.day}일${lunar.intercalation ? " 윤달" : ""}` : "지원 범위 밖"],
+        ["연도 띠", `${zodiac.branch} ${zodiac.name}`]
+      ]);
+    };
+    input.addEventListener("input", render);
+    render();
   }
 
-  function calculateAge(birthDate, targetDate) {
-    let years = targetDate.getFullYear() - birthDate.getFullYear();
-    let months = targetDate.getMonth() - birthDate.getMonth();
-    let days = targetDate.getDate() - birthDate.getDate();
+  function initDateDifference() {
+    const form = $("#lifeDateDiffForm");
+    $("#lifeDiffStart").value = todayInput();
+    $("#lifeDiffEnd").value = toInputDate(addDateParts(new Date(), { days: 100 }));
+    const render = () => {
+      const start = dateFromInput($("#lifeDiffStart").value);
+      const end = dateFromInput($("#lifeDiffEnd").value);
+      const raw = Math.round((end - start) / DAY_MS);
+      const inclusive = $("#lifeDiffInclude").checked ? (raw >= 0 ? 1 : -1) : 0;
+      const total = raw + inclusive;
+      const absolute = Math.abs(total);
+      $("#lifeDiffResult").innerHTML = resultBlock(`${formatNumber(total)}일`, total === 0 ? "같은 날짜" : total > 0 ? "종료일이 더 늦습니다." : "종료일이 더 빠릅니다.", [
+        ["주 단위", `${Math.floor(absolute / 7)}주 ${absolute % 7}일`],
+        ["시간 환산", `${formatNumber(absolute * 24)}시간`],
+        ["오늘 기준 종료일", ddayText(end)],
+        ["포함 방식", $("#lifeDiffInclude").checked ? "양 끝 날짜 포함" : "날짜 간격"]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function initDateMove() {
+    const form = $("#lifeDateMoveForm");
+    $("#lifeMoveDate").value = todayInput();
+    const render = () => {
+      const base = dateFromInput($("#lifeMoveDate").value);
+      let amount = numberValue($("#lifeMoveAmount").value);
+      if ($("#lifeMoveDirection").value === "subtract") amount *= -1;
+      const unit = $("#lifeMoveUnit").value;
+      const parts = {};
+      parts[unit] = unit === "weeks" ? amount * 7 : amount;
+      if (unit === "weeks") {
+        parts.days = parts.weeks;
+        delete parts.weeks;
+      }
+      const moved = addDateParts(base, parts);
+      $("#lifeMoveResult").innerHTML = resultBlock(formatKoreanDate(moved), WEEKDAYS[moved.getDay()], [
+        ["기준일", formatKoreanDate(base)],
+        ["변화량", `${formatNumber(Math.abs(amount))}${unitLabel(unit)} ${amount >= 0 ? "더하기" : "빼기"}`],
+        ["오늘 기준", ddayText(moved)]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function unitLabel(unit) {
+    return ({ days: "일", weeks: "주", months: "개월", years: "년" }[unit] || "");
+  }
+
+  function initLifeAnniversary() {
+    const form = $("#lifeAnniversaryForm");
+    $("#lifeAnniversaryStart").value = todayInput();
+    const render = () => {
+      const start = dateFromInput($("#lifeAnniversaryStart").value);
+      const custom = Math.max(1, numberValue($("#lifeAnniversaryCustom").value));
+      const milestones = [100, 200, 300, 365, 500, 1000, custom]
+        .filter((value, index, array) => array.indexOf(value) === index)
+        .sort((a, b) => a - b);
+      const rows = milestones.map((days) => {
+        const target = addDateParts(start, { days: days - 1 });
+        return [`${formatNumber(days)}일`, `${formatKoreanDate(target)} (${WEEKDAYS[target.getDay()]})`];
+      });
+      const firstBirthday = addDateParts(start, { years: 1 });
+      rows.push(["첫돌", `${formatKoreanDate(firstBirthday)} (${WEEKDAYS[firstBirthday.getDay()]})`]);
+      $("#lifeAnniversaryResult").innerHTML = resultBlock(formatKoreanDate(addDateParts(start, { days: 99 })), "100일째 되는 날", rows);
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function initLunarTools() {
+    const solarInput = $("#solarDateInput");
+    const now = new Date();
+    const supportedToday = now.getFullYear() <= 2050 ? now : new Date(2050, 11, 31);
+    solarInput.value = toInputDate(supportedToday);
+    $("#lunarYearInput").value = String(Math.min(now.getFullYear(), 2050));
+    $("#lunarMonthInput").value = "1";
+    $("#lunarDayInput").value = "1";
+    $("#lunarAnnualStart").value = String(Math.min(now.getFullYear(), 2041));
+
+    const renderSolar = () => {
+      const date = dateFromInput(solarInput.value);
+      const lunar = solarToLunar(date);
+      $("#solarToLunarResult").innerHTML = lunar
+        ? resultBlock(`음력 ${lunar.year}년 ${lunar.month}월 ${lunar.day}일`, lunar.intercalation ? "윤달" : "평달", [
+          ["간지", lunar.gapja],
+          ["입력한 양력", formatKoreanDate(date)]
+        ])
+        : errorResult("지원 범위 안의 올바른 양력 날짜를 입력하세요.");
+    };
+
+    const renderLunar = () => {
+      const result = lunarToSolar(
+        numberValue($("#lunarYearInput").value),
+        numberValue($("#lunarMonthInput").value),
+        numberValue($("#lunarDayInput").value),
+        $("#lunarLeapInput").checked
+      );
+      $("#lunarToSolarResult").innerHTML = result
+        ? resultBlock(formatKoreanDate(result), WEEKDAYS[result.getDay()], [
+          ["오늘 기준", ddayText(result)]
+        ])
+        : errorResult("존재하지 않거나 지원 범위를 벗어난 음력 날짜입니다.");
+    };
+
+    solarInput.addEventListener("input", renderSolar);
+    ["lunarYearInput", "lunarMonthInput", "lunarDayInput", "lunarLeapInput"].forEach((id) => {
+      $(`#${id}`).addEventListener("input", renderLunar);
+    });
+
+    $("#lunarAnnualForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      renderLunarAnnual();
+    });
+
+    renderSolar();
+    renderLunar();
+    renderLunarAnnual();
+  }
+
+  function renderLunarAnnual() {
+    const month = numberValue($("#lunarAnnualMonth").value);
+    const day = numberValue($("#lunarAnnualDay").value);
+    const start = numberValue($("#lunarAnnualStart").value);
+    const count = clamp(numberValue($("#lunarAnnualCount").value), 1, 30);
+    const rows = [];
+    for (let year = start; year < start + count && year <= 2050; year += 1) {
+      const solar = lunarToSolar(year, month, day, false);
+      rows.push([`${year}년 음력 ${month}월 ${day}일`, solar ? `${formatKoreanDate(solar)} (${WEEKDAYS[solar.getDay()]})` : "변환 불가"]);
+    }
+    $("#lunarAnnualResult").innerHTML = resultBlock(`음력 ${month}월 ${day}일`, `${start}년부터 ${rows.length}년`, rows);
+  }
+
+  function initHolidayTools() {
+    const currentYear = Math.min(new Date().getFullYear(), 2050);
+    $("#holidayYear").value = String(currentYear);
+    $("#freeDayMonth").value = `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+    $("#holidayForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      renderHolidays();
+    });
+    $("#freeDayForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      renderFreeDays();
+    });
+    renderHolidays();
+    renderFreeDays();
+  }
+
+  function renderHolidays() {
+    const year = numberValue($("#holidayYear").value);
+    if (year < 1000 || year > 2050) {
+      $("#holidayResult").innerHTML = errorResult("1000년부터 2050년 사이를 입력하세요.");
+      return;
+    }
+    const holidays = getKoreanHolidays(year);
+    $("#holidayResult").innerHTML = resultBlock(`${year}년 공휴일`, `${holidays.length}개 날짜`, holidays.map((item) => [
+      item.name,
+      `${formatKoreanDate(item.date)} (${WEEKDAYS[item.date.getDay()]})`
+    ]));
+  }
+
+  function getKoreanHolidays(year) {
+    const items = [
+      holiday(year, 1, 1, "신정"),
+      holiday(year, 3, 1, "삼일절"),
+      holiday(year, 5, 5, "어린이날"),
+      holiday(year, 6, 6, "현충일"),
+      holiday(year, 8, 15, "광복절"),
+      holiday(year, 10, 3, "개천절"),
+      holiday(year, 10, 9, "한글날"),
+      holiday(year, 12, 25, "성탄절")
+    ];
+    const seollal = lunarToSolar(year, 1, 1, false);
+    const buddha = lunarToSolar(year, 4, 8, false);
+    const chuseok = lunarToSolar(year, 8, 15, false);
+    if (seollal) {
+      items.push(
+        { date: addDateParts(seollal, { days: -1 }), name: "설날 연휴" },
+        { date: seollal, name: "설날" },
+        { date: addDateParts(seollal, { days: 1 }), name: "설날 연휴" }
+      );
+    }
+    if (buddha) items.push({ date: buddha, name: "부처님오신날" });
+    if (chuseok) {
+      items.push(
+        { date: addDateParts(chuseok, { days: -1 }), name: "추석 연휴" },
+        { date: chuseok, name: "추석" },
+        { date: addDateParts(chuseok, { days: 1 }), name: "추석 연휴" }
+      );
+    }
+    if (year >= 2021) addSubstituteHolidays(items, year);
+    return items.sort((a, b) => a.date - b.date);
+  }
+
+  function addSubstituteHolidays(items, year) {
+    const eligible = new Set(["삼일절", "어린이날", "광복절", "개천절", "한글날", "설날", "설날 연휴", "추석", "추석 연휴"]);
+    if (year >= 2023) {
+      eligible.add("부처님오신날");
+      eligible.add("성탄절");
+    }
+    const occupied = new Set(items.map((item) => toInputDate(item.date)));
+    const candidates = items.filter((item) => eligible.has(item.name) && [0, 6].includes(item.date.getDay()));
+    candidates.forEach((item) => {
+      let substitute = addDateParts(item.date, { days: 1 });
+      while ([0, 6].includes(substitute.getDay()) || occupied.has(toInputDate(substitute))) {
+        substitute = addDateParts(substitute, { days: 1 });
+      }
+      occupied.add(toInputDate(substitute));
+      items.push({ date: substitute, name: `${item.name} 대체공휴일` });
+    });
+  }
+
+  function renderFreeDays() {
+    const [year, month] = $("#freeDayMonth").value.split("-").map(Number);
+    if (!year || !month || year > 2050) {
+      $("#freeDayResult").innerHTML = errorResult("지원 범위 안의 연월을 입력하세요.");
+      return;
+    }
+    const lastDay = new Date(year, month, 0).getDate();
+    const rows = [];
+    for (let day = 1; day <= lastDay; day += 1) {
+      const solar = new Date(year, month - 1, day);
+      const lunar = solarToLunar(solar);
+      if (lunar && [9, 0].includes(lunar.day % 10)) {
+        rows.push([
+          `${month}월 ${day}일 ${WEEKDAYS[solar.getDay()]}`,
+          `음력 ${lunar.month}월 ${lunar.day}일${lunar.intercalation ? " 윤달" : ""}`
+        ]);
+      }
+    }
+    $("#freeDayResult").innerHTML = resultBlock(`${year}년 ${month}월`, `손없는 날 ${rows.length}일`, rows);
+  }
+
+  function initSchoolTools() {
+    const form = $("#lifeSchoolForm");
+    const year = new Date().getFullYear();
+    $("#lifeSchoolBirthYear").value = String(year - 7);
+    $("#lifeSchoolReferenceYear").value = String(year);
+    const render = () => {
+      const birthYear = numberValue($("#lifeSchoolBirthYear").value);
+      const referenceYear = numberValue($("#lifeSchoolReferenceYear").value);
+      const years = schoolYears(birthYear);
+      $("#lifeSchoolResult").innerHTML = resultBlock(`${years.elementaryIn}년 3월`, "초등학교 입학 예상", [
+        ["초등학교 졸업", `${years.elementaryOut}년 2월`],
+        ["중학교 입학", `${years.middleIn}년 3월`],
+        ["중학교 졸업", `${years.middleOut}년 2월`],
+        ["고등학교 입학", `${years.highIn}년 3월`],
+        ["고등학교 졸업", `${years.highOut}년 2월`]
+      ]);
+      const grades = [];
+      for (let grade = 1; grade <= 12; grade += 1) {
+        const label = grade <= 6 ? `초등학교 ${grade}학년` : grade <= 9 ? `중학교 ${grade - 6}학년` : `고등학교 ${grade - 9}학년`;
+        const studentBirth = referenceYear - grade - 6;
+        grades.push(`<tr><td>${label}</td><td>${studentBirth}년생</td><td>${referenceYear - studentBirth + 1}세</td></tr>`);
+      }
+      $("#studentAgeBody").innerHTML = grades.join("");
+      const exam = nextCsatDate();
+      $("#examDayResult").innerHTML = `<strong>대학수학능력시험 참고 D-Day</strong><span>${formatKoreanDate(exam)} (${WEEKDAYS[exam.getDay()]}) · ${ddayText(exam)}</span>`;
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function nextCsatDate() {
+    const today = stripTime(new Date());
+    let year = today.getFullYear();
+    let date = nthWeekdayOfMonth(year, 10, 4, 3);
+    if (date < today) {
+      year += 1;
+      date = nthWeekdayOfMonth(year, 10, 4, 3);
+    }
+    return date;
+  }
+
+  function nthWeekdayOfMonth(year, monthIndex, weekday, ordinal) {
+    const first = new Date(year, monthIndex, 1);
+    const offset = (weekday - first.getDay() + 7) % 7;
+    return new Date(year, monthIndex, 1 + offset + (ordinal - 1) * 7);
+  }
+
+  function initFunNames() {
+    const form = $("#funNameForm");
+    $("#funNameBirth").value = "1995-01-01";
+    const indianA = ["고요한", "푸른", "빛나는", "용감한", "따뜻한", "자유로운", "깊은", "빠른", "은빛", "붉은", "새벽의", "별을 보는"];
+    const indianB = ["바람", "강", "달", "산", "구름", "불꽃", "호수", "숲", "노을", "파도", "별", "하늘"];
+    const indianC = ["의 노래", "의 발걸음", "을 지키는 이", "과 걷는 이", "의 친구", "을 깨우는 이", "의 숨결", "을 품은 이"];
+    const chosunA = ["한양", "남산", "청계", "북촌", "서촌", "강릉", "담양", "전주", "경주", "제주", "해주", "평양"];
+    const chosunB = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임"];
+    const chosunC = ["도령", "낭자", "선비", "대감", "별감", "참봉", "훈장", "객주", "화공", "의원"];
+    const render = () => {
+      const date = dateFromInput($("#funNameBirth").value);
+      const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
+      const indian = `${indianA[(date.getMonth()) % indianA.length]} ${indianB[(date.getDate() - 1) % indianB.length]}${indianC[seed % indianC.length]}`;
+      const chosun = `${chosunA[date.getMonth() % chosunA.length]} ${chosunB[seed % chosunB.length]}${chosunC[(date.getDate() - 1) % chosunC.length]}`;
+      const style = $("#funNameStyle").value;
+      $("#funNameResult").innerHTML = resultBlock(style === "indian" ? indian : chosun, style === "indian" ? "인디언식 재미 이름" : "조선식 재미 이름", [
+        ["생년월일", formatKoreanDate(date)],
+        ["주의", "오락용 결과이며 실제 문화·역사적 작명법과 무관합니다."]
+      ]);
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function solarToLunar(date) {
+    if (typeof KoreanLunarCalendar === "undefined") return null;
+    const calendar = new KoreanLunarCalendar();
+    if (!calendar.setSolarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())) return null;
+    const lunar = calendar.getLunarCalendar();
+    const gapja = calendar.getKoreanGapja();
+    return {
+      ...lunar,
+      gapja: `${gapja.year} ${gapja.month} ${gapja.day}${gapja.intercalation ? ` ${gapja.intercalation}` : ""}`
+    };
+  }
+
+  function lunarToSolar(year, month, day, intercalation) {
+    if (typeof KoreanLunarCalendar === "undefined") return null;
+    const calendar = new KoreanLunarCalendar();
+    if (!calendar.setLunarDate(year, month, day, Boolean(intercalation))) return null;
+    const solar = calendar.getSolarCalendar();
+    return new Date(solar.year, solar.month - 1, solar.day);
+  }
+
+  function holiday(year, month, day, name) {
+    return { date: new Date(year, month - 1, day), name };
+  }
+
+  function zodiacIndex(year) {
+    return ((year - 4) % 12 + 12) % 12;
+  }
+
+  function zodiacForYear(year) {
+    return ZODIAC[zodiacIndex(year)];
+  }
+
+  function schoolYears(birthYear) {
+    const elementaryIn = birthYear + 7;
+    const elementaryOut = elementaryIn + 6;
+    const middleIn = elementaryOut;
+    const middleOut = middleIn + 3;
+    const highIn = middleOut;
+    const highOut = highIn + 3;
+    return { elementaryIn, elementaryOut, middleIn, middleOut, highIn, highOut };
+  }
+
+  function calculateAge(birth, target) {
+    let years = target.getFullYear() - birth.getFullYear();
+    let months = target.getMonth() - birth.getMonth();
+    let days = target.getDate() - birth.getDate();
     if (days < 0) {
       months -= 1;
-      days += new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
+      days += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
     }
     if (months < 0) {
       years -= 1;
@@ -957,8 +1034,74 @@
     return { years: Math.max(0, years), months: Math.max(0, months), days: Math.max(0, days) };
   }
 
+  function addDateParts(date, parts) {
+    let result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    if (parts.years) result = addMonthsClamped(result, parts.years * 12);
+    if (parts.months) result = addMonthsClamped(result, parts.months);
+    if (parts.days) result.setDate(result.getDate() + parts.days);
+    return stripTime(result);
+  }
+
+  function addMonthsClamped(date, months) {
+    const day = date.getDate();
+    const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+    const last = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+    target.setDate(Math.min(day, last));
+    return target;
+  }
+
+  function dateFromInput(value) {
+    const [year, month, day] = String(value || todayInput()).split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  function stripTime(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  function todayInput() {
+    return toInputDate(new Date());
+  }
+
+  function toInputDate(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
   function formatKoreanDate(date) {
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  }
+
+  function ddayText(date) {
+    const diff = Math.round((stripTime(date) - stripTime(new Date())) / DAY_MS);
+    return diff === 0 ? "D-Day" : diff > 0 ? `D-${formatNumber(diff)}` : `D+${formatNumber(Math.abs(diff))}`;
+  }
+
+  function isLeapYear(year) {
+    return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  }
+
+  function numberValue(value) {
+    const number = Number(String(value ?? "").replace(/,/g, ""));
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 }).format(Number(value));
+  }
+
+  function resultBlock(main, subtitle, rows) {
+    return [
+      `<div class="result-main"><strong>${escapeHtml(main)}</strong><span>${escapeHtml(subtitle)}</span></div>`,
+      `<ul class="result-list">${rows.map(([label, value]) => `<li><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></li>`).join("")}</ul>`
+    ].join("");
+  }
+
+  function errorResult(message) {
+    return `<div class="result-main error-result"><strong>입력을 확인해 주세요.</strong><span>${escapeHtml(message)}</span></div>`;
   }
 
   async function copyText(text) {
@@ -975,15 +1118,11 @@
       document.execCommand("copy");
       helper.remove();
     }
-    showToast();
-  }
-
-  function showToast() {
     const toast = $("#copyToast");
-    if (!toast) return;
-    toast.classList.add("show");
-    window.clearTimeout(showToast.timer);
-    showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1400);
+    if (toast) {
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1400);
+    }
   }
 
   function wrap(className, value) {
@@ -991,7 +1130,7 @@
   }
 
   function escapeHtml(value) {
-    return String(value)
+    return String(value ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")

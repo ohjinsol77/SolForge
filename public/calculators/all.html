@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>생활 계산기 모음 - SolForge</title>
+    <meta name="description" content="나이, 띠, 날짜, 디데이, 기념일, 양음력, 공휴일, 손없는 날, 학교 입학·졸업, 재미 이름짓기를 한곳에서 계산하는 무료 생활 계산기입니다.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.pages.dev/calculators/all.html">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+  </head>
+  <body data-page="life-calculators">
+    <a class="skip-link" href="#main">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈">
+          <span class="brand-mark">SF</span>
+          <span><strong>SolForge</strong><small>Developer & Life Tools</small></span>
+        </a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card">
+          <strong>브라우저에서 바로 계산</strong>
+          <span>입력한 날짜와 값은 서버로 전송하거나 저장하지 않습니다.</span>
+        </div>
+      </aside>
+
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보">
+            <a href="../features.html" data-top-link>기능소개</a>
+            <a href="../about.html" data-top-link>사이트소개</a>
+            <a href="../privacy.html" data-top-link>개인정보처리방침</a>
+          </nav>
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+            <span id="themeToggleLabel">Dark</span>
+          </button>
+        </header>
+
+        <section class="page-hero compact-hero">
+          <div>
+            <p class="eyebrow">Life Calculator Collection</p>
+            <h1>생활에 필요한 계산을 한곳에 모았습니다.</h1>
+            <p>나이와 띠부터 날짜, 양음력, 공휴일, 학교 일정까지 모두 브라우저 안에서 계산합니다. 왼쪽 메뉴에서 카테고리와 기능을 바로 선택할 수 있습니다.</p>
+          </div>
+          <div class="hero-panel">
+            <div class="metric-card"><strong>20+</strong><span>생활 계산 기능</span></div>
+            <div class="metric-card"><strong>0</strong><span>입력 데이터 전송</span></div>
+          </div>
+        </section>
+
+        <div class="ad-placeholder" aria-label="광고 영역">
+          <div><strong>Advertisement</strong><p>반응형 광고 예약 영역입니다.</p></div>
+        </div>
+
+        <section class="tool-section calculator-section" id="age-calculator">
+          <div class="section-heading">
+            <div><p class="eyebrow">나이 · 띠</p><h2>나이·만나이 계산기</h2><p>생년월일과 기준일로 만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="lifeAgeForm">
+              <div class="form-row"><label for="lifeBirthDate">생년월일</label><input id="lifeBirthDate" type="date" required></div>
+              <div class="form-row"><label for="lifeAgeTarget">기준일</label><input id="lifeAgeTarget" type="date" required></div>
+            </form>
+            <div class="result-panel" id="lifeAgeResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="age-table">
+          <div class="section-heading">
+            <div><p class="eyebrow">나이 · 띠</p><h2>연도별 나이표와 나이별 용어</h2><p>기준 연도의 출생연도별 나이, 띠와 전통적인 나이 용어를 표로 확인합니다.</p></div>
+          </div>
+          <form class="toolbar-form" id="ageTableForm">
+            <div class="form-row"><label for="ageTableYear">기준 연도</label><input id="ageTableYear" type="number" min="1000" max="9999"></div>
+            <button class="primary-link" type="submit">나이표 만들기</button>
+          </form>
+          <div class="table-wrap data-table-wrap">
+            <table>
+              <thead><tr><th>출생연도</th><th>만 나이 범위</th><th>세는 나이</th><th>띠</th><th>나이 용어</th></tr></thead>
+              <tbody id="ageTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="zodiac-tools">
+          <div class="section-heading">
+            <div><p class="eyebrow">나이 · 띠</p><h2>띠·띠동갑·띠궁합·삼재</h2><p>출생연도의 띠와 띠동갑 연도, 두 띠의 전통 궁합, 삼재 여부를 한 번에 확인합니다.</p></div>
+          </div>
+          <div class="calculator-card-grid">
+            <article class="mini-calculator">
+              <h3>출생연도별 띠·띠동갑</h3>
+              <div class="form-row"><label for="zodiacBirthYear">출생연도</label><input id="zodiacBirthYear" type="number" min="1000" max="9999"></div>
+              <div class="compact-result" id="zodiacYearResult" aria-live="polite"></div>
+            </article>
+            <article class="mini-calculator">
+              <h3>띠궁합</h3>
+              <div class="inline-fields two-fields">
+                <div class="form-row"><label for="zodiacA">첫 번째 띠</label><select id="zodiacA"></select></div>
+                <div class="form-row"><label for="zodiacB">두 번째 띠</label><select id="zodiacB"></select></div>
+              </div>
+              <div class="compact-result" id="zodiacMatchResult" aria-live="polite"></div>
+            </article>
+            <article class="mini-calculator">
+              <h3>연도별·띠별 삼재</h3>
+              <div class="inline-fields two-fields">
+                <div class="form-row"><label for="samjaeYear">확인 연도</label><input id="samjaeYear" type="number" min="1000" max="9999"></div>
+                <div class="form-row"><label for="samjaeSign">내 띠</label><select id="samjaeSign"></select></div>
+              </div>
+              <div class="compact-result" id="samjaeResult" aria-live="polite"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="date-info">
+          <div class="section-heading">
+            <div><p class="eyebrow">날짜</p><h2>날짜 정보</h2><p>요일, 올해의 몇 번째 날, 남은 날짜, 윤년 여부와 음력 날짜를 확인합니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="dateInfoForm">
+              <div class="form-row"><label for="dateInfoValue">확인할 날짜</label><input id="dateInfoValue" type="date" required></div>
+            </form>
+            <div class="result-panel" id="dateInfoResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="date-difference">
+          <div class="section-heading">
+            <div><p class="eyebrow">날짜</p><h2>디데이·날짜 차이 계산기</h2><p>두 날짜 사이의 기간과 오늘 기준 D-Day를 계산합니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="lifeDateDiffForm">
+              <div class="form-row"><label for="lifeDiffStart">시작일</label><input id="lifeDiffStart" type="date"></div>
+              <div class="form-row"><label for="lifeDiffEnd">종료일·목표일</label><input id="lifeDiffEnd" type="date"></div>
+              <label class="check-row"><input id="lifeDiffInclude" type="checkbox"> 시작일과 종료일을 모두 포함</label>
+            </form>
+            <div class="result-panel" id="lifeDiffResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="date-move">
+          <div class="section-heading">
+            <div><p class="eyebrow">날짜</p><h2>날짜 더하기·빼기 계산기</h2><p>기준일에 원하는 년·월·주·일을 더하거나 뺍니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="lifeDateMoveForm">
+              <div class="form-row"><label for="lifeMoveDate">기준일</label><input id="lifeMoveDate" type="date"></div>
+              <div class="inline-fields">
+                <div class="form-row"><label for="lifeMoveAmount">값</label><input id="lifeMoveAmount" type="number" min="0" value="100"></div>
+                <div class="form-row"><label for="lifeMoveUnit">단위</label><select id="lifeMoveUnit"><option value="days">일</option><option value="weeks">주</option><option value="months">개월</option><option value="years">년</option></select></div>
+                <div class="form-row"><label for="lifeMoveDirection">방향</label><select id="lifeMoveDirection"><option value="add">더하기</option><option value="subtract">빼기</option></select></div>
+              </div>
+            </form>
+            <div class="result-panel" id="lifeMoveResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="anniversary">
+          <div class="section-heading">
+            <div><p class="eyebrow">날짜</p><h2>기념일·아기 100일 계산기</h2><p>시작일을 1일째로 계산하여 100일, 200일, 첫돌과 원하는 기념일을 보여줍니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="lifeAnniversaryForm">
+              <div class="form-row"><label for="lifeAnniversaryStart">시작일·출생일</label><input id="lifeAnniversaryStart" type="date"></div>
+              <div class="form-row"><label for="lifeAnniversaryCustom">직접 입력한 며칠째</label><input id="lifeAnniversaryCustom" type="number" min="1" value="1000"></div>
+            </form>
+            <div class="result-panel" id="lifeAnniversaryResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="lunar-converter">
+          <div class="section-heading">
+            <div><p class="eyebrow">양력 · 음력</p><h2>양력·음력 상호 변환</h2><p>한국천문연구원 기준 데이터를 따르는 로컬 라이브러리로 변환합니다. 지원 범위는 양력 1000-02-13부터 2050-12-31까지입니다.</p></div>
+          </div>
+          <div class="calculator-card-grid two-columns">
+            <article class="mini-calculator">
+              <h3>양력을 음력으로</h3>
+              <div class="form-row"><label for="solarDateInput">양력 날짜</label><input id="solarDateInput" type="date" min="1000-02-13" max="2050-12-31"></div>
+              <div class="compact-result" id="solarToLunarResult" aria-live="polite"></div>
+            </article>
+            <article class="mini-calculator">
+              <h3>음력을 양력으로</h3>
+              <div class="inline-fields">
+                <div class="form-row"><label for="lunarYearInput">년</label><input id="lunarYearInput" type="number" min="1000" max="2050"></div>
+                <div class="form-row"><label for="lunarMonthInput">월</label><input id="lunarMonthInput" type="number" min="1" max="12"></div>
+                <div class="form-row"><label for="lunarDayInput">일</label><input id="lunarDayInput" type="number" min="1" max="30"></div>
+              </div>
+              <label class="check-row"><input id="lunarLeapInput" type="checkbox"> 윤달</label>
+              <div class="compact-result" id="lunarToSolarResult" aria-live="polite"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tool-section calculator-section" id="lunar-anniversary">
+          <div class="section-heading">
+            <div><p class="eyebrow">양력 · 음력</p><h2>음력 기념일의 연도별 양력 날짜</h2><p>같은 음력 월·일이 여러 해에 각각 어떤 양력 날짜인지 계산합니다.</p></div>
+          </div>
+          <form class="toolbar-form toolbar-wide" id="lunarAnnualForm">
+            <div class="form-row"><label for="lunarAnnualMonth">음력 월</label><input id="lunarAnnualMonth" type="number" min="1" max="12" value="8"></div>
+            <div class="form-row"><label for="lunarAnnualDay">음력 일</label><input id="lunarAnnualDay" type="number" min="1" max="30" value="15"></div>
+            <div class="form-row"><label for="lunarAnnualStart">시작 연도</label><input id="lunarAnnualStart" type="number" min="1000" max="2050"></div>
+            <div class="form-row"><label for="lunarAnnualCount">표시 연수</label><input id="lunarAnnualCount" type="number" min="1" max="30" value="10"></div>
+            <button class="primary-link" type="submit">변환표 만들기</button>
+          </form>
+          <div class="result-panel" id="lunarAnnualResult" aria-live="polite"></div>
+        </section>
+
+        <section class="tool-section calculator-section" id="holidays">
+          <div class="section-heading">
+            <div><p class="eyebrow">달력</p><h2>우리나라 공휴일</h2><p>고정 공휴일과 설날·부처님오신날·추석을 계산합니다. 선거일과 정부가 임시 지정하는 공휴일은 포함되지 않습니다.</p></div>
+          </div>
+          <form class="toolbar-form" id="holidayForm">
+            <div class="form-row"><label for="holidayYear">연도</label><input id="holidayYear" type="number" min="1000" max="2050"></div>
+            <button class="primary-link" type="submit">공휴일 보기</button>
+          </form>
+          <div class="result-panel" id="holidayResult" aria-live="polite"></div>
+        </section>
+
+        <section class="tool-section calculator-section" id="no-hand-days">
+          <div class="section-heading">
+            <div><p class="eyebrow">달력</p><h2>손없는 날</h2><p>전통적으로 음력 날짜의 끝수가 9 또는 0인 날을 월별로 표시합니다.</p></div>
+          </div>
+          <form class="toolbar-form" id="freeDayForm">
+            <div class="form-row"><label for="freeDayMonth">확인할 달</label><input id="freeDayMonth" type="month" min="1000-02" max="2050-12"></div>
+            <button class="primary-link" type="submit">손없는 날 보기</button>
+          </form>
+          <div class="result-panel" id="freeDayResult" aria-live="polite"></div>
+        </section>
+
+        <section class="tool-section calculator-section" id="school-tools">
+          <div class="section-heading">
+            <div><p class="eyebrow">학교</p><h2>학교 입학·졸업 연도와 학생 나이</h2><p>출생연도를 기준으로 일반적인 초·중·고 입학 및 졸업 연도를 계산하고 학년별 출생연도를 보여줍니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="lifeSchoolForm">
+              <div class="form-row"><label for="lifeSchoolBirthYear">출생연도</label><input id="lifeSchoolBirthYear" type="number" min="1900" max="9999"></div>
+              <div class="form-row"><label for="lifeSchoolReferenceYear">학생 나이표 기준 연도</label><input id="lifeSchoolReferenceYear" type="number" min="1900" max="9999"></div>
+            </form>
+            <div class="result-panel" id="lifeSchoolResult" aria-live="polite"></div>
+          </div>
+          <div class="table-wrap data-table-wrap">
+            <table>
+              <thead><tr><th>학년</th><th>출생연도</th><th>세는 나이</th></tr></thead>
+              <tbody id="studentAgeBody"></tbody>
+            </table>
+          </div>
+          <div class="notice-card" id="examDayResult"></div>
+        </section>
+
+        <section class="tool-section calculator-section" id="fun-names">
+          <div class="section-heading">
+            <div><p class="eyebrow">재미</p><h2>인디언식·조선식 이름짓기</h2><p>생년월일을 조합해 재미로 보는 이름을 만듭니다. 실제 문화나 작명 전통을 대표하지 않습니다.</p></div>
+          </div>
+          <div class="calc-grid">
+            <form class="calc-panel calc-form" id="funNameForm">
+              <div class="form-row"><label for="funNameBirth">생년월일</label><input id="funNameBirth" type="date"></div>
+              <div class="form-row"><label for="funNameStyle">이름 방식</label><select id="funNameStyle"><option value="indian">인디언식</option><option value="chosun">조선식</option></select></div>
+            </form>
+            <div class="result-panel" id="funNameResult" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <p class="eyebrow">안내</p>
+          <h2>계산 결과 사용 안내</h2>
+          <p>이 페이지의 결과는 일상적인 참고를 위한 것입니다. 학교 입학 시점, 성년 판단, 공휴일과 대체공휴일은 법령·행정 결정·개인 사정에 따라 달라질 수 있으므로 중요한 일정은 관계 기관의 최신 안내를 함께 확인하세요.</p>
+        </section>
+
+        <footer class="footer">
+          <p>© 2026 SolForge. Static tools in your browser.</p>
+          <div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../privacy.html">개인정보처리방침</a></div>
+        </footer>
+      </main>
+    </div>
+    <script src="../assets/vendor/korean-lunar-calendar/korean-lunar-calendar.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+  </body>
+</html>

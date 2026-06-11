@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SolForge - MySQL 개발자를 위한 정적 웹 도구</title>
-    <meta name="description" content="SolForge는 MySQL Query Prettier와 EXPLAIN Visual을 제공하는 개발자용 정적 웹 도구입니다. HTML, CSS, JavaScript만으로 Cloudflare Pages와 Workers Assets에서 실행됩니다.">
-    <meta name="keywords" content="MySQL formatter, MySQL query prettier, MySQL explain visual, SQL formatter, 개발자 도구">
+    <title>SolForge - MySQL 개발 도구와 생활 계산기</title>
+    <meta name="description" content="SolForge는 MySQL Query Prettier, EXPLAIN Visual과 나이, 날짜, 양음력, 공휴일, 학교 일정 등 생활 계산기를 제공하는 정적 웹 도구입니다.">
+    <meta name="keywords" content="MySQL formatter, MySQL explain visual, SQL formatter, 나이 계산기, 날짜 계산기, 양음력 변환, 생활 계산기">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="SolForge">
     <meta name="theme-color" content="#f5f8fc">
     <link rel="canonical" href="https://solforge.pages.dev/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
-    <meta property="og:title" content="SolForge - MySQL 개발자 도구">
-    <meta property="og:description" content="쿼리 정렬과 EXPLAIN 시각화를 브라우저 안에서 처리하는 정적 개발자 도구입니다.">
+    <meta property="og:title" content="SolForge - 개발 도구와 생활 계산기">
+    <meta property="og:description" content="쿼리 정렬, EXPLAIN 시각화와 다양한 생활 계산을 브라우저 안에서 처리합니다.">
     <link rel="stylesheet" href="assets/css/styles.css">
     <script type="application/ld+json">
       {
@@ -21,7 +21,7 @@
         "@type": "WebSite",
         "name": "SolForge",
         "url": "https://solforge.pages.dev/",
-        "description": "Static MySQL developer tools for query formatting and EXPLAIN visualization."
+        "description": "Static MySQL developer tools and life calculators running in the browser."
       }
     </script>
   </head>
@@ -37,11 +37,8 @@
           <p class="nav-title">DBA</p>
           <a href="tools/mysql-query-prettier.html" class="nav-link" data-nav-link><span class="nav-icon">Q</span><span>Query Prettier</span></a>
           <a href="tools/mysql-explain-visual.html" class="nav-link" data-nav-link><span class="nav-icon">E</span><span>EXPLAIN Visual</span></a>
-          <p class="nav-title">계산기</p>
-          <a href="calculators/date.html" class="nav-link" data-nav-link><span class="nav-icon">D</span><span>날짜 계산기</span></a>
-          <a href="calculators/age.html" class="nav-link" data-nav-link><span class="nav-icon">A</span><span>나이 계산기</span></a>
-          <a href="calculators/anniversary.html" class="nav-link" data-nav-link><span class="nav-icon">N</span><span>기념일 계산기</span></a>
-          <a href="calculators/school.html" class="nav-link" data-nav-link><span class="nav-icon">S</span><span>입학·졸업 계산기</span></a>
+          <p class="nav-title">생활 계산기</p>
+          <a href="calculators/all.html" class="nav-link" data-nav-link><span class="nav-icon">C</span><span>전체 계산기</span></a>
         </nav>
         <div class="side-card"><strong>Static service</strong><span>서버 저장 없이 브라우저에서 실행되는 도구입니다.</span></div>
       </aside>
@@ -58,15 +55,16 @@
         <section class="page-hero">
           <div>
             <p class="eyebrow">Free MySQL Toolkit</p>
-            <h1>쿼리를 정리하고 실행 계획을 읽는 시간을 줄입니다.</h1>
-            <p>SolForge는 MySQL 개발자가 매일 반복하는 쿼리 정렬과 EXPLAIN 결과 해석을 브라우저에서 빠르게 처리하도록 만든 정적 웹 도구입니다. 초기 화면에는 필요한 안내만 두고, 실제 기능은 각 도구 페이지에서 독립적으로 사용할 수 있게 분리했습니다.</p>
+            <h1>개발 작업과 일상 계산을 더 빠르게 처리합니다.</h1>
+            <p>SolForge는 MySQL 쿼리 정렬과 EXPLAIN 결과 해석뿐 아니라 나이, 띠, 날짜, 양음력, 공휴일, 학교 일정 등 자주 찾는 생활 계산을 브라우저에서 바로 처리하는 정적 웹 도구입니다.</p>
             <div class="hero-actions">
               <a class="primary-link" href="tools/mysql-query-prettier.html">Query Prettier 열기</a>
               <a class="secondary-link" href="tools/mysql-explain-visual.html">EXPLAIN Visual 열기</a>
+              <a class="secondary-link" href="calculators/all.html">생활 계산기 열기</a>
             </div>
           </div>
           <div class="hero-panel" aria-label="서비스 요약">
-            <div class="metric-card"><strong>2</strong><span>active MySQL tools</span></div>
+            <div class="metric-card"><strong>20+</strong><span>developer & life tools</span></div>
             <div class="metric-card"><strong>0</strong><span>server-side parsing</span></div>
             <div class="metric-card"><strong>100%</strong><span>static HTML, CSS, JS</span></div>
           </div>
@@ -89,9 +87,9 @@
               <a class="secondary-link" href="tools/mysql-explain-visual.html">도구 사용하기</a>
             </article>
             <article class="tool-card">
-              <h2>생활 계산기</h2>
-              <p>날짜 차이, D-Day, 날짜 더하기/빼기, 만나이, 기념일, 입학·졸업 연도 계산을 한 번에 확인할 수 있는 정적 계산 도구를 제공합니다.</p>
-              <a class="secondary-link" href="calculators/date.html">계산기 보기</a>
+              <h2>생활 계산기 모음</h2>
+              <p>나이·띠·삼재, 날짜 차이와 D-Day, 기념일, 양음력 변환, 공휴일, 손없는 날, 학교 입학·졸업 연도를 카테고리별로 제공합니다.</p>
+              <a class="secondary-link" href="calculators/all.html">전체 계산기 보기</a>
             </article>
           </div>
         </section>
