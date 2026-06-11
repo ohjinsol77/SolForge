@@ -59,6 +59,7 @@
     initNavigation();
     markActiveLinks();
     window.addEventListener("hashchange", markActiveLinks);
+    initToolFinder();
     initFormatter();
     initExplain();
     initLegacyCalculators();
@@ -124,8 +125,9 @@
   }
 
   function navGroup(label, links) {
+    const open = window.matchMedia("(min-width: 681px)").matches ? " open" : "";
     return [
-      '<details class="nav-group" open>',
+      `<details class="nav-group"${open}>`,
       `<summary>${label}</summary>`,
       '<div class="nav-submenu">',
       links.map(([href, text]) => `<a href="${href}" data-nav-link>${text}</a>`).join(""),
@@ -147,6 +149,92 @@
 
   function normalizePath(path) {
     return path.replace(/\/public(?=\/|$)/, "").replace(/\/index\.html$/, "/");
+  }
+
+  function initToolFinder() {
+    const input = $("#toolSearch");
+    const form = $("#toolSearchForm");
+    const cards = $$("[data-tool-card]");
+    if (!input || !cards.length) return;
+
+    const filterButtons = $$("[data-tool-filter]");
+    const count = $("#visibleToolCount");
+    const empty = $("#toolEmpty");
+    const reset = $("#resetToolSearch");
+    let activeFilter = "all";
+
+    const applyFilters = () => {
+      const query = input.value.trim().toLocaleLowerCase("ko");
+      const terms = query.split(/\s+/).filter(Boolean);
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const categoryMatch = activeFilter === "all" || card.dataset.category === activeFilter;
+        const searchable = `${card.textContent} ${card.dataset.keywords || ""}`.toLocaleLowerCase("ko");
+        const searchMatch = !terms.length || terms.every((term) => searchable.includes(term));
+        const show = categoryMatch && searchMatch;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+
+      if (count) count.textContent = String(visible);
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    const selectFilter = (filter) => {
+      activeFilter = filter;
+      filterButtons.forEach((button) => {
+        const active = button.dataset.toolFilter === filter;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      applyFilters();
+    };
+
+    input.addEventListener("input", applyFilters);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      applyFilters();
+      $("#all-tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => selectFilter(button.dataset.toolFilter || "all"));
+    });
+
+    $$("[data-search-term]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.searchTerm || "";
+        selectFilter("all");
+        applyFilters();
+        input.focus();
+      });
+    });
+
+    if (reset) {
+      reset.addEventListener("click", () => {
+        input.value = "";
+        selectFilter("all");
+        input.focus();
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const tag = document.activeElement?.tagName;
+      if (event.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+        event.preventDefault();
+        input.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === input) {
+        input.value = "";
+        applyFilters();
+        input.blur();
+      }
+    });
+
+    const initialQuery = new URLSearchParams(window.location.search).get("q");
+    if (initialQuery) input.value = initialQuery;
+    selectFilter("all");
   }
 
   function initFormatter() {

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SolForge - MySQL 개발 도구와 생활 계산기</title>
-    <meta name="description" content="SolForge는 MySQL Query Prettier, EXPLAIN Visual과 나이, 날짜, 양음력, 공휴일, 학교 일정 등 생활 계산기를 제공하는 정적 웹 도구입니다.">
+    <title>SolForge - 필요한 개발 도구와 생활 계산기를 한곳에서</title>
+    <meta name="description" content="SQL 정리, EXPLAIN 분석, 나이, 날짜, D-Day, 양음력, 공휴일, 학교 일정 등 자주 쓰는 도구를 검색하고 바로 사용하세요.">
     <meta name="keywords" content="MySQL formatter, MySQL explain visual, SQL formatter, 나이 계산기, 날짜 계산기, 양음력 변환, 생활 계산기">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="SolForge">
@@ -12,8 +12,8 @@
     <link rel="canonical" href="https://solforge.pages.dev/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
-    <meta property="og:title" content="SolForge - 개발 도구와 생활 계산기">
-    <meta property="og:description" content="쿼리 정렬, EXPLAIN 시각화와 다양한 생활 계산을 브라우저 안에서 처리합니다.">
+    <meta property="og:title" content="SolForge - 필요한 도구를 빠르게">
+    <meta property="og:description" content="개발 도구와 생활 계산기를 검색하고 한 번에 바로 사용하세요.">
     <link rel="stylesheet" href="assets/css/styles.css">
     <script type="application/ld+json">
       {
@@ -21,7 +21,12 @@
         "@type": "WebSite",
         "name": "SolForge",
         "url": "https://solforge.pages.dev/",
-        "description": "Static MySQL developer tools and life calculators running in the browser."
+        "description": "SQL tools and Korean life calculators that run directly in the browser.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://solforge.pages.dev/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
       }
     </script>
   </head>
@@ -52,46 +57,152 @@
           <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
         </header>
 
-        <section class="page-hero">
-          <div>
-            <p class="eyebrow">Free MySQL Toolkit</p>
-            <h1>개발 작업과 일상 계산을 더 빠르게 처리합니다.</h1>
-            <p>SolForge는 MySQL 쿼리 정렬과 EXPLAIN 결과 해석뿐 아니라 나이, 띠, 날짜, 양음력, 공휴일, 학교 일정 등 자주 찾는 생활 계산을 브라우저에서 바로 처리하는 정적 웹 도구입니다.</p>
-            <div class="hero-actions">
-              <a class="primary-link" href="tools/mysql-query-prettier.html">Query Prettier 열기</a>
-              <a class="secondary-link" href="tools/mysql-explain-visual.html">EXPLAIN Visual 열기</a>
-              <a class="secondary-link" href="calculators/all.html">생활 계산기 열기</a>
+        <section class="home-hero">
+          <div class="home-hero-copy">
+            <span class="hero-badge"><span aria-hidden="true"></span> 무료 · 로그인 없이 바로 사용</span>
+            <p class="eyebrow">ALL-IN-ONE TOOLBOX</p>
+            <h1>필요한 도구를<br><em>빠르게 찾아보세요.</em></h1>
+            <p class="hero-description">개발 작업부터 나이, 날짜, 양음력 계산까지. 찾고 싶은 기능을 입력하면 바로 사용할 수 있는 도구만 골라 보여드립니다.</p>
+            <form class="tool-search" id="toolSearchForm" role="search">
+              <label class="sr-only" for="toolSearch">도구 검색</label>
+              <span class="search-icon" aria-hidden="true"></span>
+              <input id="toolSearch" type="search" name="q" autocomplete="off" placeholder="예: D-Day, 만나이, 음력, SQL 정리">
+              <kbd>/</kbd>
+              <button type="submit">검색</button>
+            </form>
+            <div class="popular-searches" aria-label="인기 검색어">
+              <span>인기:</span>
+              <button type="button" data-search-term="만나이">만나이</button>
+              <button type="button" data-search-term="D-Day">D-Day</button>
+              <button type="button" data-search-term="음력 변환">음력 변환</button>
+              <button type="button" data-search-term="SQL Prettier">SQL 정리</button>
             </div>
           </div>
-          <div class="hero-panel" aria-label="서비스 요약">
-            <div class="metric-card"><strong>20+</strong><span>developer & life tools</span></div>
-            <div class="metric-card"><strong>0</strong><span>server-side parsing</span></div>
-            <div class="metric-card"><strong>100%</strong><span>static HTML, CSS, JS</span></div>
+          <div class="quick-launch" aria-label="자주 찾는 도구">
+            <div class="quick-launch-heading">
+              <div><p class="eyebrow">QUICK START</p><h2>많이 찾는 도구</h2></div>
+              <a href="#all-tools">전체 보기 <span aria-hidden="true">↓</span></a>
+            </div>
+            <div class="quick-launch-grid">
+              <a href="calculators/all.html#age-calculator" class="quick-tool quick-tool-blue">
+                <span class="quick-tool-icon">만</span><span><strong>만나이 계산기</strong><small>생년월일로 정확하게</small></span><b aria-hidden="true">→</b>
+              </a>
+              <a href="calculators/all.html#date-difference" class="quick-tool quick-tool-green">
+                <span class="quick-tool-icon">D</span><span><strong>D-Day 계산기</strong><small>두 날짜의 차이 계산</small></span><b aria-hidden="true">→</b>
+              </a>
+              <a href="calculators/all.html#lunar-converter" class="quick-tool quick-tool-purple">
+                <span class="quick-tool-icon">음</span><span><strong>양력·음력 변환</strong><small>두 달력을 상호 변환</small></span><b aria-hidden="true">→</b>
+              </a>
+              <a href="tools/mysql-query-prettier.html" class="quick-tool quick-tool-orange">
+                <span class="quick-tool-icon">SQL</span><span><strong>SQL Query 정리</strong><small>쿼리를 읽기 좋게 정렬</small></span><b aria-hidden="true">→</b>
+              </a>
+            </div>
           </div>
         </section>
 
-        <div class="ad-placeholder" aria-label="광고 영역"><div><strong>Advertisement</strong><p>AdSense 심사를 고려한 반응형 광고 예약 영역입니다.</p></div></div>
+        <section class="trust-strip" aria-label="서비스 특징">
+          <div><span class="trust-icon">20+</span><span><strong>다양한 무료 도구</strong><small>계속 추가하고 있습니다</small></span></div>
+          <div><span class="trust-icon">0</span><span><strong>회원가입 불필요</strong><small>바로 열고 바로 사용</small></span></div>
+          <div><span class="trust-icon">PC</span><span><strong>브라우저에서 처리</strong><small>입력 내용을 서버에 저장하지 않음</small></span></div>
+        </section>
 
-        <section class="info-section">
-          <p class="eyebrow">Tools</p>
-          <h2>기능은 페이지별로 분리되어 있습니다.</h2>
-          <div class="card-grid">
-            <article class="tool-card">
-              <h2>MySQL Query Prettier</h2>
-              <p>SELECT, JOIN, WHERE, GROUP BY, ORDER BY, CTE, CASE, 서브쿼리처럼 실무에서 자주 쓰는 구문을 줄바꿈과 들여쓰기로 정리합니다. 출력 영역은 더 크게 설계되어 리뷰와 복사가 편합니다.</p>
-              <a class="secondary-link" href="tools/mysql-query-prettier.html">도구 사용하기</a>
-            </article>
-            <article class="tool-card">
-              <h2>MySQL EXPLAIN Visual</h2>
-              <p>탭 구분, mysqlsh 스타일 표, JSON 형태의 EXPLAIN 결과를 받아 테이블 접근 순서, 조인 흐름, 인덱스 사용 여부, 예상 비용과 위험 지점을 시각적으로 보여줍니다.</p>
-              <a class="secondary-link" href="tools/mysql-explain-visual.html">도구 사용하기</a>
-            </article>
-            <article class="tool-card">
-              <h2>생활 계산기 모음</h2>
-              <p>나이·띠·삼재, 날짜 차이와 D-Day, 기념일, 양음력 변환, 공휴일, 손없는 날, 학교 입학·졸업 연도를 카테고리별로 제공합니다.</p>
-              <a class="secondary-link" href="calculators/all.html">전체 계산기 보기</a>
-            </article>
+        <section class="tool-directory" id="all-tools">
+          <div class="directory-heading">
+            <div>
+              <p class="eyebrow">TOOL DIRECTORY</p>
+              <h2>전체 도구</h2>
+              <p>카테고리를 고르거나 이름으로 검색하세요.</p>
+            </div>
+            <p class="tool-result-count" aria-live="polite"><strong id="visibleToolCount">18</strong>개 도구</p>
           </div>
+
+          <div class="tool-filters" role="group" aria-label="도구 카테고리">
+            <button type="button" class="active" data-tool-filter="all">전체 <span>18</span></button>
+            <button type="button" data-tool-filter="developer">개발 도구 <span>2</span></button>
+            <button type="button" data-tool-filter="age">나이·띠 <span>4</span></button>
+            <button type="button" data-tool-filter="date">날짜 <span>4</span></button>
+            <button type="button" data-tool-filter="lunar">양력·음력 <span>3</span></button>
+            <button type="button" data-tool-filter="calendar">달력·학교 <span>5</span></button>
+          </div>
+
+          <div class="tool-catalog" id="toolCatalog">
+            <a class="catalog-card featured" href="tools/mysql-query-prettier.html" data-tool-card data-category="developer" data-keywords="mysql sql query prettier formatter 쿼리 정리 포맷">
+              <span class="catalog-icon icon-developer">Q</span>
+              <span class="catalog-copy"><span class="catalog-meta">개발 도구 <b>추천</b></span><strong>MySQL Query Prettier</strong><small>복잡한 SQL 쿼리를 자동으로 정렬하고 문법을 강조합니다.</small></span>
+              <span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card featured" href="tools/mysql-explain-visual.html" data-tool-card data-category="developer" data-keywords="mysql explain visual 실행계획 분석 인덱스 쿼리">
+              <span class="catalog-icon icon-developer">E</span>
+              <span class="catalog-copy"><span class="catalog-meta">개발 도구 <b>추천</b></span><strong>MySQL EXPLAIN Visual</strong><small>실행 계획의 순서, 비용과 위험 지점을 시각적으로 확인합니다.</small></span>
+              <span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#age-calculator" data-tool-card data-category="age" data-keywords="나이 만나이 세는나이 연나이 성년 미성년 생년월일">
+              <span class="catalog-icon icon-age">만</span><span class="catalog-copy"><span class="catalog-meta">나이·띠</span><strong>나이·만나이 계산기</strong><small>만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#age-table" data-tool-card data-category="age" data-keywords="연도별 나이표 출생년도 나이 용어 환갑 칠순">
+              <span class="catalog-icon icon-age">표</span><span class="catalog-copy"><span class="catalog-meta">나이·띠</span><strong>연도별 나이표</strong><small>출생연도별 나이와 전통적인 나이 용어를 확인합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#zodiac-tools" data-tool-card data-category="age" data-keywords="띠 띠동갑 출생연도 쥐 소 호랑이 토끼 용 뱀 말 양">
+              <span class="catalog-icon icon-age">띠</span><span class="catalog-copy"><span class="catalog-meta">나이·띠</span><strong>띠·띠동갑 찾기</strong><small>출생연도의 띠와 같은 띠인 연도를 한 번에 찾습니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#zodiac-tools" data-tool-card data-category="age" data-keywords="띠궁합 궁합 삼재 들삼재 눌삼재 날삼재">
+              <span class="catalog-icon icon-age">궁</span><span class="catalog-copy"><span class="catalog-meta">나이·띠</span><strong>띠궁합·삼재</strong><small>두 띠의 전통 궁합과 연도별 삼재 여부를 봅니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#date-info" data-tool-card data-category="date" data-keywords="날짜 정보 요일 윤년 올해 몇번째 날 남은 날짜">
+              <span class="catalog-icon icon-date">일</span><span class="catalog-copy"><span class="catalog-meta">날짜</span><strong>날짜 정보</strong><small>요일, 윤년, 올해 지난 날과 남은 날을 확인합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#date-difference" data-tool-card data-category="date" data-keywords="디데이 d-day 날짜 차이 기간 며칠 남은날">
+              <span class="catalog-icon icon-date">D</span><span class="catalog-copy"><span class="catalog-meta">날짜</span><strong>D-Day·날짜 차이</strong><small>두 날짜 사이의 기간과 오늘 기준 D-Day를 계산합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#date-move" data-tool-card data-category="date" data-keywords="날짜 더하기 빼기 년 월 주 일 계산">
+              <span class="catalog-icon icon-date">±</span><span class="catalog-copy"><span class="catalog-meta">날짜</span><strong>날짜 더하기·빼기</strong><small>기준일에 원하는 기간을 더하거나 뺀 날짜를 찾습니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#anniversary" data-tool-card data-category="date" data-keywords="기념일 아기 100일 백일 돌 200일 커플">
+              <span class="catalog-icon icon-date">100</span><span class="catalog-copy"><span class="catalog-meta">날짜</span><strong>기념일·아기 100일</strong><small>100일, 200일, 첫돌과 원하는 기념일을 계산합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#lunar-converter" data-tool-card data-category="lunar" data-keywords="양력 음력 변환 달력 생일">
+              <span class="catalog-icon icon-lunar">음</span><span class="catalog-copy"><span class="catalog-meta">양력·음력</span><strong>양력 → 음력 변환</strong><small>선택한 양력 날짜에 해당하는 음력 날짜를 찾습니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#lunar-converter" data-tool-card data-category="lunar" data-keywords="음력 양력 변환 윤달 달력 생일">
+              <span class="catalog-icon icon-lunar">양</span><span class="catalog-copy"><span class="catalog-meta">양력·음력</span><strong>음력 → 양력 변환</strong><small>음력 날짜와 윤달 여부로 양력 날짜를 계산합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#lunar-anniversary" data-tool-card data-category="lunar" data-keywords="음력 기념일 연도별 양력 제사 생일">
+              <span class="catalog-icon icon-lunar">年</span><span class="catalog-copy"><span class="catalog-meta">양력·음력</span><strong>음력 기념일 변환</strong><small>같은 음력 기념일의 연도별 양력 날짜를 확인합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#holidays" data-tool-card data-category="calendar" data-keywords="대한민국 우리나라 공휴일 빨간날 설날 추석 부처님오신날">
+              <span class="catalog-icon icon-calendar">휴</span><span class="catalog-copy"><span class="catalog-meta">달력</span><strong>우리나라 공휴일</strong><small>연도별 고정·음력 공휴일 날짜를 모아 봅니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#no-hand-days" data-tool-card data-category="calendar" data-keywords="손없는 날 이사 결혼 달력 음력">
+              <span class="catalog-icon icon-calendar">손</span><span class="catalog-copy"><span class="catalog-meta">달력</span><strong>손없는 날</strong><small>월별 손없는 날을 양력과 음력으로 확인합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#school-tools" data-tool-card data-category="calendar" data-keywords="학교 입학 졸업 초등학교 중학교 고등학교 학생 나이 학년">
+              <span class="catalog-icon icon-calendar">학</span><span class="catalog-copy"><span class="catalog-meta">학교</span><strong>입학·졸업 연도</strong><small>출생연도로 초·중·고 입학과 졸업 연도를 계산합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#school-tools" data-tool-card data-category="calendar" data-keywords="수능 디데이 대학수학능력시험 학생">
+              <span class="catalog-icon icon-calendar">수</span><span class="catalog-copy"><span class="catalog-meta">학교</span><strong>수능 D-Day</strong><small>다음 대학수학능력시험까지 남은 기간을 확인합니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="catalog-card" href="calculators/all.html#fun-names" data-tool-card data-category="calendar" data-keywords="이름짓기 인디언식 조선식 재미 생년월일">
+              <span class="catalog-icon icon-calendar">명</span><span class="catalog-copy"><span class="catalog-meta">재미</span><strong>재미 이름짓기</strong><small>생년월일로 인디언식·조선식 재미 이름을 만듭니다.</small></span><span class="catalog-arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="tool-empty" id="toolEmpty" hidden>
+            <span aria-hidden="true">?</span>
+            <strong>일치하는 도구를 찾지 못했어요.</strong>
+            <p>검색어를 줄이거나 다른 카테고리를 선택해 보세요.</p>
+            <button type="button" id="resetToolSearch">전체 도구 보기</button>
+          </div>
+        </section>
+
+        <div class="ad-placeholder" aria-label="광고 영역"><div><strong>Advertisement</strong><p>콘텐츠 흐름을 방해하지 않는 반응형 광고 영역입니다.</p></div></div>
+
+        <section class="home-guide">
+          <div>
+            <p class="eyebrow">WHY SOLFORGE</p>
+            <h2>입력한 내용은 브라우저 안에서 처리됩니다.</h2>
+          </div>
+          <p>SolForge의 도구는 별도 프로그램 설치나 로그인 없이 사용할 수 있습니다. 쿼리와 날짜 등 입력한 정보는 계산을 위해 외부 서버로 전송하거나 저장하지 않습니다.</p>
+          <a class="secondary-link" href="about.html">서비스 원칙 보기</a>
         </section>
 
         <footer class="footer">
