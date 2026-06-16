@@ -265,17 +265,18 @@ function initAscii() {
   $("#generateTextAscii").addEventListener("click", () => {
     const text = $("#asciiText").value.trim() || "SOLFORGE";
     const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    context.font = "bold 42px monospace";
-    const width = Math.ceil(context.measureText(text).width) + 20;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.font = "bold 72px monospace";
+    const width = Math.ceil(context.measureText(text).width) + 48;
     canvas.width = width;
-    canvas.height = 64;
+    canvas.height = 112;
     context.fillStyle = "#fff";
-    context.fillRect(0, 0, width, 64);
-    context.font = "bold 42px monospace";
+    context.fillRect(0, 0, width, canvas.height);
+    context.font = "bold 72px monospace";
     context.fillStyle = "#000";
-    context.fillText(text, 10, 47);
-    $("#asciiOutput").value = imageDataToAscii(context.getImageData(0, 0, width, 64), Math.min(120, Math.ceil(width / 5)), true);
+    context.fillText(text, 24, 82);
+    const columns = Math.max(24, Math.min(120, Math.ceil(context.measureText(text).width / 5)));
+    $("#asciiOutput").value = imageDataToAscii(context.getImageData(0, 0, width, canvas.height), columns, true, { crop: true });
   });
   $("#generateImageAscii").addEventListener("click", async () => {
     const file = $("#asciiImageFile").files?.[0];
@@ -735,19 +736,72 @@ function drawCode39(canvas, rawValue, scale) {
   };
 }
 
-function imageDataToAscii(imageData, width, invert) {
+function imageDataToAscii(imageData, width, invert, options = {}) {
   const ramp = invert ? "@%#*+=-:. " : " .:-=+*#%@";
+  const bounds = options.crop ? contentBounds(imageData) : { left: 0, top: 0, right: imageData.width, bottom: imageData.height };
+  const sourceWidth = Math.max(1, bounds.right - bounds.left);
+  const sourceHeight = Math.max(1, bounds.bottom - bounds.top);
+  const columns = Math.max(1, Math.min(width, sourceWidth));
+  const rows = Math.max(1, options.rows || Math.round(sourceHeight / (sourceWidth / columns * 2)));
   const lines = [];
-  for (let y = 0; y < imageData.height; y += 1) {
+  for (let row = 0; row < rows; row += 1) {
     let line = "";
-    for (let x = 0; x < width; x += 1) {
-      const index = (y * imageData.width + Math.min(x, imageData.width - 1)) * 4;
-      const brightness = imageData.data[index] * 0.2126 + imageData.data[index + 1] * 0.7152 + imageData.data[index + 2] * 0.0722;
-      line += ramp[Math.min(ramp.length - 1, Math.floor(brightness / 256 * ramp.length))];
+    const yStart = Math.floor(bounds.top + row * sourceHeight / rows);
+    const yEnd = Math.max(yStart + 1, Math.floor(bounds.top + (row + 1) * sourceHeight / rows));
+    for (let column = 0; column < columns; column += 1) {
+      const xStart = Math.floor(bounds.left + column * sourceWidth / columns);
+      const xEnd = Math.max(xStart + 1, Math.floor(bounds.left + (column + 1) * sourceWidth / columns));
+      const brightness = averageBrightness(imageData, xStart, xEnd, yStart, yEnd);
+      const rampIndex = Math.min(ramp.length - 1, Math.floor(brightness / 256 * ramp.length));
+      line += ramp[rampIndex];
     }
     lines.push(line.replace(/\s+$/, ""));
   }
   return lines.join("\n");
+}
+
+function contentBounds(imageData) {
+  let left = imageData.width;
+  let top = imageData.height;
+  let right = 0;
+  let bottom = 0;
+  for (let y = 0; y < imageData.height; y += 1) {
+    for (let x = 0; x < imageData.width; x += 1) {
+      const index = (y * imageData.width + x) * 4;
+      const brightness = blendedBrightness(imageData.data, index);
+      if (brightness < 245) {
+        left = Math.min(left, x);
+        top = Math.min(top, y);
+        right = Math.max(right, x + 1);
+        bottom = Math.max(bottom, y + 1);
+      }
+    }
+  }
+  if (right <= left || bottom <= top) return { left: 0, top: 0, right: imageData.width, bottom: imageData.height };
+  return {
+    left: Math.max(0, left - 2),
+    top: Math.max(0, top - 2),
+    right: Math.min(imageData.width, right + 2),
+    bottom: Math.min(imageData.height, bottom + 2)
+  };
+}
+
+function averageBrightness(imageData, xStart, xEnd, yStart, yEnd) {
+  let total = 0;
+  let count = 0;
+  for (let y = yStart; y < yEnd; y += 1) {
+    for (let x = xStart; x < xEnd; x += 1) {
+      total += blendedBrightness(imageData.data, (y * imageData.width + x) * 4);
+      count += 1;
+    }
+  }
+  return count ? total / count : 255;
+}
+
+function blendedBrightness(data, index) {
+  const alpha = data[index + 3] / 255;
+  const brightness = data[index] * 0.2126 + data[index + 1] * 0.7152 + data[index + 2] * 0.0722;
+  return brightness * alpha + 255 * (1 - alpha);
 }
 
 function localDateTime(date) {
