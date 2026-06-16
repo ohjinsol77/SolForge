@@ -2909,6 +2909,152 @@ th {
   background: #fff;
 }
 
+.gaming-hero {
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(20, 83, 45, 0.74)),
+    linear-gradient(45deg, #111827, #047857);
+  color: #f8fafc;
+}
+
+.gaming-hero .hero-panel {
+  color: var(--ink);
+}
+
+.gaming-hitpad,
+.reaction-pad,
+.gaming-scroll-zone,
+.gaming-motion-zone,
+.keyboard-readout,
+.aim-arena {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.gaming-hitpad,
+.reaction-pad {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  gap: 0.35rem;
+  padding: 1.5rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.gaming-hitpad:hover,
+.reaction-pad:hover {
+  transform: translateY(-1px);
+  border-color: rgba(14, 165, 233, 0.45);
+}
+
+.gaming-hitpad strong,
+.reaction-pad strong {
+  display: block;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+}
+
+.gaming-hitpad span,
+.reaction-pad span {
+  color: var(--muted);
+}
+
+.gaming-scroll-zone,
+.gaming-motion-zone,
+.keyboard-readout {
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+  background:
+    linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+    var(--surface);
+  background-size: 24px 24px;
+}
+
+.reaction-pad.armed {
+  background: #991b1b;
+  color: #fff;
+}
+
+.reaction-pad.armed span,
+.reaction-pad.ready span {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.reaction-pad.ready {
+  background: #047857;
+  color: #fff;
+}
+
+.key-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  margin: 1rem 0;
+}
+
+.key-chip-grid span {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  background: var(--surface-soft);
+  font-weight: 700;
+}
+
+.key-chip-grid small {
+  margin-left: 0.3rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.aim-arena {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(14, 165, 233, 0.18), transparent 34%),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+    var(--surface);
+  background-size: auto, 32px 32px, 32px 32px, auto;
+}
+
+#aimTarget {
+  position: absolute;
+  border: 0;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.18), inset 0 0 0 6px rgba(255, 255, 255, 0.45);
+  cursor: crosshair;
+}
+
+.display-patterns button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.display-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #000;
+}
+
 @media (max-width: 1120px) {
   .utility-workbench {
     grid-template-columns: 1fr;

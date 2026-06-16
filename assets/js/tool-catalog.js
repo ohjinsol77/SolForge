@@ -60,7 +60,19 @@
     ["media", "3D", "매직아이 생성기", "텍스트를 숨긴 랜덤 도트 입체 이미지를 생성합니다.", "매직아이 stereogram 입체", "advanced-toolbox.html#magic-eye-tool"],
     ["life", "123", "숫자야구", "3·4·5자리 Bulls & Cows 게임을 즐깁니다.", "숫자야구 게임 bulls cows", "advanced-toolbox.html#baseball-tool"],
     ["media", "SCAN", "바코드 스캐너", "지원 브라우저에서 이미지와 카메라의 코드를 감지합니다.", "바코드 스캐너 qr 카메라", "advanced-toolbox.html#scanner-tool"],
-    ["media", "LIGHT", "손전등", "화면 손전등과 지원 기기의 카메라 LED를 사용합니다.", "손전등 플래시 torch led", "advanced-toolbox.html#flashlight-tool"]
+    ["media", "LIGHT", "손전등", "화면 손전등과 지원 기기의 카메라 LED를 사용합니다.", "손전등 플래시 torch led", "advanced-toolbox.html#flashlight-tool"],
+    ["game", "CPS", "클릭 속도 테스트", "제한 시간 동안 좌클릭 속도와 CPS를 측정합니다.", "cps click speed mouse gaming", "gaming-lab.html#cps-test"],
+    ["game", "RC", "우클릭 CPS 테스트", "오른쪽 마우스 버튼 클릭 속도를 측정합니다.", "right click cps mouse", "gaming-lab.html#right-cps-test"],
+    ["game", "2X", "더블클릭 테스트", "짧은 간격의 더블클릭과 클릭 튐을 감지합니다.", "double click debounce mouse", "gaming-lab.html#double-click-test"],
+    ["game", "SCR", "스크롤 테스트", "휠 방향, 누적 이동량, 초당 이벤트 수를 확인합니다.", "scroll wheel mouse speed", "gaming-lab.html#scroll-test"],
+    ["game", "Hz", "마우스 폴링레이트", "마우스 이동 이벤트 간격으로 폴링레이트를 추정합니다.", "polling rate hz mouse", "gaming-lab.html#polling-test"],
+    ["game", "DPI", "DPI·감도 계산기", "eDPI와 cm/360 값을 계산해 게임 감도 조정을 돕습니다.", "dpi edpi sensitivity cm 360", "gaming-lab.html#dpi-tool"],
+    ["game", "SPC", "스페이스바 테스트", "스페이스바 연타 횟수와 초당 입력수를 측정합니다.", "spacebar keyboard speed", "gaming-lab.html#spacebar-test"],
+    ["game", "KEY", "키보드 입력 테스트", "눌린 키와 key/code, modifier 상태를 확인합니다.", "keyboard key test ghosting", "gaming-lab.html#keyboard-test"],
+    ["game", "APM", "키 입력 속도", "키 입력수와 분당 입력 속도를 계산합니다.", "key speed apm kpm typing", "gaming-lab.html#key-speed-test"],
+    ["game", "RT", "반응속도 테스트", "신호가 바뀐 뒤 클릭하기까지 걸린 시간을 측정합니다.", "reaction speed reflex", "gaming-lab.html#reaction-test"],
+    ["game", "AIM", "에임 트레이너", "타겟 명중률과 평균 반응 시간을 측정합니다.", "aim trainer accuracy target", "gaming-lab.html#aim-trainer"],
+    ["game", "LCD", "화면 테스트 패턴", "단색, 그리드, 그라데이션 패턴으로 화면을 확인합니다.", "monitor screen color dead pixel gradient", "gaming-lab.html#display-test"]
   ];
 
   const categoryLabels = {
@@ -71,7 +83,8 @@
     lunar: "양력·음력",
     calendar: "달력·학교",
     life: "생활",
-    media: "이미지·미디어"
+    media: "이미지·미디어",
+    game: "게임·장치"
   };
 
   function init() {
@@ -100,7 +113,7 @@
   }
 
   function iconClass(category) {
-    if (category === "developer" || category === "text" || category === "life" || category === "media") return category;
+    if (category === "developer" || category === "text" || category === "life" || category === "media" || category === "game") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
     if (category === "age") return "age";

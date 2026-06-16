@@ -125,6 +125,8 @@
       navLink(`${prefix}tools/utility-toolbox.html`, "18", "확장 도구 모음"),
       navLink(`${prefix}tools/file-media-toolbox.html`, "12", "파일·미디어 도구"),
       navLink(`${prefix}tools/advanced-toolbox.html`, "10", "고급 도구"),
+      '<p class="nav-title">게임 · 장치 테스트</p>',
+      navLink(`${prefix}tools/gaming-lab.html`, "12", "게임 테스트 랩"),
       '<p class="nav-title">생활 계산기</p>',
       navGroup("나이 · 띠", [
         [`${life}#age-calculator`, "나이·만나이 계산기"],

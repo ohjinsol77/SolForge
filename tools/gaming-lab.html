@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>게임·마우스·키보드 테스트 도구 - SolForge</title>
+    <meta name="description" content="CPS, 우클릭 CPS, 더블클릭, 스페이스바, 스크롤, 반응속도, 에임 트레이너, 키보드 테스트, 마우스 폴링레이트, DPI, 화면 테스트를 정적으로 실행하는 브라우저 도구입니다.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.pages.dev/tools/gaming-lab.html">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-1">
+  </head>
+  <body data-page="gaming-lab">
+    <a class="skip-link" href="#main">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈">
+          <span class="brand-mark">SF</span>
+          <span><strong>SolForge</strong><small>Gaming Lab</small></span>
+        </a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card"><strong>정적 테스트</strong><span>측정값은 브라우저 안에서만 계산되며 서버로 전송되지 않습니다.</span></div>
+      </aside>
+
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보">
+            <a href="../features.html" data-top-link>기능소개</a>
+            <a href="../about.html" data-top-link>사이트소개</a>
+            <a href="../privacy.html" data-top-link>개인정보처리방침</a>
+          </nav>
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+        </header>
+
+        <section class="page-hero compact-hero gaming-hero">
+          <div>
+            <p class="eyebrow">Static Gaming Test Lab</p>
+            <h1>입력 장치와 게임 감각을 한 화면에서 테스트하세요.</h1>
+            <p>클릭 속도, 키 입력, 반응속도, 에임, 마우스 폴링레이트, DPI 계산, 화면 패턴까지 설치 없이 브라우저에서 바로 확인합니다.</p>
+          </div>
+          <div class="hero-panel">
+            <div class="metric-card"><strong>12</strong><span>게임·장치 테스트</span></div>
+            <div class="metric-card"><strong>0</strong><span>서버 저장</span></div>
+          </div>
+        </section>
+
+        <section class="utility-workbench gaming-workbench">
+          <aside class="utility-picker" aria-label="도구 선택">
+            <label class="utility-search">
+              <span>도구 검색</span>
+              <input id="gamingSearch" type="search" placeholder="예: CPS, 반응속도, DPI">
+            </label>
+            <div class="utility-category-tabs" role="group" aria-label="게임 도구 분류">
+              <button type="button" class="active" data-gaming-filter="all">전체</button>
+              <button type="button" data-gaming-filter="mouse">마우스</button>
+              <button type="button" data-gaming-filter="keyboard">키보드</button>
+              <button type="button" data-gaming-filter="game">게임</button>
+              <button type="button" data-gaming-filter="display">화면</button>
+            </div>
+            <nav class="utility-tool-list">
+              <button type="button" data-gaming-target="cps-test" data-category="mouse" data-keywords="cps click speed left mouse"><b>CPS</b><span><strong>클릭 속도 테스트</strong><small>좌클릭 CPS 측정</small></span></button>
+              <button type="button" data-gaming-target="right-cps-test" data-category="mouse" data-keywords="right click cps mouse"><b>RC</b><span><strong>우클릭 CPS 테스트</strong><small>컨텍스트 메뉴 차단 측정</small></span></button>
+              <button type="button" data-gaming-target="double-click-test" data-category="mouse" data-keywords="double click debounce mouse"><b>2X</b><span><strong>더블클릭 테스트</strong><small>짧은 간격 클릭 감지</small></span></button>
+              <button type="button" data-gaming-target="scroll-test" data-category="mouse" data-keywords="scroll wheel speed"><b>SCR</b><span><strong>스크롤 테스트</strong><small>휠 방향·속도</small></span></button>
+              <button type="button" data-gaming-target="polling-test" data-category="mouse" data-keywords="polling rate hz mouse"><b>Hz</b><span><strong>마우스 폴링레이트</strong><small>이벤트 간격 추정</small></span></button>
+              <button type="button" data-gaming-target="dpi-tool" data-category="mouse" data-keywords="dpi edpi sensitivity calculator"><b>DPI</b><span><strong>DPI·감도 계산기</strong><small>eDPI와 cm/360</small></span></button>
+              <button type="button" data-gaming-target="spacebar-test" data-category="keyboard" data-keywords="spacebar counter keyboard"><b>SPC</b><span><strong>스페이스바 테스트</strong><small>연타 속도 측정</small></span></button>
+              <button type="button" data-gaming-target="keyboard-test" data-category="keyboard" data-keywords="keyboard key test ghosting"><b>KEY</b><span><strong>키보드 입력 테스트</strong><small>키 코드와 누름 상태</small></span></button>
+              <button type="button" data-gaming-target="key-speed-test" data-category="keyboard" data-keywords="typing key speed apm"><b>APM</b><span><strong>키 입력 속도</strong><small>키 입력수·KPM</small></span></button>
+              <button type="button" data-gaming-target="reaction-test" data-category="game" data-keywords="reaction speed reflex"><b>RT</b><span><strong>반응속도 테스트</strong><small>기다렸다 클릭</small></span></button>
+              <button type="button" data-gaming-target="aim-trainer" data-category="game" data-keywords="aim trainer accuracy target"><b>AIM</b><span><strong>에임 트레이너</strong><small>타겟 명중률</small></span></button>
+              <button type="button" data-gaming-target="display-test" data-category="display" data-keywords="monitor screen color dead pixel gradient"><b>LCD</b><span><strong>화면 테스트 패턴</strong><small>색상·그리드·그라데이션</small></span></button>
+            </nav>
+            <p class="utility-empty" id="gamingEmpty" hidden>일치하는 도구가 없습니다.</p>
+          </aside>
+
+          <div class="utility-stage">
+            <article class="utility-panel active" id="cps-test" data-gaming-panel>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>클릭 속도 테스트</h2><p>제한 시간 동안 클릭한 횟수와 CPS를 계산합니다.</p></div><button type="button" class="ghost-button" data-reset-click-test="left">초기화</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="leftCpsSeconds">측정 시간(초)</label><input id="leftCpsSeconds" type="number" min="1" max="60" value="5"></div></div>
+              <button type="button" class="gaming-hitpad" id="leftCpsPad"><strong>클릭해서 시작</strong><span>좌클릭만 카운트합니다.</span></button>
+              <div class="stat-grid" id="leftCpsStats"></div>
+            </article>
+
+            <article class="utility-panel" id="right-cps-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>우클릭 CPS 테스트</h2><p>우클릭 속도를 측정합니다. 테스트 영역에서는 기본 컨텍스트 메뉴가 열리지 않습니다.</p></div><button type="button" class="ghost-button" data-reset-click-test="right">초기화</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="rightCpsSeconds">측정 시간(초)</label><input id="rightCpsSeconds" type="number" min="1" max="60" value="5"></div></div>
+              <button type="button" class="gaming-hitpad" id="rightCpsPad"><strong>우클릭해서 시작</strong><span>오른쪽 버튼만 카운트합니다.</span></button>
+              <div class="stat-grid" id="rightCpsStats"></div>
+            </article>
+
+            <article class="utility-panel" id="double-click-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>더블클릭 테스트</h2><p>짧은 간격으로 발생한 클릭을 감지해 스위치 튐이나 더블클릭 습관을 확인합니다.</p></div><button type="button" class="ghost-button" id="resetDoubleClick">초기화</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="doubleThreshold">감지 기준(ms)</label><input id="doubleThreshold" type="number" min="20" max="500" value="250"></div></div>
+              <button type="button" class="gaming-hitpad" id="doubleClickPad"><strong>반복 클릭</strong><span>마지막 클릭 간격을 표시합니다.</span></button>
+              <div class="result-panel" id="doubleClickResult"></div>
+            </article>
+
+            <article class="utility-panel" id="scroll-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>스크롤 테스트</h2><p>휠 방향, 누적 이동량, 초당 이벤트 수를 확인합니다.</p></div><button type="button" class="ghost-button" id="resetScrollTest">초기화</button></div>
+              <div class="gaming-scroll-zone" id="scrollZone" tabindex="0">이 영역 위에서 마우스 휠을 굴리세요.</div>
+              <div class="stat-grid" id="scrollStats"></div>
+            </article>
+
+            <article class="utility-panel" id="polling-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>마우스 폴링레이트</h2><p>마우스를 움직이는 동안 pointermove 이벤트 간격으로 Hz를 추정합니다.</p></div><button type="button" class="ghost-button" id="resetPolling">초기화</button></div>
+              <div class="gaming-motion-zone" id="pollingZone">마우스를 빠르게 움직이세요.</div>
+              <div class="stat-grid" id="pollingStats"></div>
+            </article>
+
+            <article class="utility-panel" id="dpi-tool" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>DPI·감도 계산기</h2><p>게임 감도 조정에 자주 쓰는 eDPI와 360도 회전 거리를 계산합니다.</p></div></div>
+              <div class="calculator-card-grid two-columns">
+                <section class="mini-calculator"><h3>eDPI</h3><div class="inline-fields"><div class="form-row"><label for="dpiValue">마우스 DPI</label><input id="dpiValue" type="number" min="1" value="800"></div><div class="form-row"><label for="gameSensitivity">게임 감도</label><input id="gameSensitivity" type="number" min="0" step="0.01" value="1.25"></div></div><div class="compact-result" id="edpiResult"></div></section>
+                <section class="mini-calculator"><h3>cm/360 추정</h3><div class="inline-fields"><div class="form-row"><label for="dpiDistance">이동 거리(cm)</label><input id="dpiDistance" type="number" min="0.1" step="0.1" value="30"></div><div class="form-row"><label for="dpiDegrees">회전 각도</label><input id="dpiDegrees" type="number" min="1" max="360" value="180"></div></div><div class="compact-result" id="cm360Result"></div></section>
+              </div>
+            </article>
+
+            <article class="utility-panel" id="spacebar-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">키보드</p><h2>스페이스바 테스트</h2><p>스페이스바 연타 횟수와 초당 입력수를 측정합니다.</p></div><button type="button" class="ghost-button" id="resetSpacebar">초기화</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="spacebarSeconds">측정 시간(초)</label><input id="spacebarSeconds" type="number" min="1" max="60" value="5"></div></div>
+              <button type="button" class="gaming-hitpad" id="spacebarPad"><strong>Space 입력</strong><span>버튼 포커스 후 스페이스바를 누르세요.</span></button>
+              <div class="stat-grid" id="spacebarStats"></div>
+            </article>
+
+            <article class="utility-panel" id="keyboard-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">키보드</p><h2>키보드 입력 테스트</h2><p>눌린 키, 코드, modifier 상태를 확인합니다.</p></div><button type="button" class="ghost-button" id="clearKeyboardLog">로그 지우기</button></div>
+              <div class="keyboard-readout" id="keyboardReadout" tabindex="0">이 영역을 클릭하고 키를 누르세요.</div>
+              <div class="key-chip-grid" id="activeKeyGrid"></div>
+              <div class="table-wrap"><table><thead><tr><th>키</th><th>코드</th><th>상태</th><th>시간</th></tr></thead><tbody id="keyboardLog"></tbody></table></div>
+            </article>
+
+            <article class="utility-panel" id="key-speed-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">키보드</p><h2>키 입력 속도</h2><p>일정 시간 동안 발생한 키 입력수와 KPM을 계산합니다.</p></div><button type="button" class="ghost-button" id="resetKeySpeed">초기화</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="keySpeedSeconds">측정 시간(초)</label><input id="keySpeedSeconds" type="number" min="1" max="60" value="10"></div></div>
+              <textarea id="keySpeedInput" class="utility-textarea compact-textarea" placeholder="여기에 아무 키나 입력하세요."></textarea>
+              <div class="stat-grid" id="keySpeedStats"></div>
+            </article>
+
+            <article class="utility-panel" id="reaction-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>반응속도 테스트</h2><p>빨간 화면에서 기다렸다가 초록색으로 바뀌면 클릭합니다.</p></div><button type="button" class="ghost-button" id="resetReaction">기록 초기화</button></div>
+              <button type="button" class="reaction-pad waiting" id="reactionPad"><strong>시작</strong><span>클릭하면 대기 상태로 들어갑니다.</span></button>
+              <div class="stat-grid" id="reactionStats"></div>
+            </article>
+
+            <article class="utility-panel" id="aim-trainer" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>에임 트레이너</h2><p>제한 시간 동안 나타나는 타겟을 클릭해 명중률과 평균 반응을 확인합니다.</p></div><button type="button" class="primary-link" id="startAimTrainer">시작</button></div>
+              <div class="inline-fields"><div class="form-row"><label for="aimSeconds">시간(초)</label><input id="aimSeconds" type="number" min="5" max="60" value="20"></div><div class="form-row"><label for="aimSize">타겟 크기(px)</label><input id="aimSize" type="number" min="18" max="90" value="42"></div></div>
+              <div class="aim-arena" id="aimArena"><button type="button" id="aimTarget" hidden></button></div>
+              <div class="stat-grid" id="aimStats"></div>
+            </article>
+
+            <article class="utility-panel" id="display-test" data-gaming-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">화면</p><h2>화면 테스트 패턴</h2><p>단색, 그리드, 그라데이션, 명암 패턴으로 모니터 상태를 확인합니다.</p></div></div>
+              <div class="button-row display-patterns">
+                <button type="button" data-pattern="white">흰색</button>
+                <button type="button" data-pattern="black">검정</button>
+                <button type="button" data-pattern="red">빨강</button>
+                <button type="button" data-pattern="green">초록</button>
+                <button type="button" data-pattern="blue">파랑</button>
+                <button type="button" data-pattern="grid">그리드</button>
+                <button type="button" data-pattern="gradient">그라데이션</button>
+              </div>
+              <canvas id="displayCanvas" class="display-canvas" width="960" height="540"></canvas>
+              <button type="button" class="secondary-link" id="toggleDisplayFullscreen">전체화면</button>
+            </article>
+          </div>
+        </section>
+
+        <footer class="footer"><p>© 2026 SolForge. Gaming tests run locally.</p><div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../privacy.html">개인정보처리방침</a></div></footer>
+      </main>
+    </div>
+    <script src="../assets/js/app.js?v=20260616-1"></script>
+    <script src="../assets/js/gaming-lab.js?v=20260616-1"></script>
+  </body>
+</html>
