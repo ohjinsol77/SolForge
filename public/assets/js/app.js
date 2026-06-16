@@ -46,12 +46,13 @@
     "TABLE", "THEN", "TO", "TRUE", "UNION", "UNIQUE", "UPDATE", "USE", "USING",
     "VALUES", "WHEN", "WHERE", "WITH"
   ]);
-  const MAJOR_CLAUSES = [
-    "UNION ALL", "INSERT INTO", "DELETE FROM", "GROUP BY", "ORDER BY",
-    "LEFT OUTER JOIN", "RIGHT OUTER JOIN", "FULL OUTER JOIN", "LEFT JOIN",
-    "RIGHT JOIN", "INNER JOIN", "CROSS JOIN", "FULL JOIN", "STRAIGHT_JOIN",
-    "SELECT", "FROM", "WHERE", "HAVING", "LIMIT", "OFFSET", "VALUES", "SET",
-    "UPDATE", "UNION", "WITH"
+  const SQL_CLAUSES = [
+    ["LEFT", "OUTER", "JOIN"], ["RIGHT", "OUTER", "JOIN"], ["FULL", "OUTER", "JOIN"],
+    ["UNION", "ALL"], ["INSERT", "INTO"], ["DELETE", "FROM"], ["GROUP", "BY"],
+    ["ORDER", "BY"], ["LEFT", "JOIN"], ["RIGHT", "JOIN"], ["INNER", "JOIN"],
+    ["CROSS", "JOIN"], ["FULL", "JOIN"], ["STRAIGHT_JOIN"], ["SELECT"], ["FROM"],
+    ["WHERE"], ["HAVING"], ["LIMIT"], ["OFFSET"], ["VALUES"], ["SET"], ["UPDATE"],
+    ["UNION"], ["WITH"], ["ON"]
   ];
 
   function init() {
@@ -357,45 +358,166 @@
   }
 
   function formatSql(sql) {
-    let text = String(sql || "").trim();
-    if (!text) return "";
-    text = text.replace(/\s+/g, " ");
-    MAJOR_CLAUSES.forEach((clause) => {
-      const escaped = clause.replace(/\s+/g, "\\s+");
-      text = text.replace(new RegExp(`\\b${escaped}\\b`, "gi"), `\n${clause}`);
-    });
-    text = text
-      .replace(/\s*,\s*/g, ", ")
-      .replace(/\s*([=<>!]+)\s*/g, " $1 ")
-      .replace(/\n\s+/g, "\n")
-      .replace(/\n{2,}/g, "\n")
-      .trim();
+    const rawTokens = tokenizeSql(sql)
+      .filter((token) => !/^\s+$/.test(token) && token !== "");
+    if (!rawTokens.length) return "";
 
-    const lines = [];
-    let depth = 0;
-    text.split("\n").forEach((rawLine) => {
-      let line = rawLine.trim();
-      if (!line) return;
-      const closeCount = (line.match(/^\)+/) || [""])[0].length;
-      depth = Math.max(0, depth - closeCount);
-      const upper = line.toUpperCase();
-      const isNestedClause = /^(AND|OR|WHEN|ELSE)\b/.test(upper);
-      const indent = depth + (isNestedClause ? 1 : 0);
-      lines.push(`${"  ".repeat(indent)}${uppercaseKeywords(line)}`);
-      const opens = (line.match(/\(/g) || []).length;
-      const closes = (line.match(/\)/g) || []).length;
-      depth = Math.max(0, depth + opens - closes);
-    });
+    const hasSemicolon = rawTokens[rawTokens.length - 1] === ";";
+    const tokens = hasSemicolon ? rawTokens.slice(0, -1) : rawTokens;
+    const lines = renderSqlClauses(splitSqlClauses(tokens));
+    if (hasSemicolon && lines.length) lines[lines.length - 1] += ";";
     return lines.join("\n");
   }
 
-  function uppercaseKeywords(line) {
-    return tokenizeSql(line).map((token) => {
-      if (/^[A-Za-z_][A-Za-z0-9_$]*$/.test(token) && KEYWORDS.has(token.toUpperCase())) {
-        return token.toUpperCase();
+  function splitSqlClauses(tokens) {
+    const clauses = [];
+    let current = null;
+    let depth = 0;
+    let index = 0;
+
+    while (index < tokens.length) {
+      const match = depth === 0 ? matchSqlClause(tokens, index) : null;
+      if (match) {
+        if (current) clauses.push(current);
+        current = { name: match.name, body: [] };
+        index += match.length;
+        continue;
       }
-      return token;
-    }).join("");
+
+      if (!current) current = { name: "", body: [] };
+      const token = tokens[index];
+      current.body.push(token);
+      if (token === "(") depth += 1;
+      if (token === ")") depth = Math.max(0, depth - 1);
+      index += 1;
+    }
+
+    if (current) clauses.push(current);
+    return clauses;
+  }
+
+  function matchSqlClause(tokens, start) {
+    for (const parts of SQL_CLAUSES) {
+      const matched = parts.every((part, offset) => {
+        const token = tokens[start + offset];
+        return token && token.toUpperCase() === part;
+      });
+      if (matched) return { name: parts.join(" "), length: parts.length };
+    }
+    return null;
+  }
+
+  function renderSqlClauses(clauses) {
+    const lines = [];
+    clauses.forEach((clause) => {
+      const name = clause.name.toUpperCase();
+      const body = clause.body;
+      if (!name) {
+        lines.push(renderSqlInline(body));
+      } else if (name === "SELECT" || name === "ORDER BY" || name === "GROUP BY") {
+        lines.push(name);
+        splitTopLevel(body, ",").forEach((part, index, parts) => {
+          const suffix = index < parts.length - 1 ? "," : "";
+          lines.push(`  ${renderSqlInline(part)}${suffix}`);
+        });
+      } else if (name === "ON") {
+        renderConditionLines(body, "  ON", "  ").forEach((line) => lines.push(line));
+      } else if (name === "WHERE" || name === "HAVING") {
+        renderConditionLines(body, name, "  ").forEach((line) => lines.push(line));
+      } else if (/\bJOIN$/.test(name)) {
+        lines.push(`${name}${body.length ? ` ${renderSqlInline(body)}` : ""}`);
+      } else if (name === "SET" || name === "VALUES") {
+        lines.push(name);
+        splitTopLevel(body, ",").forEach((part, index, parts) => {
+          const suffix = index < parts.length - 1 ? "," : "";
+          lines.push(`  ${renderSqlInline(part)}${suffix}`);
+        });
+      } else {
+        lines.push(`${name}${body.length ? ` ${renderSqlInline(body)}` : ""}`);
+      }
+    });
+    return lines.filter(Boolean);
+  }
+
+  function renderConditionLines(tokens, firstPrefix, nextIndent) {
+    return splitTopLevelConditions(tokens).map((part, index) => {
+      const expression = renderSqlInline(part.tokens);
+      if (index === 0) return `${firstPrefix} ${expression}`;
+      return `${nextIndent}${part.connector} ${expression}`;
+    });
+  }
+
+  function splitTopLevel(tokens, separator) {
+    const parts = [];
+    let current = [];
+    let depth = 0;
+    tokens.forEach((token) => {
+      if (token === "(") depth += 1;
+      if (token === ")") depth = Math.max(0, depth - 1);
+      if (token === separator && depth === 0) {
+        if (current.length) parts.push(current);
+        current = [];
+      } else {
+        current.push(token);
+      }
+    });
+    if (current.length) parts.push(current);
+    return parts;
+  }
+
+  function splitTopLevelConditions(tokens) {
+    const parts = [];
+    let current = [];
+    let connector = null;
+    let depth = 0;
+    tokens.forEach((token, index) => {
+      const upper = token.toUpperCase();
+      const previous = tokens[index - 1] ? tokens[index - 1].toUpperCase() : "";
+      const isConnector = depth === 0 && (upper === "AND" || upper === "OR") && previous !== "BETWEEN";
+      if (isConnector) {
+        if (current.length) parts.push({ connector, tokens: current });
+        current = [];
+        connector = upper;
+      } else {
+        current.push(token);
+      }
+      if (token === "(") depth += 1;
+      if (token === ")") depth = Math.max(0, depth - 1);
+    });
+
+    if (current.length) parts.push({ connector, tokens: current });
+    return parts.filter((part) => part.tokens.length);
+  }
+
+  function renderSqlInline(tokens) {
+    let output = "";
+    tokens.forEach((token, index) => {
+      const value = normalizeSqlToken(token);
+      const previous = tokens[index - 1] ? normalizeSqlToken(tokens[index - 1]) : "";
+      if (value === ".") {
+        output = output.trimEnd() + ".";
+      } else if (value === ",") {
+        output = output.trimEnd() + ", ";
+      } else if (value === ")") {
+        output = output.trimEnd() + ")";
+      } else if (value === "(") {
+        const needsSpace = /^(AS|IN|EXISTS|VALUES)$/i.test(previous);
+        output = output.trimEnd() + (needsSpace ? " (" : "(");
+      } else if (/^(<>|!=|<=|>=|:=|[+\-*/%=<>])$/.test(value)) {
+        output = `${output.trimEnd()} ${value} `;
+      } else {
+        const needsSpace = output && !/[\s(.]$/.test(output) && previous !== ".";
+        output += `${needsSpace ? " " : ""}${value}`;
+      }
+    });
+    return output.replace(/\s+/g, " ").trim();
+  }
+
+  function normalizeSqlToken(token) {
+    if (/^[A-Za-z_][A-Za-z0-9_$]*$/.test(token) && KEYWORDS.has(token.toUpperCase())) {
+      return token.toUpperCase();
+    }
+    return token;
   }
 
   function highlightSql(sql) {
