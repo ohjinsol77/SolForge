@@ -72,7 +72,19 @@
     ["game", "APM", "키 입력 속도", "키 입력수와 분당 입력 속도를 계산합니다.", "key speed apm kpm typing", "gaming-lab.html#key-speed-test"],
     ["game", "RT", "반응속도 테스트", "신호가 바뀐 뒤 클릭하기까지 걸린 시간을 측정합니다.", "reaction speed reflex", "gaming-lab.html#reaction-test"],
     ["game", "AIM", "에임 트레이너", "타겟 명중률과 평균 반응 시간을 측정합니다.", "aim trainer accuracy target", "gaming-lab.html#aim-trainer"],
-    ["game", "LCD", "화면 테스트 패턴", "단색, 그리드, 그라데이션 패턴으로 화면을 확인합니다.", "monitor screen color dead pixel gradient", "gaming-lab.html#display-test"]
+    ["game", "LCD", "화면 테스트 패턴", "단색, 그리드, 그라데이션 패턴으로 화면을 확인합니다.", "monitor screen color dead pixel gradient", "gaming-lab.html#display-test"],
+    ["game", "SENS", "감도 변환", "DPI 변경 후 같은 eDPI가 되도록 새 감도를 계산합니다.", "sensitivity converter dpi edpi", "gaming-calculators.html#sensitivity-converter"],
+    ["game", "FOV", "FOV 계산기", "종횡비 기준으로 수평·수직 시야각을 변환합니다.", "fov field of view", "gaming-calculators.html#fov-calculator"],
+    ["game", "TTK", "TTK 계산기", "피해량, 체력, 연사속도로 처치 시간을 추정합니다.", "ttk damage fire rate", "gaming-calculators.html#ttk-calculator"],
+    ["game", "+", "크로스헤어 생성기", "색상과 간격을 정해 조준점 PNG를 만듭니다.", "crosshair generator", "gaming-calculators.html#crosshair-generator"],
+    ["game", "ID", "게이머태그 생성기", "닉네임과 길드명 후보를 브라우저에서 생성합니다.", "gamertag guild name generator", "gaming-calculators.html#gamertag-generator"],
+    ["game", "MC", "마인크래프트 원 생성기", "블록 단위 원 설계도를 문자 그리드로 만듭니다.", "minecraft circle generator", "gaming-calculators.html#minecraft-circle"],
+    ["game", "16:9", "화면 비율 계산", "원본 비율을 유지하는 새 크기를 계산합니다.", "aspect ratio calculator", "gaming-calculators.html#aspect-ratio"],
+    ["game", "PPI", "PPI 계산기", "해상도와 대각선으로 픽셀 밀도를 계산합니다.", "ppi pixel density", "gaming-calculators.html#ppi-calculator"],
+    ["game", "TV", "화면 크기·시청거리", "대각선 기준 실제 크기와 권장 거리를 계산합니다.", "screen size viewing distance", "gaming-calculators.html#screen-size"],
+    ["game", "NET", "다운로드 시간", "파일 크기와 대역폭으로 다운로드 시간을 추정합니다.", "download time bandwidth", "gaming-calculators.html#download-time"],
+    ["game", "RAID", "RAID 용량 계산기", "RAID 0·1·5·6·10의 사용 가능 용량을 계산합니다.", "raid calculator storage", "gaming-calculators.html#raid-calculator"],
+    ["game", "RAM", "RAM 지연시간", "메모리 속도와 CL로 실제 지연시간을 계산합니다.", "ram latency calculator", "gaming-calculators.html#ram-latency"]
   ];
 
   const categoryLabels = {

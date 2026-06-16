@@ -3055,6 +3055,31 @@ th {
   background: #000;
 }
 
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.tag-cloud span {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.circle-output {
+  min-height: 360px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  line-height: 1;
+  overflow: auto;
+  white-space: pre;
+}
+
 @media (max-width: 1120px) {
   .utility-workbench {
     grid-template-columns: 1fr;
