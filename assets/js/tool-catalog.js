@@ -124,7 +124,15 @@
     ["game", "SPD", "마우스 속도·가속", "포인터 이동 속도와 최대 속도를 추정합니다.", "mouse speed acceleration", "input-training.html#mouse-speed"],
     ["game", "ML", "마우스 지연", "신호 후 클릭까지의 시간을 측정합니다.", "mouse latency reaction", "input-training.html#mouse-latency"],
     ["game", "SPIN", "마우스 스핀", "원형 움직임의 누적 각도와 회전량을 표시합니다.", "mouse spin test", "input-training.html#mouse-spin"],
-    ["game", "MOUSE", "마우스 종합 테스트", "버튼, 좌표, 휠 입력 상태를 한 번에 확인합니다.", "mouse tester buttons position", "input-training.html#mouse-tester"]
+    ["game", "MOUSE", "마우스 종합 테스트", "버튼, 좌표, 휠 입력 상태를 한 번에 확인합니다.", "mouse tester buttons position", "input-training.html#mouse-tester"],
+    ["game", "CPU", "CPU 짧은 벤치", "짧은 계산 루프로 CPU 연산량을 추정합니다.", "cpu stress benchmark", "performance-lab.html#cpu-test"],
+    ["game", "GPU", "GPU·Canvas 부하", "Canvas 입자 렌더링으로 프레임 성능을 봅니다.", "gpu stress canvas", "performance-lab.html#gpu-test"],
+    ["game", "RAM", "RAM 메모리 테스트", "메모리 할당과 간단한 쓰기 검증을 수행합니다.", "ram memory test", "performance-lab.html#ram-test"],
+    ["game", "BW", "대역폭 계산기", "전송량, 시간, 속도 관계를 계산합니다.", "bandwidth calculator transfer", "performance-lab.html#bandwidth-calculator"],
+    ["game", "mDPI", "마우스 DPI 실측", "실제 이동 거리 대비 픽셀 이동량으로 DPI를 추정합니다.", "mouse dpi test distance", "performance-lab.html#mouse-dpi-test"],
+    ["game", "BURN", "번인 패턴", "색상 순환 패턴으로 화면 잔상 확인을 돕습니다.", "burn in screen pattern", "performance-lab.html#burn-in-test"],
+    ["game", "RES", "해상도 테스트", "뷰포트, 화면 크기, DPR과 색심도를 표시합니다.", "resolution screen dpr", "performance-lab.html#resolution-test"],
+    ["game", "RTC", "WebRTC 후보 확인", "외부 STUN 없이 로컬 ICE 후보 노출 여부를 확인합니다.", "webrtc leak candidate", "performance-lab.html#webrtc-test"]
   ];
 
   const categoryLabels = {
