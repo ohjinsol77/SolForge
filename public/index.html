@@ -1,11 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SolForge - 필요한 개발 도구와 생활 계산기를 한곳에서</title>
-    <meta name="description" content="SQL 정리, EXPLAIN 분석, 나이, 날짜, D-Day, 양음력, 공휴일, 학교 일정 등 자주 쓰는 도구를 검색하고 바로 사용하세요.">
-    <meta name="keywords" content="MySQL formatter, MySQL explain visual, SQL formatter, 나이 계산기, 날짜 계산기, 양음력 변환, 생활 계산기">
+    <title>SolForge - 개발·텍스트·생활 도구를 한곳에서</title>
+    <meta name="description" content="SQL, JSON, 글자수, 한영타, URL, UUID, 단위, 나이, 날짜, D-Day, 양음력 등 자주 쓰는 도구를 검색하고 바로 사용하세요.">
+    <meta name="keywords" content="개발자 도구, 텍스트 도구, MySQL formatter, JSON formatter, 글자수 세기, 단위 변환, 날짜 계산기">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="SolForge">
     <meta name="theme-color" content="#f5f8fc">
@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="SolForge - 필요한 도구를 빠르게">
     <meta property="og:description" content="개발 도구와 생활 계산기를 검색하고 한 번에 바로 사용하세요.">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260611-2">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260612-3">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -62,27 +62,26 @@
             <span class="hero-badge"><span aria-hidden="true"></span> 무료 · 로그인 없이 바로 사용</span>
             <p class="eyebrow">ALL-IN-ONE TOOLBOX</p>
             <h1>필요한 도구를<br><em>빠르게 찾아보세요.</em></h1>
-            <p class="hero-description">개발 작업부터 나이, 날짜, 양음력 계산까지. 찾고 싶은 기능을 입력하면 바로 사용할 수 있는 도구만 골라 보여드립니다.</p>
-            <form class="tool-search" id="toolSearchForm" role="search">
+            <p class="hero-description">개발 작업, 텍스트 처리, 단위 변환부터 날짜와 양음력 계산까지. 필요한 기능을 검색해 바로 열 수 있습니다.</p>
+            <form class="tool-search" action="tools/all.html" role="search">
               <label class="sr-only" for="toolSearch">도구 검색</label>
               <span class="search-icon" aria-hidden="true"></span>
-              <input id="toolSearch" type="search" name="q" autocomplete="off" placeholder="예: D-Day, 만나이, 음력, SQL 정리" aria-controls="toolSuggestions" aria-expanded="false">
+              <input id="toolSearch" type="search" name="q" autocomplete="off" placeholder="예: JSON, 글자수, D-Day, 단위 변환">
               <kbd>/</kbd>
               <button type="submit">검색</button>
-              <div class="tool-suggestions" id="toolSuggestions" role="listbox" aria-label="추천 도구" hidden></div>
             </form>
             <div class="popular-searches" aria-label="인기 검색어">
               <span>인기:</span>
-              <button type="button" data-search-term="만나이">만나이</button>
-              <button type="button" data-search-term="D-Day">D-Day</button>
-              <button type="button" data-search-term="음력 변환">음력 변환</button>
-              <button type="button" data-search-term="SQL Prettier">SQL 정리</button>
+              <a href="tools/all.html?q=JSON">JSON</a>
+              <a href="tools/all.html?q=글자수">글자수</a>
+              <a href="tools/all.html?q=D-Day">D-Day</a>
+              <a href="tools/all.html?q=단위 변환">단위 변환</a>
             </div>
           </div>
           <div class="quick-launch" aria-label="자주 찾는 도구">
             <div class="quick-launch-heading">
               <div><p class="eyebrow">QUICK START</p><h2>많이 찾는 도구</h2></div>
-              <a href="#all-tools">전체 보기 <span aria-hidden="true">↓</span></a>
+              <a href="tools/all.html">전체 보기 <span aria-hidden="true">→</span></a>
             </div>
             <div class="quick-launch-grid">
               <a href="calculators/all.html#age-calculator" class="quick-tool quick-tool-blue">
@@ -102,12 +101,31 @@
         </section>
 
         <section class="trust-strip" aria-label="서비스 특징">
-          <div><span class="trust-icon">20+</span><span><strong>다양한 무료 도구</strong><small>계속 추가하고 있습니다</small></span></div>
+          <div><span class="trust-icon">59</span><span><strong>다양한 무료 도구</strong><small>테마별로 정리했습니다</small></span></div>
           <div><span class="trust-icon">0</span><span><strong>회원가입 불필요</strong><small>바로 열고 바로 사용</small></span></div>
           <div><span class="trust-icon">PC</span><span><strong>브라우저에서 처리</strong><small>입력 내용을 서버에 저장하지 않음</small></span></div>
         </section>
 
-        <section class="tool-directory" id="all-tools">
+        <section class="home-categories" aria-labelledby="categoryTitle">
+          <div class="directory-heading">
+            <div>
+              <p class="eyebrow">BROWSE BY CATEGORY</p>
+              <h2 id="categoryTitle">분야별 도구</h2>
+              <p>홈에서는 큰 분류만 고르고, 세부 도구는 별도 디렉터리에서 검색할 수 있습니다.</p>
+            </div>
+            <a class="secondary-link" href="tools/all.html">전체 59개 도구 보기</a>
+          </div>
+          <div class="home-category-grid">
+            <a href="tools/all.html?q=개발자"><span>DEV</span><strong>개발자 도구</strong><small>SQL, JSON, URL, UUID, Base64</small></a>
+            <a href="tools/all.html?q=텍스트"><span>TXT</span><strong>텍스트 도구</strong><small>글자수, 한영타, 정리, 마스킹</small></a>
+            <a href="tools/file-media-toolbox.html"><span>MEDIA</span><strong>파일·미디어</strong><small>이미지, 자막, 체크섬, 음성, EML</small></a>
+            <a href="tools/advanced-toolbox.html"><span>ADV</span><strong>고급 도구</strong><small>암호화, QR, GIF, ASCII, 게임, 장치</small></a>
+            <a href="calculators/all.html"><span>CAL</span><strong>날짜·생활 계산</strong><small>나이, D-Day, 양음력, 공휴일</small></a>
+            <a href="tools/utility-toolbox.html#unit-tool"><span>UNIT</span><strong>단위·생활 도구</strong><small>단위, BMI, 전통 무게, 로또</small></a>
+          </div>
+        </section>
+
+        <section class="tool-directory" id="all-tools" hidden>
           <div class="directory-heading">
             <div>
               <p class="eyebrow">TOOL DIRECTORY</p>
@@ -212,6 +230,6 @@
         </footer>
       </main>
     </div>
-    <script src="assets/js/app.js?v=20260611-2"></script>
+    <script src="assets/js/app.js?v=20260612-3"></script>
   </body>
 </html>

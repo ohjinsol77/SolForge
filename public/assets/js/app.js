@@ -122,6 +122,9 @@
       '<p class="nav-title">개발 도구</p>',
       navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
+      navLink(`${prefix}tools/utility-toolbox.html`, "18", "확장 도구 모음"),
+      navLink(`${prefix}tools/file-media-toolbox.html`, "12", "파일·미디어 도구"),
+      navLink(`${prefix}tools/advanced-toolbox.html`, "10", "고급 도구"),
       '<p class="nav-title">생활 계산기</p>',
       navGroup("나이 · 띠", [
         [`${life}#age-calculator`, "나이·만나이 계산기"],
@@ -131,6 +134,7 @@
       navGroup("날짜", [
         [`${life}#date-info`, "날짜 정보"],
         [`${life}#date-difference`, "디데이·날짜 차이"],
+        [`${life}#date-range-list`, "기간 날짜 목록·평일"],
         [`${life}#date-move`, "날짜 더하기·빼기"],
         [`${life}#anniversary`, "기념일·아기 100일"]
       ]),
@@ -182,7 +186,17 @@
     const input = $("#toolSearch");
     const form = $("#toolSearchForm");
     const cards = $$("[data-tool-card]");
-    if (!input || !cards.length) return;
+    if (!input) return;
+    if (!form || !cards.length) {
+      document.addEventListener("keydown", (event) => {
+        const tag = document.activeElement?.tagName;
+        if (event.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+          event.preventDefault();
+          input.focus();
+        }
+      });
+      return;
+    }
 
     const filterButtons = $$("[data-tool-filter]");
     const count = $("#visibleToolCount");
@@ -844,6 +858,7 @@
     initZodiacTools();
     initDateInfo();
     initDateDifference();
+    initDateRangeList();
     initDateMove();
     initLifeAnniversary();
     initLunarTools();
@@ -867,9 +882,16 @@
       const koreanAge = target.getFullYear() - birth.getFullYear() + 1;
       const yearAge = target.getFullYear() - birth.getFullYear();
       const zodiac = zodiacForYear(birth.getFullYear());
+      const livedDays = Math.floor((stripTime(target) - stripTime(birth)) / DAY_MS);
+      let nextBirthday = new Date(target.getFullYear(), birth.getMonth(), birth.getDate());
+      if (nextBirthday < stripTime(target)) nextBirthday = new Date(target.getFullYear() + 1, birth.getMonth(), birth.getDate());
+      const birthdayDiff = Math.round((stripTime(nextBirthday) - stripTime(target)) / DAY_MS);
       $("#lifeAgeResult").innerHTML = resultBlock(`만 ${age.years}세`, `${age.years}년 ${age.months}개월 ${age.days}일`, [
         ["세는 나이", `${koreanAge}세`],
         ["연 나이", `${yearAge}세`],
+        ["살아온 날", `${formatNumber(livedDays)}일`],
+        ["태어난 요일", WEEKDAYS[birth.getDay()]],
+        ["다음 생일", `${formatKoreanDate(nextBirthday)} · ${birthdayDiff === 0 ? "오늘" : `D-${formatNumber(birthdayDiff)}`}`],
         ["띠", `${zodiac.branch} ${zodiac.name}`],
         ["성년 여부", age.years >= 19 ? "성년(만 19세 이상)" : "미성년"],
         ["전통 나이 용어", AGE_TERMS.get(koreanAge) || "해당 용어 없음"]
@@ -1014,12 +1036,54 @@
       const inclusive = $("#lifeDiffInclude").checked ? (raw >= 0 ? 1 : -1) : 0;
       const total = raw + inclusive;
       const absolute = Math.abs(total);
+      const stats = countDayTypes(start, end, $("#lifeDiffInclude").checked);
       $("#lifeDiffResult").innerHTML = resultBlock(`${formatNumber(total)}일`, total === 0 ? "같은 날짜" : total > 0 ? "종료일이 더 늦습니다." : "종료일이 더 빠릅니다.", [
         ["주 단위", `${Math.floor(absolute / 7)}주 ${absolute % 7}일`],
+        ["평일", `${formatNumber(stats.weekdays)}일`],
+        ["주말", `${formatNumber(stats.weekends)}일`],
         ["시간 환산", `${formatNumber(absolute * 24)}시간`],
         ["오늘 기준 종료일", ddayText(end)],
         ["포함 방식", $("#lifeDiffInclude").checked ? "양 끝 날짜 포함" : "날짜 간격"]
       ]);
+    };
+    form.addEventListener("input", render);
+    render();
+  }
+
+  function initDateRangeList() {
+    const form = $("#dateRangeListForm");
+    if (!form) return;
+    $("#dateRangeStart").value = todayInput();
+    $("#dateRangeEnd").value = toInputDate(addDateParts(new Date(), { days: 14 }));
+    const render = () => {
+      const start = dateFromInput($("#dateRangeStart").value);
+      const end = dateFromInput($("#dateRangeEnd").value);
+      if (end < start) {
+        $("#dateRangeListResult").innerHTML = errorResult("종료일은 시작일보다 빠를 수 없습니다.");
+        return;
+      }
+      const total = Math.round((end - start) / DAY_MS) + 1;
+      if (total > 366) {
+        $("#dateRangeListResult").innerHTML = errorResult("날짜 목록은 최대 366일까지 만들 수 있습니다.");
+        return;
+      }
+      const weekdaysOnly = $("#dateRangeWeekdaysOnly").checked;
+      const rows = [];
+      let weekdays = 0;
+      let weekends = 0;
+      for (let offset = 0; offset < total; offset += 1) {
+        const date = addDateParts(start, { days: offset });
+        const weekend = date.getDay() === 0 || date.getDay() === 6;
+        if (weekend) weekends += 1;
+        else weekdays += 1;
+        if (!weekdaysOnly || !weekend) rows.push([formatKoreanDate(date), WEEKDAYS[date.getDay()]]);
+      }
+      $("#dateRangeListResult").innerHTML = [
+        resultBlock(`${formatNumber(total)}일`, `평일 ${formatNumber(weekdays)}일 · 주말 ${formatNumber(weekends)}일`, [
+          ["목록 표시", weekdaysOnly ? `평일 ${formatNumber(rows.length)}개` : `전체 ${formatNumber(rows.length)}개`]
+        ]),
+        `<div class="table-wrap date-list-wrap"><table><thead><tr><th>날짜</th><th>요일</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")}</tbody></table></div>`
+      ].join("");
     };
     form.addEventListener("input", render);
     render();
@@ -1365,6 +1429,20 @@
       months += 12;
     }
     return { years: Math.max(0, years), months: Math.max(0, months), days: Math.max(0, days) };
+  }
+
+  function countDayTypes(start, end, inclusive) {
+    const first = start <= end ? stripTime(start) : stripTime(end);
+    const last = start <= end ? stripTime(end) : stripTime(start);
+    const total = Math.max(0, Math.round((last - first) / DAY_MS) + (inclusive ? 1 : 0));
+    let weekdays = 0;
+    let weekends = 0;
+    for (let offset = 0; offset < total; offset += 1) {
+      const date = addDateParts(first, { days: offset });
+      if (date.getDay() === 0 || date.getDay() === 6) weekends += 1;
+      else weekdays += 1;
+    }
+    return { weekdays, weekends };
   }
 
   function addDateParts(date, parts) {

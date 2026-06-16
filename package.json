@@ -2,9 +2,13 @@
   "name": "solforge",
   "version": "0.1.0",
   "private": true,
-  "description": "Static MySQL developer tools and Korean life calculators.",
+  "description": "Static developer, text, media and Korean life tools.",
   "scripts": {
-    "check": "node --check assets/js/app.js && node --check public/assets/js/app.js",
+    "check": "node --check assets/js/app.js && node --check assets/js/tool-catalog.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/advanced-tools.mjs && node --check public/assets/js/app.js && node --check public/assets/js/tool-catalog.js && node --check public/assets/js/utility-tools.js && node --check public/assets/js/file-media-tools.js && node --check public/assets/js/advanced-tools.mjs",
     "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "gifenc": "^1.0.3",
+    "qrcode-generator": "^2.0.4"
   }
 }
