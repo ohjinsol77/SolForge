@@ -108,7 +108,23 @@
     ["game", "UNI", "화면 균일도", "분할 패턴으로 밝기와 색온도 편차를 확인합니다.", "screen uniformity", "display-diagnostics.html#uniformity-test"],
     ["game", "GHO", "고스팅 테스트", "움직이는 블록으로 잔상을 확인합니다.", "monitor ghosting motion", "display-diagnostics.html#ghosting-test"],
     ["game", "FRM", "프레임 스키핑", "프레임 점 간격으로 스킵을 확인합니다.", "frame skipping", "display-diagnostics.html#frame-skipping"],
-    ["game", "FPS", "FPS·Hz·해상도", "requestAnimationFrame으로 갱신률을 추정합니다.", "fps monitor hz refresh rate resolution", "display-diagnostics.html#fps-hz"]
+    ["game", "FPS", "FPS·Hz·해상도", "requestAnimationFrame으로 갱신률을 추정합니다.", "fps monitor hz refresh rate resolution", "display-diagnostics.html#fps-hz"],
+    ["game", "EAR", "청각 반응 테스트", "소리를 들은 뒤 클릭하기까지의 시간을 측정합니다.", "auditory reaction sound", "input-training.html#auditory-reaction"],
+    ["game", "MEM", "기억력 테스트", "색상 순서를 기억해 같은 순서로 입력합니다.", "memory sequence game", "input-training.html#memory-test"],
+    ["game", "TYPE", "타자 연습", "제시문 기준 WPM과 정확도를 계산합니다.", "typing speed wpm cpm", "input-training.html#typing-practice"],
+    ["game", "WASD", "WASD 트레이너", "표시되는 이동 키에 빠르게 반응합니다.", "wasd trainer movement", "input-training.html#wasd-trainer"],
+    ["game", "KPS", "키보드 클리커", "키 입력 속도와 초당 입력수를 측정합니다.", "keyboard clicker counter", "input-training.html#keyboard-clicker"],
+    ["game", "K2", "키보드 더블클릭", "같은 키가 짧은 간격으로 반복 입력되는지 감지합니다.", "keyboard double click bounce", "input-training.html#keyboard-double"],
+    ["game", "GHOST", "키보드 고스팅", "동시에 눌린 키 목록을 확인합니다.", "keyboard ghosting rollover", "input-training.html#keyboard-ghosting"],
+    ["game", "KL", "키보드 지연", "신호 후 키 입력까지의 지연을 측정합니다.", "keyboard latency reaction", "input-training.html#keyboard-latency"],
+    ["game", "KHz", "키보드 폴링 추정", "연속 키 이벤트 간격으로 입력 주기를 추정합니다.", "keyboard polling rate", "input-training.html#keyboard-polling"],
+    ["game", "ACC", "마우스 정확도", "작은 타겟 명중률로 마우스 정확도를 봅니다.", "mouse accuracy target", "input-training.html#mouse-accuracy"],
+    ["game", "DRAG", "마우스 드래그", "드래그 경로를 그려 끊김을 확인합니다.", "mouse drag test", "input-training.html#mouse-drag"],
+    ["game", "DRIFT", "마우스 드리프트", "정지 중 발생하는 미세 이동 이벤트를 봅니다.", "mouse drift idle", "input-training.html#mouse-drift"],
+    ["game", "SPD", "마우스 속도·가속", "포인터 이동 속도와 최대 속도를 추정합니다.", "mouse speed acceleration", "input-training.html#mouse-speed"],
+    ["game", "ML", "마우스 지연", "신호 후 클릭까지의 시간을 측정합니다.", "mouse latency reaction", "input-training.html#mouse-latency"],
+    ["game", "SPIN", "마우스 스핀", "원형 움직임의 누적 각도와 회전량을 표시합니다.", "mouse spin test", "input-training.html#mouse-spin"],
+    ["game", "MOUSE", "마우스 종합 테스트", "버튼, 좌표, 휠 입력 상태를 한 번에 확인합니다.", "mouse tester buttons position", "input-training.html#mouse-tester"]
   ];
 
   const categoryLabels = {
