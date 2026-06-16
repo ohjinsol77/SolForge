@@ -96,7 +96,19 @@
     ["game", "TOUCH", "터치스크린 테스트", "터치와 포인터 입력 위치를 캔버스에 기록합니다.", "touchscreen pointer test", "device-diagnostics.html#touchscreen-test"],
     ["game", "ACC", "가속도계 테스트", "DeviceMotion 값을 표시합니다.", "accelerometer motion sensor", "device-diagnostics.html#accelerometer-test"],
     ["game", "GYRO", "자이로스코프 테스트", "DeviceOrientation 값을 표시합니다.", "gyroscope orientation sensor", "device-diagnostics.html#gyroscope-test"],
-    ["game", "VIB", "진동 테스트", "지원 기기의 Vibration API를 테스트합니다.", "vibration haptic test", "device-diagnostics.html#vibration-test"]
+    ["game", "VIB", "진동 테스트", "지원 기기의 Vibration API를 테스트합니다.", "vibration haptic test", "device-diagnostics.html#vibration-test"],
+    ["game", "PIX", "불량화소 테스트", "단색 화면으로 픽셀 이상을 확인합니다.", "dead pixel color screen", "display-diagnostics.html#dead-pixel"],
+    ["game", "BLB", "백라이트 블리드", "검정 화면으로 빛샘을 확인합니다.", "backlight bleed black", "display-diagnostics.html#backlight-bleed"],
+    ["game", "BLK", "블랙 레벨", "어두운 단계 구분을 확인합니다.", "black level monitor", "display-diagnostics.html#black-level"],
+    ["game", "WHT", "화이트 레벨", "밝은 단계가 뭉개지지 않는지 확인합니다.", "white level monitor", "display-diagnostics.html#white-level"],
+    ["game", "BRI", "밝기 테스트", "그레이스케일 단계로 밝기 설정을 확인합니다.", "brightness grayscale", "display-diagnostics.html#brightness-test"],
+    ["game", "CON", "명암비 테스트", "체커와 중간 회색으로 명암을 확인합니다.", "contrast checker", "display-diagnostics.html#contrast-test"],
+    ["game", "GAM", "감마 테스트", "줄무늬와 중간 회색 패턴으로 감마를 확인합니다.", "gamma stripes", "display-diagnostics.html#gamma-test"],
+    ["game", "RGB", "색상 범위", "RGB 램프가 부드럽게 이어지는지 확인합니다.", "color range rgb", "display-diagnostics.html#color-range"],
+    ["game", "UNI", "화면 균일도", "분할 패턴으로 밝기와 색온도 편차를 확인합니다.", "screen uniformity", "display-diagnostics.html#uniformity-test"],
+    ["game", "GHO", "고스팅 테스트", "움직이는 블록으로 잔상을 확인합니다.", "monitor ghosting motion", "display-diagnostics.html#ghosting-test"],
+    ["game", "FRM", "프레임 스키핑", "프레임 점 간격으로 스킵을 확인합니다.", "frame skipping", "display-diagnostics.html#frame-skipping"],
+    ["game", "FPS", "FPS·Hz·해상도", "requestAnimationFrame으로 갱신률을 추정합니다.", "fps monitor hz refresh rate resolution", "display-diagnostics.html#fps-hz"]
   ];
 
   const categoryLabels = {
