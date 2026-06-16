@@ -491,7 +491,9 @@
 
   function renderSqlInline(tokens) {
     let output = "";
-    tokens.forEach((token, index) => {
+    let index = 0;
+    while (index < tokens.length) {
+      const token = tokens[index];
       const value = normalizeSqlToken(token);
       const previous = tokens[index - 1] ? normalizeSqlToken(tokens[index - 1]) : "";
       if (value === ".") {
@@ -501,16 +503,45 @@
       } else if (value === ")") {
         output = output.trimEnd() + ")";
       } else if (value === "(") {
-        const needsSpace = /^(AS|IN|EXISTS|VALUES)$/i.test(previous);
-        output = output.trimEnd() + (needsSpace ? " (" : "(");
+        const closeIndex = findMatchingParen(tokens, index);
+        const innerTokens = closeIndex > index ? tokens.slice(index + 1, closeIndex) : [];
+        if (isSubqueryTokens(innerTokens)) {
+          const formattedInner = renderSqlClauses(splitSqlClauses(innerTokens))
+            .map((line) => `  ${line}`)
+            .join("\n");
+          const needsSpace = /^(AS|IN|EXISTS|VALUES)$/i.test(previous);
+          output = `${output.trimEnd()}${needsSpace ? " " : ""}(\n${formattedInner}\n)`;
+          index = closeIndex;
+        } else {
+          const needsSpace = /^(AS|IN|EXISTS|VALUES)$/i.test(previous);
+          output = output.trimEnd() + (needsSpace ? " (" : "(");
+        }
       } else if (/^(<>|!=|<=|>=|:=|[+\-*/%=<>])$/.test(value)) {
         output = `${output.trimEnd()} ${value} `;
       } else {
         const needsSpace = output && !/[\s(.]$/.test(output) && previous !== ".";
         output += `${needsSpace ? " " : ""}${value}`;
       }
-    });
-    return output.replace(/\s+/g, " ").trim();
+      index += 1;
+    }
+    return output.split("\n").map((line) => line.trimEnd()).join("\n").trim();
+  }
+
+  function findMatchingParen(tokens, openIndex) {
+    let depth = 0;
+    for (let index = openIndex; index < tokens.length; index += 1) {
+      if (tokens[index] === "(") depth += 1;
+      if (tokens[index] === ")") {
+        depth -= 1;
+        if (depth === 0) return index;
+      }
+    }
+    return openIndex;
+  }
+
+  function isSubqueryTokens(tokens) {
+    const first = tokens.find((token) => token && !/^\s+$/.test(token));
+    return first ? /^(SELECT|WITH)$/i.test(first) : false;
   }
 
   function normalizeSqlToken(token) {
