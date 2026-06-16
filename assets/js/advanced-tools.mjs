@@ -221,12 +221,37 @@ function initCrypto() {
 function initCodes() {
   const canvas = $("#codeCanvas");
   const download = $("#codeDownload");
+  const status = $("#codeImageStatus");
   const render = () => {
-    const value = $("#codeValue").value;
-    if (!value) return;
-    if ($("#codeType").value === "qr") drawQr(canvas, value, $("#qrLevel").value, Number($("#codeScale").value));
-    else drawCode39(canvas, value, Number($("#codeScale").value));
-    download.href = canvas.toDataURL("image/png");
+    const value = $("#codeValue").value.trim();
+    if (!value) {
+      canvas.width = 0;
+      canvas.height = 0;
+      download.removeAttribute("href");
+      status.textContent = "이미지로 만들 내용을 입력하세요.";
+      status.className = "validation-message invalid";
+      return;
+    }
+    try {
+      if ($("#codeType").value === "qr") {
+        drawQr(canvas, value, $("#qrLevel").value, Number($("#codeScale").value) || 6);
+        status.textContent = `QR 이미지를 생성했습니다. ${canvas.width} x ${canvas.height}px`;
+      } else {
+        const meta = drawCode39(canvas, value, Number($("#codeScale").value) || 6);
+        const notes = [];
+        if (meta.removedCount) notes.push(`지원하지 않는 문자 ${meta.removedCount}개 제외`);
+        if (meta.scale !== meta.requestedScale) notes.push(`긴 입력이라 크기를 ${meta.scale}로 자동 조정`);
+        status.textContent = [`Code 39 이미지를 생성했습니다. ${meta.width} x ${meta.height}px`, ...notes].join(" · ");
+      }
+      download.href = canvas.toDataURL("image/png");
+      status.className = "validation-message valid";
+    } catch (error) {
+      canvas.width = 0;
+      canvas.height = 0;
+      download.removeAttribute("href");
+      status.textContent = error.message;
+      status.className = "validation-message invalid";
+    }
   };
   $("#generateCodeImage").addEventListener("click", render);
   $("#codeType").addEventListener("change", () => {
@@ -485,6 +510,9 @@ function initScanner() {
       ? resultBlock(items[0].rawValue, items[0].format, items.slice(1).map((item, index) => [`추가 ${index + 1}`, `${item.format}: ${item.rawValue}`]))
       : errorBlock("코드를 찾지 못했습니다.");
   };
+  output.innerHTML = "BarcodeDetector" in window
+    ? resultBlock("스캔 대기 중", "이미지를 선택하거나 카메라를 시작하세요.", [])
+    : errorBlock("이 브라우저는 BarcodeDetector를 지원하지 않습니다.");
   $("#scannerFile").addEventListener("change", async () => {
     const file = $("#scannerFile").files?.[0];
     if (!file) return;
@@ -660,12 +688,24 @@ function drawCode39(canvas, rawValue, scale) {
     "-": "nwnnnnwnw", ".": "wwnnnnwnn", " ": "nwwnnnwnn", "$": "nwnwnwnnn",
     "/": "nwnwnnnwn", "+": "nwnnnwnwn", "%": "nnnwnwnwn", "*": "nwnnwnwnn"
   };
-  const value = `*${rawValue.toUpperCase().replace(/[^0-9A-Z .$/+%-]/g, "")}*`;
-  const narrow = Math.max(1, scale);
+  const normalized = rawValue.toUpperCase();
+  const encodedValue = normalized.replace(/[^0-9A-Z .$/+%-]/g, "");
+  if (!encodedValue) throw new Error("Code 39는 영문, 숫자, 공백, - . $ / + % 문자만 사용할 수 있습니다.");
+  const value = `*${encodedValue}*`;
+  const requestedScale = Math.max(1, Number(scale) || 1);
+  const measureWidth = (narrowValue) => {
+    const wideValue = narrowValue * 3;
+    const gapValue = narrowValue;
+    const quietValue = narrowValue * 10;
+    return quietValue * 2 + Array.from(value).reduce((sum, character) => sum + Array.from(patterns[character]).reduce((inner, type) => inner + (type === "w" ? wideValue : narrowValue), 0) + gapValue, 0);
+  };
+  const scaleLimit = Math.max(1, Math.floor(1400 / measureWidth(1)));
+  const effectiveScale = Math.min(requestedScale, scaleLimit);
+  const narrow = effectiveScale;
   const wide = narrow * 3;
   const gap = narrow;
   const quiet = narrow * 10;
-  const width = quiet * 2 + Array.from(value).reduce((sum, character) => sum + Array.from(patterns[character]).reduce((inner, type) => inner + (type === "w" ? wide : narrow), 0) + gap, 0);
+  const width = measureWidth(narrow);
   const height = 120;
   canvas.width = width;
   canvas.height = height;
@@ -685,7 +725,14 @@ function drawCode39(canvas, rawValue, scale) {
   }
   context.font = "16px monospace";
   context.textAlign = "center";
-  context.fillText(rawValue.toUpperCase(), width / 2, 112);
+  context.fillText(encodedValue, width / 2, 112);
+  return {
+    width,
+    height,
+    scale: effectiveScale,
+    requestedScale,
+    removedCount: normalized.length - encodedValue.length
+  };
 }
 
 function imageDataToAscii(imageData, width, invert) {

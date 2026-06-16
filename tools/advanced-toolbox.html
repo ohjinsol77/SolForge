@@ -7,7 +7,7 @@
     <meta name="description" content="시간 계산, 코드 정렬·압축, Web Crypto, QR·바코드, ASCII 아트, GIF, 매직아이, 숫자야구, 바코드 스캔과 손전등을 제공하는 정적 도구입니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/advanced-toolbox.html">
-    <link rel="stylesheet" href="../assets/css/styles.css?v=20260612-3">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-1">
   </head>
   <body data-page="advanced-toolbox">
     <a class="skip-link" href="#main">본문으로 이동</a>
@@ -79,6 +79,7 @@
               <div class="form-row"><label for="codeValue">내용</label><input id="codeValue" type="text" value="https://solforge.pages.dev/"></div>
               <div class="inline-fields"><div class="form-row"><label for="codeType">종류</label><select id="codeType"><option value="qr">QR 코드</option><option value="code39">Code 39 바코드</option></select></div><div class="form-row"><label for="qrLevel">QR 오류 복원</label><select id="qrLevel"><option value="L">L</option><option value="M" selected>M</option><option value="Q">Q</option><option value="H">H</option></select></div><div class="form-row"><label for="codeScale">크기</label><input id="codeScale" type="number" min="2" max="16" value="6"></div></div>
               <button type="button" class="primary-link" id="generateCodeImage">이미지 생성</button>
+              <p class="validation-message" id="codeImageStatus" aria-live="polite"></p>
               <div class="canvas-result"><canvas id="codeCanvas"></canvas><a id="codeDownload" class="secondary-link" download="solforge-code.png">PNG 다운로드</a></div>
             </article>
 
@@ -140,6 +141,6 @@
     <div class="toast" id="advancedToast" role="status" aria-live="polite">완료했습니다.</div>
     <script src="../assets/vendor/qrcode-generator/qrcode.js"></script>
     <script src="../assets/js/app.js?v=20260612-3"></script>
-    <script type="module" src="../assets/js/advanced-tools.mjs?v=20260612-3"></script>
+    <script type="module" src="../assets/js/advanced-tools.mjs?v=20260616-1"></script>
   </body>
 </html>
