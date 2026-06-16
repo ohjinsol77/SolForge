@@ -84,7 +84,19 @@
     ["game", "TV", "화면 크기·시청거리", "대각선 기준 실제 크기와 권장 거리를 계산합니다.", "screen size viewing distance", "gaming-calculators.html#screen-size"],
     ["game", "NET", "다운로드 시간", "파일 크기와 대역폭으로 다운로드 시간을 추정합니다.", "download time bandwidth", "gaming-calculators.html#download-time"],
     ["game", "RAID", "RAID 용량 계산기", "RAID 0·1·5·6·10의 사용 가능 용량을 계산합니다.", "raid calculator storage", "gaming-calculators.html#raid-calculator"],
-    ["game", "RAM", "RAM 지연시간", "메모리 속도와 CL로 실제 지연시간을 계산합니다.", "ram latency calculator", "gaming-calculators.html#ram-latency"]
+    ["game", "RAM", "RAM 지연시간", "메모리 속도와 CL로 실제 지연시간을 계산합니다.", "ram latency calculator", "gaming-calculators.html#ram-latency"],
+    ["game", "SND", "사운드 테스트", "좌·우·중앙 채널로 테스트 톤을 재생합니다.", "sound speaker tone", "device-diagnostics.html#sound-test"],
+    ["game", "BASS", "저음 테스트", "낮은 주파수 톤으로 저음 응답을 확인합니다.", "bass low frequency", "device-diagnostics.html#bass-test"],
+    ["game", "Hz", "주파수 응답", "고정 톤과 주파수 스윕을 재생합니다.", "frequency response sweep", "device-diagnostics.html#frequency-test"],
+    ["game", "L/R", "헤드폰 채널", "좌우 채널 분리와 방향을 확인합니다.", "headphone left right channel", "device-diagnostics.html#headphone-test"],
+    ["game", "360", "서라운드 이동감", "스테레오 팬 이동으로 공간감을 확인합니다.", "surround stereo panner", "device-diagnostics.html#surround-test"],
+    ["game", "MIC", "마이크·데시벨", "마이크 입력 레벨과 상대 dBFS를 측정합니다.", "microphone decibel meter", "device-diagnostics.html#microphone-test"],
+    ["game", "CAM", "웹캠 테스트", "브라우저 카메라 미리보기와 캡처를 실행합니다.", "webcam camera test", "device-diagnostics.html#webcam-test"],
+    ["game", "PAD", "게임패드 테스트", "컨트롤러 버튼과 축 상태를 확인합니다.", "gamepad controller tester", "device-diagnostics.html#gamepad-test"],
+    ["game", "TOUCH", "터치스크린 테스트", "터치와 포인터 입력 위치를 캔버스에 기록합니다.", "touchscreen pointer test", "device-diagnostics.html#touchscreen-test"],
+    ["game", "ACC", "가속도계 테스트", "DeviceMotion 값을 표시합니다.", "accelerometer motion sensor", "device-diagnostics.html#accelerometer-test"],
+    ["game", "GYRO", "자이로스코프 테스트", "DeviceOrientation 값을 표시합니다.", "gyroscope orientation sensor", "device-diagnostics.html#gyroscope-test"],
+    ["game", "VIB", "진동 테스트", "지원 기기의 Vibration API를 테스트합니다.", "vibration haptic test", "device-diagnostics.html#vibration-test"]
   ];
 
   const categoryLabels = {

@@ -128,6 +128,7 @@
       '<p class="nav-title">게임 · 장치 테스트</p>',
       navLink(`${prefix}tools/gaming-lab.html`, "12", "게임 테스트 랩"),
       navLink(`${prefix}tools/gaming-calculators.html`, "12", "게임 계산기 랩"),
+      navLink(`${prefix}tools/device-diagnostics.html`, "12", "장치 진단 랩"),
       '<p class="nav-title">생활 계산기</p>',
       navGroup("나이 · 띠", [
         [`${life}#age-calculator`, "나이·만나이 계산기"],

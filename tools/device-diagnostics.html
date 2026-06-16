@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>오디오·카메라·센서 진단 도구 - SolForge</title>
+    <meta name="description" content="사운드, 저음, 주파수, 헤드폰, 서라운드, 마이크, 웹캠, 게임패드, 터치스크린, 가속도계, 자이로스코프, 진동을 브라우저에서 정적으로 테스트합니다.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.pages.dev/tools/device-diagnostics.html">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-3">
+  </head>
+  <body data-page="device-diagnostics">
+    <a class="skip-link" href="#main">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small>Device Diagnostics</small></span></a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card"><strong>권한 기반</strong><span>카메라와 마이크는 사용자가 시작 버튼을 누를 때만 요청합니다.</span></div>
+      </aside>
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보"><a href="../features.html" data-top-link>기능소개</a><a href="../about.html" data-top-link>사이트소개</a><a href="../privacy.html" data-top-link>개인정보처리방침</a></nav>
+          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+        </header>
+
+        <section class="page-hero compact-hero gaming-hero">
+          <div><p class="eyebrow">Static Device Diagnostics</p><h1>오디오와 입력 장치를 브라우저에서 점검하세요.</h1><p>스피커, 헤드폰, 마이크, 웹캠, 게임패드, 터치, 모션 센서, 진동 API를 서버 없이 로컬에서 확인합니다.</p></div>
+          <div class="hero-panel"><div class="metric-card"><strong>12</strong><span>장치 진단</span></div><div class="metric-card"><strong>HTTPS</strong><span>권한 API 권장</span></div></div>
+        </section>
+
+        <section class="utility-workbench">
+          <aside class="utility-picker" aria-label="진단 도구 선택">
+            <label class="utility-search"><span>도구 검색</span><input id="deviceSearch" type="search" placeholder="예: 마이크, 웹캠, 게임패드"></label>
+            <div class="utility-category-tabs" role="group" aria-label="진단 분류">
+              <button type="button" class="active" data-device-filter="all">전체</button>
+              <button type="button" data-device-filter="audio">오디오</button>
+              <button type="button" data-device-filter="input">입력장치</button>
+              <button type="button" data-device-filter="sensor">센서</button>
+            </div>
+            <nav class="utility-tool-list">
+              <button type="button" data-device-target="sound-test" data-category="audio" data-keywords="sound speaker tone"><b>SND</b><span><strong>사운드 테스트</strong><small>좌·우·중앙 톤</small></span></button>
+              <button type="button" data-device-target="bass-test" data-category="audio" data-keywords="bass low frequency"><b>BASS</b><span><strong>저음 테스트</strong><small>40~120Hz 톤</small></span></button>
+              <button type="button" data-device-target="frequency-test" data-category="audio" data-keywords="frequency response sweep"><b>Hz</b><span><strong>주파수 응답</strong><small>톤·스윕 테스트</small></span></button>
+              <button type="button" data-device-target="headphone-test" data-category="audio" data-keywords="headphone left right channel"><b>L/R</b><span><strong>헤드폰 채널</strong><small>좌우 분리 확인</small></span></button>
+              <button type="button" data-device-target="surround-test" data-category="audio" data-keywords="surround stereo panner"><b>360</b><span><strong>서라운드 이동감</strong><small>좌우 팬 이동</small></span></button>
+              <button type="button" data-device-target="microphone-test" data-category="audio" data-keywords="microphone decibel meter"><b>MIC</b><span><strong>마이크·데시벨</strong><small>입력 레벨 측정</small></span></button>
+              <button type="button" data-device-target="webcam-test" data-category="input" data-keywords="webcam camera test"><b>CAM</b><span><strong>웹캠 테스트</strong><small>카메라 미리보기</small></span></button>
+              <button type="button" data-device-target="gamepad-test" data-category="input" data-keywords="gamepad controller tester"><b>PAD</b><span><strong>게임패드 테스트</strong><small>버튼·축 상태</small></span></button>
+              <button type="button" data-device-target="touchscreen-test" data-category="input" data-keywords="touchscreen pointer test"><b>TOUCH</b><span><strong>터치스크린 테스트</strong><small>터치 포인트 추적</small></span></button>
+              <button type="button" data-device-target="accelerometer-test" data-category="sensor" data-keywords="accelerometer motion sensor"><b>ACC</b><span><strong>가속도계 테스트</strong><small>DeviceMotion</small></span></button>
+              <button type="button" data-device-target="gyroscope-test" data-category="sensor" data-keywords="gyroscope orientation sensor"><b>GYRO</b><span><strong>자이로스코프 테스트</strong><small>DeviceOrientation</small></span></button>
+              <button type="button" data-device-target="vibration-test" data-category="sensor" data-keywords="vibration haptic test"><b>VIB</b><span><strong>진동 테스트</strong><small>Vibration API</small></span></button>
+            </nav>
+            <p class="utility-empty" id="deviceEmpty" hidden>일치하는 진단 도구가 없습니다.</p>
+          </aside>
+
+          <div class="utility-stage">
+            <article class="utility-panel active" id="sound-test" data-device-panel>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>사운드 테스트</h2><p>좌·우·중앙 채널로 짧은 테스트 톤을 재생합니다.</p></div></div>
+              <div class="button-row"><button type="button" class="primary-link" data-tone="440" data-pan="-1">왼쪽</button><button type="button" class="primary-link" data-tone="440" data-pan="0">중앙</button><button type="button" class="primary-link" data-tone="440" data-pan="1">오른쪽</button></div>
+              <p class="validation-message" id="soundStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="bass-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>저음 테스트</h2><p>낮은 주파수 톤으로 스피커나 헤드폰의 저음 응답을 확인합니다.</p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="bassFrequency">주파수(Hz)</label><input id="bassFrequency" type="range" min="30" max="160" value="80"></div><div class="form-row"><label for="bassDuration">재생 시간(초)</label><input id="bassDuration" type="number" min="1" max="10" value="2"></div></div>
+              <button type="button" class="primary-link" id="playBass">저음 재생</button><p class="validation-message" id="bassStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="frequency-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>주파수 응답</h2><p>고정 톤 또는 100Hz~10kHz 스윕으로 출력 범위를 확인합니다.</p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="freqTone">톤(Hz)</label><input id="freqTone" type="number" min="20" max="20000" value="1000"></div></div>
+              <div class="button-row"><button type="button" class="primary-link" id="playFrequency">톤 재생</button><button type="button" class="ghost-button" id="playSweep">스윕 재생</button></div><p class="validation-message" id="freqStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="headphone-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>헤드폰 채널</h2><p>좌우 채널이 뒤바뀌지 않았는지 확인합니다.</p></div></div>
+              <div class="button-row"><button type="button" class="primary-link" data-tone="660" data-pan="-1">왼쪽 채널</button><button type="button" class="primary-link" data-tone="660" data-pan="1">오른쪽 채널</button><button type="button" class="ghost-button" id="playAlternating">좌우 번갈아 재생</button></div>
+              <p class="validation-message" id="headphoneStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="surround-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>서라운드 이동감</h2><p>스테레오 팬을 좌우로 움직여 공간감을 확인합니다.</p></div></div>
+              <button type="button" class="primary-link" id="playSurround">좌우 이동 재생</button><p class="validation-message" id="surroundStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="microphone-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">오디오</p><h2>마이크·데시벨</h2><p>마이크 입력 레벨을 실시간으로 측정합니다. 절대 dB SPL이 아닌 브라우저 입력 기준 상대값입니다.</p></div><button type="button" class="primary-link" id="startMic">마이크 시작</button></div>
+              <div class="device-meter"><span id="micMeter"></span></div><div class="stat-grid" id="micStats"></div><button type="button" class="ghost-button" id="stopMic">중지</button>
+            </article>
+
+            <article class="utility-panel" id="webcam-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">입력장치</p><h2>웹캠 테스트</h2><p>브라우저 권한을 허용하면 카메라 미리보기를 표시합니다.</p></div><button type="button" class="primary-link" id="startWebcam">웹캠 시작</button></div>
+              <video id="webcamVideo" class="device-video" playsinline muted autoplay></video><div class="button-row"><button type="button" class="ghost-button" id="captureWebcam">캡처</button><button type="button" class="ghost-button" id="stopWebcam">중지</button></div><canvas id="webcamCanvas" class="display-canvas" width="640" height="360"></canvas><p class="validation-message" id="webcamStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="gamepad-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">입력장치</p><h2>게임패드 테스트</h2><p>컨트롤러를 연결하고 아무 버튼이나 누르면 상태가 표시됩니다.</p></div><button type="button" class="primary-link" id="scanGamepad">스캔</button></div>
+              <div class="result-panel" id="gamepadResult"></div>
+            </article>
+
+            <article class="utility-panel" id="touchscreen-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">입력장치</p><h2>터치스크린 테스트</h2><p>터치나 포인터 입력 위치를 캔버스에 기록합니다.</p></div><button type="button" class="ghost-button" id="clearTouch">지우기</button></div>
+              <canvas id="touchCanvas" class="display-canvas" width="900" height="420"></canvas><div class="stat-grid" id="touchStats"></div>
+            </article>
+
+            <article class="utility-panel" id="accelerometer-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">센서</p><h2>가속도계 테스트</h2><p>지원 브라우저에서 DeviceMotion 값을 읽습니다.</p></div><button type="button" class="primary-link" id="startMotion">모션 시작</button></div>
+              <div class="stat-grid" id="motionStats"></div><p class="validation-message" id="motionStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="gyroscope-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">센서</p><h2>자이로스코프 테스트</h2><p>지원 브라우저에서 alpha, beta, gamma 방향 값을 표시합니다.</p></div><button type="button" class="primary-link" id="startGyro">자이로 시작</button></div>
+              <div class="stat-grid" id="gyroStats"></div><p class="validation-message" id="gyroStatus"></p>
+            </article>
+
+            <article class="utility-panel" id="vibration-test" data-device-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow">센서</p><h2>진동 테스트</h2><p>지원 기기에서 Vibration API 패턴을 실행합니다.</p></div></div>
+              <div class="button-row"><button type="button" class="primary-link" data-vibration="120">짧게</button><button type="button" class="primary-link" data-vibration="300">길게</button><button type="button" class="ghost-button" data-vibration="pattern">패턴</button></div><p class="validation-message" id="vibrationStatus"></p>
+            </article>
+          </div>
+        </section>
+
+        <footer class="footer"><p>© 2026 SolForge. Device diagnostics run locally.</p><div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../privacy.html">개인정보처리방침</a></div></footer>
+      </main>
+    </div>
+    <script src="../assets/js/app.js?v=20260616-3"></script>
+    <script src="../assets/js/device-diagnostics.js?v=20260616-3"></script>
+  </body>
+</html>

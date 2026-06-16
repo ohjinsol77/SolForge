@@ -4,7 +4,7 @@
   "private": true,
   "description": "Static developer, text, media and Korean life tools.",
   "scripts": {
-    "check": "node --check assets/js/app.js && node --check assets/js/tool-catalog.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/advanced-tools.mjs && node --check assets/js/gaming-lab.js && node --check assets/js/gaming-calculators.js && node --check public/assets/js/app.js && node --check public/assets/js/tool-catalog.js && node --check public/assets/js/utility-tools.js && node --check public/assets/js/file-media-tools.js && node --check public/assets/js/advanced-tools.mjs && node --check public/assets/js/gaming-lab.js && node --check public/assets/js/gaming-calculators.js",
+    "check": "node --check assets/js/app.js && node --check assets/js/tool-catalog.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/advanced-tools.mjs && node --check assets/js/gaming-lab.js && node --check assets/js/gaming-calculators.js && node --check assets/js/device-diagnostics.js && node --check public/assets/js/app.js && node --check public/assets/js/tool-catalog.js && node --check public/assets/js/utility-tools.js && node --check public/assets/js/file-media-tools.js && node --check public/assets/js/advanced-tools.mjs && node --check public/assets/js/gaming-lab.js && node --check public/assets/js/gaming-calculators.js && node --check public/assets/js/device-diagnostics.js",
     "deploy": "wrangler deploy"
   },
   "dependencies": {
