@@ -230,18 +230,42 @@
   function clickCounter(padSelector, statsSelector, resetSelector) {
     let count = 0;
     let first = 0;
+    let timer = null;
+    let finished = false;
+    const limit = 5;
     $(padSelector).addEventListener("keydown", (event) => {
       event.preventDefault();
-      if (!first) first = performance.now();
+      if (finished) return;
+      if (!first) {
+        first = performance.now();
+        $(padSelector).textContent = "측정 중입니다.";
+        timer = window.setInterval(() => {
+          const elapsed = (performance.now() - first) / 1000;
+          const remaining = Math.max(0, limit - elapsed);
+          renderStats(statsSelector, [["입력", count], ["KPS", elapsed ? (count / elapsed).toFixed(2) : "0.00"], ["남은 시간", `${remaining.toFixed(1)}초`]]);
+          if (elapsed >= limit) {
+            window.clearInterval(timer);
+            finished = true;
+            $(padSelector).classList.add("finished");
+            $(padSelector).textContent = "결과를 유지합니다. 다시 측정하려면 초기화를 누르세요.";
+            renderStats(statsSelector, [["입력", count], ["KPS", (count / limit).toFixed(2)], ["상태", "완료"]]);
+          }
+        }, 80);
+      }
       count += 1;
       const elapsed = Math.max(0.1, (performance.now() - first) / 1000);
-      renderStats(statsSelector, [["입력", count], ["KPS", (count / elapsed).toFixed(2)], ["마지막", event.code]]);
+      renderStats(statsSelector, [["입력", count], ["KPS", (count / elapsed).toFixed(2)], ["남은 시간", `${Math.max(0, limit - elapsed).toFixed(1)}초`]]);
     });
     $(resetSelector).addEventListener("click", () => {
       count = 0;
       first = 0;
-      renderStats(statsSelector, [["입력", 0], ["KPS", "0.00"], ["마지막", "-"]]);
+      finished = false;
+      window.clearInterval(timer);
+      $(padSelector).classList.remove("finished");
+      $(padSelector).textContent = "키를 누르세요.";
+      renderStats(statsSelector, [["입력", 0], ["KPS", "0.00"], ["상태", "대기"]]);
     });
+    renderStats(statsSelector, [["입력", 0], ["KPS", "0.00"], ["상태", "대기"]]);
   }
 
   function latencyTool(startSelector, padSelector, statsSelector, eventName) {
@@ -338,13 +362,27 @@
   function driftTool() {
     let measuring = false;
     let moves = 0;
+    let startedAt = 0;
+    let timer = null;
     $("#startDrift").addEventListener("click", () => {
       measuring = true;
       moves = 0;
+      startedAt = performance.now();
+      setProgress("driftProgress", "#driftStats", "드리프트 측정 진행률", 0);
       renderStats("#driftStats", [["이동 이벤트", 0], ["상태", "측정 중"]]);
+      window.clearInterval(timer);
+      timer = window.setInterval(() => {
+        const percent = (performance.now() - startedAt) / 5000 * 100;
+        setProgress("driftProgress", "#driftStats", "드리프트 측정 진행률", percent);
+        if (percent >= 100) {
+          window.clearInterval(timer);
+        }
+      }, 80);
       window.setTimeout(() => {
         measuring = false;
+        window.clearInterval(timer);
         renderStats("#driftStats", [["이동 이벤트", moves], ["상태", "완료"]]);
+        setProgress("driftProgress", "#driftStats", "드리프트 측정 완료", 100);
       }, 5000);
     });
     $("#driftZone").addEventListener("pointermove", () => {
@@ -437,6 +475,23 @@
 
   function renderStats(selector, rows) {
     $(selector).innerHTML = rows.map(([label, value]) => `<div class="stat-card"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`).join("");
+  }
+
+  function setProgress(id, anchorSelector, label, percent) {
+    const anchor = $(anchorSelector);
+    let panel = document.getElementById(id);
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = id;
+      panel.className = "progress-panel";
+      panel.innerHTML = '<header><span></span><strong>0%</strong></header><div class="progress-track"><span></span></div>';
+      anchor.insertAdjacentElement("afterend", panel);
+    }
+    const safePercent = Math.min(100, Math.max(0, percent));
+    panel.hidden = false;
+    panel.querySelector("header span").textContent = label;
+    panel.querySelector("header strong").textContent = `${Math.round(safePercent)}%`;
+    panel.querySelector(".progress-track span").style.setProperty("--progress", `${safePercent}%`);
   }
 
   function avg(values) {

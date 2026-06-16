@@ -7,7 +7,7 @@
     <meta name="description" content="CPU, GPU, RAM, 대역폭, 마우스 DPI 실측, 번인 패턴, 해상도, WebRTC 후보 확인을 정적 브라우저 도구로 실행합니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/performance-lab.html">
-    <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-6">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-7">
   </head>
   <body data-page="performance-lab">
     <a class="skip-link" href="#main">본문으로 이동</a>
@@ -49,7 +49,7 @@
             <article class="utility-panel" id="gpu-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">성능</p><h2>GPU·Canvas 부하</h2><p>움직이는 입자를 그려 Canvas 렌더링 FPS를 추정합니다.</p></div><button type="button" class="primary-link" id="runGpuTest">실행</button></div><canvas id="gpuCanvas" class="display-canvas" width="900" height="420"></canvas><div class="stat-grid" id="gpuStats"></div></article>
             <article class="utility-panel" id="ram-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">성능</p><h2>RAM 메모리 테스트</h2><p>선택한 크기의 메모리를 할당하고 간단한 쓰기/검증을 수행합니다.</p></div><button type="button" class="primary-link" id="runRamTest">실행</button></div><div class="inline-fields"><div class="form-row"><label for="ramTestSize">할당 크기(MB)</label><input id="ramTestSize" type="number" min="4" max="256" value="64"></div></div><div class="stat-grid" id="ramTestStats"></div></article>
             <article class="utility-panel" id="bandwidth-calculator" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">네트워크</p><h2>대역폭 계산기</h2><p>파일 크기, 전송 시간, 속도 중 필요한 값을 계산합니다.</p></div></div><div class="inline-fields"><div class="form-row"><label for="bwSize">전송량</label><input id="bwSize" type="number" value="10"></div><div class="form-row"><label for="bwUnit">단위</label><select id="bwUnit"><option value="1">MB</option><option value="1024" selected>GB</option><option value="1048576">TB</option></select></div><div class="form-row"><label for="bwMbps">속도(Mbps)</label><input id="bwMbps" type="number" value="1000"></div></div><div class="compact-result" id="bwResult"></div></article>
-            <article class="utility-panel" id="mouse-dpi-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>마우스 DPI 실측</h2><p>마우스를 실제 거리만큼 움직였을 때 브라우저 픽셀 이동량으로 DPI를 추정합니다.</p></div><button type="button" class="ghost-button" id="resetDpiTrace">초기화</button></div><div class="inline-fields"><div class="form-row"><label for="dpiCm">이동 거리(cm)</label><input id="dpiCm" type="number" min="1" step="0.1" value="10"></div></div><div class="gaming-motion-zone" id="dpiTraceZone">클릭 후 지정 거리만큼 수평 이동하세요.</div><div class="stat-grid" id="dpiTraceStats"></div></article>
+            <article class="utility-panel" id="mouse-dpi-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">마우스</p><h2>마우스 DPI 실측</h2><p>마우스를 실제 거리만큼 움직였을 때 브라우저 픽셀 이동량으로 DPI를 추정합니다.</p></div><div class="button-row"><button type="button" class="primary-link" id="startDpiTraceButton">측정 시작</button><button type="button" class="ghost-button" id="resetDpiTrace">초기화</button></div></div><div class="inline-fields"><div class="form-row"><label for="dpiCm">이동 거리(cm)</label><input id="dpiCm" type="number" min="1" step="0.1" value="10"></div></div><div class="gaming-motion-zone" id="dpiTraceZone">측정 시작을 누른 뒤 지정 거리만큼 수평 이동하세요.</div><div class="stat-grid" id="dpiTraceStats"></div></article>
             <article class="utility-panel" id="burn-in-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">화면</p><h2>번인 패턴</h2><p>강한 색상 순환 패턴입니다. 장시간 켜두지 말고 짧게 확인하세요.</p></div><button type="button" class="primary-link" id="toggleBurnIn">시작</button></div><canvas id="burnCanvas" class="display-canvas" width="960" height="540"></canvas></article>
             <article class="utility-panel" id="resolution-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">환경</p><h2>해상도 테스트</h2><p>현재 브라우저와 화면 정보를 표시합니다.</p></div><button type="button" class="primary-link" id="refreshResolution">새로고침</button></div><div class="stat-grid" id="resolutionStats"></div></article>
             <article class="utility-panel" id="webrtc-test" data-perf-panel hidden><div class="utility-panel-heading"><div><p class="eyebrow">환경</p><h2>WebRTC 후보 확인</h2><p>외부 STUN 서버 없이 브라우저가 노출하는 로컬 ICE 후보만 확인합니다.</p></div><button type="button" class="primary-link" id="runRtcTest">확인</button></div><textarea id="rtcOutput" class="utility-textarea compact-textarea" readonly></textarea></article>
@@ -60,6 +60,6 @@
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260616-6"></script>
-    <script src="../assets/js/performance-lab.js?v=20260616-6"></script>
+    <script src="../assets/js/performance-lab.js?v=20260616-7"></script>
   </body>
 </html>

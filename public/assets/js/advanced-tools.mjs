@@ -403,7 +403,7 @@ function initMagicEye() {
     const width = Math.max(320, Math.min(1200, Number($("#magicWidth").value) || 720));
     const height = Math.round(width * 0.55);
     const separation = Math.max(54, Math.round(width / 8));
-    const depth = Number($("#magicDepth").value) || 12;
+    const depth = Math.max(4, Math.min(24, Number($("#magicDepth").value) || 12));
     const text = $("#magicText").value.trim() || "SF";
     const depthCanvas = document.createElement("canvas");
     depthCanvas.width = width;
@@ -417,6 +417,13 @@ function initMagicEye() {
     depthContext.textBaseline = "middle";
     depthContext.fillText(text, width / 2, height / 2);
     const mask = depthContext.getImageData(0, 0, width, height).data;
+    const previewCanvas = $("#magicDepthCanvas");
+    previewCanvas.width = 320;
+    previewCanvas.height = Math.round(320 * height / width);
+    const previewContext = previewCanvas.getContext("2d");
+    previewContext.fillStyle = "#0f172a";
+    previewContext.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+    previewContext.drawImage(depthCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
 
     const canvas = $("#magicCanvas");
     canvas.width = width;
@@ -430,7 +437,7 @@ function initMagicEye() {
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
         const masked = mask[(y * width + x) * 4] > 100;
-        const shift = masked ? depth : 0;
+        const shift = masked ? Math.round(depth * 1.8) : 0;
         const sourceX = x < separation ? x : Math.max(0, x - separation + shift);
         const color = x < separation ? pattern[y][x] : [
           image.data[(y * width + sourceX) * 4],

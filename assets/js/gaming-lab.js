@@ -87,33 +87,39 @@
     let start = 0;
     let timer = null;
     let running = false;
+    let finished = false;
 
     const render = () => {
       const limit = clamp(Number(secondsInput.value) || 5, 1, 60);
-      const elapsed = running ? Math.min(limit, (performance.now() - start) / 1000) : 0;
-      const remaining = running ? Math.max(0, limit - elapsed) : limit;
+      const elapsed = running ? Math.min(limit, (performance.now() - start) / 1000) : finished ? limit : 0;
+      const remaining = running ? Math.max(0, limit - elapsed) : finished ? 0 : limit;
       output.innerHTML = [
         stat("클릭", count),
         stat("CPS", elapsed > 0 ? (count / elapsed).toFixed(2) : "0.00"),
         stat("남은 시간", `${remaining.toFixed(1)}초`)
       ].join("");
-      pad.querySelector("strong").textContent = running ? `${count}회` : "클릭해서 시작";
+      if (running) pad.querySelector("strong").textContent = `${count}회`;
+      else if (!finished) pad.querySelector("strong").textContent = kind === "right" ? "우클릭해서 시작" : "클릭해서 시작";
     };
 
     const finish = () => {
       running = false;
+      finished = true;
       window.clearInterval(timer);
       const limit = clamp(Number(secondsInput.value) || 5, 1, 60);
       const cps = count / limit;
+      pad.classList.add("finished");
       pad.querySelector("strong").textContent = `${cps.toFixed(2)} CPS`;
-      pad.querySelector("span").textContent = "다시 클릭하면 새 측정을 시작합니다.";
+      pad.querySelector("span").textContent = "결과를 유지합니다. 다시 측정하려면 초기화를 누르세요.";
       render();
     };
 
     const reset = () => {
       count = 0;
       running = false;
+      finished = false;
       window.clearInterval(timer);
+      pad.classList.remove("finished");
       pad.querySelector("strong").textContent = kind === "right" ? "우클릭해서 시작" : "클릭해서 시작";
       pad.querySelector("span").textContent = kind === "right" ? "오른쪽 버튼만 카운트합니다." : "좌클릭만 카운트합니다.";
       render();
@@ -122,6 +128,7 @@
     pad.addEventListener(eventName, (event) => {
       event.preventDefault();
       if (!validEvent(event)) return;
+      if (finished) return;
       const limit = clamp(Number(secondsInput.value) || 5, 1, 60);
       if (!running) {
         count = 0;
@@ -255,21 +262,28 @@
     let start = 0;
     let timer = null;
     let running = false;
+    let finished = false;
     const render = () => {
       const limit = clamp(Number($("#spacebarSeconds").value) || 5, 1, 60);
-      const elapsed = running ? Math.min(limit, (performance.now() - start) / 1000) : 0;
+      const elapsed = running ? Math.min(limit, (performance.now() - start) / 1000) : finished ? limit : 0;
       $("#spacebarStats").innerHTML = [
         stat("입력", count),
         stat("SPS", elapsed ? (count / elapsed).toFixed(2) : "0.00"),
-        stat("남은 시간", `${(running ? Math.max(0, limit - elapsed) : limit).toFixed(1)}초`)
+        stat("남은 시간", `${(running ? Math.max(0, limit - elapsed) : finished ? 0 : limit).toFixed(1)}초`)
       ].join("");
     };
     const finish = () => {
       running = false;
+      finished = true;
       window.clearInterval(timer);
+      const limit = clamp(Number($("#spacebarSeconds").value) || 5, 1, 60);
+      $("#spacebarPad").classList.add("finished");
+      $("#spacebarPad").querySelector("strong").textContent = `${(count / limit).toFixed(2)} SPS`;
+      $("#spacebarPad").querySelector("span").textContent = "결과를 유지합니다. 다시 측정하려면 초기화를 누르세요.";
       render();
     };
     const hit = () => {
+      if (finished) return;
       const limit = clamp(Number($("#spacebarSeconds").value) || 5, 1, 60);
       if (!running) {
         count = 0;
@@ -293,7 +307,11 @@
     $("#resetSpacebar").addEventListener("click", () => {
       count = 0;
       running = false;
+      finished = false;
       window.clearInterval(timer);
+      $("#spacebarPad").classList.remove("finished");
+      $("#spacebarPad").querySelector("strong").textContent = "Space 입력";
+      $("#spacebarPad").querySelector("span").textContent = "버튼 포커스 후 스페이스바를 누르세요.";
       render();
     });
     render();

@@ -199,7 +199,7 @@
     const mb = positive("#fileSize") * Number($("#fileUnit").value);
     const mbps = positive("#bandwidth");
     const seconds = mb * 8 / mbps;
-    $("#downloadResult").innerHTML = resultBlock(duration(seconds), `${format(mb, 1)} MB at ${format(mbps, 1)} Mbps`, [["초", format(seconds, 1)], ["실효 80% 가정", duration(seconds / 0.8)]]);
+    $("#downloadResult").innerHTML = resultBlock(duration(seconds), `${format(mb, 1)} MB 파일 · ${format(mbps, 1)} Mbps`, [["초 단위", `${format(seconds, 1)}초`], ["실효 80% 기준", duration(seconds / 0.8)], ["초당 전송량", `${format(mbps / 8, 2)} MB/s`]]);
   }
 
   function raid() {
@@ -233,7 +233,10 @@
   }
 
   function resultBlock(title, subtitle, rows = []) {
-    return [`<strong>${escapeHtml(title)}</strong>`, `<p>${escapeHtml(subtitle)}</p>`, `<dl>${rows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`].join("");
+    return [
+      `<div class="result-main"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(subtitle)}</span></div>`,
+      rows.length ? `<dl class="result-list">${rows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : ""
+    ].join("");
   }
 
   function duration(seconds) {

@@ -4,6 +4,10 @@
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
   let burnAnimation = 0;
+  let dpiStart = null;
+  let dpiDistance = 0;
+  let dpiTracking = false;
+  let dpiArmed = false;
 
   if (document.body.matches('[data-page="performance-lab"]')) {
     initWorkbench();
@@ -45,9 +49,12 @@
     $("#runGpuTest").addEventListener("click", gpuTest);
     $("#runRamTest").addEventListener("click", ramTest);
     ["bwSize", "bwUnit", "bwMbps"].forEach((id) => document.getElementById(id).addEventListener("input", bandwidth));
+    $("#startDpiTraceButton").addEventListener("click", armDpiTrace);
     $("#resetDpiTrace").addEventListener("click", resetDpiTrace);
-    $("#dpiTraceZone").addEventListener("pointerdown", resetDpiTrace);
+    $("#dpiTraceZone").addEventListener("pointerdown", startDpiTrace);
     $("#dpiTraceZone").addEventListener("pointermove", dpiTrace);
+    $("#dpiTraceZone").addEventListener("pointerup", finishDpiTrace);
+    $("#dpiTraceZone").addEventListener("pointercancel", finishDpiTrace);
     $("#toggleBurnIn").addEventListener("click", toggleBurnIn);
     $("#refreshResolution").addEventListener("click", resolution);
     $("#runRtcTest").addEventListener("click", rtcTest);
@@ -57,24 +64,41 @@
     drawBurn(0);
   }
 
-  function cpuTest() {
+  async function cpuTest() {
+    const button = $("#runCpuTest");
+    button.disabled = true;
+    button.textContent = "진행 중";
     const start = performance.now();
     let operations = 0;
     let value = 0;
-    while (performance.now() - start < 1200) {
-      for (let i = 1; i < 5000; i += 1) value += Math.sqrt(i + value % 17);
-      operations += 5000;
+    const durationMs = 1200;
+    setProgress("cpuProgress", "#cpuStats", "CPU 계산 진행률", 0);
+    while (performance.now() - start < durationMs) {
+      for (let chunk = 0; chunk < 18; chunk += 1) {
+        for (let i = 1; i < 5000; i += 1) value += Math.sqrt(i + value % 17);
+        operations += 5000;
+      }
+      setProgress("cpuProgress", "#cpuStats", "CPU 계산 진행률", (performance.now() - start) / durationMs * 100);
+      await frame();
     }
     const elapsed = performance.now() - start;
-    renderStats("#cpuStats", [["연산", operations.toLocaleString("ko-KR")], ["시간", `${elapsed.toFixed(0)}ms`], ["점수", Math.round(operations / elapsed).toLocaleString("ko-KR")]]);
+    renderStats("#cpuStats", [["연산", operations.toLocaleString("ko-KR")], ["시간", `${elapsed.toFixed(0)}ms`], ["ms당 연산", Math.round(operations / elapsed).toLocaleString("ko-KR")]]);
+    setProgress("cpuProgress", "#cpuStats", "CPU 계산 완료", 100);
+    button.disabled = false;
+    button.textContent = "실행";
   }
 
   function gpuTest() {
+    const button = $("#runGpuTest");
+    button.disabled = true;
+    button.textContent = "진행 중";
     const canvas = $("#gpuCanvas");
     const context = canvas.getContext("2d");
     const particles = Array.from({ length: 420 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: Math.random() * 6 - 3, vy: Math.random() * 6 - 3, r: 2 + Math.random() * 7 }));
     const frames = [];
     const start = performance.now();
+    const durationMs = 1800;
+    setProgress("gpuProgress", "#gpuStats", "Canvas 렌더링 진행률", 0);
     const draw = (now) => {
       frames.push(now);
       context.fillStyle = "rgba(15, 23, 42, 0.22)";
@@ -89,45 +113,100 @@
         context.arc(particle.x, particle.y, particle.r, 0, Math.PI * 2);
         context.fill();
       }
-      if (now - start < 1800) requestAnimationFrame(draw);
-      else renderStats("#gpuStats", [["프레임", frames.length], ["추정 FPS", Math.round(frames.length / 1.8)], ["입자", particles.length]]);
+      setProgress("gpuProgress", "#gpuStats", "Canvas 렌더링 진행률", (now - start) / durationMs * 100);
+      if (now - start < durationMs) requestAnimationFrame(draw);
+      else {
+        renderStats("#gpuStats", [["프레임", frames.length], ["추정 FPS", Math.round(frames.length / (durationMs / 1000))], ["입자", particles.length]]);
+        setProgress("gpuProgress", "#gpuStats", "Canvas 렌더링 완료", 100);
+        button.disabled = false;
+        button.textContent = "실행";
+      }
     };
     requestAnimationFrame(draw);
   }
 
-  function ramTest() {
+  async function ramTest() {
+    const button = $("#runRamTest");
+    button.disabled = true;
+    button.textContent = "진행 중";
     const sizeMb = clamp(Number($("#ramTestSize").value) || 64, 4, 256);
     const start = performance.now();
     const bytes = sizeMb * 1024 * 1024;
     const buffer = new Uint8Array(bytes);
-    for (let i = 0; i < buffer.length; i += 4096) buffer[i] = i % 251;
+    setProgress("ramProgress", "#ramTestStats", "메모리 쓰기 진행률", 0);
+    for (let i = 0; i < buffer.length; i += 4096) {
+      buffer[i] = i % 251;
+      if (i % (4096 * 512) === 0) {
+        setProgress("ramProgress", "#ramTestStats", "메모리 쓰기 진행률", i / buffer.length * 50);
+        await frame();
+      }
+    }
     let checksum = 0;
-    for (let i = 0; i < buffer.length; i += 4096) checksum = (checksum + buffer[i]) % 100000;
+    for (let i = 0; i < buffer.length; i += 4096) {
+      checksum = (checksum + buffer[i]) % 100000;
+      if (i % (4096 * 512) === 0) {
+        setProgress("ramProgress", "#ramTestStats", "메모리 검증 진행률", 50 + i / buffer.length * 50);
+        await frame();
+      }
+    }
     const elapsed = performance.now() - start;
     renderStats("#ramTestStats", [["크기", `${sizeMb}MB`], ["시간", `${elapsed.toFixed(1)}ms`], ["체크섬", checksum]]);
+    setProgress("ramProgress", "#ramTestStats", "메모리 테스트 완료", 100);
+    button.disabled = false;
+    button.textContent = "실행";
   }
 
   function bandwidth() {
     const mb = positive("#bwSize") * Number($("#bwUnit").value);
     const mbps = positive("#bwMbps");
     const seconds = mb * 8 / mbps;
-    $("#bwResult").innerHTML = resultBlock(duration(seconds), `${format(mb)} MB 전송`, [["속도", `${format(mbps)} Mbps`], ["MB/s", format(mbps / 8)], ["1시간 전송량", `${format(mbps / 8 * 3600 / 1024)} GB`]]);
+    $("#bwResult").innerHTML = resultBlock(duration(seconds), `${format(mb)} MB 전송 기준`, [["대역폭", `${format(mbps)} Mbps`], ["초당 전송량", `${format(mbps / 8)} MB/s`], ["1시간 전송량", `${format(mbps / 8 * 3600 / 1024)} GB`]]);
   }
 
-  let dpiStart = null;
-  let dpiDistance = 0;
-  function resetDpiTrace(event) {
-    dpiStart = event ? { x: event.clientX, y: event.clientY } : null;
+  function resetDpiTrace() {
+    dpiStart = null;
     dpiDistance = 0;
-    renderStats("#dpiTraceStats", [["픽셀 이동", 0], ["추정 DPI", "-"]]);
+    dpiTracking = false;
+    dpiArmed = false;
+    $("#dpiTraceZone").textContent = "여기를 누른 상태로 입력한 거리만큼 수평 이동하세요.";
+    renderStats("#dpiTraceStats", [["픽셀 이동", 0], ["추정 DPI", "-"], ["상태", "대기"]]);
+  }
+
+  function armDpiTrace() {
+    dpiStart = null;
+    dpiDistance = 0;
+    dpiTracking = false;
+    dpiArmed = true;
+    $("#dpiTraceZone").textContent = "시작 지점을 누른 채 실제 거리만큼 수평 이동하세요.";
+    renderStats("#dpiTraceStats", [["픽셀 이동", 0], ["추정 DPI", "-"], ["상태", "준비됨"]]);
+  }
+
+  function startDpiTrace(event) {
+    if (!dpiArmed) armDpiTrace();
+    dpiStart = { x: event.clientX, y: event.clientY };
+    dpiDistance = 0;
+    dpiTracking = true;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    $("#dpiTraceZone").textContent = "누른 상태로 실제 거리만큼 이동한 뒤 버튼을 떼세요.";
+    renderStats("#dpiTraceStats", [["픽셀 이동", 0], ["추정 DPI", "-"], ["상태", "측정 중"]]);
   }
 
   function dpiTrace(event) {
-    if (!dpiStart) return;
+    if (!dpiStart || !dpiTracking) return;
     dpiDistance = Math.max(dpiDistance, Math.hypot(event.clientX - dpiStart.x, event.clientY - dpiStart.y));
     const inches = positive("#dpiCm") / 2.54;
     const dpi = dpiDistance / inches;
-    renderStats("#dpiTraceStats", [["픽셀 이동", Math.round(dpiDistance)], ["추정 DPI", Math.round(dpi)]]);
+    renderStats("#dpiTraceStats", [["픽셀 이동", Math.round(dpiDistance)], ["추정 DPI", Math.round(dpi)], ["상태", "측정 중"]]);
+  }
+
+  function finishDpiTrace() {
+    if (!dpiStart) return;
+    dpiTracking = false;
+    dpiArmed = false;
+    const inches = positive("#dpiCm") / 2.54;
+    const dpi = dpiDistance / inches;
+    $("#dpiTraceZone").textContent = "결과를 유지합니다. 다시 측정하려면 초기화를 누르세요.";
+    renderStats("#dpiTraceStats", [["픽셀 이동", Math.round(dpiDistance)], ["추정 DPI", dpiDistance ? Math.round(dpi) : "-"], ["상태", "완료"]]);
   }
 
   function toggleBurnIn() {
@@ -196,8 +275,29 @@
     $(selector).innerHTML = rows.map(([label, value]) => `<div class="stat-card"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`).join("");
   }
 
+  function setProgress(id, anchorSelector, label, percent) {
+    const anchor = $(anchorSelector);
+    let panel = document.getElementById(id);
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = id;
+      panel.className = "progress-panel";
+      panel.innerHTML = '<header><span></span><strong>0%</strong></header><div class="progress-track"><span></span></div>';
+      anchor.insertAdjacentElement("afterend", panel);
+    }
+    const safePercent = clamp(percent, 0, 100);
+    panel.hidden = false;
+    panel.querySelector("header span").textContent = label;
+    panel.querySelector("header strong").textContent = `${Math.round(safePercent)}%`;
+    panel.querySelector(".progress-track span").style.setProperty("--progress", `${safePercent}%`);
+  }
+
   function resultBlock(title, subtitle, rows) {
-    return `<strong>${escapeHtml(title)}</strong><p>${escapeHtml(subtitle)}</p><dl>${rows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`;
+    return `<div class="result-main"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(subtitle)}</span></div><dl class="result-list">${rows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`;
+  }
+
+  function frame() {
+    return new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
   function duration(seconds) {
