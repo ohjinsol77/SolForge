@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SolForge - 필요한 도구를 빠르게</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#005ac2",
+                    "on-surface": "#e1e2ec",
+                    "on-error": "#690005",
+                    "surface-variant": "#32353c",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "background": "#10131a",
+                    "on-surface-variant": "#c2c6d6",
+                    "surface-tint": "#adc6ff",
+                    "surface-container-highest": "#32353c",
+                    "tertiary": "#ffb786",
+                    "error-container": "#93000a",
+                    "secondary": "#b1c6f9",
+                    "tertiary-fixed": "#ffdcc6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "inverse-on-surface": "#2e3038",
+                    "secondary-container": "#304671",
+                    "error": "#ffb4ab",
+                    "inverse-surface": "#e1e2ec",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "tertiary-container": "#df7412",
+                    "on-primary-fixed": "#001a42",
+                    "surface-dim": "#10131a",
+                    "outline": "#8c909f",
+                    "primary": "#adc6ff",
+                    "on-secondary-container": "#9fb5e7",
+                    "surface-bright": "#363941",
+                    "surface": "#10131a",
+                    "secondary-fixed": "#d8e2ff",
+                    "surface-container-lowest": "#0b0e15",
+                    "on-secondary": "#182f59",
+                    "on-background": "#e1e2ec",
+                    "outline-variant": "#424754",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#001a42",
+                    "on-primary": "#002e6a",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-container": "#4d8eff",
+                    "surface-container": "#1d2027",
+                    "on-tertiary": "#502400",
+                    "on-tertiary-container": "#461f00",
+                    "surface-container-low": "#191b23",
+                    "surface-container-high": "#272a31",
+                    "on-primary-fixed-variant": "#004395",
+                    "on-secondary-fixed-variant": "#304671",
+                    "on-tertiary-fixed": "#311400",
+                    "on-primary-container": "#00285d",
+                    "secondary-fixed-dim": "#b1c6f9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "gutter": "24px",
+                    "lg": "24px",
+                    "container-max": "1440px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Geist", "sans-serif"],
+                    "code-sm": ["JetBrains Mono", "monospace"],
+                    "label-md": ["Geist", "sans-serif"],
+                    "headline-sm": ["Geist", "sans-serif"],
+                    "display-lg": ["Geist", "sans-serif"],
+                    "body-md": ["Geist", "sans-serif"],
+                    "headline-md": ["Geist", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist-font@latest/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist-font@latest/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'JetBrains Mono';
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@latest/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #10131a;
+            color: #e1e2ec;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+
+        .glass-sidebar {
+            background: rgba(16, 19, 26, 0.6);
+            backdrop-filter: blur(20px);
+        }
+
+        .tool-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tool-card:hover {
+            border-color: #3F3F46;
+            background-color: #1d2027;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #32353c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary/30">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] border-r border-outline-variant bg-surface-container-low dark:bg-surface-container-lowest flex flex-col py-6 px-4 gap-2 z-50">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-surface">SolForge</h1>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">브라우저 도구</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 custom-scrollbar overflow-y-auto">
+<div class="px-2 mb-2">
+<p class="text-[11px] font-bold text-outline uppercase tracking-wider mb-2">기능 메뉴</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-primary dark:text-primary font-bold border-l-2 border-primary bg-secondary-container/10 transition-transform duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-md font-label-md">홈</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="text-label-md font-label-md">쿼리 정리</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">data_exploration</span>
+<span class="text-label-md font-label-md">실행계획 시각화</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span class="text-label-md font-label-md">확장 도구 모음</span>
+</a>
+</div>
+</div>
+<div class="px-2 mt-6">
+<p class="text-[11px] font-bold text-outline uppercase tracking-wider mb-2">작업 도구</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">folder</span>
+<span class="text-label-md font-label-md">파일·미디어 도구</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="text-label-md font-label-md">고급 도구</span>
+</a>
+</div>
+</div>
+<div class="px-2 mt-6">
+<p class="text-[11px] font-bold text-outline uppercase tracking-wider mb-2">게임·장치 테스트</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="text-label-md font-label-md">게임 테스트 랩</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="text-label-md font-label-md">장치 진단 랩</span>
+</a>
+</div>
+</div>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-3 px-2 py-2">
+<img alt="User" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqpAnwnndVdO4XNdO0MRHUdi1Vu02jxTkEFeuWVbasVhopwrhIIvE_tPvlJEIl1CQlu5m1ENCBs7Dq1VVfAHbSt_I3iEznmkUOnlHrpUcDuQdYhluGt5GlEZoocuvhkHJnN2xqIoSUbMMf4Ken7me8Li2dCSqhM7V3YE_meFoOtLVF0c2jGy9UuWsnZ2D2EPMCFZSaYg6fN6ByKWH8RBRSfxmygfLEiJHRNWH4xPrNNjc_5rQ8p5Iou77gW9iEc8XWr3zkC6SIVsQ"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-label-md font-bold text-on-surface truncate">Dev_Admin</p>
+<p class="text-[10px] text-on-surface-variant truncate">Premium Account</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-240px)] z-40 bg-background/80 backdrop-blur-xl border-b border-outline-variant h-16 px-gutter flex justify-between items-center ml-[240px]">
+<div class="flex items-center gap-8">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 text-label-md" href="#">기능소개</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">사이트소개</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">개인정보처리방침</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-container-high px-3 py-1.5 rounded-lg border border-outline-variant flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+<span class="text-label-md">다크 모드</span>
+</button>
+<div class="w-px h-4 bg-outline-variant mx-1"></div>
+<button class="text-on-surface-variant hover:text-primary transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-opacity">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[240px] pt-16 min-h-screen">
+<div class="max-w-[1200px] mx-auto px-gutter py-12">
+<!-- Hero Section -->
+<section class="mb-20 text-center relative overflow-hidden py-12 rounded-xl">
+
+<div class="relative z-10">
+<h2 class="text-display-lg font-display-lg mb-6 tracking-tight">필요한 도구를 빠르게 찾아보세요</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
+                        필요한 도구를 빠르고 정확하게 찾아보세요. 개발 워크플로우를 최적화하는 스마트 유틸리티 모음.
+                    </p>
+<div class="max-w-xl mx-auto relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-[#0F0F11] border border-outline-variant rounded-xl py-4 pl-12 pr-24 focus:border-primary focus:ring-0 transition-all text-body-md" placeholder="도구, 기능, 변환기 검색..." type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+<span class="text-[10px] font-bold text-outline bg-surface-container py-1 px-2 rounded border border-outline-variant">CMD + K</span>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded-lg text-label-md font-bold hover:opacity-90 transition-opacity">검색</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Start Section -->
+<section class="mb-16">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-headline-sm font-headline-sm border-l-4 border-primary pl-4">빠른 시작</h3>
+<button class="text-primary text-label-md font-bold hover:underline">모든 도구 보기</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="tool-card bg-surface-container-low border border-outline-variant p-5 rounded-xl group cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center mb-4 text-primary transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">calculate</span>
+</div>
+<h4 class="text-label-md font-bold mb-1">만나이 계산기</h4>
+<p class="text-[11px] text-on-surface-variant">정확한 법적 나이 계산</p>
+</div>
+<div class="tool-card bg-surface-container-low border border-outline-variant p-5 rounded-xl group cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center mb-4 text-secondary transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">event_available</span>
+</div>
+<h4 class="text-label-md font-bold mb-1">D-Day 계산기</h4>
+<p class="text-[11px] text-on-surface-variant">중요 일정 디데이 관리</p>
+</div>
+<div class="tool-card bg-surface-container-low border border-outline-variant p-5 rounded-xl group cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center mb-4 text-tertiary transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">history_toggle_off</span>
+</div>
+<h4 class="text-label-md font-bold mb-1">양력·음력 변환</h4>
+<p class="text-[11px] text-on-surface-variant">정밀한 날짜 시스템 변환</p>
+</div>
+<div class="tool-card bg-surface-container-low border border-outline-variant p-5 rounded-xl group cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center mb-4 text-primary transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">code_blocks</span>
+</div>
+<h4 class="text-label-md font-bold mb-1">SQL 쿼리 정리</h4>
+<p class="text-[11px] text-on-surface-variant">가독성 높은 쿼리 포맷팅</p>
+</div>
+</div>
+</section>
+<!-- Category Grid (Bento Style) -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-headline-sm font-headline-sm border-l-4 border-primary pl-4">카테고리별 탐색</h3>
+</div>
+<div class="bento-grid">
+<!-- Featured Dev Tool Card -->
+<div class="col-span-12 md:col-span-7 row-span-2 tool-card bg-[#1A1A1E] border border-outline-variant rounded-xl p-8 flex flex-col justify-between overflow-hidden relative group">
+<div class="absolute -right-10 -bottom-10 opacity-5 transition-transform group-hover:scale-110 duration-500">
+<span class="material-symbols-outlined text-[320px]">terminal</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-3 bg-primary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-primary text-[32px]">terminal</span>
+</div>
+<div>
+<h4 class="text-headline-md font-headline-md">개발자 도구</h4>
+<p class="text-body-md text-on-surface-variant">SQL, JSON, URL, UUID, Base64</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="bg-background/40 border border-outline-variant p-3 rounded-lg text-[13px] hover:border-primary transition-colors">JSON Prettier</div>
+<div class="bg-background/40 border border-outline-variant p-3 rounded-lg text-[13px] hover:border-primary transition-colors">Base64 Encoder</div>
+<div class="bg-background/40 border border-outline-variant p-3 rounded-lg text-[13px] hover:border-primary transition-colors">UUID Generator</div>
+<div class="bg-background/40 border border-outline-variant p-3 rounded-lg text-[13px] hover:border-primary transition-colors">URL Decoder</div>
+</div>
+</div>
+<div class="mt-8 relative z-10">
+<button class="bg-primary/10 border border-primary text-primary px-6 py-2 rounded-lg text-label-md font-bold hover:bg-primary hover:text-on-primary transition-all">전체보기</button>
+</div>
+</div>
+<!-- Side Cards -->
+<div class="col-span-12 md:col-span-5 tool-card bg-surface-container-low border border-outline-variant rounded-xl p-6 flex items-start gap-4">
+<div class="p-3 bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-secondary">description</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm mb-1">텍스트 도구</h4>
+<p class="text-body-md text-on-surface-variant">글자수, 한영타, 정리, 마스킹</p>
+</div>
+</div>
+<div class="col-span-12 md:col-span-5 tool-card bg-surface-container-low border border-outline-variant rounded-xl p-6 flex items-start gap-4">
+<div class="p-3 bg-tertiary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-tertiary">folder_zip</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm mb-1">파일·미디어</h4>
+<p class="text-body-md text-on-surface-variant">이미지, 자막, 체크섬, 음성, EML</p>
+</div>
+</div>
+<!-- Bottom Cards -->
+<div class="col-span-12 md:col-span-4 tool-card bg-surface-container-low border border-outline-variant rounded-xl p-6">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<h4 class="text-headline-sm font-headline-sm">날짜·생활 계산</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">나이, D-Day, 양음력, 공휴일 등 일상 필수 계산기</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-highest rounded text-[11px]">나이</span>
+<span class="px-2 py-1 bg-surface-container-highest rounded text-[11px]">공휴일</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 tool-card bg-surface-container-low border border-outline-variant rounded-xl p-6">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary">balance</span>
+<h4 class="text-headline-sm font-headline-sm">단위·생활 도구</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">단위, BMI, 전통 무게, 로또 당첨 확률 등</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-highest rounded text-[11px]">단위변환</span>
+<span class="px-2 py-1 bg-surface-container-highest rounded text-[11px]">건강</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 tool-card bg-[#1A1A1E] border border-primary/30 rounded-xl p-6 overflow-hidden relative">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">security</span>
+<h4 class="text-headline-sm font-headline-sm">고급 도구</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">암호화, QR, GIF, ASCII, 게임, 장치 테스트</p>
+<div class="w-full h-16 border-2 border-dashed border-outline-variant rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">qr_code_2</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Latest Updates / Status Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+<div class="md:col-span-2">
+<div class="bg-[#1A1A1E] border border-outline-variant rounded-xl p-6">
+<h3 class="text-label-md font-bold uppercase tracking-widest text-primary mb-6">시스템 업데이트</h3>
+<div class="space-y-4">
+<div class="flex gap-4 items-start pb-4 border-b border-outline-variant">
+<span class="text-[12px] font-code-sm text-outline pt-1">2026.04.12</span>
+<div>
+<p class="text-body-md font-bold">SQL 쿼리 포맷터 엔진 업그레이드</p>
+<p class="text-[12px] text-on-surface-variant">PostgreSQL 및 SQLite 최신 문법 지원 추가</p>
+</div>
+</div>
+<div class="flex gap-4 items-start pb-4 border-b border-outline-variant">
+<span class="text-[12px] font-code-sm text-outline pt-1">2026.04.05</span>
+<div>
+<p class="text-body-md font-bold">새로운 GIF 변환 도구 런칭</p>
+<p class="text-[12px] text-on-surface-variant">동영상에서 고화질 GIF 생성을 위한 엔진 통합</p>
+</div>
+</div>
+<div class="flex gap-4 items-start">
+<span class="text-[12px] font-code-sm text-outline pt-1">2026.03.28</span>
+<div>
+<p class="text-body-md font-bold">암호화 라이브러리 보안 패치</p>
+<p class="text-[12px] text-on-surface-variant">AES-256-GCM 알고리즘 안정성 개선</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-6 h-full flex flex-col justify-between">
+<div>
+<h3 class="text-label-md font-bold uppercase tracking-widest text-on-surface mb-4">현재 시스템 상태</h3>
+<div class="flex items-center gap-2 mb-8">
+<div class="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse"></div>
+<span class="text-[13px] text-on-surface-variant font-medium">모든 시스템 정상 작동 중</span>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span>연산 서버 부하</span>
+<span>12%</span>
+</div>
+<div class="w-full bg-background h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-[12%] h-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span>파일 처리 대기</span>
+<span>0.2s</span>
+</div>
+<div class="w-full bg-background h-1 rounded-full overflow-hidden">
+<div class="bg-secondary w-[5%] h-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<button class="w-full border border-outline-variant text-on-surface-variant py-2 rounded-lg text-label-md hover:bg-surface-container-highest transition-colors">실시간 대시보드</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="w-full py-10 mt-xl border-t border-outline-variant bg-surface-container-lowest flex flex-col items-center justify-center gap-4 text-center ml-0 md:ml-0">
+<div class="flex flex-col items-center gap-2">
+<span class="text-label-md font-bold text-on-surface">SolForge</span>
+<p class="text-body-md font-body-md text-on-surface-variant">© 2026 SolForge. Static MySQL tools for developers.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">기능소개</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">사이트소개</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">개인정보처리방침</a>
+</div>
+<div class="mt-4 opacity-50">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span class="text-[10px] uppercase tracking-[2px]">Enterprise Grade Security</span>
+</div>
+</footer>
+</main>
+<script>
+        // Smooth scaling for tool cards on mouse enter
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Search shortcut listener
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('input[type="text"]').focus();
+            }
+        });
+    </script>
+</body></html>
