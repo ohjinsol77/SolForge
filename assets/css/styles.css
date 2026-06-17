@@ -866,12 +866,17 @@ th {
 .form-row input,
 .form-row select {
   width: 100%;
+  min-width: 0;
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
   padding: 0.55rem 0.7rem;
+}
+
+.form-row input[type="range"] {
+  margin: 0;
 }
 
 .inline-fields {
@@ -2988,7 +2993,7 @@ th {
 
 .chmod-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   gap: 0.75rem;
   margin: 0.85rem 0;
 }
@@ -3000,12 +3005,51 @@ th {
   border: 1px solid var(--line);
   border-radius: 9px;
   color: var(--muted);
+  min-width: 0;
 }
 
 .chmod-grid legend {
   padding: 0 0.35rem;
   color: var(--text);
   font-weight: 900;
+}
+
+.chmod-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+#chmod-tool,
+#password-tool {
+  max-width: 920px;
+}
+
+#chmod-tool .result-panel {
+  grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+#chmod-tool .result-main {
+  min-width: 0;
+}
+
+#chmod-tool .result-main strong,
+#chmod-tool .result-main span {
+  overflow-wrap: anywhere;
+}
+
+#password-tool .option-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+#password-tool .option-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .copy-result {
@@ -3185,6 +3229,7 @@ th {
 }
 
 .diff-output {
+  min-width: 0;
   margin-top: 1rem;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -3196,6 +3241,7 @@ th {
 .diff-summary {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
   padding: 0.65rem 0.8rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.75rem;
@@ -3214,6 +3260,8 @@ th {
   display: block;
   min-height: 1.4rem;
   padding-inline: 0.35rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .diff-add {
@@ -3771,6 +3819,7 @@ th {
   .utility-two-column,
   .stat-grid,
   .chmod-grid,
+  #chmod-tool .result-panel,
   .utility-unit-fields {
     grid-template-columns: 1fr;
   }
