@@ -161,7 +161,7 @@ function initCode() {
   $("#minifyCode").addEventListener("click", () => run(true));
   language.addEventListener("change", () => {
     const samples = {
-      json: '{"name":"SolForge","static":true,"tools":59}',
+      json: '{"name":"SolForge","static":true,"tools":60}',
       css: "body{margin:0;color:#111}.card{padding:16px;border:1px solid #ddd}",
       javascript: "function sum(a,b){const result=a+b;return result;}console.log(sum(1,2));",
       html: "<main><section><h1>SolForge</h1><p>Static tools</p></section></main>",
