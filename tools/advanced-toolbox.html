@@ -7,6 +7,7 @@
     <meta name="description" content="시간 계산, 코드 정렬·압축, Web Crypto, QR·바코드, ASCII 아트, GIF, 매직아이, 숫자야구, 바코드 스캔과 손전등을 제공하는 정적 도구입니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/advanced-toolbox.html">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231677ff'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial' font-weight='700' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-7">
   </head>
   <body data-page="advanced-toolbox">
@@ -31,17 +32,24 @@
         <section class="utility-workbench">
           <aside class="utility-picker" aria-label="도구 선택">
             <label class="utility-search"><span>도구 검색</span><input id="advancedSearch" type="search" placeholder="예: 암호화, QR, GIF"></label>
+            <div class="utility-category-tabs" role="group" aria-label="고급 도구 분류">
+              <button type="button" class="active" data-advanced-filter="all">전체</button>
+              <button type="button" data-advanced-filter="time">시간</button>
+              <button type="button" data-advanced-filter="developer">개발자</button>
+              <button type="button" data-advanced-filter="media">이미지</button>
+              <button type="button" data-advanced-filter="device">장치</button>
+            </div>
             <nav class="utility-tool-list">
-              <button type="button" data-advanced-target="time-tool" data-keywords="시간 차이 더하기 근무시간 단위"><b>TIME</b><span><strong>시간 계산기</strong><small>차이·근무·단위 변환</small></span></button>
-              <button type="button" data-advanced-target="code-tool" data-keywords="코드 정렬 압축 minify beautify"><b>{ }</b><span><strong>코드 정렬·압축</strong><small>JSON·CSS·JS·HTML</small></span></button>
-              <button type="button" data-advanced-target="crypto-tool" data-keywords="암호화 hash hmac pbkdf2 aes"><b>KEY</b><span><strong>암호화 도구</strong><small>Hash·HMAC·AES</small></span></button>
-              <button type="button" data-advanced-target="qr-barcode-tool" data-keywords="qr barcode 바코드 생성"><b>QR</b><span><strong>QR·바코드 생성</strong><small>PNG 다운로드</small></span></button>
-              <button type="button" data-advanced-target="ascii-art-tool" data-keywords="ascii art 아스키아트 텍스트 이미지"><b>TXT</b><span><strong>ASCII 아트</strong><small>텍스트·이미지 변환</small></span></button>
-              <button type="button" data-advanced-target="gif-tool" data-keywords="gif 움짤 이미지 애니메이션"><b>GIF</b><span><strong>GIF 생성기</strong><small>여러 이미지 애니메이션</small></span></button>
-              <button type="button" data-advanced-target="magic-eye-tool" data-keywords="매직아이 stereogram 입체 이미지"><b>3D</b><span><strong>매직아이 생성</strong><small>텍스트 깊이맵</small></span></button>
-              <button type="button" data-advanced-target="baseball-tool" data-keywords="숫자야구 게임 bulls cows"><b>123</b><span><strong>숫자야구</strong><small>3·4·5자리 게임</small></span></button>
-              <button type="button" data-advanced-target="scanner-tool" data-keywords="바코드 스캐너 카메라 barcode"><b>SCAN</b><span><strong>바코드 스캐너</strong><small>카메라·이미지 감지</small></span></button>
-              <button type="button" data-advanced-target="flashlight-tool" data-keywords="손전등 플래시 torch 화면"><b>LIGHT</b><span><strong>손전등</strong><small>화면·카메라 LED</small></span></button>
+              <button type="button" data-advanced-target="time-tool" data-category="time" data-keywords="시간 차이 더하기 근무시간 단위"><b>TIME</b><span><strong>시간 계산기</strong><small>차이·근무·단위 변환</small></span></button>
+              <button type="button" data-advanced-target="code-tool" data-category="developer" data-keywords="코드 정렬 압축 minify beautify"><b>{ }</b><span><strong>코드 정렬·압축</strong><small>JSON·CSS·JS·HTML</small></span></button>
+              <button type="button" data-advanced-target="crypto-tool" data-category="developer" data-keywords="암호화 hash hmac pbkdf2 aes"><b>KEY</b><span><strong>암호화 도구</strong><small>Hash·HMAC·AES</small></span></button>
+              <button type="button" data-advanced-target="qr-barcode-tool" data-category="media" data-keywords="qr barcode 바코드 생성"><b>QR</b><span><strong>QR·바코드 생성</strong><small>PNG 다운로드</small></span></button>
+              <button type="button" data-advanced-target="ascii-art-tool" data-category="media" data-keywords="ascii art 아스키아트 텍스트 이미지"><b>TXT</b><span><strong>ASCII 아트</strong><small>텍스트·이미지 변환</small></span></button>
+              <button type="button" data-advanced-target="gif-tool" data-category="media" data-keywords="gif 움짤 이미지 애니메이션"><b>GIF</b><span><strong>GIF 생성기</strong><small>여러 이미지 애니메이션</small></span></button>
+              <button type="button" data-advanced-target="magic-eye-tool" data-category="media" data-keywords="매직아이 stereogram 입체 이미지"><b>3D</b><span><strong>매직아이 생성</strong><small>텍스트 깊이맵</small></span></button>
+              <button type="button" data-advanced-target="baseball-tool" data-category="device" data-keywords="숫자야구 게임 bulls cows"><b>123</b><span><strong>숫자야구</strong><small>3·4·5자리 게임</small></span></button>
+              <button type="button" data-advanced-target="scanner-tool" data-category="device" data-keywords="바코드 스캐너 카메라 barcode"><b>SCAN</b><span><strong>바코드 스캐너</strong><small>카메라·이미지 감지</small></span></button>
+              <button type="button" data-advanced-target="flashlight-tool" data-category="device" data-keywords="손전등 플래시 torch 화면"><b>LIGHT</b><span><strong>손전등</strong><small>화면·카메라 LED</small></span></button>
             </nav>
             <p class="utility-empty" id="advancedEmpty" hidden>일치하는 도구가 없습니다.</p>
           </aside>
@@ -144,6 +152,6 @@
     <div class="toast" id="advancedToast" role="status" aria-live="polite">완료했습니다.</div>
     <script src="../assets/vendor/qrcode-generator/qrcode.js"></script>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script type="module" src="../assets/js/advanced-tools.mjs?v=20260616-8"></script>
+    <script type="module" src="../assets/js/advanced-tools.mjs?v=20260617-1"></script>
   </body>
 </html>

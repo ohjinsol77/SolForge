@@ -7,6 +7,7 @@
     <meta name="description" content="특수문자, 코드표, 색상, 텍스트 비교, 자막 변환, HTML 미리보기, 파일 체크섬, 이미지 압축, TTS, STT, EML과 키보드 이벤트 도구입니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/file-media-toolbox.html">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231677ff'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial' font-weight='700' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260612-4">
   </head>
   <body data-page="file-media-toolbox">
@@ -31,19 +32,26 @@
         <section class="utility-workbench">
           <aside class="utility-picker" aria-label="도구 선택">
             <label class="utility-search"><span>도구 검색</span><input id="mediaToolSearch" type="search" placeholder="예: 이미지, 자막, 색상"></label>
+            <div class="utility-category-tabs" role="group" aria-label="파일·미디어 분류">
+              <button type="button" class="active" data-media-filter="all">전체</button>
+              <button type="button" data-media-filter="character">문자</button>
+              <button type="button" data-media-filter="document">문서</button>
+              <button type="button" data-media-filter="media">미디어</button>
+              <button type="button" data-media-filter="developer">개발자</button>
+            </div>
             <nav class="utility-tool-list" id="mediaToolList">
-              <button type="button" data-media-target="character-map" data-keywords="특수문자 이모지 유니코드 복사"><b>★</b><span><strong>특수문자 모음</strong><small>검색·클릭 복사</small></span></button>
-              <button type="button" data-media-target="code-table" data-keywords="ascii html 코드표 문자참조"><b>ASCII</b><span><strong>ASCII·HTML 코드표</strong><small>문자 코드 검색</small></span></button>
-              <button type="button" data-media-target="color-tool" data-keywords="색상 color hex rgb hsl"><b>#</b><span><strong>색상 변환기</strong><small>HEX·RGB·HSL</small></span></button>
-              <button type="button" data-media-target="text-diff" data-keywords="텍스트 코드 비교 diff"><b>±</b><span><strong>텍스트 비교</strong><small>줄 단위 차이</small></span></button>
-              <button type="button" data-media-target="subtitle-tool" data-keywords="smi srt 자막 변환 싱크"><b>CC</b><span><strong>SMI → SRT</strong><small>자막·싱크 변환</small></span></button>
-              <button type="button" data-media-target="html-editor" data-keywords="html 웹 에디터 미리보기"><b>&lt;/&gt;</b><span><strong>HTML 미리보기</strong><small>코드 편집·실행</small></span></button>
-              <button type="button" data-media-target="checksum-tool" data-keywords="파일 체크섬 sha hash"><b>SHA</b><span><strong>파일 체크섬</strong><small>SHA 해시 계산</small></span></button>
-              <button type="button" data-media-target="image-tool" data-keywords="이미지 압축 리사이즈 data url jpg png"><b>IMG</b><span><strong>이미지 압축·Data URL</strong><small>Canvas 로컬 변환</small></span></button>
-              <button type="button" data-media-target="tts-tool" data-keywords="tts 문자 음성 읽기"><b>TTS</b><span><strong>문자 음성 변환</strong><small>브라우저 음성 합성</small></span></button>
-              <button type="button" data-media-target="stt-tool" data-keywords="stt 음성 문자 마이크"><b>STT</b><span><strong>음성 문자 변환</strong><small>브라우저 음성 인식</small></span></button>
-              <button type="button" data-media-target="eml-tool" data-keywords="eml 이메일 메일 뷰어"><b>EML</b><span><strong>EML 뷰어</strong><small>메일 파일 로컬 열기</small></span></button>
-              <button type="button" data-media-target="key-event-tool" data-keywords="키보드 이벤트 key code keycode"><b>KEY</b><span><strong>키보드 이벤트</strong><small>key·code 확인</small></span></button>
+              <button type="button" data-media-target="character-map" data-category="character" data-keywords="특수문자 이모지 유니코드 복사"><b>★</b><span><strong>특수문자 모음</strong><small>검색·클릭 복사</small></span></button>
+              <button type="button" data-media-target="code-table" data-category="character" data-keywords="ascii html 코드표 문자참조"><b>ASCII</b><span><strong>ASCII·HTML 코드표</strong><small>문자 코드 검색</small></span></button>
+              <button type="button" data-media-target="color-tool" data-category="media" data-keywords="색상 color hex rgb hsl"><b>#</b><span><strong>색상 변환기</strong><small>HEX·RGB·HSL</small></span></button>
+              <button type="button" data-media-target="text-diff" data-category="document" data-keywords="텍스트 코드 비교 diff"><b>±</b><span><strong>텍스트 비교</strong><small>줄 단위 차이</small></span></button>
+              <button type="button" data-media-target="subtitle-tool" data-category="document" data-keywords="smi srt 자막 변환 싱크"><b>CC</b><span><strong>SMI → SRT</strong><small>자막·싱크 변환</small></span></button>
+              <button type="button" data-media-target="html-editor" data-category="developer" data-keywords="html 웹 에디터 미리보기"><b>&lt;/&gt;</b><span><strong>HTML 미리보기</strong><small>코드 편집·실행</small></span></button>
+              <button type="button" data-media-target="checksum-tool" data-category="developer" data-keywords="파일 체크섬 sha hash"><b>SHA</b><span><strong>파일 체크섬</strong><small>SHA 해시 계산</small></span></button>
+              <button type="button" data-media-target="image-tool" data-category="media" data-keywords="이미지 압축 리사이즈 data url jpg png"><b>IMG</b><span><strong>이미지 압축·Data URL</strong><small>Canvas 로컬 변환</small></span></button>
+              <button type="button" data-media-target="tts-tool" data-category="media" data-keywords="tts 문자 음성 읽기"><b>TTS</b><span><strong>문자 음성 변환</strong><small>브라우저 음성 합성</small></span></button>
+              <button type="button" data-media-target="stt-tool" data-category="media" data-keywords="stt 음성 문자 마이크"><b>STT</b><span><strong>음성 문자 변환</strong><small>브라우저 음성 인식</small></span></button>
+              <button type="button" data-media-target="eml-tool" data-category="document" data-keywords="eml 이메일 메일 뷰어"><b>EML</b><span><strong>EML 뷰어</strong><small>메일 파일 로컬 열기</small></span></button>
+              <button type="button" data-media-target="key-event-tool" data-category="developer" data-keywords="키보드 이벤트 key code keycode"><b>KEY</b><span><strong>키보드 이벤트</strong><small>key·code 확인</small></span></button>
             </nav>
             <p class="utility-empty" id="mediaToolEmpty" hidden>일치하는 도구가 없습니다.</p>
           </aside>
@@ -142,6 +150,6 @@
     </div>
     <div class="toast" id="mediaToast" role="status" aria-live="polite">복사했습니다.</div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script src="../assets/js/file-media-tools.js?v=20260612-4"></script>
+    <script src="../assets/js/file-media-tools.js?v=20260617-1"></script>
   </body>
 </html>

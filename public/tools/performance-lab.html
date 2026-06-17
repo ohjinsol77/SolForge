@@ -7,6 +7,7 @@
     <meta name="description" content="CPU, GPU, RAM, 대역폭, 마우스 DPI 실측, 번인 패턴, 해상도, WebRTC 후보 확인을 정적 브라우저 도구로 실행합니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/performance-lab.html">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231677ff'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial' font-weight='700' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-7">
   </head>
   <body data-page="performance-lab">
@@ -31,15 +32,22 @@
         <section class="utility-workbench">
           <aside class="utility-picker" aria-label="성능 도구 선택">
             <label class="utility-search"><span>도구 검색</span><input id="perfSearch" type="search" placeholder="예: CPU, RAM, WebRTC"></label>
+            <div class="utility-category-tabs" role="group" aria-label="성능 도구 분류">
+              <button type="button" class="active" data-perf-filter="all">전체</button>
+              <button type="button" data-perf-filter="system">시스템</button>
+              <button type="button" data-perf-filter="network">네트워크</button>
+              <button type="button" data-perf-filter="input">입력장치</button>
+              <button type="button" data-perf-filter="display">화면</button>
+            </div>
             <nav class="utility-tool-list">
-              <button type="button" data-perf-target="cpu-test" data-keywords="cpu stress benchmark"><b>CPU</b><span><strong>CPU 짧은 벤치</strong><small>계산 반복 측정</small></span></button>
-              <button type="button" data-perf-target="gpu-test" data-keywords="gpu stress canvas"><b>GPU</b><span><strong>GPU·Canvas 부하</strong><small>프레임 렌더링</small></span></button>
-              <button type="button" data-perf-target="ram-test" data-keywords="ram memory test"><b>RAM</b><span><strong>RAM 메모리 테스트</strong><small>할당·검증</small></span></button>
-              <button type="button" data-perf-target="bandwidth-calculator" data-keywords="bandwidth calculator transfer"><b>BW</b><span><strong>대역폭 계산기</strong><small>전송량·시간·속도</small></span></button>
-              <button type="button" data-perf-target="mouse-dpi-test" data-keywords="mouse dpi test distance"><b>mDPI</b><span><strong>마우스 DPI 실측</strong><small>거리 대비 픽셀</small></span></button>
-              <button type="button" data-perf-target="burn-in-test" data-keywords="burn in screen pattern"><b>BURN</b><span><strong>번인 패턴</strong><small>색상 순환</small></span></button>
-              <button type="button" data-perf-target="resolution-test" data-keywords="resolution screen dpr"><b>RES</b><span><strong>해상도 테스트</strong><small>뷰포트·화면·DPR</small></span></button>
-              <button type="button" data-perf-target="webrtc-test" data-keywords="webrtc leak candidate"><b>RTC</b><span><strong>WebRTC 후보 확인</strong><small>로컬 ICE 후보</small></span></button>
+              <button type="button" data-perf-target="cpu-test" data-category="system" data-keywords="cpu stress benchmark"><b>CPU</b><span><strong>CPU 짧은 벤치</strong><small>계산 반복 측정</small></span></button>
+              <button type="button" data-perf-target="gpu-test" data-category="system" data-keywords="gpu stress canvas"><b>GPU</b><span><strong>GPU·Canvas 부하</strong><small>프레임 렌더링</small></span></button>
+              <button type="button" data-perf-target="ram-test" data-category="system" data-keywords="ram memory test"><b>RAM</b><span><strong>RAM 메모리 테스트</strong><small>할당·검증</small></span></button>
+              <button type="button" data-perf-target="bandwidth-calculator" data-category="network" data-keywords="bandwidth calculator transfer"><b>BW</b><span><strong>대역폭 계산기</strong><small>전송량·시간·속도</small></span></button>
+              <button type="button" data-perf-target="mouse-dpi-test" data-category="input" data-keywords="mouse dpi test distance"><b>mDPI</b><span><strong>마우스 DPI 실측</strong><small>거리 대비 픽셀</small></span></button>
+              <button type="button" data-perf-target="burn-in-test" data-category="display" data-keywords="burn in screen pattern"><b>BURN</b><span><strong>번인 패턴</strong><small>색상 순환</small></span></button>
+              <button type="button" data-perf-target="resolution-test" data-category="display" data-keywords="resolution screen dpr"><b>RES</b><span><strong>해상도 테스트</strong><small>뷰포트·화면·DPR</small></span></button>
+              <button type="button" data-perf-target="webrtc-test" data-category="network" data-keywords="webrtc leak candidate"><b>RTC</b><span><strong>WebRTC 후보 확인</strong><small>로컬 ICE 후보</small></span></button>
             </nav>
             <p class="utility-empty" id="perfEmpty" hidden>일치하는 성능 도구가 없습니다.</p>
           </aside>
@@ -60,6 +68,6 @@
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script src="../assets/js/performance-lab.js?v=20260616-7"></script>
+    <script src="../assets/js/performance-lab.js?v=20260617-1"></script>
   </body>
 </html>

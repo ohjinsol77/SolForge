@@ -7,6 +7,7 @@
     <meta name="description" content="불량화소, 백라이트 블리드, 블랙·화이트 레벨, 밝기, 명암, 감마, 색상 범위, 균일도, 고스팅, 프레임 스키핑, FPS·Hz를 정적으로 테스트합니다.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.pages.dev/tools/display-diagnostics.html">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231677ff'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial' font-weight='700' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260616-4">
   </head>
   <body data-page="display-diagnostics">
@@ -31,19 +32,25 @@
         <section class="utility-workbench">
           <aside class="utility-picker" aria-label="화면 진단 선택">
             <label class="utility-search"><span>도구 검색</span><input id="displaySearch" type="search" placeholder="예: 감마, 고스팅, FPS"></label>
+            <div class="utility-category-tabs" role="group" aria-label="화면 진단 분류">
+              <button type="button" class="active" data-display-filter="all">전체</button>
+              <button type="button" data-display-filter="color">색상·밝기</button>
+              <button type="button" data-display-filter="motion">움직임</button>
+              <button type="button" data-display-filter="environment">환경</button>
+            </div>
             <nav class="utility-tool-list">
-              <button type="button" data-display-target="dead-pixel" data-keywords="dead pixel color screen"><b>PIX</b><span><strong>불량화소 테스트</strong><small>단색 전환</small></span></button>
-              <button type="button" data-display-target="backlight-bleed" data-keywords="backlight bleed black"><b>BLB</b><span><strong>백라이트 블리드</strong><small>검정 화면</small></span></button>
-              <button type="button" data-display-target="black-level" data-keywords="black level"><b>BLK</b><span><strong>블랙 레벨</strong><small>어두운 단계</small></span></button>
-              <button type="button" data-display-target="white-level" data-keywords="white level"><b>WHT</b><span><strong>화이트 레벨</strong><small>밝은 단계</small></span></button>
-              <button type="button" data-display-target="brightness-test" data-keywords="brightness grayscale"><b>BRI</b><span><strong>밝기 테스트</strong><small>그레이스케일</small></span></button>
-              <button type="button" data-display-target="contrast-test" data-keywords="contrast checker"><b>CON</b><span><strong>명암비 테스트</strong><small>체커·단계</small></span></button>
-              <button type="button" data-display-target="gamma-test" data-keywords="gamma stripes"><b>GAM</b><span><strong>감마 테스트</strong><small>줄무늬 패턴</small></span></button>
-              <button type="button" data-display-target="color-range" data-keywords="color range rgb"><b>RGB</b><span><strong>색상 범위</strong><small>RGB 램프</small></span></button>
-              <button type="button" data-display-target="uniformity-test" data-keywords="screen uniformity"><b>UNI</b><span><strong>화면 균일도</strong><small>분할 패턴</small></span></button>
-              <button type="button" data-display-target="ghosting-test" data-keywords="monitor ghosting motion"><b>GHO</b><span><strong>고스팅 테스트</strong><small>움직이는 블록</small></span></button>
-              <button type="button" data-display-target="frame-skipping" data-keywords="frame skipping"><b>FRM</b><span><strong>프레임 스키핑</strong><small>프레임 점검</small></span></button>
-              <button type="button" data-display-target="fps-hz" data-keywords="fps monitor hz refresh rate resolution"><b>FPS</b><span><strong>FPS·Hz·해상도</strong><small>RAF 추정</small></span></button>
+              <button type="button" data-display-target="dead-pixel" data-category="color" data-keywords="dead pixel color screen"><b>PIX</b><span><strong>불량화소 테스트</strong><small>단색 전환</small></span></button>
+              <button type="button" data-display-target="backlight-bleed" data-category="color" data-keywords="backlight bleed black"><b>BLB</b><span><strong>백라이트 블리드</strong><small>검정 화면</small></span></button>
+              <button type="button" data-display-target="black-level" data-category="color" data-keywords="black level"><b>BLK</b><span><strong>블랙 레벨</strong><small>어두운 단계</small></span></button>
+              <button type="button" data-display-target="white-level" data-category="color" data-keywords="white level"><b>WHT</b><span><strong>화이트 레벨</strong><small>밝은 단계</small></span></button>
+              <button type="button" data-display-target="brightness-test" data-category="color" data-keywords="brightness grayscale"><b>BRI</b><span><strong>밝기 테스트</strong><small>그레이스케일</small></span></button>
+              <button type="button" data-display-target="contrast-test" data-category="color" data-keywords="contrast checker"><b>CON</b><span><strong>명암비 테스트</strong><small>체커·단계</small></span></button>
+              <button type="button" data-display-target="gamma-test" data-category="color" data-keywords="gamma stripes"><b>GAM</b><span><strong>감마 테스트</strong><small>줄무늬 패턴</small></span></button>
+              <button type="button" data-display-target="color-range" data-category="color" data-keywords="color range rgb"><b>RGB</b><span><strong>색상 범위</strong><small>RGB 램프</small></span></button>
+              <button type="button" data-display-target="uniformity-test" data-category="color" data-keywords="screen uniformity"><b>UNI</b><span><strong>화면 균일도</strong><small>분할 패턴</small></span></button>
+              <button type="button" data-display-target="ghosting-test" data-category="motion" data-keywords="monitor ghosting motion"><b>GHO</b><span><strong>고스팅 테스트</strong><small>움직이는 블록</small></span></button>
+              <button type="button" data-display-target="frame-skipping" data-category="motion" data-keywords="frame skipping"><b>FRM</b><span><strong>프레임 스키핑</strong><small>프레임 점검</small></span></button>
+              <button type="button" data-display-target="fps-hz" data-category="environment" data-keywords="fps monitor hz refresh rate resolution"><b>FPS</b><span><strong>FPS·Hz·해상도</strong><small>RAF 추정</small></span></button>
             </nav>
             <p class="utility-empty" id="displayEmpty" hidden>일치하는 화면 진단 도구가 없습니다.</p>
           </aside>
@@ -68,6 +75,6 @@
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script src="../assets/js/display-diagnostics.js?v=20260616-4"></script>
+    <script src="../assets/js/display-diagnostics.js?v=20260617-1"></script>
   </body>
 </html>

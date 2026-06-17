@@ -17,7 +17,9 @@
   function initWorkbench() {
     const buttons = $$("[data-perf-target]");
     const panels = $$("[data-perf-panel]");
+    const filters = $$("[data-perf-filter]");
     const search = $("#perfSearch");
+    let activeFilter = "all";
     const activate = (id, updateHash = true) => {
       if (!document.getElementById(id)?.matches("[data-perf-panel]")) return;
       buttons.forEach((button) => button.classList.toggle("active", button.dataset.perfTarget === id));
@@ -28,19 +30,29 @@
       });
       if (updateHash) history.replaceState(null, "", `#${id}`);
     };
-    buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.perfTarget)));
-    search.addEventListener("input", () => {
+    const filter = () => {
       const query = normalize(search.value);
       let visible = 0;
       buttons.forEach((button) => {
-        const found = !query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query);
+        const inCategory = activeFilter === "all" || button.dataset.category === activeFilter;
+        const found = inCategory && (!query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query));
         button.hidden = !found;
         if (found) visible += 1;
       });
       $("#perfEmpty").hidden = visible > 0;
+    };
+    buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.perfTarget)));
+    filters.forEach((button) => button.addEventListener("click", () => {
+      activeFilter = button.dataset.perfFilter;
+      filters.forEach((item) => item.classList.toggle("active", item === button));
+      filter();
+    }));
+    search.addEventListener("input", () => {
+      filter();
     });
     const initial = location.hash.slice(1);
     activate(document.getElementById(initial)?.matches("[data-perf-panel]") ? initial : "cpu-test", false);
+    filter();
     window.addEventListener("hashchange", () => activate(location.hash.slice(1), false));
   }
 

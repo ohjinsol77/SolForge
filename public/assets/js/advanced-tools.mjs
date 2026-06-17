@@ -24,7 +24,9 @@ if (document.body.matches('[data-page="advanced-toolbox"]')) {
 function initWorkbench() {
   const buttons = $$("[data-advanced-target]");
   const panels = $$("[data-advanced-panel]");
+  const filters = $$("[data-advanced-filter]");
   const search = $("#advancedSearch");
+  let activeFilter = "all";
   const activate = (id, updateHash = true) => {
     if (!document.getElementById(id)?.matches("[data-advanced-panel]")) return;
     buttons.forEach((button) => button.classList.toggle("active", button.dataset.advancedTarget === id));
@@ -35,19 +37,29 @@ function initWorkbench() {
     });
     if (updateHash) history.replaceState(null, "", `#${id}`);
   };
-  buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.advancedTarget)));
-  search.addEventListener("input", () => {
+  const filter = () => {
     const query = normalize(search.value);
     let visible = 0;
     buttons.forEach((button) => {
-      const matches = !query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query);
+      const inCategory = activeFilter === "all" || button.dataset.category === activeFilter;
+      const matches = inCategory && (!query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query));
       button.hidden = !matches;
       if (matches) visible += 1;
     });
     $("#advancedEmpty").hidden = visible > 0;
+  };
+  buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.advancedTarget)));
+  filters.forEach((button) => button.addEventListener("click", () => {
+    activeFilter = button.dataset.advancedFilter;
+    filters.forEach((item) => item.classList.toggle("active", item === button));
+    filter();
+  }));
+  search.addEventListener("input", () => {
+    filter();
   });
   const initial = location.hash.slice(1);
   activate(document.getElementById(initial)?.matches("[data-advanced-panel]") ? initial : "time-tool", false);
+  filter();
   window.addEventListener("hashchange", () => activate(location.hash.slice(1), false));
 }
 

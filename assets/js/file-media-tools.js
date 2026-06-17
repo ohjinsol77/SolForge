@@ -26,7 +26,9 @@
   function initWorkbench() {
     const buttons = $$("[data-media-target]");
     const panels = $$("[data-media-panel]");
+    const filters = $$("[data-media-filter]");
     const search = $("#mediaToolSearch");
+    let activeFilter = "all";
     const activate = (id, updateHash = true) => {
       if (!document.getElementById(id)?.matches("[data-media-panel]")) return;
       buttons.forEach((button) => button.classList.toggle("active", button.dataset.mediaTarget === id));
@@ -37,19 +39,29 @@
       });
       if (updateHash) history.replaceState(null, "", `#${id}`);
     };
-    buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.mediaTarget)));
-    search.addEventListener("input", () => {
+    const filter = () => {
       const query = normalize(search.value);
       let visible = 0;
       buttons.forEach((button) => {
-        const matches = !query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query);
+        const inCategory = activeFilter === "all" || button.dataset.category === activeFilter;
+        const matches = inCategory && (!query || normalize(`${button.textContent} ${button.dataset.keywords || ""}`).includes(query));
         button.hidden = !matches;
         if (matches) visible += 1;
       });
       $("#mediaToolEmpty").hidden = visible > 0;
+    };
+    buttons.forEach((button) => button.addEventListener("click", () => activate(button.dataset.mediaTarget)));
+    filters.forEach((button) => button.addEventListener("click", () => {
+      activeFilter = button.dataset.mediaFilter;
+      filters.forEach((item) => item.classList.toggle("active", item === button));
+      filter();
+    }));
+    search.addEventListener("input", () => {
+      filter();
     });
     const initial = location.hash.slice(1);
     activate(document.getElementById(initial)?.matches("[data-media-panel]") ? initial : "character-map", false);
+    filter();
     window.addEventListener("hashchange", () => activate(location.hash.slice(1), false));
   }
 
