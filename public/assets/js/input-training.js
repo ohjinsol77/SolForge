@@ -330,11 +330,15 @@
     const context = canvas.getContext("2d");
     let drawing = false;
     let points = 0;
+    const renderDragState = (status) => {
+      renderStats(statsSelector, [["포인트", points], ["상태", status]]);
+    };
     const reset = () => {
       context.fillStyle = "#0f172a";
       context.fillRect(0, 0, canvas.width, canvas.height);
       points = 0;
-      renderStats(statsSelector, [["포인트", 0], ["상태", "대기"]]);
+      drawing = false;
+      renderDragState("대기");
     };
     const pos = (event) => {
       const rect = canvas.getBoundingClientRect();
@@ -342,8 +346,10 @@
     };
     canvas.addEventListener("pointerdown", (event) => {
       drawing = true;
+      canvas.setPointerCapture?.(event.pointerId);
       context.beginPath();
       context.moveTo(...pos(event));
+      renderDragState("드래그 중");
     });
     canvas.addEventListener("pointermove", (event) => {
       if (!drawing) return;
@@ -352,9 +358,22 @@
       context.lineTo(...pos(event));
       context.stroke();
       points += 1;
-      renderStats(statsSelector, [["포인트", points], ["상태", "드래그 중"]]);
+      renderDragState("드래그 중");
     });
-    window.addEventListener("pointerup", () => { drawing = false; });
+    const finishDrag = (event, status = "완료") => {
+      if (!drawing) return;
+      drawing = false;
+      if (event?.pointerId !== undefined) canvas.releasePointerCapture?.(event.pointerId);
+      renderDragState(points ? status : "대기");
+    };
+    canvas.addEventListener("pointerup", (event) => finishDrag(event));
+    canvas.addEventListener("pointercancel", (event) => finishDrag(event, "취소"));
+    canvas.addEventListener("lostpointercapture", () => {
+      if (!drawing) return;
+      drawing = false;
+      renderDragState(points ? "완료" : "대기");
+    });
+    window.addEventListener("pointerup", (event) => finishDrag(event));
     $(clearSelector).addEventListener("click", reset);
     reset();
   }
