@@ -4,6 +4,7 @@
   const tools = [
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier.html"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual.html"],
+    ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info.html"],
     ["age", "만", "나이·만나이 계산기", "만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.", "나이 만나이 세는나이 생년월일", "../calculators/all.html#age-calculator"],
     ["age", "표", "연도별 나이표", "출생연도별 나이와 전통적인 나이 용어를 확인합니다.", "나이표 환갑 칠순 출생연도", "../calculators/all.html#age-table"],
     ["age", "띠", "띠·띠동갑 찾기", "출생연도의 띠와 같은 띠인 연도를 찾습니다.", "띠 띠동갑 출생년도", "../calculators/all.html#zodiac-tools"],

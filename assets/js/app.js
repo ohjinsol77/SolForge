@@ -122,6 +122,7 @@
       '<p class="nav-title">개발 도구</p>',
       navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
+      navLink(`${prefix}tools/npm-package-info.html`, "npm", "npm 패키지 정보"),
       navLink(`${prefix}tools/utility-toolbox.html`, "18", "확장 도구 모음"),
       navLink(`${prefix}tools/file-media-toolbox.html`, "12", "파일·미디어 도구"),
       navLink(`${prefix}tools/advanced-toolbox.html`, "10", "고급 도구"),
