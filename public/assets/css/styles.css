@@ -217,8 +217,9 @@ button {
 }
 
 .content {
-  width: min(100%, 1360px);
-  padding: 1.35rem clamp(1rem, 3vw, 2.75rem) 3rem;
+  width: 100%;
+  min-width: 0;
+  padding: 1.35rem clamp(1rem, 3vw, 3.25rem) 3rem;
 }
 
 .topbar {
@@ -1921,6 +1922,60 @@ th {
   .nav-group,
   .data-table-wrap tbody tr:nth-child(even) {
     background: var(--surface);
+  }
+}
+
+@media (min-width: 1500px) {
+  :root {
+    --sidebar-width: clamp(284px, 16vw, 340px);
+  }
+
+  .content {
+    padding-inline: clamp(2rem, 3.5vw, 5rem);
+  }
+
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(480px, 0.74fr);
+    min-height: clamp(540px, 38vw, 700px);
+  }
+
+  .quick-launch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-tool {
+    min-height: 104px;
+    align-content: start;
+  }
+
+  .trust-strip > div {
+    min-height: 104px;
+  }
+
+  .tool-catalog {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  .home-category-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (min-width: 1900px) {
+  .content {
+    padding-inline: clamp(3rem, 4vw, 6.5rem);
+  }
+
+  .home-hero {
+    grid-template-columns: minmax(0, 1.08fr) minmax(560px, 0.72fr);
+  }
+
+  .tool-catalog {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  }
+
+  .home-category-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 }
 
