@@ -187,7 +187,7 @@
 
   async function loadJsdelivrRoot(packageName) {
     try {
-      const result = await cachedFetch(`${JSDELIVR}/${encodeURIComponent(packageName)}`, `jsdelivr:${packageName}`, JSDELIVR_TTL);
+      const result = await cachedFetch(jsdelivrApiUrl(packageName), `jsdelivr:${packageName}`, JSDELIVR_TTL);
       state.jsdelivr = result.data;
     } catch (_error) {
       state.jsdelivr = null;
@@ -198,7 +198,7 @@
     if (!state.packageName) return;
     const version = $("#npmCdnVersion")?.value || latestVersion();
     try {
-      const result = await cachedFetch(`${JSDELIVR}/${encodeURIComponent(`${state.packageName}@${version}`)}`, `jsdelivr:${state.packageName}:${version}`, JSDELIVR_TTL);
+      const result = await cachedFetch(jsdelivrApiUrl(state.packageName, version), `jsdelivr:${state.packageName}:${version}`, JSDELIVR_TTL);
       state.files = prioritizeFiles(flattenFiles(result.data.files || []));
       if (!$("#npmCdnPath").value && state.files[0]) $("#npmCdnPath").value = state.files[0].path.replace(/^\//, "");
     } catch (_error) {
@@ -670,6 +670,11 @@
     if (!author) return "-";
     if (typeof author === "string") return author;
     return author.name || author.email || author.url || "-";
+  }
+
+  function jsdelivrApiUrl(packageName, version = "") {
+    const spec = version ? `${packageName}@${version}` : packageName;
+    return encodeURI(`${JSDELIVR}/${spec}`);
   }
 
   function updateUrl(packageName) {
