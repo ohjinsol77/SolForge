@@ -37,6 +37,7 @@
   function init() {
     if (!document.body.matches('[data-page="npm-package-info"]')) return;
     cleanupCache();
+    initNpmTabs();
     bindEvents();
     renderRecent();
     renderFavorites();
@@ -49,6 +50,23 @@
     } else {
       setStatus("패키지명을 검색하거나 입력 후 상세 조회를 누르세요.", "info");
     }
+  }
+
+  function initNpmTabs() {
+    const tabs = $$("[data-npm-tab]");
+    const sections = $$("[data-npm-section]");
+    const activate = (name) => {
+      tabs.forEach((tab) => {
+        const active = tab.dataset.npmTab === name;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-selected", String(active));
+      });
+      sections.forEach((section) => {
+        section.hidden = section.dataset.npmSection !== name;
+      });
+    };
+    tabs.forEach((tab) => tab.addEventListener("click", () => activate(tab.dataset.npmTab)));
+    activate("overview");
   }
 
   function bindEvents() {
