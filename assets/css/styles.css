@@ -3572,7 +3572,8 @@ th {
   background-size: auto, 32px 32px, 32px 32px, auto;
 }
 
-#aimTarget {
+#aimTarget,
+#accuracyTarget {
   position: absolute;
   border: 0;
   border-radius: 999px;
