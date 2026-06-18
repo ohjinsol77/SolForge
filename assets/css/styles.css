@@ -253,7 +253,6 @@ button {
   color: var(--text);
 }
 
-.language-toggle,
 .theme-toggle,
 .sample-button,
 .copy-button,
@@ -270,11 +269,6 @@ button {
   color: var(--text);
   font-weight: 900;
   box-shadow: 0 8px 18px rgba(23, 42, 69, 0.08);
-}
-
-.language-toggle {
-  min-width: 54px;
-  padding: 0.5rem 0.72rem;
 }
 
 .theme-toggle {
@@ -2156,7 +2150,6 @@ th {
   }
 
   .top-links a,
-  .language-toggle,
   .theme-toggle,
   .sample-button,
   .primary-link,
