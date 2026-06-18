@@ -401,7 +401,7 @@ button {
 }
 
 .affiliate-disclosure {
-  width: min(100%, 700px);
+  width: min(100%, 1000px);
   color: var(--text);
   font-size: 0.82rem;
   font-weight: 800;
@@ -409,7 +409,7 @@ button {
 }
 
 .coupang-ad-slot {
-  width: min(100%, 700px);
+  width: min(100%, 1000px);
   min-height: 70px;
   overflow: hidden;
 }
