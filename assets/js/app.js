@@ -153,6 +153,7 @@
       navGroup("달력 · 학교", [
         [`${life}#holidays`, "우리나라 공휴일"],
         [`${prefix}tools/world-holidays.html`, "세계 공휴일 달력"],
+        [`${prefix}tools/crypto-sentiment.html`, "코인 공포탐욕 지표"],
         [`${life}#no-hand-days`, "손없는 날"],
         [`${life}#school-tools`, "입학·졸업·학생 나이"],
         [`${life}#fun-names`, "재미 이름짓기"]

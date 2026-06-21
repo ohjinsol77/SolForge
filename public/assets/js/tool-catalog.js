@@ -19,6 +19,7 @@
     ["lunar", "年", "음력 기념일 변환", "같은 음력 기념일의 연도별 양력 날짜를 봅니다.", "음력 기념일 제사 생일", "../calculators/all.html#lunar-anniversary"],
     ["calendar", "휴", "우리나라 공휴일", "연도별 고정·음력·대체 공휴일을 확인합니다.", "대한민국 공휴일 대체공휴일", "../calculators/all.html#holidays"],
     ["calendar", "WORLD", "세계 공휴일 달력", "Nager.Date 공개 API로 국가별 공휴일 달력과 영업일을 조회합니다.", "세계 공휴일 국가 holiday calendar nager 영업일", "world-holidays.html"],
+    ["life", "COIN", "코인 공포탐욕 지표", "공포탐욕 지수와 주요 암호화폐 거래량 상위 20개의 KRW·USD 시세를 조회합니다.", "코인 암호화폐 비트코인 공포탐욕 fear greed coingecko price volume", "crypto-sentiment.html"],
     ["calendar", "손", "손없는 날", "월별 손없는 날을 양력과 음력으로 확인합니다.", "손없는날 이사 음력", "../calculators/all.html#no-hand-days"],
     ["calendar", "학", "입학·졸업 연도", "출생연도로 초·중·고 입학과 졸업 시점을 계산합니다.", "학교 입학 졸업 학생", "../calculators/all.html#school-tools"],
     ["calendar", "수", "수능 D-Day", "다음 대학수학능력시험까지 남은 기간을 확인합니다.", "수능 디데이 시험", "../calculators/all.html#school-tools"],
