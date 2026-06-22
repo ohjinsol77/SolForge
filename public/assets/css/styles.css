@@ -2718,6 +2718,119 @@ th {
   background: linear-gradient(90deg, #ef4444, #eab308, #22c55e);
 }
 
+.stock-toolbar {
+  grid-template-columns: minmax(220px, 1fr) minmax(120px, 0.28fr) minmax(130px, 0.3fr) auto;
+}
+
+.global-stock-toolbar {
+  grid-template-columns: minmax(220px, 1fr) minmax(130px, 0.3fr) auto;
+}
+
+.stock-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.stock-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stock-change.up {
+  color: #16a34a;
+}
+
+.stock-change.down {
+  color: #dc2626;
+}
+
+.stock-chart {
+  min-height: 300px;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background:
+    linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    var(--surface-soft);
+  background-size: 72px 72px;
+}
+
+.stock-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 260px;
+}
+
+.stock-chart-grid {
+  fill: none;
+  stroke: color-mix(in srgb, var(--muted) 22%, transparent);
+  stroke-width: 1;
+}
+
+.stock-chart-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.stock-chart-svg.up {
+  color: #16a34a;
+}
+
+.stock-chart-svg.down {
+  color: #dc2626;
+}
+
+.stock-chart-empty {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.stock-quick-list button {
+  display: inline-grid;
+  gap: 0.1rem;
+  align-content: center;
+}
+
+.stock-quick-list small {
+  font-size: 0.68rem;
+  opacity: 0.75;
+}
+
+.stock-chip-list .empty-chip {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.stock-table-wrap {
+  overflow: auto;
+}
+
+.compact-heading {
+  margin-top: 0.2rem;
+}
+
+.compact-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
 .tall-list {
   max-height: 520px;
   overflow: auto;
@@ -4058,7 +4171,8 @@ th {
   }
 
   .crypto-overview-grid,
-  .crypto-data-grid {
+  .crypto-data-grid,
+  .stock-main-grid {
     grid-template-columns: 1fr;
   }
 
@@ -4083,6 +4197,12 @@ th {
 
 @media (max-width: 680px) {
   .crypto-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-toolbar,
+  .global-stock-toolbar,
+  .stock-summary-grid {
     grid-template-columns: 1fr;
   }
 

@@ -151,6 +151,8 @@
         [`${life}#lunar-anniversary`, "음력 기념일 변환"]
       ]),
       navGroup("주식 및 코인", [
+        [`${prefix}tools/korea-stocks.html`, "국내 주식 조회"],
+        [`${prefix}tools/global-stocks.html`, "해외 주식 조회"],
         [`${prefix}tools/crypto-sentiment.html`, "코인 공포탐욕 지표"]
       ]),
       navGroup("달력 · 학교", [
