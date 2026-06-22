@@ -1601,6 +1601,11 @@ th {
   color: #047857;
 }
 
+.icon-finance {
+  background: rgba(234, 179, 8, 0.14);
+  color: #a16207;
+}
+
 .icon-media {
   background: rgba(147, 51, 234, 0.13);
   color: #7e22ce;
@@ -2475,6 +2480,7 @@ th {
 
 .crypto-data-grid {
   grid-template-columns: minmax(0, 1fr) minmax(300px, 0.34fr);
+  align-items: start;
 }
 
 .crypto-gauge-card {
@@ -2615,6 +2621,7 @@ th {
 }
 
 .crypto-table-wrap {
+  max-height: none;
   overflow: auto;
 }
 
@@ -2681,9 +2688,14 @@ th {
 
 .crypto-fng-row {
   display: grid;
-  grid-template-columns: minmax(94px, 1fr) minmax(88px, 1.4fr) 38px;
+  grid-template-columns: minmax(124px, 1fr) minmax(88px, 1.4fr) 38px;
   gap: 0.6rem;
   align-items: center;
+}
+
+.crypto-fng-row span,
+.crypto-fng-row strong {
+  white-space: nowrap;
 }
 
 .crypto-fng-row small {
