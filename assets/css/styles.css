@@ -2227,14 +2227,24 @@ th {
   .topbar-controls {
     width: 100%;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: stretch;
   }
 
-  .topbar-controls .theme-toggle,
-  .topbar-controls .skin-apply-button,
-  .topbar-controls .skin-select,
   .topbar-controls .language-toggle {
-    flex: 1;
+    flex: 0 0 48px;
+    width: 48px;
+    min-width: 48px;
+  }
+
+  .topbar-controls .skin-select {
+    flex: 1 1 calc(100% - 56px);
+    min-width: 0;
+  }
+
+  .topbar-controls .theme-toggle,
+  .topbar-controls .skin-apply-button {
+    flex: 1 1 calc(50% - 0.25rem);
   }
 
   .top-links {
