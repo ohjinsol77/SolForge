@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>파일·문서·미디어 도구 - SolForge</title>
-    <meta name="description" content="특수문자, 코드표, 색상, 텍스트 비교, 자막 변환, HTML 미리보기, 파일 체크섬, 이미지 압축, TTS, STT, EML과 키보드 이벤트 도구입니다.">
+    <title data-i18n="tools.file-media-toolbox.meta.title">파일·문서·미디어 도구 - SolForge</title>
+    <meta name="description" content="특수문자, 코드표, 색상, 텍스트 비교, 자막 변환, HTML 미리보기, 파일 체크섬, 이미지 압축, TTS, STT, EML과 키보드 이벤트 도구입니다." data-i18n-attrs="content:tools.file-media-toolbox.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/file-media-toolbox.html">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231677ff'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial' font-weight='700' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
@@ -15,152 +15,153 @@
     <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
   </head>
   <body data-page="file-media-toolbox">
-    <a class="skip-link" href="#main">본문으로 이동</a>
+    <a class="skip-link" href="#main"><span data-i18n="tools.file-media-toolbox.text.0001">본문으로 이동</span></a>
     <div class="site-shell">
-      <aside class="sidebar" aria-label="기능 메뉴">
-        <a class="brand" href="../index.html" aria-label="SolForge 홈"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small>File & Media Tools</small></span></a>
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0002">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0003"><span class="brand-mark"><span data-i18n="tools.file-media-toolbox.text.0004">SF</span></span><span><strong><span data-i18n="tools.file-media-toolbox.text.0005">SolForge</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0006">File & Media Tools</span></small></span></a>
         <nav class="side-nav" data-solforge-nav></nav>
-        <div class="side-card"><strong>로컬 파일 처리</strong><span>선택한 파일은 업로드하지 않고 현재 브라우저에서 읽습니다.</span></div>
+        <div class="side-card"><strong><span data-i18n="tools.file-media-toolbox.text.0007">로컬 파일 처리</span></strong><span><span data-i18n="tools.file-media-toolbox.text.0008">선택한 파일은 업로드하지 않고 현재 브라우저에서 읽습니다.</span></span></div>
       </aside>
       <main class="content" id="main">
         <header class="topbar">
-          <nav class="top-links" aria-label="사이트 정보"><a href="../features.html" data-top-link>기능소개</a><a href="../about.html" data-top-link>사이트소개</a><a href="../terms.html" data-top-link>이용약관</a><a href="../privacy.html" data-top-link>개인정보처리방침</a><a href="../contact.html" data-top-link>문의</a></nav>
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0009"><a href="../features.html" data-top-link><span data-i18n="tools.file-media-toolbox.text.0010">기능소개</span></a><a href="../about.html" data-top-link><span data-i18n="tools.file-media-toolbox.text.0011">사이트소개</span></a><a href="../terms.html" data-top-link><span data-i18n="tools.file-media-toolbox.text.0012">이용약관</span></a><a href="../privacy.html" data-top-link><span data-i18n="tools.file-media-toolbox.text.0013">개인정보처리방침</span></a><a href="../contact.html" data-top-link><span data-i18n="tools.file-media-toolbox.text.0014">문의</span></a></nav>
           <div class="topbar-controls">
-            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/" aria-label="Switch to English" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0015">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0016">
               <option value="basic">Basic</option>
               <option value="saas">SaaS</option>
               <option value="terminal">Terminal</option>
             </select>
-            <button class="skin-apply-button" type="button" id="skinApplyButton">적용</button>
-            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+            <button class="skin-apply-button" type="button" id="skinApplyButton"><span data-i18n="tools.file-media-toolbox.text.0017">적용</span></button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel"><span data-i18n="tools.file-media-toolbox.text.0018">Dark</span></span></button>
           </div>
         </header>
 
         <section class="page-hero compact-hero utility-hero">
-          <div><p class="eyebrow">File & Media Workbench</p><h1>파일과 브라우저 기능도 로컬에서 처리합니다.</h1><p>문서와 이미지를 서버에 올리지 않고 변환하며, 음성·키보드 기능은 브라우저 지원 범위에서 실행됩니다.</p></div>
-          <div class="hero-panel"><div class="metric-card"><strong>12</strong><span>파일·미디어 도구</span></div><div class="metric-card"><strong>Local</strong><span>파일 처리 방식</span></div></div>
+          <div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0019">File & Media Workbench</span></p><h1><span data-i18n="tools.file-media-toolbox.text.0020">파일과 브라우저 기능도 로컬에서 처리합니다.</span></h1><p><span data-i18n="tools.file-media-toolbox.text.0021">문서와 이미지를 서버에 올리지 않고 변환하며, 음성·키보드 기능은 브라우저 지원 범위에서 실행됩니다.</span></p></div>
+          <div class="hero-panel"><div class="metric-card"><strong>12</strong><span><span data-i18n="tools.file-media-toolbox.text.0022">파일·미디어 도구</span></span></div><div class="metric-card"><strong><span data-i18n="tools.file-media-toolbox.text.0023">Local</span></strong><span><span data-i18n="tools.file-media-toolbox.text.0024">파일 처리 방식</span></span></div></div>
         </section>
 
         <section class="utility-workbench">
-          <aside class="utility-picker" aria-label="도구 선택">
-            <label class="utility-search"><span>도구 검색</span><input id="mediaToolSearch" type="search" placeholder="예: 이미지, 자막, 색상"></label>
-            <div class="utility-category-tabs" role="group" aria-label="파일·미디어 분류">
-              <button type="button" class="active" data-media-filter="all">전체</button>
-              <button type="button" data-media-filter="character">문자</button>
-              <button type="button" data-media-filter="document">문서</button>
-              <button type="button" data-media-filter="media">미디어</button>
-              <button type="button" data-media-filter="developer">개발자</button>
+          <aside class="utility-picker" aria-label="도구 선택" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0025">
+            <label class="utility-search"><span><span data-i18n="tools.file-media-toolbox.text.0026">도구 검색</span></span><input id="mediaToolSearch" type="search" placeholder="예: 이미지, 자막, 색상" data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0027"></label>
+            <div class="utility-category-tabs" role="group" aria-label="파일·미디어 분류" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0028">
+              <button type="button" class="active" data-media-filter="all"><span data-i18n="tools.file-media-toolbox.text.0029">전체</span></button>
+              <button type="button" data-media-filter="character"><span data-i18n="tools.file-media-toolbox.text.0030">문자</span></button>
+              <button type="button" data-media-filter="document"><span data-i18n="tools.file-media-toolbox.text.0031">문서</span></button>
+              <button type="button" data-media-filter="media"><span data-i18n="tools.file-media-toolbox.text.0032">미디어</span></button>
+              <button type="button" data-media-filter="developer"><span data-i18n="tools.file-media-toolbox.text.0033">개발자</span></button>
             </div>
             <nav class="utility-tool-list" id="mediaToolList">
-              <button type="button" data-media-target="character-map" data-category="character" data-keywords="특수문자 이모지 유니코드 복사"><b>★</b><span><strong>특수문자 모음</strong><small>검색·클릭 복사</small></span></button>
-              <button type="button" data-media-target="code-table" data-category="character" data-keywords="ascii html 코드표 문자참조"><b>ASCII</b><span><strong>ASCII·HTML 코드표</strong><small>문자 코드 검색</small></span></button>
-              <button type="button" data-media-target="color-tool" data-category="media" data-keywords="색상 color hex rgb hsl"><b>#</b><span><strong>색상 변환기</strong><small>HEX·RGB·HSL</small></span></button>
-              <button type="button" data-media-target="text-diff" data-category="document" data-keywords="텍스트 코드 비교 diff"><b>±</b><span><strong>텍스트 비교</strong><small>줄 단위 차이</small></span></button>
-              <button type="button" data-media-target="subtitle-tool" data-category="document" data-keywords="smi srt 자막 변환 싱크"><b>CC</b><span><strong>SMI → SRT</strong><small>자막·싱크 변환</small></span></button>
-              <button type="button" data-media-target="html-editor" data-category="developer" data-keywords="html 웹 에디터 미리보기"><b>&lt;/&gt;</b><span><strong>HTML 미리보기</strong><small>코드 편집·실행</small></span></button>
-              <button type="button" data-media-target="checksum-tool" data-category="developer" data-keywords="파일 체크섬 sha hash"><b>SHA</b><span><strong>파일 체크섬</strong><small>SHA 해시 계산</small></span></button>
-              <button type="button" data-media-target="image-tool" data-category="media" data-keywords="이미지 압축 리사이즈 data url jpg png"><b>IMG</b><span><strong>이미지 압축·Data URL</strong><small>Canvas 로컬 변환</small></span></button>
-              <button type="button" data-media-target="tts-tool" data-category="media" data-keywords="tts 문자 음성 읽기"><b>TTS</b><span><strong>문자 음성 변환</strong><small>브라우저 음성 합성</small></span></button>
-              <button type="button" data-media-target="stt-tool" data-category="media" data-keywords="stt 음성 문자 마이크"><b>STT</b><span><strong>음성 문자 변환</strong><small>브라우저 음성 인식</small></span></button>
-              <button type="button" data-media-target="eml-tool" data-category="document" data-keywords="eml 이메일 메일 뷰어"><b>EML</b><span><strong>EML 뷰어</strong><small>메일 파일 로컬 열기</small></span></button>
-              <button type="button" data-media-target="key-event-tool" data-category="developer" data-keywords="키보드 이벤트 key code keycode"><b>KEY</b><span><strong>키보드 이벤트</strong><small>key·code 확인</small></span></button>
+              <button type="button" data-media-target="character-map" data-category="character" data-keywords="특수문자 이모지 유니코드 복사"><b>★</b><span><strong><span data-i18n="tools.file-media-toolbox.text.0034">특수문자 모음</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0035">검색·클릭 복사</span></small></span></button>
+              <button type="button" data-media-target="code-table" data-category="character" data-keywords="ascii html 코드표 문자참조"><b><span data-i18n="tools.file-media-toolbox.text.0036">ASCII</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0037">ASCII·HTML 코드표</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0038">문자 코드 검색</span></small></span></button>
+              <button type="button" data-media-target="color-tool" data-category="media" data-keywords="색상 color hex rgb hsl"><b>#</b><span><strong><span data-i18n="tools.file-media-toolbox.text.0039">색상 변환기</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0040">HEX·RGB·HSL</span></small></span></button>
+              <button type="button" data-media-target="text-diff" data-category="document" data-keywords="텍스트 코드 비교 diff"><b>±</b><span><strong><span data-i18n="tools.file-media-toolbox.text.0041">텍스트 비교</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0042">줄 단위 차이</span></small></span></button>
+              <button type="button" data-media-target="subtitle-tool" data-category="document" data-keywords="smi srt 자막 변환 싱크"><b><span data-i18n="tools.file-media-toolbox.text.0043">CC</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0044">SMI → SRT</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0045">자막·싱크 변환</span></small></span></button>
+              <button type="button" data-media-target="html-editor" data-category="developer" data-keywords="html 웹 에디터 미리보기"><b><span data-i18n="tools.file-media-toolbox.text.0046">&lt;/&gt;</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0047">HTML 미리보기</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0048">코드 편집·실행</span></small></span></button>
+              <button type="button" data-media-target="checksum-tool" data-category="developer" data-keywords="파일 체크섬 sha hash"><b><span data-i18n="tools.file-media-toolbox.text.0049">SHA</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0050">파일 체크섬</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0051">SHA 해시 계산</span></small></span></button>
+              <button type="button" data-media-target="image-tool" data-category="media" data-keywords="이미지 압축 리사이즈 data url jpg png"><b><span data-i18n="tools.file-media-toolbox.text.0052">IMG</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0053">이미지 압축·Data URL</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0054">Canvas 로컬 변환</span></small></span></button>
+              <button type="button" data-media-target="tts-tool" data-category="media" data-keywords="tts 문자 음성 읽기"><b><span data-i18n="tools.file-media-toolbox.text.0055">TTS</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0056">문자 음성 변환</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0057">브라우저 음성 합성</span></small></span></button>
+              <button type="button" data-media-target="stt-tool" data-category="media" data-keywords="stt 음성 문자 마이크"><b><span data-i18n="tools.file-media-toolbox.text.0058">STT</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0059">음성 문자 변환</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0060">브라우저 음성 인식</span></small></span></button>
+              <button type="button" data-media-target="eml-tool" data-category="document" data-keywords="eml 이메일 메일 뷰어"><b><span data-i18n="tools.file-media-toolbox.text.0061">EML</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0062">EML 뷰어</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0063">메일 파일 로컬 열기</span></small></span></button>
+              <button type="button" data-media-target="key-event-tool" data-category="developer" data-keywords="키보드 이벤트 key code keycode"><b><span data-i18n="tools.file-media-toolbox.text.0064">KEY</span></b><span><strong><span data-i18n="tools.file-media-toolbox.text.0065">키보드 이벤트</span></strong><small><span data-i18n="tools.file-media-toolbox.text.0066">key·code 확인</span></small></span></button>
             </nav>
-            <p class="utility-empty" id="mediaToolEmpty" hidden>일치하는 도구가 없습니다.</p>
+            <p class="utility-empty" id="mediaToolEmpty" hidden><span data-i18n="tools.file-media-toolbox.text.0067">일치하는 도구가 없습니다.</span></p>
           </aside>
 
           <div class="utility-stage">
             <article class="utility-panel active" id="character-map" data-media-panel>
-              <div class="utility-panel-heading"><div><p class="eyebrow">문자</p><h2>특수문자·이모지 모음</h2><p>문자를 검색한 뒤 클릭하면 클립보드에 복사합니다.</p></div></div>
-              <label class="form-row"><span>문자 검색</span><input id="characterSearch" type="search" placeholder="예: 화살표, 별, 하트"></label>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0068">문자</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0069">특수문자·이모지 모음</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0070">문자를 검색한 뒤 클릭하면 클립보드에 복사합니다.</span></p></div></div>
+              <label class="form-row"><span><span data-i18n="tools.file-media-toolbox.text.0071">문자 검색</span></span><input id="characterSearch" type="search" placeholder="예: 화살표, 별, 하트" data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0072"></label>
               <div class="character-grid" id="characterGrid"></div>
               <p class="validation-message" id="characterInfo" aria-live="polite"></p>
             </article>
 
             <article class="utility-panel" id="code-table" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">문자</p><h2>ASCII·HTML 문자 코드표</h2><p>인쇄 가능한 ASCII 문자와 HTML 숫자 문자참조를 검색합니다.</p></div></div>
-              <label class="form-row"><span>검색</span><input id="codeTableSearch" type="search" placeholder="문자, 65, A, &#65;"></label>
-              <div class="table-wrap data-table-wrap"><table><thead><tr><th>문자</th><th>10진수</th><th>16진수</th><th>HTML</th><th>설명</th></tr></thead><tbody id="codeTableBody"></tbody></table></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0073">문자</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0074">ASCII·HTML 문자 코드표</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0075">인쇄 가능한 ASCII 문자와 HTML 숫자 문자참조를 검색합니다.</span></p></div></div>
+              <label class="form-row"><span><span data-i18n="tools.file-media-toolbox.text.0076">검색</span></span><input id="codeTableSearch" type="search" placeholder="문자, 65, A, &#65;" data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0077"></label>
+              <div class="table-wrap data-table-wrap"><table><thead><tr><th><span data-i18n="tools.file-media-toolbox.text.0078">문자</span></th><th><span data-i18n="tools.file-media-toolbox.text.0079">10진수</span></th><th><span data-i18n="tools.file-media-toolbox.text.0080">16진수</span></th><th><span data-i18n="tools.file-media-toolbox.text.0081">HTML</span></th><th><span data-i18n="tools.file-media-toolbox.text.0082">설명</span></th></tr></thead><tbody id="codeTableBody"></tbody></table></div>
             </article>
 
             <article class="utility-panel" id="color-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">디자인</p><h2>색상 선택·변환</h2><p>색상을 고르면 HEX, RGB와 HSL 값을 계산합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0083">디자인</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0084">색상 선택·변환</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0085">색상을 고르면 HEX, RGB와 HSL 값을 계산합니다.</span></p></div></div>
               <div class="color-workbench">
-                <input id="colorPickerInput" class="large-color-input" type="color" value="#1677ff" aria-label="색상 선택">
-                <div class="form-row"><label for="colorHexInput">HEX</label><input id="colorHexInput" type="text" value="#1677ff"></div>
+                <input id="colorPickerInput" class="large-color-input" type="color" value="#1677ff" aria-label="색상 선택" data-i18n-attrs="aria-label:tools.file-media-toolbox.attr.aria-label.0086">
+                <div class="form-row"><label for="colorHexInput"><span data-i18n="tools.file-media-toolbox.text.0087">HEX</span></label><input id="colorHexInput" type="text" value="#1677ff"></div>
                 <div class="color-preview" id="colorPreview"></div>
               </div>
               <div class="result-panel" id="colorResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="text-diff" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">문서</p><h2>텍스트 비교</h2><p>두 문서를 줄 단위로 비교해 추가·삭제·동일 항목을 표시합니다.</p></div><button type="button" class="primary-link" id="compareText">비교</button></div>
-              <div class="utility-two-column"><textarea id="diffOriginal" class="utility-textarea code-textarea" placeholder="원본"></textarea><textarea id="diffChanged" class="utility-textarea code-textarea" placeholder="변경본"></textarea></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0088">문서</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0089">텍스트 비교</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0090">두 문서를 줄 단위로 비교해 추가·삭제·동일 항목을 표시합니다.</span></p></div><button type="button" class="primary-link" id="compareText"><span data-i18n="tools.file-media-toolbox.text.0091">비교</span></button></div>
+              <div class="utility-two-column"><textarea id="diffOriginal" class="utility-textarea code-textarea" placeholder="원본" data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0092"></textarea><textarea id="diffChanged" class="utility-textarea code-textarea" placeholder="변경본" data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0093"></textarea></div>
               <div class="diff-output" id="diffOutput" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="subtitle-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">문서</p><h2>SMI → SRT 자막 변환</h2><p>SMI의 SYNC 시점을 SRT 시간 형식으로 바꾸고 싱크 오프셋을 적용합니다.</p></div><button type="button" class="primary-link" id="convertSubtitle">변환</button></div>
-              <div class="toolbar-form"><div class="form-row"><label for="subtitleOffset">싱크 조정(ms)</label><input id="subtitleOffset" type="number" value="0"></div><button type="button" class="copy-button" data-media-copy="subtitleOutput">결과 복사</button></div>
-              <div class="utility-two-column"><textarea id="subtitleInput" class="utility-textarea code-textarea" placeholder="<SYNC Start=1000><P Class=KRCC>첫 번째 자막"></textarea><textarea id="subtitleOutput" class="utility-textarea code-textarea" readonly></textarea></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0094">문서</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0095">SMI → SRT 자막 변환</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0096">SMI의 SYNC 시점을 SRT 시간 형식으로 바꾸고 싱크 오프셋을 적용합니다.</span></p></div><button type="button" class="primary-link" id="convertSubtitle"><span data-i18n="tools.file-media-toolbox.text.0097">변환</span></button></div>
+              <div class="toolbar-form"><div class="form-row"><label for="subtitleOffset"><span data-i18n="tools.file-media-toolbox.text.0098">싱크 조정(ms)</span></label><input id="subtitleOffset" type="number" value="0"></div><button type="button" class="copy-button" data-media-copy="subtitleOutput"><span data-i18n="tools.file-media-toolbox.text.0099">결과 복사</span></button></div>
+              <div class="utility-two-column"><textarea id="subtitleInput" class="utility-textarea code-textarea" placeholder="<SYNC Start=1000 data-i18n="tools.file-media-toolbox.text.0162"><P Class=KRCC><span data-i18n="tools.file-media-toolbox.text.0100">첫 번째 자막"></span></textarea><textarea id="subtitleOutput" class="utility-textarea code-textarea" readonly></textarea></div>
             </article>
 
             <article class="utility-panel" id="html-editor" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>HTML 웹 에디터·미리보기</h2><p>작성한 HTML을 sandbox iframe에서 즉시 미리 봅니다.</p></div><div class="button-row"><button type="button" class="primary-link" id="runHtml">실행</button><button type="button" class="ghost-button" id="printHtml">인쇄</button></div></div>
-              <div class="utility-two-column html-editor-grid"><textarea id="htmlEditorInput" class="utility-textarea code-textarea"><!doctype html>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0101">개발자</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0102">HTML 웹 에디터·미리보기</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0103">작성한 HTML을 sandbox iframe에서 즉시 미리 봅니다.</span></p></div><div class="button-row"><button type="button" class="primary-link" id="runHtml"><span data-i18n="tools.file-media-toolbox.text.0104">실행</span></button><button type="button" class="ghost-button" id="printHtml"><span data-i18n="tools.file-media-toolbox.text.0105">인쇄</span></button></div></div>
+              <div class="utility-two-column html-editor-grid"><textarea id="htmlEditorInput" class="utility-textarea code-textarea" data-i18n="tools.file-media-toolbox.text.0163"><!doctype html>
 <html lang="ko">
 <head><meta charset="utf-8"><style>body{font-family:sans-serif;padding:2rem}h1{color:#1677ff}</style></head>
-<body><h1>Hello SolForge</h1><p>HTML을 수정하고 실행하세요.</p></body>
-</html></textarea><iframe id="htmlPreview" class="html-preview" sandbox="allow-modals" title="HTML 미리보기"></iframe></div>
+<body><h1><span data-i18n="tools.file-media-toolbox.text.0106">Hello SolForge</span></h1><p><span data-i18n="tools.file-media-toolbox.text.0107">HTML을 수정하고 실행하세요.</span></p></body>
+</html></textarea><iframe id="htmlPreview" class="html-preview" sandbox="allow-modals" title="HTML 미리보기" data-i18n-attrs="title:tools.file-media-toolbox.attr.title.0108"></iframe></div>
             </article>
 
             <article class="utility-panel" id="checksum-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">파일</p><h2>파일 체크섬</h2><p>파일 전체를 브라우저에서 읽어 SHA 체크섬을 계산합니다.</p></div></div>
-              <label class="file-drop"><input id="checksumFile" type="file"><strong>체크섬을 계산할 파일 선택</strong><span>SHA-1, SHA-256, SHA-384, SHA-512</span></label>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0109">파일</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0110">파일 체크섬</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0111">파일 전체를 브라우저에서 읽어 SHA 체크섬을 계산합니다.</span></p></div></div>
+              <label class="file-drop"><input id="checksumFile" type="file"><strong><span data-i18n="tools.file-media-toolbox.text.0112">체크섬을 계산할 파일 선택</span></strong><span><span data-i18n="tools.file-media-toolbox.text.0113">SHA-1, SHA-256, SHA-384, SHA-512</span></span></label>
               <div class="result-panel checksum-result" id="checksumResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="image-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">이미지</p><h2>이미지 압축·리사이즈·Data URL</h2><p>JPG·PNG·WebP 파일을 Canvas로 줄이고 다운로드 가능한 이미지와 Data URL을 만듭니다.</p></div></div>
-              <label class="file-drop"><input id="imageFile" type="file" accept="image/*"><strong>이미지 파일 선택</strong><span>파일은 브라우저 밖으로 전송되지 않습니다.</span></label>
-              <div class="inline-fields"><div class="form-row"><label for="imageMaxSize">최대 크기(px)</label><input id="imageMaxSize" type="number" min="64" max="8000" value="1600"></div><div class="form-row"><label for="imageQuality">품질(%)</label><input id="imageQuality" type="number" min="10" max="100" value="82"></div><div class="form-row"><label for="imageFormat">출력 형식</label><select id="imageFormat"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></div></div>
-              <button type="button" class="primary-link" id="processImage">이미지 변환</button>
-              <div class="image-result" id="imageResult" hidden><img id="imagePreview" alt="변환 이미지 미리보기"><div><p id="imageStats"></p><a class="secondary-link" id="imageDownload" download="solforge-image.jpg">다운로드</a></div><textarea id="imageDataUrl" class="utility-textarea code-textarea" readonly></textarea></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0114">이미지</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0115">이미지 압축·리사이즈·Data URL</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0116">JPG·PNG·WebP 파일을 Canvas로 줄이고 다운로드 가능한 이미지와 Data URL을 만듭니다.</span></p></div></div>
+              <label class="file-drop"><input id="imageFile" type="file" accept="image/*"><strong><span data-i18n="tools.file-media-toolbox.text.0117">이미지 파일 선택</span></strong><span><span data-i18n="tools.file-media-toolbox.text.0118">파일은 브라우저 밖으로 전송되지 않습니다.</span></span></label>
+              <div class="inline-fields"><div class="form-row"><label for="imageMaxSize"><span data-i18n="tools.file-media-toolbox.text.0119">최대 크기(px)</span></label><input id="imageMaxSize" type="number" min="64" max="8000" value="1600"></div><div class="form-row"><label for="imageQuality"><span data-i18n="tools.file-media-toolbox.text.0120">품질(%)</span></label><input id="imageQuality" type="number" min="10" max="100" value="82"></div><div class="form-row"><label for="imageFormat"><span data-i18n="tools.file-media-toolbox.text.0121">출력 형식</span></label><select id="imageFormat"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></div></div>
+              <button type="button" class="primary-link" id="processImage"><span data-i18n="tools.file-media-toolbox.text.0122">이미지 변환</span></button>
+              <div class="image-result" id="imageResult" hidden><img id="imagePreview" alt="변환 이미지 미리보기" data-i18n-attrs="alt:tools.file-media-toolbox.attr.alt.0123"><div><p id="imageStats"></p><a class="secondary-link" id="imageDownload" download="solforge-image.jpg"><span data-i18n="tools.file-media-toolbox.text.0124">다운로드</span></a></div><textarea id="imageDataUrl" class="utility-textarea code-textarea" readonly></textarea></div>
             </article>
 
             <article class="utility-panel" id="tts-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">음성</p><h2>문자 음성 변환</h2><p>브라우저에 설치된 음성으로 입력한 문장을 읽습니다.</p></div><div class="button-row"><button type="button" class="primary-link" id="speakText">읽기</button><button type="button" class="ghost-button" id="stopSpeech">중지</button></div></div>
-              <textarea id="ttsInput" class="utility-textarea">안녕하세요. SolForge 문자 음성 변환 도구입니다.</textarea>
-              <div class="inline-fields"><div class="form-row"><label for="ttsVoice">음성</label><select id="ttsVoice"></select></div><div class="form-row"><label for="ttsRate">속도</label><input id="ttsRate" type="range" min="0.5" max="2" step="0.1" value="1"></div><div class="form-row"><label for="ttsPitch">높낮이</label><input id="ttsPitch" type="range" min="0" max="2" step="0.1" value="1"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0125">음성</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0126">문자 음성 변환</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0127">브라우저에 설치된 음성으로 입력한 문장을 읽습니다.</span></p></div><div class="button-row"><button type="button" class="primary-link" id="speakText"><span data-i18n="tools.file-media-toolbox.text.0128">읽기</span></button><button type="button" class="ghost-button" id="stopSpeech"><span data-i18n="tools.file-media-toolbox.text.0129">중지</span></button></div></div>
+              <textarea id="ttsInput" class="utility-textarea" data-i18n="tools.file-media-toolbox.text.0164">안녕하세요. SolForge 문자 음성 변환 도구입니다.</textarea>
+              <div class="inline-fields"><div class="form-row"><label for="ttsVoice"><span data-i18n="tools.file-media-toolbox.text.0130">음성</span></label><select id="ttsVoice"></select></div><div class="form-row"><label for="ttsRate"><span data-i18n="tools.file-media-toolbox.text.0131">속도</span></label><input id="ttsRate" type="range" min="0.5" max="2" step="0.1" value="1"></div><div class="form-row"><label for="ttsPitch"><span data-i18n="tools.file-media-toolbox.text.0132">높낮이</span></label><input id="ttsPitch" type="range" min="0" max="2" step="0.1" value="1"></div></div>
               <p class="validation-message" id="ttsStatus"></p>
             </article>
 
             <article class="utility-panel" id="stt-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">음성</p><h2>음성 문자 변환</h2><p>지원 브라우저에서 마이크 음성을 실시간 텍스트로 변환합니다.</p></div><div class="button-row"><button type="button" class="primary-link" id="startRecognition">인식 시작</button><button type="button" class="ghost-button" id="stopRecognition">중지</button></div></div>
-              <div class="form-row"><label for="sttLanguage">언어</label><select id="sttLanguage"><option value="ko-KR">한국어</option><option value="en-US">English (US)</option><option value="ja-JP">日本語</option></select></div>
-              <textarea id="sttOutput" class="utility-textarea" placeholder="인식된 문장이 여기에 표시됩니다."></textarea>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0133">음성</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0134">음성 문자 변환</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0135">지원 브라우저에서 마이크 음성을 실시간 텍스트로 변환합니다.</span></p></div><div class="button-row"><button type="button" class="primary-link" id="startRecognition"><span data-i18n="tools.file-media-toolbox.text.0136">인식 시작</span></button><button type="button" class="ghost-button" id="stopRecognition"><span data-i18n="tools.file-media-toolbox.text.0137">중지</span></button></div></div>
+              <div class="form-row"><label for="sttLanguage"><span data-i18n="tools.file-media-toolbox.text.0138">언어</span></label><select id="sttLanguage"><option value="ko-KR" data-i18n="tools.file-media-toolbox.text.0161">한국어</option><option value="en-US">English (US)</option><option value="ja-JP">日本語</option></select></div>
+              <textarea id="sttOutput" class="utility-textarea" placeholder="인식된 문장이 여기에 표시됩니다." data-i18n-attrs="placeholder:tools.file-media-toolbox.attr.placeholder.0139"></textarea>
               <p class="validation-message" id="sttStatus"></p>
             </article>
 
             <article class="utility-panel" id="eml-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">파일</p><h2>EML 뷰어</h2><p>로컬 EML 파일의 주요 헤더와 텍스트 본문을 읽습니다.</p></div></div>
-              <label class="file-drop"><input id="emlFile" type="file" accept=".eml,message/rfc822"><strong>EML 파일 선택</strong><span>제목, 보낸 사람, 받는 사람, 날짜와 본문</span></label>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0140">파일</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0141">EML 뷰어</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0142">로컬 EML 파일의 주요 헤더와 텍스트 본문을 읽습니다.</span></p></div></div>
+              <label class="file-drop"><input id="emlFile" type="file" accept=".eml,message/rfc822"><strong><span data-i18n="tools.file-media-toolbox.text.0143">EML 파일 선택</span></strong><span><span data-i18n="tools.file-media-toolbox.text.0144">제목, 보낸 사람, 받는 사람, 날짜와 본문</span></span></label>
               <div class="result-panel" id="emlHeaders"></div>
               <pre class="eml-body" id="emlBody"></pre>
             </article>
 
             <article class="utility-panel" id="key-event-tool" data-media-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>키보드 이벤트 테스트</h2><p>아래 영역을 클릭하고 키를 누르면 key, code와 modifier 상태를 표시합니다.</p></div><button type="button" class="ghost-button" id="clearKeyHistory">기록 지우기</button></div>
-              <div class="key-capture" id="keyCapture" tabindex="0">이 영역을 클릭한 뒤 키를 누르세요.</div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.file-media-toolbox.text.0145">개발자</span></p><h2><span data-i18n="tools.file-media-toolbox.text.0146">키보드 이벤트 테스트</span></h2><p><span data-i18n="tools.file-media-toolbox.text.0147">아래 영역을 클릭하고 키를 누르면 key, code와 modifier 상태를 표시합니다.</span></p></div><button type="button" class="ghost-button" id="clearKeyHistory"><span data-i18n="tools.file-media-toolbox.text.0148">기록 지우기</span></button></div>
+              <div class="key-capture" id="keyCapture" tabindex="0"><span data-i18n="tools.file-media-toolbox.text.0149">이 영역을 클릭한 뒤 키를 누르세요.</span></div>
               <div class="stat-grid key-stats" id="keyStats"></div>
-              <div class="table-wrap"><table><thead><tr><th>key</th><th>code</th><th>keyCode</th><th>modifier</th></tr></thead><tbody id="keyHistory"></tbody></table></div>
+              <div class="table-wrap"><table><thead><tr><th><span data-i18n="tools.file-media-toolbox.text.0150">key</span></th><th><span data-i18n="tools.file-media-toolbox.text.0151">code</span></th><th><span data-i18n="tools.file-media-toolbox.text.0152">keyCode</span></th><th><span data-i18n="tools.file-media-toolbox.text.0153">modifier</span></th></tr></thead><tbody id="keyHistory"></tbody></table></div>
             </article>
           </div>
         </section>
 
-        <footer class="footer"><p>© 2026 SolForge. Files stay in your browser.</p><div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../terms.html">이용약관</a><a href="../privacy.html">개인정보처리방침</a><a href="../contact.html">문의</a></div></footer>
+        <footer class="footer"><p><span data-i18n="tools.file-media-toolbox.text.0154">© 2026 SolForge. Files stay in your browser.</span></p><div><a href="../features.html"><span data-i18n="tools.file-media-toolbox.text.0155">기능소개</span></a><a href="../about.html"><span data-i18n="tools.file-media-toolbox.text.0156">사이트소개</span></a><a href="../terms.html"><span data-i18n="tools.file-media-toolbox.text.0157">이용약관</span></a><a href="../privacy.html"><span data-i18n="tools.file-media-toolbox.text.0158">개인정보처리방침</span></a><a href="../contact.html"><span data-i18n="tools.file-media-toolbox.text.0159">문의</span></a></div></footer>
       </main>
     </div>
-    <div class="toast" id="mediaToast" role="status" aria-live="polite">복사했습니다.</div>
+    <div class="toast" id="mediaToast" role="status" aria-live="polite"><span data-i18n="tools.file-media-toolbox.text.0160">복사했습니다.</span></div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
     <script src="../assets/js/file-media-tools.js?v=20260617-1"></script>
   </body>

@@ -254,6 +254,7 @@ button {
 }
 
 .theme-toggle,
+.language-toggle,
 .skin-apply-button,
 .sample-button,
 .copy-button,
@@ -275,6 +276,14 @@ button {
 .theme-toggle {
   min-width: 104px;
   padding: 0.5rem 0.78rem;
+}
+
+.language-toggle {
+  width: 44px;
+  min-width: 44px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  text-decoration: none;
 }
 
 .skin-apply-button {
@@ -2206,6 +2215,7 @@ th {
 
   .top-links a,
   .theme-toggle,
+  .language-toggle,
   .skin-apply-button,
   .skin-select,
   .sample-button,
@@ -2222,7 +2232,8 @@ th {
 
   .topbar-controls .theme-toggle,
   .topbar-controls .skin-apply-button,
-  .topbar-controls .skin-select {
+  .topbar-controls .skin-select,
+  .topbar-controls .language-toggle {
     flex: 1;
   }
 

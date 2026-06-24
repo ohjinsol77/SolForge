@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>텍스트·개발자·생활 도구 모음 - SolForge</title>
-    <meta name="description" content="글자수, 텍스트 정리, 한영타, JSON, Base64, URL, Timestamp, UUID, chmod, 비밀번호, 단위와 BMI를 브라우저에서 처리하는 무료 도구 모음입니다.">
+    <title data-i18n="tools.utility-toolbox.meta.title">텍스트·개발자·생활 도구 모음 - SolForge</title>
+    <meta name="description" content="글자수, 텍스트 정리, 한영타, JSON, Base64, URL, Timestamp, UUID, chmod, 비밀번호, 단위와 BMI를 브라우저에서 처리하는 무료 도구 모음입니다." data-i18n-attrs="content:tools.utility-toolbox.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/utility-toolbox.html">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960"
@@ -14,269 +14,270 @@
     <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
   </head>
   <body data-page="utility-toolbox">
-    <a class="skip-link" href="#main">본문으로 이동</a>
+    <a class="skip-link" href="#main"><span data-i18n="tools.utility-toolbox.text.0001">본문으로 이동</span></a>
     <div class="site-shell">
-      <aside class="sidebar" aria-label="기능 메뉴">
-        <a class="brand" href="../index.html" aria-label="SolForge 홈">
-          <span class="brand-mark">SF</span>
-          <span><strong>SolForge</strong><small>Browser Tool Collection</small></span>
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0002">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0003">
+          <span class="brand-mark"><span data-i18n="tools.utility-toolbox.text.0004">SF</span></span>
+          <span><strong><span data-i18n="tools.utility-toolbox.text.0005">SolForge</span></strong><small><span data-i18n="tools.utility-toolbox.text.0006">Browser Tool Collection</span></small></span>
         </a>
         <nav class="side-nav" data-solforge-nav></nav>
-        <div class="side-card"><strong>로컬 처리</strong><span>입력한 텍스트와 파일은 브라우저 안에서만 처리합니다.</span></div>
+        <div class="side-card"><strong><span data-i18n="tools.utility-toolbox.text.0007">로컬 처리</span></strong><span><span data-i18n="tools.utility-toolbox.text.0008">입력한 텍스트와 파일은 브라우저 안에서만 처리합니다.</span></span></div>
       </aside>
 
       <main class="content" id="main">
         <header class="topbar">
-          <nav class="top-links" aria-label="사이트 정보"><a href="../features.html" data-top-link>기능소개</a><a href="../about.html" data-top-link>사이트소개</a><a href="../terms.html" data-top-link>이용약관</a><a href="../privacy.html" data-top-link>개인정보처리방침</a><a href="../contact.html" data-top-link>문의</a></nav>
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0009"><a href="../features.html" data-top-link><span data-i18n="tools.utility-toolbox.text.0010">기능소개</span></a><a href="../about.html" data-top-link><span data-i18n="tools.utility-toolbox.text.0011">사이트소개</span></a><a href="../terms.html" data-top-link><span data-i18n="tools.utility-toolbox.text.0012">이용약관</span></a><a href="../privacy.html" data-top-link><span data-i18n="tools.utility-toolbox.text.0013">개인정보처리방침</span></a><a href="../contact.html" data-top-link><span data-i18n="tools.utility-toolbox.text.0014">문의</span></a></nav>
           <div class="topbar-controls">
-            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/" aria-label="Switch to English" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0015">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0016">
               <option value="basic">Basic</option>
               <option value="saas">SaaS</option>
               <option value="terminal">Terminal</option>
             </select>
-            <button class="skin-apply-button" type="button" id="skinApplyButton">적용</button>
-            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+            <button class="skin-apply-button" type="button" id="skinApplyButton"><span data-i18n="tools.utility-toolbox.text.0017">적용</span></button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel"><span data-i18n="tools.utility-toolbox.text.0018">Dark</span></span></button>
           </div>
         </header>
 
         <section class="page-hero compact-hero utility-hero">
           <div>
-            <p class="eyebrow">Static Utility Workbench</p>
-            <h1>자주 쓰는 도구를 한 화면에서 선택하세요.</h1>
-            <p>텍스트, 데이터, 개발, 생활 계산 도구를 모두 서버 전송 없이 실행합니다. 도구를 선택하면 필요한 입력 화면만 표시됩니다.</p>
+            <p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0019">Static Utility Workbench</span></p>
+            <h1><span data-i18n="tools.utility-toolbox.text.0020">자주 쓰는 도구를 한 화면에서 선택하세요.</span></h1>
+            <p><span data-i18n="tools.utility-toolbox.text.0021">텍스트, 데이터, 개발, 생활 계산 도구를 모두 서버 전송 없이 실행합니다. 도구를 선택하면 필요한 입력 화면만 표시됩니다.</span></p>
           </div>
           <div class="hero-panel">
-            <div class="metric-card"><strong id="utilityToolTotal">18</strong><span>정적 도구</span></div>
-            <div class="metric-card"><strong>0</strong><span>서버 저장</span></div>
+            <div class="metric-card"><strong id="utilityToolTotal">18</strong><span><span data-i18n="tools.utility-toolbox.text.0022">정적 도구</span></span></div>
+            <div class="metric-card"><strong>0</strong><span><span data-i18n="tools.utility-toolbox.text.0023">서버 저장</span></span></div>
           </div>
         </section>
 
         <section class="utility-workbench">
-          <aside class="utility-picker" aria-label="도구 선택">
+          <aside class="utility-picker" aria-label="도구 선택" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0024">
             <label class="utility-search">
-              <span>도구 검색</span>
-              <input id="utilitySearch" type="search" placeholder="예: JSON, 글자수, UUID">
+              <span><span data-i18n="tools.utility-toolbox.text.0025">도구 검색</span></span>
+              <input id="utilitySearch" type="search" placeholder="예: JSON, 글자수, UUID" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0026">
             </label>
-            <div class="utility-category-tabs" role="group" aria-label="도구 분류">
-              <button type="button" class="active" data-utility-filter="all">전체</button>
-              <button type="button" data-utility-filter="text">텍스트</button>
-              <button type="button" data-utility-filter="developer">개발자</button>
-              <button type="button" data-utility-filter="life">생활</button>
+            <div class="utility-category-tabs" role="group" aria-label="도구 분류" data-i18n-attrs="aria-label:tools.utility-toolbox.attr.aria-label.0027">
+              <button type="button" class="active" data-utility-filter="all"><span data-i18n="tools.utility-toolbox.text.0028">전체</span></button>
+              <button type="button" data-utility-filter="text"><span data-i18n="tools.utility-toolbox.text.0029">텍스트</span></button>
+              <button type="button" data-utility-filter="developer"><span data-i18n="tools.utility-toolbox.text.0030">개발자</span></button>
+              <button type="button" data-utility-filter="life"><span data-i18n="tools.utility-toolbox.text.0031">생활</span></button>
             </div>
             <nav class="utility-tool-list" id="utilityToolList">
-              <button type="button" data-tool-target="text-counter" data-category="text" data-keywords="글자수 단어 줄 바이트"><b>글</b><span><strong>글자수 세기</strong><small>문자·단어·줄·바이트</small></span></button>
-              <button type="button" data-tool-target="text-cleaner" data-category="text" data-keywords="공백 줄바꿈 빈줄 정리"><b>정</b><span><strong>텍스트 정리기</strong><small>공백과 개행 정돈</small></span></button>
-              <button type="button" data-tool-target="keyboard-converter" data-category="text" data-keywords="한영타 키보드 변환"><b>한</b><span><strong>한영타 변환</strong><small>영문 자판 ↔ 한글</small></span></button>
-              <button type="button" data-tool-target="privacy-mask" data-category="text" data-keywords="개인정보 마스킹 전화 이메일 주민 카드"><b>마</b><span><strong>개인정보 마스킹</strong><small>민감 정보 가리기</small></span></button>
-              <button type="button" data-tool-target="number-format" data-category="text" data-keywords="숫자 콤마 소수점 포맷"><b>1K</b><span><strong>숫자 포맷</strong><small>콤마·소수점 변환</small></span></button>
-              <button type="button" data-tool-target="money-korean" data-category="text" data-keywords="한글 금액 숫자 원"><b>원</b><span><strong>한글 금액 변환</strong><small>숫자 ↔ 한글 금액</small></span></button>
-              <button type="button" data-tool-target="json-tool" data-category="developer" data-keywords="json 포맷 압축 검사"><b>{}</b><span><strong>JSON 포매터</strong><small>정렬·압축·검증</small></span></button>
-              <button type="button" data-tool-target="base64-tool" data-category="developer" data-keywords="base64 인코딩 디코딩"><b>B64</b><span><strong>Base64 변환</strong><small>UTF-8 인코딩·디코딩</small></span></button>
-              <button type="button" data-tool-target="url-codec" data-category="developer" data-keywords="url uri 인코딩 디코딩"><b>%</b><span><strong>URL 인코더</strong><small>URI 문자열 변환</small></span></button>
-              <button type="button" data-tool-target="url-parser" data-category="developer" data-keywords="url 파서 쿼리 protocol host"><b>URL</b><span><strong>URL 파서</strong><small>주소 구성요소 분석</small></span></button>
-              <button type="button" data-tool-target="timestamp-tool" data-category="developer" data-keywords="unix timestamp 시간 변환"><b>TS</b><span><strong>Unix Timestamp</strong><small>날짜·타임스탬프 변환</small></span></button>
-              <button type="button" data-tool-target="uuid-tool" data-category="developer" data-keywords="uuid guid 생성"><b>ID</b><span><strong>UUID 생성기</strong><small>UUID v4 복수 생성</small></span></button>
-              <button type="button" data-tool-target="chmod-tool" data-category="developer" data-keywords="chmod 리눅스 권한 755 rwx"><b>755</b><span><strong>chmod 계산기</strong><small>숫자·문자 권한 변환</small></span></button>
-              <button type="button" data-tool-target="password-tool" data-category="developer" data-keywords="비밀번호 랜덤 패스워드 보안"><b>PW</b><span><strong>비밀번호 생성기</strong><small>암호학적 랜덤 문자열</small></span></button>
-              <button type="button" data-tool-target="unit-tool" data-category="life" data-keywords="단위 길이 무게 온도 면적 속도"><b>↔</b><span><strong>단위 변환기</strong><small>길이·무게·온도 등</small></span></button>
-              <button type="button" data-tool-target="traditional-weight" data-category="life" data-keywords="근 관 돈 그램 전통 무게"><b>근</b><span><strong>근·관·돈 변환</strong><small>전통 무게 단위</small></span></button>
-              <button type="button" data-tool-target="bmi-tool" data-category="life" data-keywords="bmi whr 키 체중 비만"><b>BMI</b><span><strong>BMI·WHR 계산</strong><small>체질량·복부 비율</small></span></button>
-              <button type="button" data-tool-target="lotto-tool" data-category="life" data-keywords="로또 번호 랜덤 추첨"><b>45</b><span><strong>로또 번호 생성</strong><small>중복 없는 6개 번호</small></span></button>
+              <button type="button" data-tool-target="text-counter" data-category="text" data-keywords="글자수 단어 줄 바이트"><b><span data-i18n="tools.utility-toolbox.text.0032">글</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0033">글자수 세기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0034">문자·단어·줄·바이트</span></small></span></button>
+              <button type="button" data-tool-target="text-cleaner" data-category="text" data-keywords="공백 줄바꿈 빈줄 정리"><b><span data-i18n="tools.utility-toolbox.text.0035">정</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0036">텍스트 정리기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0037">공백과 개행 정돈</span></small></span></button>
+              <button type="button" data-tool-target="keyboard-converter" data-category="text" data-keywords="한영타 키보드 변환"><b><span data-i18n="tools.utility-toolbox.text.0038">한</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0039">한영타 변환</span></strong><small><span data-i18n="tools.utility-toolbox.text.0040">영문 자판 ↔ 한글</span></small></span></button>
+              <button type="button" data-tool-target="privacy-mask" data-category="text" data-keywords="개인정보 마스킹 전화 이메일 주민 카드"><b><span data-i18n="tools.utility-toolbox.text.0041">마</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0042">개인정보 마스킹</span></strong><small><span data-i18n="tools.utility-toolbox.text.0043">민감 정보 가리기</span></small></span></button>
+              <button type="button" data-tool-target="number-format" data-category="text" data-keywords="숫자 콤마 소수점 포맷"><b><span data-i18n="tools.utility-toolbox.text.0044">1K</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0045">숫자 포맷</span></strong><small><span data-i18n="tools.utility-toolbox.text.0046">콤마·소수점 변환</span></small></span></button>
+              <button type="button" data-tool-target="money-korean" data-category="text" data-keywords="한글 금액 숫자 원"><b><span data-i18n="tools.utility-toolbox.text.0047">원</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0048">한글 금액 변환</span></strong><small><span data-i18n="tools.utility-toolbox.text.0049">숫자 ↔ 한글 금액</span></small></span></button>
+              <button type="button" data-tool-target="json-tool" data-category="developer" data-keywords="json 포맷 압축 검사"><b>{}</b><span><strong><span data-i18n="tools.utility-toolbox.text.0050">JSON 포매터</span></strong><small><span data-i18n="tools.utility-toolbox.text.0051">정렬·압축·검증</span></small></span></button>
+              <button type="button" data-tool-target="base64-tool" data-category="developer" data-keywords="base64 인코딩 디코딩"><b><span data-i18n="tools.utility-toolbox.text.0052">B64</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0053">Base64 변환</span></strong><small><span data-i18n="tools.utility-toolbox.text.0054">UTF-8 인코딩·디코딩</span></small></span></button>
+              <button type="button" data-tool-target="url-codec" data-category="developer" data-keywords="url uri 인코딩 디코딩"><b>%</b><span><strong><span data-i18n="tools.utility-toolbox.text.0055">URL 인코더</span></strong><small><span data-i18n="tools.utility-toolbox.text.0056">URI 문자열 변환</span></small></span></button>
+              <button type="button" data-tool-target="url-parser" data-category="developer" data-keywords="url 파서 쿼리 protocol host"><b><span data-i18n="tools.utility-toolbox.text.0057">URL</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0058">URL 파서</span></strong><small><span data-i18n="tools.utility-toolbox.text.0059">주소 구성요소 분석</span></small></span></button>
+              <button type="button" data-tool-target="timestamp-tool" data-category="developer" data-keywords="unix timestamp 시간 변환"><b><span data-i18n="tools.utility-toolbox.text.0060">TS</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0061">Unix Timestamp</span></strong><small><span data-i18n="tools.utility-toolbox.text.0062">날짜·타임스탬프 변환</span></small></span></button>
+              <button type="button" data-tool-target="uuid-tool" data-category="developer" data-keywords="uuid guid 생성"><b><span data-i18n="tools.utility-toolbox.text.0063">ID</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0064">UUID 생성기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0065">UUID v4 복수 생성</span></small></span></button>
+              <button type="button" data-tool-target="chmod-tool" data-category="developer" data-keywords="chmod 리눅스 권한 755 rwx"><b>755</b><span><strong><span data-i18n="tools.utility-toolbox.text.0066">chmod 계산기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0067">숫자·문자 권한 변환</span></small></span></button>
+              <button type="button" data-tool-target="password-tool" data-category="developer" data-keywords="비밀번호 랜덤 패스워드 보안"><b><span data-i18n="tools.utility-toolbox.text.0068">PW</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0069">비밀번호 생성기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0070">암호학적 랜덤 문자열</span></small></span></button>
+              <button type="button" data-tool-target="unit-tool" data-category="life" data-keywords="단위 길이 무게 온도 면적 속도"><b>↔</b><span><strong><span data-i18n="tools.utility-toolbox.text.0071">단위 변환기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0072">길이·무게·온도 등</span></small></span></button>
+              <button type="button" data-tool-target="traditional-weight" data-category="life" data-keywords="근 관 돈 그램 전통 무게"><b><span data-i18n="tools.utility-toolbox.text.0073">근</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0074">근·관·돈 변환</span></strong><small><span data-i18n="tools.utility-toolbox.text.0075">전통 무게 단위</span></small></span></button>
+              <button type="button" data-tool-target="bmi-tool" data-category="life" data-keywords="bmi whr 키 체중 비만"><b><span data-i18n="tools.utility-toolbox.text.0076">BMI</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0077">BMI·WHR 계산</span></strong><small><span data-i18n="tools.utility-toolbox.text.0078">체질량·복부 비율</span></small></span></button>
+              <button type="button" data-tool-target="lotto-tool" data-category="life" data-keywords="로또 번호 랜덤 추첨"><b>45</b><span><strong><span data-i18n="tools.utility-toolbox.text.0079">로또 번호 생성</span></strong><small><span data-i18n="tools.utility-toolbox.text.0080">중복 없는 6개 번호</span></small></span></button>
             </nav>
-            <p class="utility-empty" id="utilityEmpty" hidden>일치하는 도구가 없습니다.</p>
+            <p class="utility-empty" id="utilityEmpty" hidden><span data-i18n="tools.utility-toolbox.text.0081">일치하는 도구가 없습니다.</span></p>
           </aside>
 
           <div class="utility-stage">
             <article class="utility-panel active" id="text-counter" data-tool-panel>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>글자수 세기</h2><p>공백 포함·제외 문자 수와 단어, 줄, UTF-8 바이트를 실시간 계산합니다.</p></div><button type="button" class="ghost-button" data-clear-target="textCounterInput">비우기</button></div>
-              <textarea id="textCounterInput" class="utility-textarea" placeholder="통계를 확인할 텍스트를 입력하세요."></textarea>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0082">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0083">글자수 세기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0084">공백 포함·제외 문자 수와 단어, 줄, UTF-8 바이트를 실시간 계산합니다.</span></p></div><button type="button" class="ghost-button" data-clear-target="textCounterInput"><span data-i18n="tools.utility-toolbox.text.0085">비우기</span></button></div>
+              <textarea id="textCounterInput" class="utility-textarea" placeholder="통계를 확인할 텍스트를 입력하세요." data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0086"></textarea>
               <div class="stat-grid" id="textCounterStats" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="text-cleaner" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>텍스트 정리기</h2><p>연속 공백, 줄 끝 공백, 빈 줄과 보이지 않는 문자를 정리합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0087">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0088">텍스트 정리기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0089">연속 공백, 줄 끝 공백, 빈 줄과 보이지 않는 문자를 정리합니다.</span></p></div></div>
               <div class="utility-two-column">
-                <div><label class="editor-label" for="textCleanerInput">입력</label><textarea id="textCleanerInput" class="utility-textarea"></textarea></div>
-                <div><div class="editor-label-row"><label class="editor-label" for="textCleanerOutput">결과</label><button type="button" class="copy-button" data-copy-from="textCleanerOutput">복사</button></div><textarea id="textCleanerOutput" class="utility-textarea" readonly></textarea></div>
+                <div><label class="editor-label" for="textCleanerInput"><span data-i18n="tools.utility-toolbox.text.0090">입력</span></label><textarea id="textCleanerInput" class="utility-textarea"></textarea></div>
+                <div><div class="editor-label-row"><label class="editor-label" for="textCleanerOutput"><span data-i18n="tools.utility-toolbox.text.0091">결과</span></label><button type="button" class="copy-button" data-copy-from="textCleanerOutput"><span data-i18n="tools.utility-toolbox.text.0092">복사</span></button></div><textarea id="textCleanerOutput" class="utility-textarea" readonly></textarea></div>
               </div>
-              <div class="option-row"><label><input id="cleanMergeLines" type="checkbox"> 문단 안 줄바꿈 합치기</label><label><input id="cleanSingleLine" type="checkbox"> 전체를 한 줄로</label></div>
+              <div class="option-row"><label><input id="cleanMergeLines" type="checkbox"> <span data-i18n="tools.utility-toolbox.text.0093">문단 안 줄바꿈 합치기</span></label><label><input id="cleanSingleLine" type="checkbox"> <span data-i18n="tools.utility-toolbox.text.0094">전체를 한 줄로</span></label></div>
             </article>
 
             <article class="utility-panel" id="keyboard-converter" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>한영타 변환기</h2><p>한/영 전환을 놓치고 입력한 문자열을 두벌식 자판 기준으로 복구합니다.</p></div></div>
-              <div class="segmented-control"><button type="button" class="active" data-keyboard-mode="auto">자동</button><button type="button" data-keyboard-mode="eng-to-kor">영 → 한</button><button type="button" data-keyboard-mode="kor-to-eng">한 → 영</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0095">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0096">한영타 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0097">한/영 전환을 놓치고 입력한 문자열을 두벌식 자판 기준으로 복구합니다.</span></p></div></div>
+              <div class="segmented-control"><button type="button" class="active" data-keyboard-mode="auto"><span data-i18n="tools.utility-toolbox.text.0098">자동</span></button><button type="button" data-keyboard-mode="eng-to-kor"><span data-i18n="tools.utility-toolbox.text.0099">영 → 한</span></button><button type="button" data-keyboard-mode="kor-to-eng"><span data-i18n="tools.utility-toolbox.text.0100">한 → 영</span></button></div>
               <div class="utility-two-column">
-                <textarea id="keyboardInput" class="utility-textarea" placeholder="dkssudgktpdy 또는 안녕하세요"></textarea>
-                <div><div class="editor-label-row"><span class="editor-label">변환 결과</span><button type="button" class="copy-button" data-copy-from="keyboardOutput">복사</button></div><textarea id="keyboardOutput" class="utility-textarea" readonly></textarea></div>
+                <textarea id="keyboardInput" class="utility-textarea" placeholder="dkssudgktpdy 또는 안녕하세요" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0101"></textarea>
+                <div><div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0102">변환 결과</span></span><button type="button" class="copy-button" data-copy-from="keyboardOutput"><span data-i18n="tools.utility-toolbox.text.0103">복사</span></button></div><textarea id="keyboardOutput" class="utility-textarea" readonly></textarea></div>
               </div>
             </article>
 
             <article class="utility-panel" id="privacy-mask" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>개인정보 마스킹</h2><p>전화번호, 이메일, 주민등록번호와 카드번호 패턴을 자동으로 가립니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0104">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0105">개인정보 마스킹</span></h2><p><span data-i18n="tools.utility-toolbox.text.0106">전화번호, 이메일, 주민등록번호와 카드번호 패턴을 자동으로 가립니다.</span></p></div></div>
               <div class="utility-two-column">
-                <textarea id="privacyInput" class="utility-textarea" placeholder="홍길동 010-1234-5678 user@example.com"></textarea>
-                <div><div class="editor-label-row"><span class="editor-label">마스킹 결과</span><button type="button" class="copy-button" data-copy-from="privacyOutput">복사</button></div><textarea id="privacyOutput" class="utility-textarea" readonly></textarea></div>
+                <textarea id="privacyInput" class="utility-textarea" placeholder="홍길동 010-1234-5678 user@example.com" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0107"></textarea>
+                <div><div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0108">마스킹 결과</span></span><button type="button" class="copy-button" data-copy-from="privacyOutput"><span data-i18n="tools.utility-toolbox.text.0109">복사</span></button></div><textarea id="privacyOutput" class="utility-textarea" readonly></textarea></div>
               </div>
             </article>
 
             <article class="utility-panel" id="number-format" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>숫자 포맷 변환기</h2><p>여러 줄의 숫자에 천 단위 콤마와 소수점 자릿수를 적용합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0110">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0111">숫자 포맷 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0112">여러 줄의 숫자에 천 단위 콤마와 소수점 자릿수를 적용합니다.</span></p></div></div>
               <div class="toolbar-form">
-                <div class="form-row"><label for="numberDecimals">소수점 자리</label><input id="numberDecimals" type="number" min="0" max="12" value="0"></div>
-                <label class="check-row"><input id="numberParentheses" type="checkbox"> 음수를 괄호로 표시</label>
+                <div class="form-row"><label for="numberDecimals"><span data-i18n="tools.utility-toolbox.text.0113">소수점 자리</span></label><input id="numberDecimals" type="number" min="0" max="12" value="0"></div>
+                <label class="check-row"><input id="numberParentheses" type="checkbox"> <span data-i18n="tools.utility-toolbox.text.0114">음수를 괄호로 표시</span></label>
               </div>
               <div class="utility-two-column">
-                <textarea id="numberFormatInput" class="utility-textarea" placeholder="1234567&#10;-9876.5"></textarea>
-                <div><div class="editor-label-row"><span class="editor-label">결과</span><button type="button" class="copy-button" data-copy-from="numberFormatOutput">복사</button></div><textarea id="numberFormatOutput" class="utility-textarea" readonly></textarea></div>
+                <textarea id="numberFormatInput" class="utility-textarea" placeholder="1234567&#10;-9876.5" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0115"></textarea>
+                <div><div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0116">결과</span></span><button type="button" class="copy-button" data-copy-from="numberFormatOutput"><span data-i18n="tools.utility-toolbox.text.0117">복사</span></button></div><textarea id="numberFormatOutput" class="utility-textarea" readonly></textarea></div>
               </div>
             </article>
 
             <article class="utility-panel" id="money-korean" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">텍스트</p><h2>한글 금액 변환기</h2><p>정수 금액을 한글 원 표기로, 한글 금액을 숫자로 변환합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0118">텍스트</span></p><h2><span data-i18n="tools.utility-toolbox.text.0119">한글 금액 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0120">정수 금액을 한글 원 표기로, 한글 금액을 숫자로 변환합니다.</span></p></div></div>
               <div class="inline-fields two-fields">
-                <div class="form-row"><label for="moneyNumberInput">숫자 금액</label><input id="moneyNumberInput" type="text" inputmode="numeric" value="123456789"></div>
-                <div class="form-row"><label for="moneyKoreanInput">한글 금액</label><input id="moneyKoreanInput" type="text" value="일억이천삼백사십오만육천칠백팔십구원"></div>
+                <div class="form-row"><label for="moneyNumberInput"><span data-i18n="tools.utility-toolbox.text.0121">숫자 금액</span></label><input id="moneyNumberInput" type="text" inputmode="numeric" value="123456789"></div>
+                <div class="form-row"><label for="moneyKoreanInput"><span data-i18n="tools.utility-toolbox.text.0122">한글 금액</span></label><input id="moneyKoreanInput" type="text" value="일억이천삼백사십오만육천칠백팔십구원" data-i18n-attrs="value:tools.utility-toolbox.attr.value.0239"></div>
               </div>
               <div class="result-panel" id="moneyResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="json-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>JSON 포매터·검증기</h2><p>JSON을 검증하고 들여쓰기 또는 한 줄 형태로 변환합니다.</p></div><div class="button-row"><button type="button" class="ghost-button" id="jsonPretty">정렬</button><button type="button" class="ghost-button" id="jsonMinify">압축</button></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0123">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0124">JSON 포매터·검증기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0125">JSON을 검증하고 들여쓰기 또는 한 줄 형태로 변환합니다.</span></p></div><div class="button-row"><button type="button" class="ghost-button" id="jsonPretty"><span data-i18n="tools.utility-toolbox.text.0126">정렬</span></button><button type="button" class="ghost-button" id="jsonMinify"><span data-i18n="tools.utility-toolbox.text.0127">압축</span></button></div></div>
               <div class="utility-two-column">
                 <textarea id="jsonInput" class="utility-textarea code-textarea" spellcheck="false">{"service":"SolForge","tools":["JSON","Base64"],"static":true}</textarea>
-                <div><div class="editor-label-row"><span class="editor-label">결과</span><button type="button" class="copy-button" data-copy-from="jsonOutput">복사</button></div><textarea id="jsonOutput" class="utility-textarea code-textarea" readonly></textarea></div>
+                <div><div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0128">결과</span></span><button type="button" class="copy-button" data-copy-from="jsonOutput"><span data-i18n="tools.utility-toolbox.text.0129">복사</span></button></div><textarea id="jsonOutput" class="utility-textarea code-textarea" readonly></textarea></div>
               </div>
               <p class="validation-message" id="jsonStatus" aria-live="polite"></p>
             </article>
 
             <article class="utility-panel" id="base64-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>Base64 인코더·디코더</h2><p>UTF-8 텍스트와 로컬 파일을 Base64로 변환하거나 파일로 복원합니다.</p></div><div class="button-row"><button type="button" class="ghost-button" id="base64Encode">텍스트 인코딩</button><button type="button" class="ghost-button" id="base64Decode">텍스트 디코딩</button></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0130">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0131">Base64 인코더·디코더</span></h2><p><span data-i18n="tools.utility-toolbox.text.0132">UTF-8 텍스트와 로컬 파일을 Base64로 변환하거나 파일로 복원합니다.</span></p></div><div class="button-row"><button type="button" class="ghost-button" id="base64Encode"><span data-i18n="tools.utility-toolbox.text.0133">텍스트 인코딩</span></button><button type="button" class="ghost-button" id="base64Decode"><span data-i18n="tools.utility-toolbox.text.0134">텍스트 디코딩</span></button></div></div>
               <div class="utility-two-column">
-                <textarea id="base64Input" class="utility-textarea" placeholder="원문 또는 Base64"></textarea>
-                <div><div class="editor-label-row"><span class="editor-label">결과</span><button type="button" class="copy-button" data-copy-from="base64Output">복사</button></div><textarea id="base64Output" class="utility-textarea" readonly></textarea></div>
+                <textarea id="base64Input" class="utility-textarea" placeholder="원문 또는 Base64" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0135"></textarea>
+                <div><div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0136">결과</span></span><button type="button" class="copy-button" data-copy-from="base64Output"><span data-i18n="tools.utility-toolbox.text.0137">복사</span></button></div><textarea id="base64Output" class="utility-textarea" readonly></textarea></div>
               </div>
               <div class="toolbar-form toolbar-wide">
-                <label class="form-row utility-grow"><span>파일 인코딩</span><input id="base64File" type="file"></label>
-                <button type="button" class="secondary-link" id="base64EncodeFile">파일 → Base64</button>
+                <label class="form-row utility-grow"><span><span data-i18n="tools.utility-toolbox.text.0138">파일 인코딩</span></span><input id="base64File" type="file"></label>
+                <button type="button" class="secondary-link" id="base64EncodeFile"><span data-i18n="tools.utility-toolbox.text.0139">파일 → Base64</span></button>
               </div>
               <div class="toolbar-form toolbar-wide">
-                <div class="form-row utility-grow"><label for="base64FileName">복원 파일명</label><input id="base64FileName" type="text" value="decoded-file.bin"></div>
-                <div class="form-row"><label for="base64Mime">MIME</label><input id="base64Mime" type="text" value="application/octet-stream"></div>
-                <button type="button" class="secondary-link" id="base64DecodeFile">Base64 → 파일</button>
-                <a class="ghost-button" id="base64FileDownload" download hidden>파일 다운로드</a>
+                <div class="form-row utility-grow"><label for="base64FileName"><span data-i18n="tools.utility-toolbox.text.0140">복원 파일명</span></label><input id="base64FileName" type="text" value="decoded-file.bin"></div>
+                <div class="form-row"><label for="base64Mime"><span data-i18n="tools.utility-toolbox.text.0141">MIME</span></label><input id="base64Mime" type="text" value="application/octet-stream"></div>
+                <button type="button" class="secondary-link" id="base64DecodeFile"><span data-i18n="tools.utility-toolbox.text.0142">Base64 → 파일</span></button>
+                <a class="ghost-button" id="base64FileDownload" download hidden><span data-i18n="tools.utility-toolbox.text.0143">파일 다운로드</span></a>
               </div>
               <p class="validation-message" id="base64FileStatus" aria-live="polite"></p>
             </article>
 
             <article class="utility-panel" id="url-codec" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>URL 인코더·디코더</h2><p>전체 URI 또는 쿼리 값 단위로 인코딩 방식을 선택할 수 있습니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0144">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0145">URL 인코더·디코더</span></h2><p><span data-i18n="tools.utility-toolbox.text.0146">전체 URI 또는 쿼리 값 단위로 인코딩 방식을 선택할 수 있습니다.</span></p></div></div>
               <div class="toolbar-form">
-                <div class="form-row"><label for="urlCodecMode">방식</label><select id="urlCodecMode"><option value="component">URI 컴포넌트</option><option value="uri">전체 URI</option></select></div>
-                <button type="button" class="primary-link" id="urlEncode">인코딩</button>
-                <button type="button" class="secondary-link" id="urlDecode">디코딩</button>
+                <div class="form-row"><label for="urlCodecMode"><span data-i18n="tools.utility-toolbox.text.0147">방식</span></label><select id="urlCodecMode"><option value="component" data-i18n="tools.utility-toolbox.text.0228">URI 컴포넌트</option><option value="uri" data-i18n="tools.utility-toolbox.text.0229">전체 URI</option></select></div>
+                <button type="button" class="primary-link" id="urlEncode"><span data-i18n="tools.utility-toolbox.text.0148">인코딩</span></button>
+                <button type="button" class="secondary-link" id="urlDecode"><span data-i18n="tools.utility-toolbox.text.0149">디코딩</span></button>
               </div>
               <div class="utility-two-column">
-                <textarea id="urlCodecInput" class="utility-textarea">https://example.com/search?q=한글 검색</textarea>
+                <textarea id="urlCodecInput" class="utility-textarea" data-i18n="tools.utility-toolbox.text.0238">https://example.com/search?q=한글 검색</textarea>
                 <textarea id="urlCodecOutput" class="utility-textarea" readonly></textarea>
               </div>
             </article>
 
             <article class="utility-panel" id="url-parser" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>URL 파서</h2><p>URL의 프로토콜, 호스트, 경로, 쿼리와 해시를 분해합니다.</p></div></div>
-              <div class="toolbar-form toolbar-wide"><div class="form-row utility-grow"><label for="urlParserInput">URL</label><input id="urlParserInput" type="url" value="https://example.com:8080/path?q=SolForge&amp;lang=ko#result"></div><button type="button" class="primary-link" id="parseUrl">분석</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0150">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0151">URL 파서</span></h2><p><span data-i18n="tools.utility-toolbox.text.0152">URL의 프로토콜, 호스트, 경로, 쿼리와 해시를 분해합니다.</span></p></div></div>
+              <div class="toolbar-form toolbar-wide"><div class="form-row utility-grow"><label for="urlParserInput"><span data-i18n="tools.utility-toolbox.text.0153">URL</span></label><input id="urlParserInput" type="url" value="https://example.com:8080/path?q=SolForge&amp;lang=ko#result"></div><button type="button" class="primary-link" id="parseUrl"><span data-i18n="tools.utility-toolbox.text.0154">분석</span></button></div>
               <div class="result-panel" id="urlParserResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="timestamp-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>Unix Timestamp 변환기</h2><p>초·밀리초 타임스탬프와 로컬 날짜를 상호 변환합니다.</p></div><button type="button" class="ghost-button" id="timestampNow">현재 시간</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0155">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0156">Unix Timestamp 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0157">초·밀리초 타임스탬프와 로컬 날짜를 상호 변환합니다.</span></p></div><button type="button" class="ghost-button" id="timestampNow"><span data-i18n="tools.utility-toolbox.text.0158">현재 시간</span></button></div>
               <div class="inline-fields two-fields">
-                <div class="form-row"><label for="timestampInput">Timestamp</label><input id="timestampInput" type="text" inputmode="numeric"></div>
-                <div class="form-row"><label for="timestampDateInput">날짜·시간</label><input id="timestampDateInput" type="datetime-local"></div>
+                <div class="form-row"><label for="timestampInput"><span data-i18n="tools.utility-toolbox.text.0159">Timestamp</span></label><input id="timestampInput" type="text" inputmode="numeric"></div>
+                <div class="form-row"><label for="timestampDateInput"><span data-i18n="tools.utility-toolbox.text.0160">날짜·시간</span></label><input id="timestampDateInput" type="datetime-local"></div>
               </div>
               <div class="result-panel" id="timestampResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="uuid-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>UUID v4 생성기</h2><p>브라우저의 암호학적 난수로 UUID를 생성합니다.</p></div></div>
-              <form class="toolbar-form" id="uuidForm"><div class="form-row"><label for="uuidCount">생성 개수</label><input id="uuidCount" type="number" min="1" max="100" value="5"></div><label class="check-row"><input id="uuidUppercase" type="checkbox"> 대문자</label><button class="primary-link" type="submit">생성</button></form>
-              <div class="editor-label-row"><span class="editor-label">UUID 목록</span><button type="button" class="copy-button" data-copy-from="uuidOutput">복사</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0161">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0162">UUID v4 생성기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0163">브라우저의 암호학적 난수로 UUID를 생성합니다.</span></p></div></div>
+              <form class="toolbar-form" id="uuidForm"><div class="form-row"><label for="uuidCount"><span data-i18n="tools.utility-toolbox.text.0164">생성 개수</span></label><input id="uuidCount" type="number" min="1" max="100" value="5"></div><label class="check-row"><input id="uuidUppercase" type="checkbox"> <span data-i18n="tools.utility-toolbox.text.0165">대문자</span></label><button class="primary-link" type="submit"><span data-i18n="tools.utility-toolbox.text.0166">생성</span></button></form>
+              <div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0167">UUID 목록</span></span><button type="button" class="copy-button" data-copy-from="uuidOutput"><span data-i18n="tools.utility-toolbox.text.0168">복사</span></button></div>
               <textarea id="uuidOutput" class="utility-textarea code-textarea" readonly></textarea>
             </article>
 
             <article class="utility-panel" id="chmod-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>chmod 권한 계산기</h2><p>755 같은 숫자 권한을 rwxr-xr-x 문자 권한으로 변환합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0169">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0170">chmod 권한 계산기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0171">755 같은 숫자 권한을 rwxr-xr-x 문자 권한으로 변환합니다.</span></p></div></div>
               <div class="inline-fields two-fields">
-                <div class="form-row"><label for="chmodInput">숫자 권한</label><input id="chmodInput" type="text" inputmode="numeric" maxlength="4" value="755"></div>
-                <div class="form-row"><label for="chmodSymbolic">문자 권한</label><input id="chmodSymbolic" type="text" value="rwxr-xr-x"></div>
+                <div class="form-row"><label for="chmodInput"><span data-i18n="tools.utility-toolbox.text.0172">숫자 권한</span></label><input id="chmodInput" type="text" inputmode="numeric" maxlength="4" value="755"></div>
+                <div class="form-row"><label for="chmodSymbolic"><span data-i18n="tools.utility-toolbox.text.0173">문자 권한</span></label><input id="chmodSymbolic" type="text" value="rwxr-xr-x"></div>
               </div>
               <div class="chmod-grid" id="chmodGrid"></div>
               <div class="result-panel" id="chmodResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="password-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">개발자</p><h2>비밀번호 생성기</h2><p>브라우저의 암호학적 난수를 사용해 복사 가능한 비밀번호를 만듭니다.</p></div><button type="button" class="primary-link" id="generatePassword">새로 생성</button></div>
-              <div class="form-row"><label for="passwordLength">길이 <output id="passwordLengthValue">20</output></label><input id="passwordLength" type="range" min="8" max="64" value="20"></div>
-              <div class="option-row"><label><input id="passwordLower" type="checkbox" checked> 소문자</label><label><input id="passwordUpper" type="checkbox" checked> 대문자</label><label><input id="passwordNumber" type="checkbox" checked> 숫자</label><label><input id="passwordSymbol" type="checkbox" checked> 특수문자</label><label><input id="passwordAmbiguous" type="checkbox" checked> 혼동 문자 제외</label></div>
-              <div class="copy-result"><code id="passwordOutput"></code><button type="button" class="copy-button" data-copy-from="passwordOutput">복사</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0174">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0175">비밀번호 생성기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0176">브라우저의 암호학적 난수를 사용해 복사 가능한 비밀번호를 만듭니다.</span></p></div><button type="button" class="primary-link" id="generatePassword"><span data-i18n="tools.utility-toolbox.text.0177">새로 생성</span></button></div>
+              <div class="form-row"><label for="passwordLength"><span data-i18n="tools.utility-toolbox.text.0178">길이</span> <output id="passwordLengthValue">20</output></label><input id="passwordLength" type="range" min="8" max="64" value="20"></div>
+              <div class="option-row"><label><input id="passwordLower" type="checkbox" checked> <span data-i18n="tools.utility-toolbox.text.0179">소문자</span></label><label><input id="passwordUpper" type="checkbox" checked> <span data-i18n="tools.utility-toolbox.text.0180">대문자</span></label><label><input id="passwordNumber" type="checkbox" checked> <span data-i18n="tools.utility-toolbox.text.0181">숫자</span></label><label><input id="passwordSymbol" type="checkbox" checked> <span data-i18n="tools.utility-toolbox.text.0182">특수문자</span></label><label><input id="passwordAmbiguous" type="checkbox" checked> <span data-i18n="tools.utility-toolbox.text.0183">혼동 문자 제외</span></label></div>
+              <div class="copy-result"><code id="passwordOutput"></code><button type="button" class="copy-button" data-copy-from="passwordOutput"><span data-i18n="tools.utility-toolbox.text.0184">복사</span></button></div>
               <div class="password-meter"><span id="passwordMeter"></span></div>
             </article>
 
             <article class="utility-panel" id="unit-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">생활</p><h2>단위 변환기</h2><p>길이, 무게, 온도, 면적과 속도를 변환합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0185">생활</span></p><h2><span data-i18n="tools.utility-toolbox.text.0186">단위 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0187">길이, 무게, 온도, 면적과 속도를 변환합니다.</span></p></div></div>
               <div class="inline-fields utility-unit-fields">
-                <div class="form-row"><label for="unitCategory">종류</label><select id="unitCategory"><option value="length">길이</option><option value="weight">무게</option><option value="temperature">온도</option><option value="area">면적</option><option value="speed">속도</option></select></div>
-                <div class="form-row"><label for="unitValue">값</label><input id="unitValue" type="number" step="any" value="1"></div>
-                <div class="form-row"><label for="unitFrom">From</label><select id="unitFrom"></select></div>
-                <div class="form-row"><label for="unitTo">To</label><select id="unitTo"></select></div>
+                <div class="form-row"><label for="unitCategory"><span data-i18n="tools.utility-toolbox.text.0188">종류</span></label><select id="unitCategory"><option value="length" data-i18n="tools.utility-toolbox.text.0230">길이</option><option value="weight" data-i18n="tools.utility-toolbox.text.0231">무게</option><option value="temperature" data-i18n="tools.utility-toolbox.text.0232">온도</option><option value="area" data-i18n="tools.utility-toolbox.text.0233">면적</option><option value="speed" data-i18n="tools.utility-toolbox.text.0234">속도</option></select></div>
+                <div class="form-row"><label for="unitValue"><span data-i18n="tools.utility-toolbox.text.0189">값</span></label><input id="unitValue" type="number" step="any" value="1"></div>
+                <div class="form-row"><label for="unitFrom"><span data-i18n="tools.utility-toolbox.text.0190">From</span></label><select id="unitFrom"></select></div>
+                <div class="form-row"><label for="unitTo"><span data-i18n="tools.utility-toolbox.text.0191">To</span></label><select id="unitTo"></select></div>
               </div>
               <div class="result-panel" id="unitResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="traditional-weight" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">생활</p><h2>근·관·돈 변환기</h2><p>근 기준 중량을 직접 정해 g과 kg으로 환산합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0192">생활</span></p><h2><span data-i18n="tools.utility-toolbox.text.0193">근·관·돈 변환기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0194">근 기준 중량을 직접 정해 g과 kg으로 환산합니다.</span></p></div></div>
               <div class="inline-fields">
-                <div class="form-row"><label for="traditionalValue">값</label><input id="traditionalValue" type="number" min="0" step="any" value="1"></div>
-                <div class="form-row"><label for="traditionalUnit">단위</label><select id="traditionalUnit"><option value="geun">근</option><option value="gwan">관</option><option value="don">돈</option><option value="g">g</option><option value="kg">kg</option></select></div>
-                <div class="form-row"><label for="geunGram">1근 기준(g)</label><input id="geunGram" type="number" min="1" value="600"></div>
+                <div class="form-row"><label for="traditionalValue"><span data-i18n="tools.utility-toolbox.text.0195">값</span></label><input id="traditionalValue" type="number" min="0" step="any" value="1"></div>
+                <div class="form-row"><label for="traditionalUnit"><span data-i18n="tools.utility-toolbox.text.0196">단위</span></label><select id="traditionalUnit"><option value="geun" data-i18n="tools.utility-toolbox.text.0235">근</option><option value="gwan" data-i18n="tools.utility-toolbox.text.0236">관</option><option value="don" data-i18n="tools.utility-toolbox.text.0237">돈</option><option value="g">g</option><option value="kg">kg</option></select></div>
+                <div class="form-row"><label for="geunGram"><span data-i18n="tools.utility-toolbox.text.0197">1근 기준(g)</span></label><input id="geunGram" type="number" min="1" value="600"></div>
               </div>
-              <div class="preset-row"><button type="button" data-geun-preset="600">표준 600g</button><button type="button" data-geun-preset="400">채소 400g</button><button type="button" data-geun-preset="375">옛 관행 375g</button><button type="button" data-geun-preset="500">고춧가루 500g</button></div>
+              <div class="preset-row"><button type="button" data-geun-preset="600"><span data-i18n="tools.utility-toolbox.text.0198">표준 600g</span></button><button type="button" data-geun-preset="400"><span data-i18n="tools.utility-toolbox.text.0199">채소 400g</span></button><button type="button" data-geun-preset="375"><span data-i18n="tools.utility-toolbox.text.0200">옛 관행 375g</span></button><button type="button" data-geun-preset="500"><span data-i18n="tools.utility-toolbox.text.0201">고춧가루 500g</span></button></div>
               <div class="result-panel" id="traditionalResult" aria-live="polite"></div>
             </article>
 
             <article class="utility-panel" id="bmi-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">생활</p><h2>BMI·WHR 계산기</h2><p>키와 체중으로 BMI를, 허리와 엉덩이 둘레로 WHR을 계산합니다.</p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0202">생활</span></p><h2><span data-i18n="tools.utility-toolbox.text.0203">BMI·WHR 계산기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0204">키와 체중으로 BMI를, 허리와 엉덩이 둘레로 WHR을 계산합니다.</span></p></div></div>
               <div class="inline-fields">
-                <div class="form-row"><label for="bmiHeight">키(cm)</label><input id="bmiHeight" type="number" min="50" max="250" value="170"></div>
-                <div class="form-row"><label for="bmiWeight">체중(kg)</label><input id="bmiWeight" type="number" min="1" max="500" step="0.1" value="65"></div>
-                <div class="form-row"><label for="bmiWaist">허리(cm)</label><input id="bmiWaist" type="number" min="0" step="0.1" placeholder="선택"></div>
-                <div class="form-row"><label for="bmiHip">엉덩이(cm)</label><input id="bmiHip" type="number" min="0" step="0.1" placeholder="선택"></div>
+                <div class="form-row"><label for="bmiHeight"><span data-i18n="tools.utility-toolbox.text.0205">키(cm)</span></label><input id="bmiHeight" type="number" min="50" max="250" value="170"></div>
+                <div class="form-row"><label for="bmiWeight"><span data-i18n="tools.utility-toolbox.text.0206">체중(kg)</span></label><input id="bmiWeight" type="number" min="1" max="500" step="0.1" value="65"></div>
+                <div class="form-row"><label for="bmiWaist"><span data-i18n="tools.utility-toolbox.text.0207">허리(cm)</span></label><input id="bmiWaist" type="number" min="0" step="0.1" placeholder="선택" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0208"></div>
+                <div class="form-row"><label for="bmiHip"><span data-i18n="tools.utility-toolbox.text.0209">엉덩이(cm)</span></label><input id="bmiHip" type="number" min="0" step="0.1" placeholder="선택" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0210"></div>
               </div>
               <div class="result-panel" id="bmiResult" aria-live="polite"></div>
-              <p class="tool-disclaimer">건강 상태를 진단하는 의료 도구가 아니며 일반적인 참고용입니다.</p>
+              <p class="tool-disclaimer"><span data-i18n="tools.utility-toolbox.text.0211">건강 상태를 진단하는 의료 도구가 아니며 일반적인 참고용입니다.</span></p>
             </article>
 
             <article class="utility-panel" id="lotto-tool" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">생활</p><h2>로또 번호 생성기</h2><p>1부터 45까지 중복 없는 번호 6개를 암호학적 난수로 생성합니다.</p></div><button type="button" class="primary-link" id="generateLotto">번호 생성</button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0212">생활</span></p><h2><span data-i18n="tools.utility-toolbox.text.0213">로또 번호 생성기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0214">1부터 45까지 중복 없는 번호 6개를 암호학적 난수로 생성합니다.</span></p></div><button type="button" class="primary-link" id="generateLotto"><span data-i18n="tools.utility-toolbox.text.0215">번호 생성</span></button></div>
               <div class="lotto-numbers" id="lottoNumbers" aria-live="polite"></div>
-              <div class="editor-label-row"><span class="editor-label">최근 생성</span><button type="button" class="ghost-button" id="clearLottoHistory">기록 지우기</button></div>
+              <div class="editor-label-row"><span class="editor-label"><span data-i18n="tools.utility-toolbox.text.0216">최근 생성</span></span><button type="button" class="ghost-button" id="clearLottoHistory"><span data-i18n="tools.utility-toolbox.text.0217">기록 지우기</span></button></div>
               <ol class="lotto-history" id="lottoHistory"></ol>
             </article>
           </div>
         </section>
 
         <section class="info-section utility-notice">
-          <p class="eyebrow">안내</p>
-          <h2>모든 계산은 현재 브라우저에서 실행됩니다.</h2>
-          <p>비밀번호와 개인정보를 포함한 입력값은 SolForge 서버로 전송하지 않습니다. 중요한 보안·건강·금융 판단에는 전문 기관의 최신 기준을 함께 확인하세요.</p>
+          <p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0218">안내</span></p>
+          <h2><span data-i18n="tools.utility-toolbox.text.0219">모든 계산은 현재 브라우저에서 실행됩니다.</span></h2>
+          <p><span data-i18n="tools.utility-toolbox.text.0220">비밀번호와 개인정보를 포함한 입력값은 SolForge 서버로 전송하지 않습니다. 중요한 보안·건강·금융 판단에는 전문 기관의 최신 기준을 함께 확인하세요.</span></p>
         </section>
 
         <footer class="footer">
-          <p>© 2026 SolForge. Static tools in your browser.</p>
-          <div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../terms.html">이용약관</a><a href="../privacy.html">개인정보처리방침</a><a href="../contact.html">문의</a></div>
+          <p><span data-i18n="tools.utility-toolbox.text.0221">© 2026 SolForge. Static tools in your browser.</span></p>
+          <div><a href="../features.html"><span data-i18n="tools.utility-toolbox.text.0222">기능소개</span></a><a href="../about.html"><span data-i18n="tools.utility-toolbox.text.0223">사이트소개</span></a><a href="../terms.html"><span data-i18n="tools.utility-toolbox.text.0224">이용약관</span></a><a href="../privacy.html"><span data-i18n="tools.utility-toolbox.text.0225">개인정보처리방침</span></a><a href="../contact.html"><span data-i18n="tools.utility-toolbox.text.0226">문의</span></a></div>
         </footer>
       </main>
     </div>
-    <div class="toast" id="copyToast" role="status" aria-live="polite">복사했습니다.</div>
+    <div class="toast" id="copyToast" role="status" aria-live="polite"><span data-i18n="tools.utility-toolbox.text.0227">복사했습니다.</span></div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
     <script src="../assets/js/utility-tools.js?v=20260612-4"></script>
   </body>

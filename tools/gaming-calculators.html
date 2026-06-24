@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>게임·하드웨어 계산기 - SolForge</title>
-    <meta name="description" content="감도 변환, FOV, TTK, 크로스헤어, 게이머태그, 마인크래프트 원, 화면 비율, PPI, 화면 크기, 다운로드 시간, RAID, RAM 지연시간을 정적으로 계산합니다.">
+    <title data-i18n="tools.gaming-calculators.meta.title">게임·하드웨어 계산기 - SolForge</title>
+    <meta name="description" content="감도 변환, FOV, TTK, 크로스헤어, 게이머태그, 마인크래프트 원, 화면 비율, PPI, 화면 크기, 다운로드 시간, RAID, RAM 지연시간을 정적으로 계산합니다." data-i18n-attrs="content:tools.gaming-calculators.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/gaming-calculators.html">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960"
@@ -14,135 +14,136 @@
     <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
   </head>
   <body data-page="gaming-calculators">
-    <a class="skip-link" href="#main">본문으로 이동</a>
+    <a class="skip-link" href="#main"><span data-i18n="tools.gaming-calculators.text.0001">본문으로 이동</span></a>
     <div class="site-shell">
-      <aside class="sidebar" aria-label="기능 메뉴">
-        <a class="brand" href="../index.html" aria-label="SolForge 홈"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small>Gaming Calculators</small></span></a>
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0002">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0003"><span class="brand-mark"><span data-i18n="tools.gaming-calculators.text.0004">SF</span></span><span><strong><span data-i18n="tools.gaming-calculators.text.0005">SolForge</span></strong><small><span data-i18n="tools.gaming-calculators.text.0006">Gaming Calculators</span></small></span></a>
         <nav class="side-nav" data-solforge-nav></nav>
-        <div class="side-card"><strong>계산 전용</strong><span>입력값만으로 결과를 계산하는 정적 도구입니다.</span></div>
+        <div class="side-card"><strong><span data-i18n="tools.gaming-calculators.text.0007">계산 전용</span></strong><span><span data-i18n="tools.gaming-calculators.text.0008">입력값만으로 결과를 계산하는 정적 도구입니다.</span></span></div>
       </aside>
       <main class="content" id="main">
         <header class="topbar">
-          <nav class="top-links" aria-label="사이트 정보"><a href="../features.html" data-top-link>기능소개</a><a href="../about.html" data-top-link>사이트소개</a><a href="../terms.html" data-top-link>이용약관</a><a href="../privacy.html" data-top-link>개인정보처리방침</a><a href="../contact.html" data-top-link>문의</a></nav>
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0009"><a href="../features.html" data-top-link><span data-i18n="tools.gaming-calculators.text.0010">기능소개</span></a><a href="../about.html" data-top-link><span data-i18n="tools.gaming-calculators.text.0011">사이트소개</span></a><a href="../terms.html" data-top-link><span data-i18n="tools.gaming-calculators.text.0012">이용약관</span></a><a href="../privacy.html" data-top-link><span data-i18n="tools.gaming-calculators.text.0013">개인정보처리방침</span></a><a href="../contact.html" data-top-link><span data-i18n="tools.gaming-calculators.text.0014">문의</span></a></nav>
           <div class="topbar-controls">
-            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/" aria-label="Switch to English" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0015">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0016">
               <option value="basic">Basic</option>
               <option value="saas">SaaS</option>
               <option value="terminal">Terminal</option>
             </select>
-            <button class="skin-apply-button" type="button" id="skinApplyButton">적용</button>
-            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+            <button class="skin-apply-button" type="button" id="skinApplyButton"><span data-i18n="tools.gaming-calculators.text.0017">적용</span></button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel"><span data-i18n="tools.gaming-calculators.text.0018">Dark</span></span></button>
           </div>
         </header>
 
         <section class="page-hero compact-hero gaming-hero">
-          <div><p class="eyebrow">Static Gaming Calculators</p><h1>게임 설정과 하드웨어 값을 빠르게 계산하세요.</h1><p>감도, 시야각, 처치 시간, 화면 밀도, 저장장치 구성, 메모리 지연시간처럼 자주 계산하는 값을 한 곳에 모았습니다.</p></div>
-          <div class="hero-panel"><div class="metric-card"><strong>12</strong><span>정적 계산기</span></div><div class="metric-card"><strong>Local</strong><span>브라우저 계산</span></div></div>
+          <div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0019">Static Gaming Calculators</span></p><h1><span data-i18n="tools.gaming-calculators.text.0020">게임 설정과 하드웨어 값을 빠르게 계산하세요.</span></h1><p><span data-i18n="tools.gaming-calculators.text.0021">감도, 시야각, 처치 시간, 화면 밀도, 저장장치 구성, 메모리 지연시간처럼 자주 계산하는 값을 한 곳에 모았습니다.</span></p></div>
+          <div class="hero-panel"><div class="metric-card"><strong>12</strong><span><span data-i18n="tools.gaming-calculators.text.0022">정적 계산기</span></span></div><div class="metric-card"><strong><span data-i18n="tools.gaming-calculators.text.0023">Local</span></strong><span><span data-i18n="tools.gaming-calculators.text.0024">브라우저 계산</span></span></div></div>
         </section>
 
         <section class="utility-workbench">
-          <aside class="utility-picker" aria-label="계산기 선택">
-            <label class="utility-search"><span>계산기 검색</span><input id="calcSearch" type="search" placeholder="예: FOV, PPI, RAID"></label>
-            <div class="utility-category-tabs" role="group" aria-label="계산기 분류">
-              <button type="button" class="active" data-calc-filter="all">전체</button>
-              <button type="button" data-calc-filter="game">게임</button>
-              <button type="button" data-calc-filter="screen">화면</button>
-              <button type="button" data-calc-filter="hardware">하드웨어</button>
-              <button type="button" data-calc-filter="network">네트워크</button>
+          <aside class="utility-picker" aria-label="계산기 선택" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0025">
+            <label class="utility-search"><span><span data-i18n="tools.gaming-calculators.text.0026">계산기 검색</span></span><input id="calcSearch" type="search" placeholder="예: FOV, PPI, RAID" data-i18n-attrs="placeholder:tools.gaming-calculators.attr.placeholder.0027"></label>
+            <div class="utility-category-tabs" role="group" aria-label="계산기 분류" data-i18n-attrs="aria-label:tools.gaming-calculators.attr.aria-label.0028">
+              <button type="button" class="active" data-calc-filter="all"><span data-i18n="tools.gaming-calculators.text.0029">전체</span></button>
+              <button type="button" data-calc-filter="game"><span data-i18n="tools.gaming-calculators.text.0030">게임</span></button>
+              <button type="button" data-calc-filter="screen"><span data-i18n="tools.gaming-calculators.text.0031">화면</span></button>
+              <button type="button" data-calc-filter="hardware"><span data-i18n="tools.gaming-calculators.text.0032">하드웨어</span></button>
+              <button type="button" data-calc-filter="network"><span data-i18n="tools.gaming-calculators.text.0033">네트워크</span></button>
             </div>
             <nav class="utility-tool-list">
-              <button type="button" data-calc-target="sensitivity-converter" data-category="game" data-keywords="sensitivity converter dpi edpi"><b>SENS</b><span><strong>감도 변환</strong><small>DPI 변경 감도 보정</small></span></button>
-              <button type="button" data-calc-target="fov-calculator" data-category="game" data-keywords="fov field of view"><b>FOV</b><span><strong>FOV 계산기</strong><small>수평·수직 시야각</small></span></button>
-              <button type="button" data-calc-target="ttk-calculator" data-category="game" data-keywords="ttk damage fire rate"><b>TTK</b><span><strong>TTK 계산기</strong><small>처치 시간 추정</small></span></button>
-              <button type="button" data-calc-target="crosshair-generator" data-category="game" data-keywords="crosshair generator"><b>+</b><span><strong>크로스헤어 생성기</strong><small>PNG 조준점</small></span></button>
-              <button type="button" data-calc-target="gamertag-generator" data-category="game" data-keywords="gamertag guild name generator"><b>ID</b><span><strong>게이머태그 생성기</strong><small>닉네임·길드명</small></span></button>
-              <button type="button" data-calc-target="minecraft-circle" data-category="game" data-keywords="minecraft circle generator"><b>MC</b><span><strong>마인크래프트 원</strong><small>블록 원 설계</small></span></button>
-              <button type="button" data-calc-target="aspect-ratio" data-category="screen" data-keywords="aspect ratio calculator"><b>16:9</b><span><strong>화면 비율 계산</strong><small>비율 유지 크기</small></span></button>
-              <button type="button" data-calc-target="ppi-calculator" data-category="screen" data-keywords="ppi pixel density"><b>PPI</b><span><strong>PPI 계산기</strong><small>픽셀 밀도</small></span></button>
-              <button type="button" data-calc-target="screen-size" data-category="screen" data-keywords="screen size viewing distance"><b>TV</b><span><strong>화면 크기·시청거리</strong><small>가로·세로·권장거리</small></span></button>
-              <button type="button" data-calc-target="download-time" data-category="network" data-keywords="download time bandwidth"><b>NET</b><span><strong>다운로드 시간</strong><small>파일 크기와 대역폭</small></span></button>
-              <button type="button" data-calc-target="raid-calculator" data-category="hardware" data-keywords="raid calculator storage"><b>RAID</b><span><strong>RAID 용량 계산기</strong><small>0·1·5·6·10</small></span></button>
-              <button type="button" data-calc-target="ram-latency" data-category="hardware" data-keywords="ram latency calculator"><b>RAM</b><span><strong>RAM 지연시간</strong><small>CL과 클럭</small></span></button>
+              <button type="button" data-calc-target="sensitivity-converter" data-category="game" data-keywords="sensitivity converter dpi edpi"><b><span data-i18n="tools.gaming-calculators.text.0034">SENS</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0035">감도 변환</span></strong><small><span data-i18n="tools.gaming-calculators.text.0036">DPI 변경 감도 보정</span></small></span></button>
+              <button type="button" data-calc-target="fov-calculator" data-category="game" data-keywords="fov field of view"><b><span data-i18n="tools.gaming-calculators.text.0037">FOV</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0038">FOV 계산기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0039">수평·수직 시야각</span></small></span></button>
+              <button type="button" data-calc-target="ttk-calculator" data-category="game" data-keywords="ttk damage fire rate"><b><span data-i18n="tools.gaming-calculators.text.0040">TTK</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0041">TTK 계산기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0042">처치 시간 추정</span></small></span></button>
+              <button type="button" data-calc-target="crosshair-generator" data-category="game" data-keywords="crosshair generator"><b>+</b><span><strong><span data-i18n="tools.gaming-calculators.text.0043">크로스헤어 생성기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0044">PNG 조준점</span></small></span></button>
+              <button type="button" data-calc-target="gamertag-generator" data-category="game" data-keywords="gamertag guild name generator"><b><span data-i18n="tools.gaming-calculators.text.0045">ID</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0046">게이머태그 생성기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0047">닉네임·길드명</span></small></span></button>
+              <button type="button" data-calc-target="minecraft-circle" data-category="game" data-keywords="minecraft circle generator"><b><span data-i18n="tools.gaming-calculators.text.0048">MC</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0049">마인크래프트 원</span></strong><small><span data-i18n="tools.gaming-calculators.text.0050">블록 원 설계</span></small></span></button>
+              <button type="button" data-calc-target="aspect-ratio" data-category="screen" data-keywords="aspect ratio calculator"><b>16:9</b><span><strong><span data-i18n="tools.gaming-calculators.text.0051">화면 비율 계산</span></strong><small><span data-i18n="tools.gaming-calculators.text.0052">비율 유지 크기</span></small></span></button>
+              <button type="button" data-calc-target="ppi-calculator" data-category="screen" data-keywords="ppi pixel density"><b><span data-i18n="tools.gaming-calculators.text.0053">PPI</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0054">PPI 계산기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0055">픽셀 밀도</span></small></span></button>
+              <button type="button" data-calc-target="screen-size" data-category="screen" data-keywords="screen size viewing distance"><b><span data-i18n="tools.gaming-calculators.text.0056">TV</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0057">화면 크기·시청거리</span></strong><small><span data-i18n="tools.gaming-calculators.text.0058">가로·세로·권장거리</span></small></span></button>
+              <button type="button" data-calc-target="download-time" data-category="network" data-keywords="download time bandwidth"><b><span data-i18n="tools.gaming-calculators.text.0059">NET</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0060">다운로드 시간</span></strong><small><span data-i18n="tools.gaming-calculators.text.0061">파일 크기와 대역폭</span></small></span></button>
+              <button type="button" data-calc-target="raid-calculator" data-category="hardware" data-keywords="raid calculator storage"><b><span data-i18n="tools.gaming-calculators.text.0062">RAID</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0063">RAID 용량 계산기</span></strong><small><span data-i18n="tools.gaming-calculators.text.0064">0·1·5·6·10</span></small></span></button>
+              <button type="button" data-calc-target="ram-latency" data-category="hardware" data-keywords="ram latency calculator"><b><span data-i18n="tools.gaming-calculators.text.0065">RAM</span></b><span><strong><span data-i18n="tools.gaming-calculators.text.0066">RAM 지연시간</span></strong><small><span data-i18n="tools.gaming-calculators.text.0067">CL과 클럭</span></small></span></button>
             </nav>
-            <p class="utility-empty" id="calcEmpty" hidden>일치하는 계산기가 없습니다.</p>
+            <p class="utility-empty" id="calcEmpty" hidden><span data-i18n="tools.gaming-calculators.text.0068">일치하는 계산기가 없습니다.</span></p>
           </aside>
 
           <div class="utility-stage">
             <article class="utility-panel active" id="sensitivity-converter" data-calc-panel>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>감도 변환</h2><p>마우스 DPI를 바꿔도 같은 eDPI가 되도록 새 게임 감도를 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="sensOldDpi">기존 DPI</label><input id="sensOldDpi" type="number" value="800"></div><div class="form-row"><label for="sensOld">기존 감도</label><input id="sensOld" type="number" step="0.01" value="1.25"></div><div class="form-row"><label for="sensNewDpi">새 DPI</label><input id="sensNewDpi" type="number" value="1600"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0069">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0070">감도 변환</span></h2><p><span data-i18n="tools.gaming-calculators.text.0071">마우스 DPI를 바꿔도 같은 eDPI가 되도록 새 게임 감도를 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="sensOldDpi"><span data-i18n="tools.gaming-calculators.text.0072">기존 DPI</span></label><input id="sensOldDpi" type="number" value="800"></div><div class="form-row"><label for="sensOld"><span data-i18n="tools.gaming-calculators.text.0073">기존 감도</span></label><input id="sensOld" type="number" step="0.01" value="1.25"></div><div class="form-row"><label for="sensNewDpi"><span data-i18n="tools.gaming-calculators.text.0074">새 DPI</span></label><input id="sensNewDpi" type="number" value="1600"></div></div>
               <div class="compact-result" id="sensResult"></div>
             </article>
 
             <article class="utility-panel" id="fov-calculator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>FOV 계산기</h2><p>종횡비 기준으로 수평 FOV와 수직 FOV를 변환합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="fovValue">입력 FOV</label><input id="fovValue" type="number" min="1" max="179" value="90"></div><div class="form-row"><label for="fovMode">입력 기준</label><select id="fovMode"><option value="h">수평</option><option value="v">수직</option></select></div><div class="form-row"><label for="fovAspectW">가로비</label><input id="fovAspectW" type="number" value="16"></div><div class="form-row"><label for="fovAspectH">세로비</label><input id="fovAspectH" type="number" value="9"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0075">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0076">FOV 계산기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0077">종횡비 기준으로 수평 FOV와 수직 FOV를 변환합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="fovValue"><span data-i18n="tools.gaming-calculators.text.0078">입력 FOV</span></label><input id="fovValue" type="number" min="1" max="179" value="90"></div><div class="form-row"><label for="fovMode"><span data-i18n="tools.gaming-calculators.text.0079">입력 기준</span></label><select id="fovMode"><option value="h" data-i18n="tools.gaming-calculators.text.0148">수평</option><option value="v" data-i18n="tools.gaming-calculators.text.0149">수직</option></select></div><div class="form-row"><label for="fovAspectW"><span data-i18n="tools.gaming-calculators.text.0080">가로비</span></label><input id="fovAspectW" type="number" value="16"></div><div class="form-row"><label for="fovAspectH"><span data-i18n="tools.gaming-calculators.text.0081">세로비</span></label><input id="fovAspectH" type="number" value="9"></div></div>
               <div class="compact-result" id="fovResult"></div>
             </article>
 
             <article class="utility-panel" id="ttk-calculator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>TTK 계산기</h2><p>체력, 피해량, 연사속도 기준으로 처치까지 걸리는 시간을 추정합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="ttkHealth">체력</label><input id="ttkHealth" type="number" value="100"></div><div class="form-row"><label for="ttkDamage">발당 피해</label><input id="ttkDamage" type="number" value="24"></div><div class="form-row"><label for="ttkRpm">연사속도(RPM)</label><input id="ttkRpm" type="number" value="600"></div><div class="form-row"><label for="ttkHead">헤드 배율</label><input id="ttkHead" type="number" step="0.1" value="1.5"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0082">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0083">TTK 계산기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0084">체력, 피해량, 연사속도 기준으로 처치까지 걸리는 시간을 추정합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="ttkHealth"><span data-i18n="tools.gaming-calculators.text.0085">체력</span></label><input id="ttkHealth" type="number" value="100"></div><div class="form-row"><label for="ttkDamage"><span data-i18n="tools.gaming-calculators.text.0086">발당 피해</span></label><input id="ttkDamage" type="number" value="24"></div><div class="form-row"><label for="ttkRpm"><span data-i18n="tools.gaming-calculators.text.0087">연사속도(RPM)</span></label><input id="ttkRpm" type="number" value="600"></div><div class="form-row"><label for="ttkHead"><span data-i18n="tools.gaming-calculators.text.0088">헤드 배율</span></label><input id="ttkHead" type="number" step="0.1" value="1.5"></div></div>
               <div class="compact-result" id="ttkResult"></div>
             </article>
 
             <article class="utility-panel" id="crosshair-generator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>크로스헤어 생성기</h2><p>간단한 조준점을 Canvas로 그려 PNG로 저장할 수 있습니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="crossColor">색상</label><input id="crossColor" type="color" value="#22c55e"></div><div class="form-row"><label for="crossLength">길이</label><input id="crossLength" type="number" min="2" max="96" value="34"></div><div class="form-row"><label for="crossGap">중앙 간격</label><input id="crossGap" type="number" min="0" max="64" value="8"></div><div class="form-row"><label for="crossThick">두께</label><input id="crossThick" type="number" min="1" max="24" value="4"></div></div>
-              <canvas id="crosshairCanvas" class="display-canvas" width="360" height="360"></canvas><a id="crosshairDownload" class="secondary-link" download="solforge-crosshair.png">PNG 다운로드</a>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0089">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0090">크로스헤어 생성기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0091">간단한 조준점을 Canvas로 그려 PNG로 저장할 수 있습니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="crossColor"><span data-i18n="tools.gaming-calculators.text.0092">색상</span></label><input id="crossColor" type="color" value="#22c55e"></div><div class="form-row"><label for="crossLength"><span data-i18n="tools.gaming-calculators.text.0093">길이</span></label><input id="crossLength" type="number" min="2" max="96" value="34"></div><div class="form-row"><label for="crossGap"><span data-i18n="tools.gaming-calculators.text.0094">중앙 간격</span></label><input id="crossGap" type="number" min="0" max="64" value="8"></div><div class="form-row"><label for="crossThick"><span data-i18n="tools.gaming-calculators.text.0095">두께</span></label><input id="crossThick" type="number" min="1" max="24" value="4"></div></div>
+              <canvas id="crosshairCanvas" class="display-canvas" width="360" height="360"></canvas><a id="crosshairDownload" class="secondary-link" download="solforge-crosshair.png"><span data-i18n="tools.gaming-calculators.text.0096">PNG 다운로드</span></a>
             </article>
 
             <article class="utility-panel" id="gamertag-generator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>게이머태그 생성기</h2><p>분위기, 접두어, 숫자를 조합해 닉네임과 길드명을 만듭니다.</p></div><button type="button" class="primary-link" id="generateTags">생성</button></div>
-              <div class="inline-fields"><div class="form-row"><label for="tagTheme">분위기</label><select id="tagTheme"><option value="tech">테크</option><option value="myth">신화</option><option value="speed">스피드</option></select></div><label class="form-row"><span>숫자 붙이기</span><input id="tagNumbers" type="checkbox" checked></label></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0097">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0098">게이머태그 생성기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0099">분위기, 접두어, 숫자를 조합해 닉네임과 길드명을 만듭니다.</span></p></div><button type="button" class="primary-link" id="generateTags"><span data-i18n="tools.gaming-calculators.text.0100">생성</span></button></div>
+              <div class="inline-fields"><div class="form-row"><label for="tagTheme"><span data-i18n="tools.gaming-calculators.text.0101">분위기</span></label><select id="tagTheme"><option value="tech" data-i18n="tools.gaming-calculators.text.0150">테크</option><option value="myth" data-i18n="tools.gaming-calculators.text.0151">신화</option><option value="speed" data-i18n="tools.gaming-calculators.text.0152">스피드</option></select></div><label class="form-row"><span><span data-i18n="tools.gaming-calculators.text.0102">숫자 붙이기</span></span><input id="tagNumbers" type="checkbox" checked></label></div>
               <div class="result-panel" id="tagResult"></div>
             </article>
 
             <article class="utility-panel" id="minecraft-circle" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">게임</p><h2>마인크래프트 원 생성기</h2><p>블록으로 만들 원의 위에서 본 설계도를 생성합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="circleDiameter">지름(블록)</label><input id="circleDiameter" type="number" min="3" max="61" value="21"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0103">게임</span></p><h2><span data-i18n="tools.gaming-calculators.text.0104">마인크래프트 원 생성기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0105">블록으로 만들 원의 위에서 본 설계도를 생성합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="circleDiameter"><span data-i18n="tools.gaming-calculators.text.0106">지름(블록)</span></label><input id="circleDiameter" type="number" min="3" max="61" value="21"></div></div>
               <pre class="ascii-output circle-output" id="circleOutput"></pre>
             </article>
 
             <article class="utility-panel" id="aspect-ratio" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">화면</p><h2>화면 비율 계산</h2><p>원본 비율을 유지하며 새 가로나 세로 값을 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="aspectW">원본 가로</label><input id="aspectW" type="number" value="1920"></div><div class="form-row"><label for="aspectH">원본 세로</label><input id="aspectH" type="number" value="1080"></div><div class="form-row"><label for="aspectNewW">새 가로</label><input id="aspectNewW" type="number" value="2560"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0107">화면</span></p><h2><span data-i18n="tools.gaming-calculators.text.0108">화면 비율 계산</span></h2><p><span data-i18n="tools.gaming-calculators.text.0109">원본 비율을 유지하며 새 가로나 세로 값을 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="aspectW"><span data-i18n="tools.gaming-calculators.text.0110">원본 가로</span></label><input id="aspectW" type="number" value="1920"></div><div class="form-row"><label for="aspectH"><span data-i18n="tools.gaming-calculators.text.0111">원본 세로</span></label><input id="aspectH" type="number" value="1080"></div><div class="form-row"><label for="aspectNewW"><span data-i18n="tools.gaming-calculators.text.0112">새 가로</span></label><input id="aspectNewW" type="number" value="2560"></div></div>
               <div class="compact-result" id="aspectResult"></div>
             </article>
 
             <article class="utility-panel" id="ppi-calculator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">화면</p><h2>PPI 계산기</h2><p>해상도와 대각선 크기로 픽셀 밀도를 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="ppiW">가로 픽셀</label><input id="ppiW" type="number" value="2560"></div><div class="form-row"><label for="ppiH">세로 픽셀</label><input id="ppiH" type="number" value="1440"></div><div class="form-row"><label for="ppiInch">대각선(inch)</label><input id="ppiInch" type="number" step="0.1" value="27"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0113">화면</span></p><h2><span data-i18n="tools.gaming-calculators.text.0114">PPI 계산기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0115">해상도와 대각선 크기로 픽셀 밀도를 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="ppiW"><span data-i18n="tools.gaming-calculators.text.0116">가로 픽셀</span></label><input id="ppiW" type="number" value="2560"></div><div class="form-row"><label for="ppiH"><span data-i18n="tools.gaming-calculators.text.0117">세로 픽셀</span></label><input id="ppiH" type="number" value="1440"></div><div class="form-row"><label for="ppiInch"><span data-i18n="tools.gaming-calculators.text.0118">대각선(inch)</span></label><input id="ppiInch" type="number" step="0.1" value="27"></div></div>
               <div class="compact-result" id="ppiResult"></div>
             </article>
 
             <article class="utility-panel" id="screen-size" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">화면</p><h2>화면 크기·시청거리</h2><p>대각선과 비율로 화면 실제 크기와 권장 시청거리를 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="screenInch">대각선(inch)</label><input id="screenInch" type="number" step="0.1" value="32"></div><div class="form-row"><label for="screenAspectW">가로비</label><input id="screenAspectW" type="number" value="16"></div><div class="form-row"><label for="screenAspectH">세로비</label><input id="screenAspectH" type="number" value="9"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0119">화면</span></p><h2><span data-i18n="tools.gaming-calculators.text.0120">화면 크기·시청거리</span></h2><p><span data-i18n="tools.gaming-calculators.text.0121">대각선과 비율로 화면 실제 크기와 권장 시청거리를 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="screenInch"><span data-i18n="tools.gaming-calculators.text.0122">대각선(inch)</span></label><input id="screenInch" type="number" step="0.1" value="32"></div><div class="form-row"><label for="screenAspectW"><span data-i18n="tools.gaming-calculators.text.0123">가로비</span></label><input id="screenAspectW" type="number" value="16"></div><div class="form-row"><label for="screenAspectH"><span data-i18n="tools.gaming-calculators.text.0124">세로비</span></label><input id="screenAspectH" type="number" value="9"></div></div>
               <div class="compact-result" id="screenResult"></div>
             </article>
 
             <article class="utility-panel" id="download-time" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">네트워크</p><h2>다운로드 시간</h2><p>파일 크기와 네트워크 속도로 예상 다운로드 시간을 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="fileSize">파일 크기</label><input id="fileSize" type="number" value="80"></div><div class="form-row"><label for="fileUnit">단위</label><select id="fileUnit"><option value="1">MB</option><option value="1024" selected>GB</option><option value="1048576">TB</option></select></div><div class="form-row"><label for="bandwidth">속도(Mbps)</label><input id="bandwidth" type="number" value="500"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0125">네트워크</span></p><h2><span data-i18n="tools.gaming-calculators.text.0126">다운로드 시간</span></h2><p><span data-i18n="tools.gaming-calculators.text.0127">파일 크기와 네트워크 속도로 예상 다운로드 시간을 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="fileSize"><span data-i18n="tools.gaming-calculators.text.0128">파일 크기</span></label><input id="fileSize" type="number" value="80"></div><div class="form-row"><label for="fileUnit"><span data-i18n="tools.gaming-calculators.text.0129">단위</span></label><select id="fileUnit"><option value="1">MB</option><option value="1024" selected>GB</option><option value="1048576">TB</option></select></div><div class="form-row"><label for="bandwidth"><span data-i18n="tools.gaming-calculators.text.0130">속도(Mbps)</span></label><input id="bandwidth" type="number" value="500"></div></div>
               <div class="compact-result" id="downloadResult"></div>
             </article>
 
             <article class="utility-panel" id="raid-calculator" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">하드웨어</p><h2>RAID 용량 계산기</h2><p>디스크 개수와 단일 디스크 용량으로 RAID별 사용 가능 용량을 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="raidLevel">RAID</label><select id="raidLevel"><option value="0">0</option><option value="1">1</option><option value="5">5</option><option value="6">6</option><option value="10">10</option></select></div><div class="form-row"><label for="raidDisks">디스크 수</label><input id="raidDisks" type="number" min="2" value="4"></div><div class="form-row"><label for="raidSize">디스크당 TB</label><input id="raidSize" type="number" min="0" step="0.1" value="2"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0131">하드웨어</span></p><h2><span data-i18n="tools.gaming-calculators.text.0132">RAID 용량 계산기</span></h2><p><span data-i18n="tools.gaming-calculators.text.0133">디스크 개수와 단일 디스크 용량으로 RAID별 사용 가능 용량을 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="raidLevel"><span data-i18n="tools.gaming-calculators.text.0134">RAID</span></label><select id="raidLevel"><option value="0">0</option><option value="1">1</option><option value="5">5</option><option value="6">6</option><option value="10">10</option></select></div><div class="form-row"><label for="raidDisks"><span data-i18n="tools.gaming-calculators.text.0135">디스크 수</span></label><input id="raidDisks" type="number" min="2" value="4"></div><div class="form-row"><label for="raidSize"><span data-i18n="tools.gaming-calculators.text.0136">디스크당 TB</span></label><input id="raidSize" type="number" min="0" step="0.1" value="2"></div></div>
               <div class="compact-result" id="raidResult"></div>
             </article>
 
             <article class="utility-panel" id="ram-latency" data-calc-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow">하드웨어</p><h2>RAM 지연시간</h2><p>메모리 클럭과 CAS Latency로 실제 지연시간(ns)을 계산합니다.</p></div></div>
-              <div class="inline-fields"><div class="form-row"><label for="ramMt">속도(MT/s)</label><input id="ramMt" type="number" value="6000"></div><div class="form-row"><label for="ramCl">CL</label><input id="ramCl" type="number" value="30"></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.gaming-calculators.text.0137">하드웨어</span></p><h2><span data-i18n="tools.gaming-calculators.text.0138">RAM 지연시간</span></h2><p><span data-i18n="tools.gaming-calculators.text.0139">메모리 클럭과 CAS Latency로 실제 지연시간(ns)을 계산합니다.</span></p></div></div>
+              <div class="inline-fields"><div class="form-row"><label for="ramMt"><span data-i18n="tools.gaming-calculators.text.0140">속도(MT/s)</span></label><input id="ramMt" type="number" value="6000"></div><div class="form-row"><label for="ramCl"><span data-i18n="tools.gaming-calculators.text.0141">CL</span></label><input id="ramCl" type="number" value="30"></div></div>
               <div class="compact-result" id="ramResult"></div>
             </article>
           </div>
         </section>
 
-        <footer class="footer"><p>© 2026 SolForge. Gaming calculators run locally.</p><div><a href="../features.html">기능소개</a><a href="../about.html">사이트소개</a><a href="../terms.html">이용약관</a><a href="../privacy.html">개인정보처리방침</a><a href="../contact.html">문의</a></div></footer>
+        <footer class="footer"><p><span data-i18n="tools.gaming-calculators.text.0142">© 2026 SolForge. Gaming calculators run locally.</span></p><div><a href="../features.html"><span data-i18n="tools.gaming-calculators.text.0143">기능소개</span></a><a href="../about.html"><span data-i18n="tools.gaming-calculators.text.0144">사이트소개</span></a><a href="../terms.html"><span data-i18n="tools.gaming-calculators.text.0145">이용약관</span></a><a href="../privacy.html"><span data-i18n="tools.gaming-calculators.text.0146">개인정보처리방침</span></a><a href="../contact.html"><span data-i18n="tools.gaming-calculators.text.0147">문의</span></a></div></footer>
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260612-5"></script>

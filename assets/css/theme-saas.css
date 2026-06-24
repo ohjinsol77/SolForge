@@ -160,6 +160,7 @@
 
 /* ── Theme toggle + skin select ─────────────────────────────────────────── */
 :root[data-skin="saas"] .theme-toggle,
+:root[data-skin="saas"] .language-toggle,
 :root[data-skin="saas"] .skin-apply-button {
   font-size: 0.82rem;
   font-weight: 500;
@@ -172,6 +173,7 @@
 }
 
 :root[data-skin="saas"] .theme-toggle:hover,
+:root[data-skin="saas"] .language-toggle:hover,
 :root[data-skin="saas"] .skin-apply-button:not(:disabled):hover {
   background: var(--surface-soft);
   color: var(--text);

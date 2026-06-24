@@ -58,6 +58,7 @@
   function init() {
     const initializers = [
       initToolFinder,
+      initLanguageToggle,
       initTheme,
       initNavigation,
       markActiveLinks,
@@ -75,6 +76,25 @@
       }
     });
     window.addEventListener("hashchange", markActiveLinks);
+  }
+
+  function initLanguageToggle() {
+    const toggle = $("#languageToggle");
+    if (!toggle) return;
+    const lang = document.documentElement.lang === "en" ? "en" : "ko";
+    const nextLang = lang === "ko" ? "en" : "ko";
+    const targetPath = switchLanguagePath(window.location.pathname, nextLang);
+    toggle.href = `${targetPath}${window.location.search}${window.location.hash}`;
+    toggle.textContent = nextLang === "en" ? "🇺🇸" : "🇰🇷";
+    toggle.setAttribute("aria-label", nextLang === "en" ? "Switch to English" : "한국어로 변경");
+  }
+
+  function switchLanguagePath(pathname, nextLang) {
+    const path = pathname || "/";
+    if (/^\/(?:ko|en)(?:\/|$)/.test(path)) {
+      return path.replace(/^\/(?:ko|en)(?=\/|$)/, `/${nextLang}`);
+    }
+    return `/${nextLang}${path === "/" ? "/" : path}`;
   }
 
   function initTheme() {

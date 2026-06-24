@@ -165,6 +165,7 @@
 
 /* ── Theme toggle + skin selector ──────────────────────────────────────── */
 :root[data-skin="terminal"] .theme-toggle,
+:root[data-skin="terminal"] .language-toggle,
 :root[data-skin="terminal"] .skin-apply-button {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
@@ -175,6 +176,7 @@
 }
 
 :root[data-skin="terminal"] .theme-toggle:hover,
+:root[data-skin="terminal"] .language-toggle:hover,
 :root[data-skin="terminal"] .skin-apply-button:not(:disabled):hover {
   border-color: var(--brand);
   box-shadow: 0 0 0 2px rgba(125, 207, 255, 0.12);
