@@ -478,9 +478,11 @@ function translate(value) {
 }
 
 function generate() {
+  const existingEn = readJson("src/locales/en.json", {});
   const en = {};
   for (const [key, value] of Object.entries(ko)) {
-    en[key] = translate(value);
+    const current = existingEn[key];
+    en[key] = current && !/[가-힣]/.test(current) ? current : translate(value);
   }
 
   writeJson("src/locales/en.json", Object.fromEntries(Object.entries(en).sort(([a], [b]) => a.localeCompare(b))));
