@@ -11,6 +11,8 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960"
      crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260617-1">
+    <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
   </head>
   <body data-page="file-media-toolbox">
     <a class="skip-link" href="#main">본문으로 이동</a>
@@ -23,7 +25,15 @@
       <main class="content" id="main">
         <header class="topbar">
           <nav class="top-links" aria-label="사이트 정보"><a href="../features.html" data-top-link>기능소개</a><a href="../about.html" data-top-link>사이트소개</a><a href="../terms.html" data-top-link>이용약관</a><a href="../privacy.html" data-top-link>개인정보처리방침</a><a href="../contact.html" data-top-link>문의</a></nav>
-          <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          <div class="topbar-controls">
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택">
+              <option value="basic">Basic</option>
+              <option value="saas">SaaS</option>
+              <option value="terminal">Terminal</option>
+            </select>
+            <button class="skin-apply-button" type="button" id="skinApplyButton">적용</button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          </div>
         </header>
 
         <section class="page-hero compact-hero utility-hero">

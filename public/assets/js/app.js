@@ -79,20 +79,57 @@
 
   function initTheme() {
     const toggle = $("#themeToggle");
-    const label = $("#themeToggleLabel");
-    const saved = readStorage("solforge-theme");
-    const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(saved || (systemDark ? "dark" : "light"));
-    if (!toggle) return;
-    toggle.addEventListener("click", () => {
-      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-    });
+    const label  = $("#themeToggleLabel");
+    const skinSel = $("#skinSelect");
+    const skinApply = $("#skinApplyButton");
+
+    // ── dark/light ──────────────────────────────────────────
+    const savedTheme  = readStorage("solforge-theme");
+    const systemDark  = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(savedTheme || (systemDark ? "dark" : "light"));
+
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      });
+    }
+
+    // ── skin (basic / saas / terminal) ───────────────────────
+    const savedSkin = readStorage("solforge-skin") || "basic";
+    setSkin(savedSkin);
+
+    if (skinSel) {
+      skinSel.value = savedSkin;
+      skinSel.addEventListener("change", syncSkinApplyState);
+    }
+
+    if (skinApply) {
+      skinApply.addEventListener("click", () => {
+        const nextSkin = skinSel ? skinSel.value : "basic";
+        setSkin(nextSkin);
+      });
+    }
 
     function setTheme(theme) {
       document.documentElement.dataset.theme = theme;
       writeStorage("solforge-theme", theme);
       if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
-      if (label) label.textContent = theme === "dark" ? "Light" : "Dark";
+      if (label)  label.textContent = theme === "dark" ? "Light" : "Dark";
+    }
+
+    function setSkin(skin) {
+      document.documentElement.dataset.skin = skin;
+      writeStorage("solforge-skin", skin);
+      if (skinSel) skinSel.value = skin;
+      syncSkinApplyState();
+    }
+
+    function syncSkinApplyState() {
+      if (!skinApply || !skinSel) return;
+      const currentSkin = document.documentElement.dataset.skin || "basic";
+      const isApplied = skinSel.value === currentSkin;
+      skinApply.disabled = isApplied;
+      skinApply.textContent = isApplied ? "적용됨" : "적용";
     }
   }
 

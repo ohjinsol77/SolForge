@@ -254,6 +254,7 @@ button {
 }
 
 .theme-toggle,
+.skin-apply-button,
 .sample-button,
 .copy-button,
 .primary-link,
@@ -274,6 +275,18 @@ button {
 .theme-toggle {
   min-width: 104px;
   padding: 0.5rem 0.78rem;
+}
+
+.skin-apply-button {
+  min-width: 72px;
+  padding: 0.5rem 0.72rem;
+  cursor: pointer;
+}
+
+.skin-apply-button:disabled {
+  cursor: default;
+  opacity: 0.56;
+  box-shadow: none;
 }
 
 .skin-select {
@@ -2193,6 +2206,7 @@ th {
 
   .top-links a,
   .theme-toggle,
+  .skin-apply-button,
   .skin-select,
   .sample-button,
   .primary-link,
@@ -2207,6 +2221,7 @@ th {
   }
 
   .topbar-controls .theme-toggle,
+  .topbar-controls .skin-apply-button,
   .topbar-controls .skin-select {
     flex: 1;
   }

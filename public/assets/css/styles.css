@@ -254,6 +254,7 @@ button {
 }
 
 .theme-toggle,
+.skin-apply-button,
 .sample-button,
 .copy-button,
 .primary-link,
@@ -274,6 +275,55 @@ button {
 .theme-toggle {
   min-width: 104px;
   padding: 0.5rem 0.78rem;
+}
+
+.skin-apply-button {
+  min-width: 72px;
+  padding: 0.5rem 0.72rem;
+  cursor: pointer;
+}
+
+.skin-apply-button:disabled {
+  cursor: default;
+  opacity: 0.56;
+  box-shadow: none;
+}
+
+.skin-select {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(23, 42, 69, 0.08);
+  outline: none;
+  transition: border-color 160ms, box-shadow 160ms;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+  padding-right: 1.8rem;
+}
+
+.skin-select:hover,
+.skin-select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.topbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .theme-toggle-icon {
@@ -2156,10 +2206,24 @@ th {
 
   .top-links a,
   .theme-toggle,
+  .skin-apply-button,
+  .skin-select,
   .sample-button,
   .primary-link,
   .secondary-link {
     width: 100%;
+  }
+
+  .topbar-controls {
+    width: 100%;
+    flex-direction: row;
+    justify-content: stretch;
+  }
+
+  .topbar-controls .theme-toggle,
+  .topbar-controls .skin-apply-button,
+  .topbar-controls .skin-select {
+    flex: 1;
   }
 
   .top-links {
