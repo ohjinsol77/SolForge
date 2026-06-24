@@ -79,20 +79,40 @@
 
   function initTheme() {
     const toggle = $("#themeToggle");
-    const label = $("#themeToggleLabel");
-    const saved = readStorage("solforge-theme");
-    const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(saved || (systemDark ? "dark" : "light"));
-    if (!toggle) return;
-    toggle.addEventListener("click", () => {
-      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-    });
+    const label  = $("#themeToggleLabel");
+    const skinSel = $("#skinSelect");
+
+    // ── dark/light ──────────────────────────────────────────
+    const savedTheme  = readStorage("solforge-theme");
+    const systemDark  = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(savedTheme || (systemDark ? "dark" : "light"));
+
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      });
+    }
+
+    // ── skin (basic / terminal) ──────────────────────────────
+    const savedSkin = readStorage("solforge-skin") || "basic";
+    setSkin(savedSkin);
+
+    if (skinSel) {
+      skinSel.value = savedSkin;
+      skinSel.addEventListener("change", () => setSkin(skinSel.value));
+    }
 
     function setTheme(theme) {
       document.documentElement.dataset.theme = theme;
       writeStorage("solforge-theme", theme);
       if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
-      if (label) label.textContent = theme === "dark" ? "Light" : "Dark";
+      if (label)  label.textContent = theme === "dark" ? "Light" : "Dark";
+    }
+
+    function setSkin(skin) {
+      document.documentElement.dataset.skin = skin;
+      writeStorage("solforge-skin", skin);
+      if (skinSel) skinSel.value = skin;
     }
   }
 
