@@ -58,6 +58,9 @@
     ko: {
       skinApply: "적용",
       skinApplied: "적용됨",
+      skinLabel: "테마",
+      menuOpen: "메뉴",
+      menuClose: "메뉴 닫기",
       navDeveloper: "개발 도구",
       navNpm: "npm 패키지 정보",
       navUtility: "확장 도구 모음",
@@ -98,6 +101,9 @@
     en: {
       skinApply: "Apply",
       skinApplied: "Applied",
+      skinLabel: "Theme",
+      menuOpen: "Menu",
+      menuClose: "Close menu",
       navDeveloper: "Developer Tools",
       navNpm: "npm Package Info",
       navUtility: "Utility Toolbox",
@@ -184,6 +190,7 @@
     const label  = $("#themeToggleLabel");
     const skinSel = $("#skinSelect");
     const skinApply = $("#skinApplyButton");
+    enhanceSkinSelect();
 
     // ── dark/light ──────────────────────────────────────────
     const savedTheme  = readStorage("solforge-theme");
@@ -202,14 +209,11 @@
 
     if (skinSel) {
       skinSel.value = savedSkin;
-      skinSel.addEventListener("change", syncSkinApplyState);
+      skinSel.addEventListener("change", () => setSkin(skinSel.value || "basic"));
     }
 
     if (skinApply) {
-      skinApply.addEventListener("click", () => {
-        const nextSkin = skinSel ? skinSel.value : "basic";
-        setSkin(nextSkin);
-      });
+      skinApply.remove();
     }
 
     function setTheme(theme) {
@@ -223,15 +227,17 @@
       document.documentElement.dataset.skin = skin;
       writeStorage("solforge-skin", skin);
       if (skinSel) skinSel.value = skin;
-      syncSkinApplyState();
     }
 
-    function syncSkinApplyState() {
-      if (!skinApply || !skinSel) return;
-      const currentSkin = document.documentElement.dataset.skin || "basic";
-      const isApplied = skinSel.value === currentSkin;
-      skinApply.disabled = isApplied;
-      skinApply.textContent = isApplied ? text("skinApplied") : text("skinApply");
+    function enhanceSkinSelect() {
+      if (!skinSel || skinSel.closest(".skin-select-control")) return;
+      const wrapper = document.createElement("label");
+      wrapper.className = "skin-select-control";
+      const labelText = document.createElement("span");
+      labelText.className = "skin-select-label";
+      labelText.textContent = text("skinLabel");
+      skinSel.parentNode.insertBefore(wrapper, skinSel);
+      wrapper.append(labelText, skinSel);
     }
   }
 
@@ -302,6 +308,59 @@
         [`${life}#fun-names`, text("navFunNames")]
       ])
     ].join("");
+    initMobileNavigation(nav);
+  }
+
+  function initMobileNavigation(nav) {
+    const sidebar = nav.closest(".sidebar");
+    const brand = sidebar && $(".brand", sidebar);
+    if (!sidebar || !brand || $(".mobile-nav-toggle", sidebar)) return;
+
+    if (!nav.id) nav.id = "siteNavigation";
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "mobile-nav-toggle";
+    toggle.setAttribute("aria-controls", nav.id);
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = `<span class="mobile-nav-icon" aria-hidden="true"></span><span>${text("menuOpen")}</span>`;
+    brand.insertAdjacentElement("afterend", toggle);
+
+    const scrim = document.createElement("button");
+    scrim.type = "button";
+    scrim.className = "mobile-nav-scrim";
+    scrim.setAttribute("aria-label", text("menuClose"));
+    document.body.appendChild(scrim);
+
+    const setOpen = (open) => {
+      sidebar.classList.toggle("mobile-nav-open", open);
+      scrim.classList.toggle("is-visible", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.querySelector("span:last-child").textContent = open ? text("menuClose") : text("menuOpen");
+    };
+
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setOpen(!sidebar.classList.contains("mobile-nav-open"));
+    });
+
+    scrim.addEventListener("click", () => setOpen(false));
+
+    nav.addEventListener("click", (event) => {
+      if (event.target.closest("a")) window.setTimeout(() => setOpen(false), 0);
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (!sidebar.classList.contains("mobile-nav-open")) return;
+      if (!sidebar.contains(event.target)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.matchMedia("(min-width: 681px)").matches) setOpen(false);
+    });
   }
 
   function text(key) {
@@ -314,7 +373,7 @@
   }
 
   function navGroup(label, links) {
-    const open = window.matchMedia("(min-width: 681px)").matches ? " open" : "";
+    const open = " open";
     return [
       `<details class="nav-group"${open}>`,
       `<summary>${label}</summary>`,
