@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const acorn = require("acorn");
 const {
   DEFAULT_LANG,
   LANGS,
@@ -188,13 +189,64 @@ function injectDynamicI18nScript(html) {
   return html.replace(/<\/head>/i, `    <script src="/assets/js/i18n-dynamic.js"></script>\n  </head>`);
 }
 
-function decodeJsStringLiteral(literal) {
-  if (literal.startsWith("`") && literal.includes("${")) return null;
+function parseJs(source) {
+  const options = { ecmaVersion: "latest", allowHashBang: true };
   try {
-    return Function(`"use strict"; return (${literal});`)();
-  } catch (_error) {
-    return null;
+    return acorn.parse(source, { ...options, sourceType: "module" });
+  } catch (_moduleError) {
+    return acorn.parse(source, { ...options, sourceType: "script" });
   }
+}
+
+function isStaticPropertyKey(node, parent) {
+  return parent
+    && (
+      (parent.type === "Property" && parent.key === node && !parent.computed)
+      || (parent.type === "PropertyDefinition" && parent.key === node && !parent.computed)
+      || (parent.type === "MethodDefinition" && parent.key === node && !parent.computed)
+    );
+}
+
+function walkAst(node, parent, visitor) {
+  if (!node || typeof node.type !== "string") return;
+  visitor(node, parent);
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "parent") continue;
+    if (Array.isArray(value)) {
+      for (const child of value) {
+        if (child && typeof child.type === "string") walkAst(child, node, visitor);
+      }
+    } else if (value && typeof value.type === "string") {
+      walkAst(value, node, visitor);
+    }
+  }
+}
+
+function collectStringNodes(source) {
+  const ast = parseJs(source);
+  const nodes = [];
+  walkAst(ast, null, (node, parent) => {
+    if (node.type === "Literal" && typeof node.value === "string") {
+      if (isStaticPropertyKey(node, parent)) return;
+      nodes.push({
+        start: node.start,
+        end: node.end,
+        literal: source.slice(node.start, node.end),
+        values: [node.value]
+      });
+      return;
+    }
+    if (node.type === "TemplateLiteral") {
+      if (isStaticPropertyKey(node, parent)) return;
+      nodes.push({
+        start: node.start,
+        end: node.end,
+        literal: source.slice(node.start, node.end),
+        values: node.quasis.map((quasi) => quasi.value.cooked || quasi.value.raw || "")
+      });
+    }
+  });
+  return nodes.sort((a, b) => a.start - b.start);
 }
 
 function collectJsTranslations() {
@@ -210,15 +262,14 @@ function collectJsTranslations() {
   ]) {
     map[phrase] = translate(phrase);
   }
-  const literalPattern = /(["'`])(?:\\[\s\S]|(?!\1)[^\\])*\1/g;
   for (const file of walkFiles(jsDir, (candidate) => /\.(?:m?js)$/.test(candidate))) {
     const source = fs.readFileSync(file, "utf8");
-    for (const match of source.matchAll(literalPattern)) {
-      const literal = match[0];
+    for (const { literal, values } of collectStringNodes(source)) {
       if (!/[가-힣]/.test(literal)) continue;
-      const value = decodeJsStringLiteral(literal);
-      if (typeof value === "string" && /[가-힣]/.test(value)) {
-        map[value] = translate(value);
+      for (const value of values) {
+        if (typeof value === "string" && /[가-힣]/.test(value)) {
+          map[value] = translate(value);
+        }
       }
     }
   }
@@ -227,15 +278,21 @@ function collectJsTranslations() {
 
 function transformJsForRuntimeI18n(map) {
   const jsDir = path.join(DIST, "assets", "js");
-  const literalPattern = /(["'`])(?:\\[\s\S]|(?!\1)[^\\])*\1/g;
   for (const file of walkFiles(jsDir, (candidate) => /\.(?:m?js)$/.test(candidate) && !candidate.endsWith("i18n-dynamic.js"))) {
     const source = fs.readFileSync(file, "utf8");
-    const transformed = source.replace(literalPattern, (literal, quote, offset, full) => {
-      if (!/[가-힣]/.test(literal)) return literal;
-      const before = full.slice(Math.max(0, offset - 16), offset);
-      if (/sfT\(\s*$/.test(before)) return literal;
-      return `window.sfT(${literal})`;
-    });
+    let transformed = "";
+    let cursor = 0;
+    for (const { start, end, literal } of collectStringNodes(source)) {
+      transformed += source.slice(cursor, start);
+      const before = source.slice(Math.max(0, start - 16), start);
+      if (!/[가-힣]/.test(literal) || /sfT\(\s*$/.test(before)) {
+        transformed += literal;
+      } else {
+        transformed += `window.sfT(${literal})`;
+      }
+      cursor = end;
+    }
+    transformed += source.slice(cursor);
     fs.writeFileSync(file, transformed);
   }
 

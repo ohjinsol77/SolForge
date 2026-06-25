@@ -9,6 +9,7 @@
     "deploy": "npm run build && npm exec -- wrangler deploy"
   },
   "dependencies": {
+    "acorn": "^8.17.0",
     "gifenc": "^1.0.3",
     "qrcode-generator": "^2.0.4"
   }
