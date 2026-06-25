@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build-i18n.js",
     "check": "node --check assets/js/app.js && node --check assets/js/tool-catalog.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/advanced-tools.mjs && node --check assets/js/gaming-lab.js && node --check assets/js/gaming-calculators.js && node --check assets/js/device-diagnostics.js && node --check assets/js/display-diagnostics.js && node --check assets/js/input-training.js && node --check assets/js/performance-lab.js && node --check assets/js/world-holidays.js && node --check assets/js/npm-package-info.js && node --check assets/js/crypto-sentiment.js && node --check assets/js/stock-market.js",
-    "deploy": "npm run build && npm exec -- wrangler pages deploy dist --project-name solforge"
+    "deploy": "npm run build && npm exec -- wrangler deploy"
   },
   "dependencies": {
     "gifenc": "^1.0.3",
