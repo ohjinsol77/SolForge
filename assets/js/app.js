@@ -54,6 +54,88 @@
     ["WHERE"], ["HAVING"], ["LIMIT"], ["OFFSET"], ["VALUES"], ["SET"], ["UPDATE"],
     ["UNION"], ["WITH"], ["ON"]
   ];
+  const UI_TEXT = {
+    ko: {
+      skinApply: "적용",
+      skinApplied: "적용됨",
+      navDeveloper: "개발 도구",
+      navNpm: "npm 패키지 정보",
+      navUtility: "확장 도구 모음",
+      navFileMedia: "파일·미디어 도구",
+      navAdvanced: "고급 도구",
+      navGamingSection: "게임 · 장치 테스트",
+      navGamingLab: "게임 테스트 랩",
+      navGamingCalculators: "게임 계산기 랩",
+      navDeviceDiagnostics: "장치 진단 랩",
+      navDisplayDiagnostics: "화면 진단 랩",
+      navInputTraining: "입력 연습 랩",
+      navPerformanceLab: "성능 진단 랩",
+      navLife: "생활 계산기",
+      navAgeGroup: "나이 · 띠",
+      navAgeCalculator: "나이·만나이 계산기",
+      navAgeTable: "나이표·나이 용어",
+      navZodiac: "띠·띠궁합·삼재",
+      navDateGroup: "날짜",
+      navDateInfo: "날짜 정보",
+      navDateDiff: "디데이·날짜 차이",
+      navDateRange: "기간 날짜 목록·평일",
+      navDateMove: "날짜 더하기·빼기",
+      navAnniversary: "기념일·아기 100일",
+      navLunarGroup: "양력 · 음력",
+      navLunarConverter: "양음력 변환",
+      navLunarAnniversary: "음력 기념일 변환",
+      navFinanceGroup: "주식 및 코인",
+      navKoreaStocks: "국내 주식 조회",
+      navGlobalStocks: "해외 주식 조회",
+      navCrypto: "코인 공포탐욕 지표",
+      navCalendarGroup: "달력 · 학교",
+      navHolidays: "우리나라 공휴일",
+      navWorldHolidays: "세계 공휴일 달력",
+      navNoHandDays: "손없는 날",
+      navSchool: "입학·졸업·학생 나이",
+      navFunNames: "재미 이름짓기"
+    },
+    en: {
+      skinApply: "Apply",
+      skinApplied: "Applied",
+      navDeveloper: "Developer Tools",
+      navNpm: "npm Package Info",
+      navUtility: "Utility Toolbox",
+      navFileMedia: "File & Media Tools",
+      navAdvanced: "Advanced Tools",
+      navGamingSection: "Game & Device Tests",
+      navGamingLab: "Game Test Lab",
+      navGamingCalculators: "Game Calculator Lab",
+      navDeviceDiagnostics: "Device Diagnostics Lab",
+      navDisplayDiagnostics: "Display Diagnostics Lab",
+      navInputTraining: "Input Training Lab",
+      navPerformanceLab: "Performance Lab",
+      navLife: "Life Calculators",
+      navAgeGroup: "Age & Zodiac",
+      navAgeCalculator: "Age Calculator",
+      navAgeTable: "Age Table",
+      navZodiac: "Zodiac Match & Samjae",
+      navDateGroup: "Dates",
+      navDateInfo: "Date Info",
+      navDateDiff: "D-Day & Date Difference",
+      navDateRange: "Date Range & Weekdays",
+      navDateMove: "Add or Subtract Dates",
+      navAnniversary: "Anniversary Calculator",
+      navLunarGroup: "Solar & Lunar",
+      navLunarConverter: "Solar/Lunar Converter",
+      navLunarAnniversary: "Lunar Anniversary Converter",
+      navFinanceGroup: "Stocks & Crypto",
+      navKoreaStocks: "Korean Stocks",
+      navGlobalStocks: "Global Stocks",
+      navCrypto: "Crypto Fear & Greed",
+      navCalendarGroup: "Calendar & School",
+      navHolidays: "Korean Holidays",
+      navWorldHolidays: "World Holiday Calendar",
+      navNoHandDays: "No-Hand Days",
+      navSchool: "School Year Calculator",
+      navFunNames: "Fun Name Generator"
+    }
+  };
 
   function init() {
     const initializers = [
@@ -149,7 +231,7 @@
       const currentSkin = document.documentElement.dataset.skin || "basic";
       const isApplied = skinSel.value === currentSkin;
       skinApply.disabled = isApplied;
-      skinApply.textContent = isApplied ? "적용됨" : "적용";
+      skinApply.textContent = isApplied ? text("skinApplied") : text("skinApply");
     }
   }
 
@@ -176,50 +258,55 @@
     const prefix = nested ? "../" : "";
     const life = `${prefix}calculators/all.html`;
     nav.innerHTML = [
-      '<p class="nav-title">개발 도구</p>',
+      `<p class="nav-title">${text("navDeveloper")}</p>`,
       navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
-      navLink(`${prefix}tools/npm-package-info.html`, "npm", "npm 패키지 정보"),
-      navLink(`${prefix}tools/utility-toolbox.html`, "18", "확장 도구 모음"),
-      navLink(`${prefix}tools/file-media-toolbox.html`, "12", "파일·미디어 도구"),
-      navLink(`${prefix}tools/advanced-toolbox.html`, "10", "고급 도구"),
-      '<p class="nav-title">게임 · 장치 테스트</p>',
-      navLink(`${prefix}tools/gaming-lab.html`, "12", "게임 테스트 랩"),
-      navLink(`${prefix}tools/gaming-calculators.html`, "12", "게임 계산기 랩"),
-      navLink(`${prefix}tools/device-diagnostics.html`, "12", "장치 진단 랩"),
-      navLink(`${prefix}tools/display-diagnostics.html`, "12", "화면 진단 랩"),
-      navLink(`${prefix}tools/input-training.html`, "16", "입력 연습 랩"),
-      navLink(`${prefix}tools/performance-lab.html`, "8", "성능 진단 랩"),
-      '<p class="nav-title">생활 계산기</p>',
-      navGroup("나이 · 띠", [
-        [`${life}#age-calculator`, "나이·만나이 계산기"],
-        [`${life}#age-table`, "나이표·나이 용어"],
-        [`${life}#zodiac-tools`, "띠·띠궁합·삼재"]
+      navLink(`${prefix}tools/npm-package-info.html`, "npm", text("navNpm")),
+      navLink(`${prefix}tools/utility-toolbox.html`, "18", text("navUtility")),
+      navLink(`${prefix}tools/file-media-toolbox.html`, "12", text("navFileMedia")),
+      navLink(`${prefix}tools/advanced-toolbox.html`, "10", text("navAdvanced")),
+      `<p class="nav-title">${text("navGamingSection")}</p>`,
+      navLink(`${prefix}tools/gaming-lab.html`, "12", text("navGamingLab")),
+      navLink(`${prefix}tools/gaming-calculators.html`, "12", text("navGamingCalculators")),
+      navLink(`${prefix}tools/device-diagnostics.html`, "12", text("navDeviceDiagnostics")),
+      navLink(`${prefix}tools/display-diagnostics.html`, "12", text("navDisplayDiagnostics")),
+      navLink(`${prefix}tools/input-training.html`, "16", text("navInputTraining")),
+      navLink(`${prefix}tools/performance-lab.html`, "8", text("navPerformanceLab")),
+      `<p class="nav-title">${text("navLife")}</p>`,
+      navGroup(text("navAgeGroup"), [
+        [`${life}#age-calculator`, text("navAgeCalculator")],
+        [`${life}#age-table`, text("navAgeTable")],
+        [`${life}#zodiac-tools`, text("navZodiac")]
       ]),
-      navGroup("날짜", [
-        [`${life}#date-info`, "날짜 정보"],
-        [`${life}#date-difference`, "디데이·날짜 차이"],
-        [`${life}#date-range-list`, "기간 날짜 목록·평일"],
-        [`${life}#date-move`, "날짜 더하기·빼기"],
-        [`${life}#anniversary`, "기념일·아기 100일"]
+      navGroup(text("navDateGroup"), [
+        [`${life}#date-info`, text("navDateInfo")],
+        [`${life}#date-difference`, text("navDateDiff")],
+        [`${life}#date-range-list`, text("navDateRange")],
+        [`${life}#date-move`, text("navDateMove")],
+        [`${life}#anniversary`, text("navAnniversary")]
       ]),
-      navGroup("양력 · 음력", [
-        [`${life}#lunar-converter`, "양음력 변환"],
-        [`${life}#lunar-anniversary`, "음력 기념일 변환"]
+      navGroup(text("navLunarGroup"), [
+        [`${life}#lunar-converter`, text("navLunarConverter")],
+        [`${life}#lunar-anniversary`, text("navLunarAnniversary")]
       ]),
-      navGroup("주식 및 코인", [
-        [`${prefix}tools/korea-stocks.html`, "국내 주식 조회"],
-        [`${prefix}tools/global-stocks.html`, "해외 주식 조회"],
-        [`${prefix}tools/crypto-sentiment.html`, "코인 공포탐욕 지표"]
+      navGroup(text("navFinanceGroup"), [
+        [`${prefix}tools/korea-stocks.html`, text("navKoreaStocks")],
+        [`${prefix}tools/global-stocks.html`, text("navGlobalStocks")],
+        [`${prefix}tools/crypto-sentiment.html`, text("navCrypto")]
       ]),
-      navGroup("달력 · 학교", [
-        [`${life}#holidays`, "우리나라 공휴일"],
-        [`${prefix}tools/world-holidays.html`, "세계 공휴일 달력"],
-        [`${life}#no-hand-days`, "손없는 날"],
-        [`${life}#school-tools`, "입학·졸업·학생 나이"],
-        [`${life}#fun-names`, "재미 이름짓기"]
+      navGroup(text("navCalendarGroup"), [
+        [`${life}#holidays`, text("navHolidays")],
+        [`${prefix}tools/world-holidays.html`, text("navWorldHolidays")],
+        [`${life}#no-hand-days`, text("navNoHandDays")],
+        [`${life}#school-tools`, text("navSchool")],
+        [`${life}#fun-names`, text("navFunNames")]
       ])
     ].join("");
+  }
+
+  function text(key) {
+    const lang = document.documentElement.lang === "en" ? "en" : "ko";
+    return (UI_TEXT[lang] && UI_TEXT[lang][key]) || UI_TEXT.ko[key] || key;
   }
 
   function navLink(href, icon, label) {

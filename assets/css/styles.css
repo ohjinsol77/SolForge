@@ -1335,9 +1335,10 @@ th {
   font-weight: 900;
 }
 
-.hero-badge span {
+.hero-badge span[aria-hidden="true"] {
   width: 7px;
   height: 7px;
+  flex: 0 0 7px;
   border-radius: 50%;
   background: currentColor;
   box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 15%, transparent);
@@ -1347,7 +1348,7 @@ th {
   margin: 0.35rem 0 1rem;
   font-size: clamp(2.45rem, 5.2vw, 4.75rem);
   line-height: 1.06;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
 }
 
 .home-hero h1 em {
@@ -2190,6 +2191,10 @@ th {
     margin-bottom: 0.85rem;
   }
 
+  .side-nav {
+    display: none;
+  }
+
   .nav-title {
     margin-top: 0.75rem;
   }
@@ -2249,7 +2254,46 @@ th {
 
   .top-links {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .top-links a {
+    min-width: 0;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .home-hero {
+    padding: 1.2rem;
+    border-radius: 12px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(1.7rem, 8vw, 1.95rem);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .home-hero h1 span,
+  .home-hero h1 em {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+  }
+
+  .tool-search {
+    gap: 0.45rem;
+  }
+
+  .tool-search input {
+    font-size: 0.9rem;
   }
 
   .top-links a {
@@ -2318,7 +2362,7 @@ th {
   }
 
   .home-hero h1 {
-    font-size: clamp(2.25rem, 13vw, 3.35rem);
+    font-size: clamp(1.7rem, 8vw, 1.95rem);
   }
 
   .tool-search {
