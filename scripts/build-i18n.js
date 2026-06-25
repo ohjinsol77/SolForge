@@ -228,6 +228,7 @@ function collectStringNodes(source) {
   walkAst(ast, null, (node, parent) => {
     if (node.type === "Literal" && typeof node.value === "string") {
       if (isStaticPropertyKey(node, parent)) return;
+      if (!/[가-힣]/.test(node.value)) return;
       nodes.push({
         start: node.start,
         end: node.end,
@@ -238,15 +239,22 @@ function collectStringNodes(source) {
     }
     if (node.type === "TemplateLiteral") {
       if (isStaticPropertyKey(node, parent)) return;
+      const values = node.quasis.map((quasi) => quasi.value.cooked || quasi.value.raw || "");
+      if (!values.some((value) => /[가-힣]/.test(value))) return;
       nodes.push({
         start: node.start,
         end: node.end,
         literal: source.slice(node.start, node.end),
-        values: node.quasis.map((quasi) => quasi.value.cooked || quasi.value.raw || "")
+        values
       });
     }
   });
-  return nodes.sort((a, b) => a.start - b.start);
+  return nodes
+    .sort((a, b) => a.start - b.start || b.end - a.end)
+    .filter((node, index, sorted) => {
+      const previous = sorted[index - 1];
+      return !previous || node.start >= previous.end;
+    });
 }
 
 function collectJsTranslations() {
