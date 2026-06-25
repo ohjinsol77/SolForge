@@ -142,9 +142,17 @@
       navFunNames: "Fun Name Generator"
     }
   };
+  const RIGHT_RAIL_AD_PROVIDERS = [
+    {
+      id: "coupang-vertical",
+      enabled: true,
+      render: renderCoupangVerticalAd
+    }
+  ];
 
   function init() {
     const initializers = [
+      initRightRailAds,
       initToolFinder,
       initLanguageToggle,
       initTheme,
@@ -164,6 +172,101 @@
       }
     });
     window.addEventListener("hashchange", markActiveLinks);
+  }
+
+  function initRightRailAds() {
+    const main = $("#main.content");
+    if (!main || isHomePage() || $(".content-with-ad", main)) return;
+
+    const provider = pickAdProvider();
+    if (!provider) return;
+
+    const topbar = $(".topbar", main);
+    const footer = $(".footer", main);
+    const layout = document.createElement("div");
+    const primary = document.createElement("div");
+    const rail = document.createElement("aside");
+
+    layout.className = "content-with-ad";
+    primary.className = "content-primary";
+    rail.className = "right-ad-rail";
+    rail.setAttribute("aria-label", text("adRailLabel"));
+
+    let cursor = topbar ? topbar.nextSibling : main.firstChild;
+    while (cursor && cursor !== footer) {
+      const next = cursor.nextSibling;
+      primary.appendChild(cursor);
+      cursor = next;
+    }
+
+    if (!primary.children.length) return;
+
+    provider.render(rail);
+    layout.append(primary, rail);
+    main.insertBefore(layout, footer || null);
+    main.classList.add("content-has-right-ad");
+  }
+
+  function isHomePage() {
+    const pathname = window.location.pathname || "/";
+    const normalized = pathname.replace(/\/+$/, "");
+    const filename = normalized.split("/").pop() || "index.html";
+    if (/\/(?:tools|calculators)(?:\/|$)/.test(normalized)) return false;
+    return filename === "index.html" || normalized === "" || normalized === "/ko" || normalized === "/en";
+  }
+
+  function pickAdProvider() {
+    const providers = RIGHT_RAIL_AD_PROVIDERS.filter((provider) => provider.enabled && typeof provider.render === "function");
+    if (!providers.length) return null;
+    return providers[Math.floor(Math.random() * providers.length)];
+  }
+
+  function renderCoupangVerticalAd(container) {
+    const card = document.createElement("div");
+    const badge = document.createElement("span");
+    const slot = document.createElement("div");
+    const disclosure = document.createElement("p");
+
+    card.className = "right-ad-card";
+    badge.className = "right-ad-badge";
+    badge.textContent = text("adBadge");
+    disclosure.className = "right-ad-disclosure";
+    disclosure.textContent = text("coupangDisclosure");
+    slot.className = "coupang-vertical-slot";
+    slot.setAttribute("aria-label", text("coupangAdLabel"));
+
+    card.append(badge, slot, disclosure);
+    container.appendChild(card);
+    mountCoupangAd(slot);
+  }
+
+  function mountCoupangAd(slot) {
+    if (!slot.id) slot.id = `coupangVertical${Math.random().toString(36).slice(2)}`;
+    const config = {
+      id: 1000486,
+      template: "carousel",
+      trackingCode: "AF5479527",
+      width: "70",
+      height: "1100",
+      tsource: "",
+      container: `#${slot.id}`
+    };
+    const run = () => {
+      const script = document.createElement("script");
+      script.text = `new PartnersCoupang.G(${JSON.stringify(config)});`;
+      slot.appendChild(script);
+    };
+
+    if (window.PartnersCoupang && window.PartnersCoupang.G) {
+      run();
+      return;
+    }
+
+    const loader = document.createElement("script");
+    loader.src = "https://ads-partners.coupang.com/g.js";
+    loader.async = true;
+    loader.onload = run;
+    slot.appendChild(loader);
   }
 
   function initLanguageToggle() {
@@ -365,6 +468,15 @@
 
   function text(key) {
     const lang = document.documentElement.lang === "en" ? "en" : "ko";
+    const common = {
+      adBadge: lang === "en" ? "AD" : "광고",
+      adRailLabel: lang === "en" ? "Right side advertisement" : "오른쪽 광고 영역",
+      coupangAdLabel: lang === "en" ? "Coupang Partners advertisement" : "쿠팡 파트너스 광고",
+      coupangDisclosure: lang === "en"
+        ? "As a Coupang Partners participant, SolForge may earn commissions from qualifying purchases."
+        : "SolForge는 쿠팡 파트너스 활동의 일환으로 일정액의 수수료를 제공받을 수 있습니다."
+    };
+    if (common[key]) return common[key];
     return (UI_TEXT[lang] && UI_TEXT[lang][key]) || UI_TEXT.ko[key] || key;
   }
 
