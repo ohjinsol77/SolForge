@@ -9,8 +9,18 @@
   const ASSET = "/assets/img/mapleland/";
   const EXTERNAL_ICONS = {
     darkWyvern: "https://maplestory.io/api/GMS/62/mob/8810021/icon",
+    papulatus: "https://maplestory.io/api/GMS/62/mob/8500002/icon",
+    pianus: "https://maplestory.io/api/GMS/62/mob/8510000/icon",
+    zakum: "https://maplestory.io/api/GMS/62/mob/8800002/icon",
     elNath: "https://maplestory.io/api/gms/62/map/211000000/icon",
     leafre: "https://maplestory.io/api/gms/62/map/240000000/icon",
+    horntailNecklace: "https://maplestory.io/api/gms/200/item/1102154/icon",
+    gloveAttack10: "https://maplestory.io/api/gms/200/item/2040804/icon",
+    gloveAttack60: "https://maplestory.io/api/gms/200/item/2040805/icon",
+    steely: "https://maplestory.io/api/gms/200/item/2070005/icon",
+    ilbi: "https://maplestory.io/api/gms/200/item/2070006/icon",
+    papulatusPiece: "https://maplestory.io/api/gms/62/item/4031179/icon",
+    darkCrystal: "https://maplestory.io/api/gms/62/item/4001076/icon",
     oneHour: "https://maplestory.io/api/gms/200/item/4001126/icon",
     expCoupon: "https://maplestory.io/api/gms/200/item/2450046/icon",
     itemDrop: "https://maplestory.io/api/gms/62/item/4031138/icon",
@@ -20,41 +30,55 @@
     petFood: "https://maplestory.io/api/gms/200/item/2120000/icon"
   };
   const ICONS = [
-    ["holy_symbol.png", "Holy Symbol"],
-    ["magic_guard.png", "Magic Guard"],
-    ["invincible.png", "Invincible"],
-    ["bahamute.png", "Bahamut"],
-    ["infinity.png", "Infinity"],
-    ["resurrection.png", "Resurrection"],
-    ["roar.png", "Dragon Roar"],
-    ["hyper_body.png", "Hyper Body"],
-    ["beholder.png", "Beholder"],
-    ["power_guard.png", "Power Guard"],
-    ["fury.png", "Rage"],
-    ["enrage.png", "Enrage"],
-    ["sanctuary.png", "Sanctuary"],
-    ["silver_hawk.png", "Silver Hawk"],
-    ["sharp.png", "Sharp Eyes"],
-    ["concentration.png", "Concentration"],
-    ["sniping.png", "Sniping"],
-    ["hei.png", "Haste"],
-    ["meso_up.png", "Meso Up"],
-    ["shadow_partner.png", "Shadow Partner"],
-    ["spirit_javelin.png", "Spirit Javelin"],
-    ["meso_guard.png", "Meso Guard"],
-    ["smoke_shell.png", "Smoke Shell"],
-    ["assassination.png", "Assassination"],
-    ["booster.png", "Booster"],
-    ["maple_warrior.png", "Maple Warrior"],
-    ["will.png", "Hero's Will"],
-    ["trap.png", "Trap"],
-    ["horntail.png", "Horntail"],
-    ["chaos_zakum.png", "Zakum"],
-    ["tomb.png", "Tomb"],
-    ["horntail_dispel.png", "Dispel"],
-    ["seduce.png", "Seduce"],
-    ["attack_cancel.png", "Attack cancel"],
-    ["attack_cancel_big.png", "Big cancel"]
+    ["holy_symbol.png", { ko: "홀리심볼", en: "Holy Symbol" }],
+    ["magic_guard.png", { ko: "매직가드", en: "Magic Guard" }],
+    ["invincible.png", { ko: "인빈서블", en: "Invincible" }],
+    ["bahamute.png", { ko: "바하뮤트", en: "Bahamut" }],
+    ["infinity.png", { ko: "인피니티", en: "Infinity" }],
+    ["resurrection.png", { ko: "리저렉션", en: "Resurrection" }],
+    ["roar.png", { ko: "드래곤로어", en: "Dragon Roar" }],
+    ["hyper_body.png", { ko: "하이퍼바디", en: "Hyper Body" }],
+    ["beholder.png", { ko: "비홀더", en: "Beholder" }],
+    ["power_guard.png", { ko: "파워가드", en: "Power Guard" }],
+    ["fury.png", { ko: "분노", en: "Rage" }],
+    ["enrage.png", { ko: "인레이지", en: "Enrage" }],
+    ["sanctuary.png", { ko: "생츄어리", en: "Sanctuary" }],
+    ["silver_hawk.png", { ko: "실버호크", en: "Silver Hawk" }],
+    ["sharp.png", { ko: "샤프아이즈", en: "Sharp Eyes" }],
+    ["concentration.png", { ko: "집중", en: "Concentration" }],
+    ["sniping.png", { ko: "스나이핑", en: "Sniping" }],
+    ["hei.png", { ko: "헤이스트", en: "Haste" }],
+    ["meso_up.png", { ko: "메소업", en: "Meso Up" }],
+    ["shadow_partner.png", { ko: "쉐도우파트너", en: "Shadow Partner" }],
+    ["spirit_javelin.png", { ko: "스피릿자벨린", en: "Spirit Javelin" }],
+    ["meso_guard.png", { ko: "메소가드", en: "Meso Guard" }],
+    ["smoke_shell.png", { ko: "연막탄", en: "Smoke Shell" }],
+    ["assassination.png", { ko: "암살", en: "Assassination" }],
+    ["booster.png", { ko: "부스터", en: "Booster" }],
+    ["wind_booster.gif", { ko: "윈드부스터", en: "Wind Booster" }],
+    ["time_leap.png", { ko: "타임리프", en: "Time Leap" }],
+    ["maple_warrior.png", { ko: "메이플용사", en: "Maple Warrior" }],
+    ["will.png", { ko: "용사의의지", en: "Hero's Will" }],
+    ["trap.png", { ko: "두더지", en: "Trap" }],
+    ["horntail.png", { ko: "혼테일", en: "Horntail" }],
+    ["chaos_zakum.png", { ko: "자쿰", en: "Zakum" }],
+    ["tomb.png", { ko: "사망", en: "Tomb" }],
+    ["horntail_dispel.png", { ko: "혼테일 갈무리", en: "Horntail dispel" }],
+    ["dispel.png", { ko: "버프해제", en: "Dispel" }],
+    ["seduce.png", { ko: "유혹", en: "Seduce" }],
+    ["attack_cancel.png", { ko: "공무", en: "Weapon cancel" }],
+    ["attack_cancel_big.png", { ko: "보스 공무", en: "Boss weapon cancel" }],
+    ["bung_cry.png", { ko: "알림", en: "Alert" }],
+    [EXTERNAL_ICONS.papulatus, { ko: "파풀라투스", en: "Papulatus" }],
+    [EXTERNAL_ICONS.pianus, { ko: "피아누스", en: "Pianus" }],
+    [EXTERNAL_ICONS.zakum, { ko: "자쿰 본체", en: "Zakum body" }],
+    [EXTERNAL_ICONS.horntailNecklace, { ko: "혼목", en: "Horntail necklace" }],
+    [EXTERNAL_ICONS.gloveAttack10, { ko: "장공 10%", en: "Glove ATT 10%" }],
+    [EXTERNAL_ICONS.gloveAttack60, { ko: "장공 60%", en: "Glove ATT 60%" }],
+    [EXTERNAL_ICONS.steely, { ko: "토비 표창", en: "Steely" }],
+    [EXTERNAL_ICONS.ilbi, { ko: "일비 표창", en: "Ilbi" }],
+    [EXTERNAL_ICONS.papulatusPiece, { ko: "차원의 조각", en: "Dimension piece" }],
+    [EXTERNAL_ICONS.darkCrystal, { ko: "어둠의 크리스탈", en: "Dark crystal" }]
   ];
   const PRESET_GROUPS = [
     { id: "magician", ko: "법사", en: "Magician" },
@@ -98,9 +122,15 @@
     { id: "smoke-shell-duration", group: "thief", icon: "smoke_shell.png", sampleKo: "연막탄30 지속시간", titleKo: "연막탄 지속", titleEn: "Smoke Shell duration", ms: 60000 },
     { id: "assassination", group: "thief", icon: "assassination.png", sampleKo: "암살30 풀차징", titleKo: "암살 풀차징", titleEn: "Assassination full charge", ms: 12000 },
     { id: "booster", group: "common", icon: "booster.png", sampleKo: "부스터", titleKo: "부스터", titleEn: "Booster", ms: 200000 },
+    { id: "wind-booster", group: "common", icon: "wind_booster.gif", sampleKo: "윈드부스터", titleKo: "윈드부스터", titleEn: "Wind Booster", ms: 300000 },
     { id: "maple-warrior-9", group: "common", icon: "maple_warrior.png", sampleKo: "메이플용사 9", titleKo: "메이플용사", titleEn: "Maple Warrior", ms: 270000 },
     { id: "maple-warrior-19", group: "common", icon: "maple_warrior.png", sampleKo: "메이플용사 19", titleKo: "메이플용사", titleEn: "Maple Warrior", ms: 570000 },
     { id: "will", group: "common", icon: "will.png", sampleKo: "용사의의지 1", titleKo: "용사의의지", titleEn: "Hero's Will", ms: 600000 },
+    { id: "time-leap-1", group: "common", icon: "time_leap.png", sampleKo: "타임리프 1", titleKo: "타임리프", titleEn: "Time Leap", ms: 2700000 },
+    { id: "time-leap-2", group: "common", icon: "time_leap.png", sampleKo: "타임리프 2", titleKo: "타임리프", titleEn: "Time Leap", ms: 2400000 },
+    { id: "time-leap-3", group: "common", icon: "time_leap.png", sampleKo: "타임리프 3", titleKo: "타임리프", titleEn: "Time Leap", ms: 2100000 },
+    { id: "time-leap-4", group: "common", icon: "time_leap.png", sampleKo: "타임리프 4", titleKo: "타임리프", titleEn: "Time Leap", ms: 1800000 },
+    { id: "time-leap-5", group: "common", icon: "time_leap.png", sampleKo: "타임리프 5", titleKo: "타임리프", titleEn: "Time Leap", ms: 1500000 },
     { id: "mole-round", group: "detail", icon: "trap.png", sampleKo: "두더지 (원탁)", titleKo: "두더지", titleEn: "Mole", ms: 31230 },
     { id: "mole-leafre", group: "detail", icon: "trap.png", sampleKo: "두더지 (리프레)", titleKo: "두더지", titleEn: "Mole", ms: 31030 },
     { id: "elnath-spawn", group: "detail", icon: EXTERNAL_ICONS.elNath, sampleKo: "엘나스 젠 사이클", titleKo: "젠젠", titleEn: "El Nath spawn cycle", ms: 7000 },
@@ -109,6 +139,7 @@
     { id: "death-dc", group: "boss", icon: "tomb.png", sampleKo: "사망 팅", titleKo: "사망 팅", titleEn: "Death reconnect", ms: 900000 },
     { id: "ht-five", group: "boss", icon: "horntail_dispel.png", sampleKo: "혼테일 - 5갈", titleKo: "혼테일 5갈", titleEn: "Horntail 5-min dispel", ms: 300000 },
     { id: "ht-three", group: "boss", icon: "horntail_dispel.png", sampleKo: "혼테일 - 3갈", titleKo: "혼테일 3갈", titleEn: "Horntail 3-min dispel", ms: 180000 },
+    { id: "ht-buff-dispel", group: "boss", icon: "dispel.png", sampleKo: "혼테일 - 버프해제", titleKo: "혼테일 버프해제", titleEn: "Horntail buff dispel", ms: 180000 },
     { id: "ht-first-seduce", group: "boss", icon: "seduce.png", sampleKo: "혼테일 - 첫 개인유혹", titleKo: "첫 개인유혹", titleEn: "First seduce", ms: 120000 },
     { id: "ht-seduce", group: "boss", icon: "seduce.png", sampleKo: "혼테일 - 개인유혹", titleKo: "개인유혹", titleEn: "Seduce", ms: 180000 },
     { id: "ht-wyvern", group: "boss", icon: EXTERNAL_ICONS.darkWyvern, sampleKo: "혼테일 - 다크와이번", titleKo: "다크와이번", titleEn: "Dark Wyvern", ms: 50000 },
@@ -177,6 +208,11 @@
   const els = {
     presetGrid: $("#maplePresetGrid"),
     iconPicker: $("#mapleIconPicker"),
+    iconTrigger: $("#mapleIconTrigger"),
+    iconPreview: $("#mapleSelectedIconPreview"),
+    iconName: $("#mapleSelectedIconName"),
+    iconPopover: $("#mapleIconPopover"),
+    iconClose: $("#closeMapleIconPicker"),
     icon: $("#mapleTimerIcon"),
     title: $("#mapleTimerTitle"),
     minutes: $("#mapleTimerMinutes"),
@@ -221,6 +257,14 @@
     els.add.addEventListener("click", addTimer);
     els.preview.addEventListener("click", () => playAlarm(els.title.value.trim() || text.alarm));
     els.pip.addEventListener("click", openPip);
+    els.iconTrigger.addEventListener("click", openIconPicker);
+    els.iconClose.addEventListener("click", closeIconPicker);
+    els.iconPopover.addEventListener("mousedown", (event) => {
+      if (event.target === els.iconPopover) closeIconPicker();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !els.iconPopover.hidden) closeIconPicker();
+    });
     els.resetSlot.addEventListener("click", () => {
       if (!window.confirm(text.resetConfirm)) return;
       currentSlot().timers = [];
@@ -282,8 +326,22 @@
       button.addEventListener("click", () => {
         setIcon(button.dataset.iconValue);
         saveDraft();
+        closeIconPicker();
       });
     });
+  }
+
+  function openIconPicker() {
+    els.iconPopover.hidden = false;
+    els.iconTrigger.setAttribute("aria-expanded", "true");
+    const active = $("[data-icon-value].active", els.iconPicker) || $("[data-icon-value]", els.iconPicker);
+    if (active) active.focus();
+  }
+
+  function closeIconPicker() {
+    els.iconPopover.hidden = true;
+    els.iconTrigger.setAttribute("aria-expanded", "false");
+    els.iconTrigger.focus();
   }
 
   function renderPipSupport() {
@@ -623,7 +681,7 @@
     PRESETS.forEach((preset) => {
       if (!options.has(preset.icon)) options.set(preset.icon, sampleLabel(preset));
     });
-    return Array.from(options.entries());
+    return Array.from(options.entries()).map(([file, label]) => [file, iconOptionLabel(label)]);
   }
 
   function isAllowedIcon(value) {
@@ -632,11 +690,23 @@
 
   function setIcon(value) {
     els.icon.value = isAllowedIcon(value) ? value : PRESETS[0].icon;
+    els.iconPreview.src = iconUrl(els.icon.value);
+    els.iconName.textContent = iconLabel(els.icon.value);
     $$("[data-icon-value]", els.iconPicker).forEach((button) => {
       const active = button.dataset.iconValue === els.icon.value;
       button.classList.toggle("active", active);
       button.setAttribute("aria-selected", active ? "true" : "false");
     });
+  }
+
+  function iconLabel(value) {
+    const found = uniqueIconOptions().find(([file]) => file === value);
+    return found ? found[1] : iconOptionLabel(ICONS[0][1]);
+  }
+
+  function iconOptionLabel(labelValue) {
+    if (labelValue && typeof labelValue === "object") return lang === "en" ? labelValue.en : labelValue.ko;
+    return String(labelValue || "");
   }
 
   function iconUrl(value) {

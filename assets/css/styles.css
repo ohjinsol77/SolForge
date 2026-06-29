@@ -4700,26 +4700,102 @@ th {
   font-weight: 900;
 }
 
-.maple-icon-picker {
+.maple-icon-trigger {
   display: grid;
-  grid-template-columns: repeat(6, 34px);
-  gap: 0.35rem;
-  max-height: 154px;
-  overflow: auto;
-  padding: 0.45rem;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 0.35rem 0.55rem;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-weight: 900;
+  text-align: left;
+  cursor: pointer;
+}
+
+.maple-icon-trigger img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.maple-icon-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maple-icon-popover[hidden] {
+  display: none;
+}
+
+.maple-icon-popover {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.maple-icon-popover-panel {
+  width: min(520px, 100%);
+  max-height: min(78vh, 560px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.24);
+}
+
+.maple-icon-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.maple-icon-popover-head strong {
+  font-size: 1rem;
+}
+
+.maple-icon-popover-head button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.maple-icon-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 0.45rem;
+  max-height: calc(min(78vh, 560px) - 68px);
+  overflow: auto;
+  padding: 0.85rem;
   background: var(--surface-soft);
 }
 
 .maple-icon-picker button {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 100%;
+  aspect-ratio: 1;
   place-items: center;
-  padding: 0.2rem;
+  padding: 0.35rem;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 8px;
   background: color-mix(in srgb, var(--surface) 88%, var(--brand) 12%);
   cursor: pointer;
 }
@@ -4731,8 +4807,8 @@ th {
 }
 
 .maple-icon-picker img {
-  max-width: 26px;
-  max-height: 26px;
+  max-width: 34px;
+  max-height: 34px;
   object-fit: contain;
 }
 
@@ -5184,10 +5260,6 @@ th {
   .maple-preset-grid,
   .maple-preset-list {
     grid-template-columns: 1fr;
-  }
-
-  .maple-icon-picker {
-    grid-template-columns: repeat(7, 34px);
   }
 
   .maple-command-row,
