@@ -28,6 +28,7 @@ const SOURCE_HTML_FILES = [
   "tools/mysql-query-prettier.html",
   "tools/npm-package-info.html",
   "tools/performance-lab.html",
+  "tools/pip-toolbox.html",
   "tools/utility-toolbox.html",
   "tools/world-holidays.html",
   "calculators/age.html",

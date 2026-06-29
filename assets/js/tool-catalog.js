@@ -2,6 +2,12 @@
   "use strict";
 
   const tools = [
+    ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox.html#pip-clock"],
+    ["pip", "TMR", "PIP 타이머", "카운트다운 타이머를 페이지와 PIP 창에서 실행합니다.", "pip 타이머 timer countdown", "pip-toolbox.html#pip-timer"],
+    ["pip", "POM", "PIP 뽀모도로 타이머", "집중·휴식 시간을 반복하는 뽀모도로 타이머입니다.", "pip 뽀모도로 pomodoro 집중 휴식", "pip-toolbox.html#pip-pomodoro"],
+    ["pip", "HEX", "PIP 색상 선택", "색상을 고르고 HEX, RGB, HSL 값을 확인합니다.", "pip color picker 색상 hex rgb hsl", "pip-toolbox.html#pip-color"],
+    ["pip", "IMG", "PIP 이미지 리사이즈", "로컬 이미지를 원하는 크기와 형식으로 다시 저장합니다.", "pip image resize 이미지 리사이즈", "pip-toolbox.html#pip-image"],
+    ["pip", "MEM", "PIP 메모", "브라우저에 저장되는 간단한 메모를 PIP 창으로 띄웁니다.", "pip memo note 메모 노트", "pip-toolbox.html#pip-memo"],
     ["boss", "BOSS", "메이플랜드 보스타이머", "메이플랜드 보스 패턴과 스킬 쿨타임을 PIP 창으로 관리합니다.", "메이플랜드 보스 타이머 pip 혼테일 자쿰 피아누스 유혹 공무", "mapleland-boss-timer.html"],
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier.html"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual.html"],
@@ -142,6 +148,7 @@
   ];
 
   const categoryLabels = {
+    pip: "pip 도구모음",
     boss: "보스타이머",
     developer: "개발자",
     text: "텍스트",
@@ -181,7 +188,7 @@
   }
 
   function iconClass(category) {
-    if (category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "game" || category === "finance") return category;
+    if (category === "pip" || category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "game" || category === "finance") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
     if (category === "age") return "age";
