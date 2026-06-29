@@ -4582,6 +4582,35 @@ th {
 
 .maple-preset-grid {
   display: grid;
+  gap: 0.7rem;
+}
+
+.maple-preset-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.maple-preset-tabs button {
+  min-height: 32px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.maple-preset-tabs button.active {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface));
+  color: var(--text);
+}
+
+.maple-preset-list {
+  display: grid;
   gap: 0.55rem;
 }
 
@@ -4663,13 +4692,48 @@ th {
 }
 
 .maple-timer-setup .inline-fields {
-  grid-template-columns: minmax(120px, 150px) minmax(220px, 1fr) minmax(82px, 96px) minmax(82px, 96px);
+  grid-template-columns: minmax(210px, 260px) minmax(220px, 1fr) minmax(74px, 88px) minmax(74px, 88px) minmax(74px, 88px);
   align-items: end;
 }
 
-.maple-icon-row select,
 .small-field input {
   font-weight: 900;
+}
+
+.maple-icon-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 34px);
+  gap: 0.35rem;
+  max-height: 154px;
+  overflow: auto;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.maple-icon-picker button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--brand) 12%);
+  cursor: pointer;
+}
+
+.maple-icon-picker button.active {
+  border-color: color-mix(in srgb, var(--brand) 70%, var(--line));
+  background: color-mix(in srgb, var(--brand) 18%, var(--surface));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 13%, transparent);
+}
+
+.maple-icon-picker img {
+  max-width: 26px;
+  max-height: 26px;
+  object-fit: contain;
 }
 
 .maple-adjust-row,
@@ -5038,10 +5102,6 @@ th {
     position: static;
   }
 
-  .maple-preset-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .pip-two-column,
   .pip-color-grid,
   .pip-memo-layout {
@@ -5121,8 +5181,13 @@ th {
   }
 
   .maple-timer-setup .inline-fields,
-  .maple-preset-grid {
+  .maple-preset-grid,
+  .maple-preset-list {
     grid-template-columns: 1fr;
+  }
+
+  .maple-icon-picker {
+    grid-template-columns: repeat(7, 34px);
   }
 
   .maple-command-row,

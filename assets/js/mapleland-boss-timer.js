@@ -7,28 +7,124 @@
   const SLOT_COUNT = 5;
   const TICK_MS = 250;
   const ASSET = "/assets/img/mapleland/";
+  const EXTERNAL_ICONS = {
+    darkWyvern: "https://maplestory.io/api/GMS/62/mob/8810021/icon",
+    elNath: "https://maplestory.io/api/gms/62/map/211000000/icon",
+    leafre: "https://maplestory.io/api/gms/62/map/240000000/icon",
+    oneHour: "https://maplestory.io/api/gms/200/item/4001126/icon",
+    expCoupon: "https://maplestory.io/api/gms/200/item/2450046/icon",
+    itemDrop: "https://maplestory.io/api/gms/62/item/4031138/icon",
+    warriorPotion: "https://maplestory.io/api/gms/200/item/2002017/icon",
+    cider: "https://maplestory.io/api/gms/200/item/2022002/icon",
+    speedPill: "https://maplestory.io/api/gms/200/item/2002010/icon",
+    petFood: "https://maplestory.io/api/gms/200/item/2120000/icon"
+  };
   const ICONS = [
+    ["holy_symbol.png", "Holy Symbol"],
+    ["magic_guard.png", "Magic Guard"],
+    ["invincible.png", "Invincible"],
+    ["bahamute.png", "Bahamut"],
+    ["infinity.png", "Infinity"],
+    ["resurrection.png", "Resurrection"],
+    ["roar.png", "Dragon Roar"],
+    ["hyper_body.png", "Hyper Body"],
+    ["beholder.png", "Beholder"],
+    ["power_guard.png", "Power Guard"],
+    ["fury.png", "Rage"],
+    ["enrage.png", "Enrage"],
+    ["sanctuary.png", "Sanctuary"],
+    ["silver_hawk.png", "Silver Hawk"],
+    ["sharp.png", "Sharp Eyes"],
+    ["concentration.png", "Concentration"],
+    ["sniping.png", "Sniping"],
+    ["hei.png", "Haste"],
+    ["meso_up.png", "Meso Up"],
+    ["shadow_partner.png", "Shadow Partner"],
+    ["spirit_javelin.png", "Spirit Javelin"],
+    ["meso_guard.png", "Meso Guard"],
+    ["smoke_shell.png", "Smoke Shell"],
+    ["assassination.png", "Assassination"],
+    ["booster.png", "Booster"],
+    ["maple_warrior.png", "Maple Warrior"],
+    ["will.png", "Hero's Will"],
+    ["trap.png", "Trap"],
     ["horntail.png", "Horntail"],
     ["chaos_zakum.png", "Zakum"],
-    ["resurrection.png", "Resurrection"],
     ["tomb.png", "Tomb"],
     ["horntail_dispel.png", "Dispel"],
     ["seduce.png", "Seduce"],
     ["attack_cancel.png", "Attack cancel"],
-    ["attack_cancel_big.png", "Big cancel"],
-    ["holy_symbol.png", "Holy Symbol"]
+    ["attack_cancel_big.png", "Big cancel"]
+  ];
+  const PRESET_GROUPS = [
+    { id: "magician", ko: "법사", en: "Magician" },
+    { id: "warrior", ko: "전사", en: "Warrior" },
+    { id: "bowman", ko: "궁수", en: "Bowman" },
+    { id: "thief", ko: "도적", en: "Thief" },
+    { id: "common", ko: "공통스킬", en: "Common Skills" },
+    { id: "detail", ko: "미세조정", en: "Fine Tuning" },
+    { id: "boss", ko: "보스", en: "Boss" },
+    { id: "etc", ko: "기타", en: "Etc" }
   ];
   const PRESETS = [
-    { id: "ht-five", icon: "horntail_dispel.png", titleKo: "혼테일 5갈", titleEn: "Horntail 5-min dispel", seconds: 300, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "ht-three", icon: "horntail_dispel.png", titleKo: "혼테일 3갈", titleEn: "Horntail 3-min dispel", seconds: 180, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "ht-first-seduce", icon: "seduce.png", titleKo: "첫 개인유혹", titleEn: "First seduce", seconds: 120, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "ht-seduce", icon: "seduce.png", titleKo: "개인유혹", titleEn: "Seduce", seconds: 180, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "ht-wyvern", icon: "horntail.png", titleKo: "다크와이번", titleEn: "Dark Wyvern", seconds: 50, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "ht-cancel", icon: "attack_cancel.png", titleKo: "혼테일 공무", titleEn: "Horntail weapon cancel", seconds: 45, groupKo: "혼테일", groupEn: "Horntail" },
-    { id: "zakum-cancel", icon: "attack_cancel_big.png", titleKo: "자쿰 공무", titleEn: "Zakum weapon cancel", seconds: 30, groupKo: "자쿰", groupEn: "Zakum" },
-    { id: "pianus-cancel", icon: "attack_cancel_big.png", titleKo: "피아누스 공무", titleEn: "Pianus weapon cancel", seconds: 38, groupKo: "피아누스", groupEn: "Pianus" },
-    { id: "resurrection", icon: "resurrection.png", titleKo: "리저렉션 쿨", titleEn: "Resurrection cooldown", seconds: 1800, groupKo: "공통", groupEn: "Common" },
-    { id: "death-dc", icon: "tomb.png", titleKo: "사망 팅", titleEn: "Death reconnect", seconds: 900, groupKo: "공통", groupEn: "Common" }
+    { id: "hs-100", group: "magician", icon: "holy_symbol.png", sampleKo: "홀리심볼 (1분40초)", titleKo: "홀리심볼", titleEn: "Holy Symbol", ms: 100000 },
+    { id: "hs-105", group: "magician", icon: "holy_symbol.png", sampleKo: "홀리심볼 (1분45초)", titleKo: "홀리심볼", titleEn: "Holy Symbol", ms: 105000 },
+    { id: "hs-110", group: "magician", icon: "holy_symbol.png", sampleKo: "홀리심볼 (1분50초)", titleKo: "홀리심볼", titleEn: "Holy Symbol", ms: 110000 },
+    { id: "magic-guard", group: "magician", icon: "magic_guard.png", sampleKo: "매직가드", titleKo: "매직가드", titleEn: "Magic Guard", ms: 600000 },
+    { id: "invincible", group: "magician", icon: "invincible.png", sampleKo: "인빈서블", titleKo: "인빈서블", titleEn: "Invincible", ms: 300000 },
+    { id: "bahamute", group: "magician", icon: "bahamute.png", sampleKo: "바하뮤트", titleKo: "바하뮤트", titleEn: "Bahamut", ms: 160000 },
+    { id: "infinity", group: "magician", icon: "infinity.png", sampleKo: "인피니티 쿨", titleKo: "인피니티", titleEn: "Infinity", ms: 600000 },
+    { id: "resurrection-magician", group: "magician", icon: "resurrection.png", sampleKo: "리저렉션 쿨", titleKo: "리저렉션", titleEn: "Resurrection", ms: 1800000 },
+    { id: "dragon-roar", group: "warrior", icon: "roar.png", sampleKo: "드래곤로어 (4분10초)", titleKo: "드래곤로어", titleEn: "Dragon Roar", ms: 250000 },
+    { id: "hyper-body", group: "warrior", icon: "hyper_body.png", sampleKo: "하이퍼바디", titleKo: "하이퍼바디", titleEn: "Hyper Body", ms: 155000 },
+    { id: "beholder", group: "warrior", icon: "beholder.png", sampleKo: "비홀더", titleKo: "비홀더", titleEn: "Beholder", ms: 1200000 },
+    { id: "power-guard", group: "warrior", icon: "power_guard.png", sampleKo: "파워가드", titleKo: "파워가드", titleEn: "Power Guard", ms: 90000 },
+    { id: "fury", group: "warrior", icon: "fury.png", sampleKo: "분노", titleKo: "분노", titleEn: "Rage", ms: 160000 },
+    { id: "enrage", group: "warrior", icon: "enrage.png", sampleKo: "인레이지 쿨", titleKo: "인레이지", titleEn: "Enrage", ms: 360000 },
+    { id: "sanctuary", group: "warrior", icon: "sanctuary.png", sampleKo: "생츄어리 쿨", titleKo: "생츄어리", titleEn: "Sanctuary", ms: 70000 },
+    { id: "silver-hawk", group: "bowman", icon: "silver_hawk.png", sampleKo: "실버호크", titleKo: "실버호크", titleEn: "Silver Hawk", ms: 180000 },
+    { id: "sharp-10", group: "bowman", icon: "sharp.png", sampleKo: "샤프아이즈 10", titleKo: "샤프아이즈", titleEn: "Sharp Eyes", ms: 100000 },
+    { id: "sharp-20", group: "bowman", icon: "sharp.png", sampleKo: "샤프아이즈 20", titleKo: "샤프아이즈", titleEn: "Sharp Eyes", ms: 200000 },
+    { id: "sharp-30", group: "bowman", icon: "sharp.png", sampleKo: "샤프아이즈 30", titleKo: "샤프아이즈", titleEn: "Sharp Eyes", ms: 300000 },
+    { id: "concentration", group: "bowman", icon: "concentration.png", sampleKo: "집중 쿨", titleKo: "집중", titleEn: "Concentration", ms: 360000 },
+    { id: "sniping", group: "bowman", icon: "sniping.png", sampleKo: "스나이핑 쿨", titleKo: "스나이핑", titleEn: "Sniping", ms: 10000 },
+    { id: "haste", group: "thief", icon: "hei.png", sampleKo: "헤이스트", titleKo: "헤이스트", titleEn: "Haste", ms: 200000 },
+    { id: "meso-up", group: "thief", icon: "meso_up.png", sampleKo: "메소업", titleKo: "메소업", titleEn: "Meso Up", ms: 120000 },
+    { id: "shadow-partner", group: "thief", icon: "shadow_partner.png", sampleKo: "쉐도우파트너", titleKo: "쉐도우파트너", titleEn: "Shadow Partner", ms: 180000 },
+    { id: "spirit-javelin-1", group: "thief", icon: "spirit_javelin.png", sampleKo: "스피릿자벨린 1", titleKo: "스피릿자벨린", titleEn: "Spirit Javelin", ms: 62000 },
+    { id: "spirit-javelin-30", group: "thief", icon: "spirit_javelin.png", sampleKo: "스피릿자벨린 30", titleKo: "스피릿자벨린", titleEn: "Spirit Javelin", ms: 120000 },
+    { id: "meso-guard", group: "thief", icon: "meso_guard.png", sampleKo: "메소가드", titleKo: "메소가드", titleEn: "Meso Guard", ms: 180000 },
+    { id: "smoke-shell-cool", group: "thief", icon: "smoke_shell.png", sampleKo: "연막탄 쿨", titleKo: "연막탄 쿨", titleEn: "Smoke Shell cooldown", ms: 600000 },
+    { id: "smoke-shell-duration", group: "thief", icon: "smoke_shell.png", sampleKo: "연막탄30 지속시간", titleKo: "연막탄 지속", titleEn: "Smoke Shell duration", ms: 60000 },
+    { id: "assassination", group: "thief", icon: "assassination.png", sampleKo: "암살30 풀차징", titleKo: "암살 풀차징", titleEn: "Assassination full charge", ms: 12000 },
+    { id: "booster", group: "common", icon: "booster.png", sampleKo: "부스터", titleKo: "부스터", titleEn: "Booster", ms: 200000 },
+    { id: "maple-warrior-9", group: "common", icon: "maple_warrior.png", sampleKo: "메이플용사 9", titleKo: "메이플용사", titleEn: "Maple Warrior", ms: 270000 },
+    { id: "maple-warrior-19", group: "common", icon: "maple_warrior.png", sampleKo: "메이플용사 19", titleKo: "메이플용사", titleEn: "Maple Warrior", ms: 570000 },
+    { id: "will", group: "common", icon: "will.png", sampleKo: "용사의의지 1", titleKo: "용사의의지", titleEn: "Hero's Will", ms: 600000 },
+    { id: "mole-round", group: "detail", icon: "trap.png", sampleKo: "두더지 (원탁)", titleKo: "두더지", titleEn: "Mole", ms: 31230 },
+    { id: "mole-leafre", group: "detail", icon: "trap.png", sampleKo: "두더지 (리프레)", titleKo: "두더지", titleEn: "Mole", ms: 31030 },
+    { id: "elnath-spawn", group: "detail", icon: EXTERNAL_ICONS.elNath, sampleKo: "엘나스 젠 사이클", titleKo: "젠젠", titleEn: "El Nath spawn cycle", ms: 7000 },
+    { id: "leafre-spawn", group: "detail", icon: EXTERNAL_ICONS.leafre, sampleKo: "리프레 젠 사이클", titleKo: "젠젠", titleEn: "Leafre spawn cycle", ms: 8000 },
+    { id: "resurrection-boss", group: "boss", icon: "resurrection.png", sampleKo: "리저렉션 쿨", titleKo: "리저렉션", titleEn: "Resurrection", ms: 1800000 },
+    { id: "death-dc", group: "boss", icon: "tomb.png", sampleKo: "사망 팅", titleKo: "사망 팅", titleEn: "Death reconnect", ms: 900000 },
+    { id: "ht-five", group: "boss", icon: "horntail_dispel.png", sampleKo: "혼테일 - 5갈", titleKo: "혼테일 5갈", titleEn: "Horntail 5-min dispel", ms: 300000 },
+    { id: "ht-three", group: "boss", icon: "horntail_dispel.png", sampleKo: "혼테일 - 3갈", titleKo: "혼테일 3갈", titleEn: "Horntail 3-min dispel", ms: 180000 },
+    { id: "ht-first-seduce", group: "boss", icon: "seduce.png", sampleKo: "혼테일 - 첫 개인유혹", titleKo: "첫 개인유혹", titleEn: "First seduce", ms: 120000 },
+    { id: "ht-seduce", group: "boss", icon: "seduce.png", sampleKo: "혼테일 - 개인유혹", titleKo: "개인유혹", titleEn: "Seduce", ms: 180000 },
+    { id: "ht-wyvern", group: "boss", icon: EXTERNAL_ICONS.darkWyvern, sampleKo: "혼테일 - 다크와이번", titleKo: "다크와이번", titleEn: "Dark Wyvern", ms: 50000 },
+    { id: "ht-cancel", group: "boss", icon: "attack_cancel.png", sampleKo: "혼테일 - 공무", titleKo: "혼테일 공무", titleEn: "Horntail weapon cancel", ms: 45000 },
+    { id: "zakum-cancel", group: "boss", icon: "attack_cancel_big.png", sampleKo: "자쿰 - 공무", titleKo: "자쿰 공무", titleEn: "Zakum weapon cancel", ms: 30000 },
+    { id: "pianus-cancel", group: "boss", icon: "attack_cancel_big.png", sampleKo: "피아누스 - 공무", titleKo: "피아누스 공무", titleEn: "Pianus weapon cancel", ms: 38000 },
+    { id: "one-hour", group: "etc", icon: EXTERNAL_ICONS.oneHour, sampleKo: "한타임", titleKo: "한타임", titleEn: "One hour", ms: 3600000 },
+    { id: "exp-coupon-15", group: "etc", icon: EXTERNAL_ICONS.expCoupon, sampleKo: "경쿠 15분", titleKo: "경쿠 15분", titleEn: "EXP coupon 15 min", ms: 900000 },
+    { id: "exp-coupon-30", group: "etc", icon: EXTERNAL_ICONS.expCoupon, sampleKo: "경쿠 30분", titleKo: "경쿠 30분", titleEn: "EXP coupon 30 min", ms: 1800000 },
+    { id: "item-drop", group: "etc", icon: EXTERNAL_ICONS.itemDrop, sampleKo: "아이템 증발 (2분 50초)", titleKo: "아이템 증발", titleEn: "Item disappears", ms: 170000 },
+    { id: "warrior-potion", group: "etc", icon: EXTERNAL_ICONS.warriorPotion, sampleKo: "전사의 비약", titleKo: "전사의 비약", titleEn: "Warrior potion", ms: 480000 },
+    { id: "cider", group: "etc", icon: EXTERNAL_ICONS.cider, sampleKo: "사이다", titleKo: "사이다", titleEn: "Cider", ms: 300000 },
+    { id: "speed-pill", group: "etc", icon: EXTERNAL_ICONS.speedPill, sampleKo: "속도 알약", titleKo: "속도 알약", titleEn: "Speed pill", ms: 600000 },
+    { id: "warrior-potion-alchemy", group: "etc", icon: EXTERNAL_ICONS.warriorPotion, sampleKo: "전사의 비약 (+알케)", titleKo: "전사의 비약", titleEn: "Warrior potion (+Alchemy)", ms: 720000 },
+    { id: "cider-alchemy", group: "etc", icon: EXTERNAL_ICONS.cider, sampleKo: "사이다 (+알케)", titleKo: "사이다", titleEn: "Cider (+Alchemy)", ms: 450000 },
+    { id: "pet-food", group: "etc", icon: EXTERNAL_ICONS.petFood, sampleKo: "밥주세요", titleKo: "밥주세요", titleEn: "Pet food", ms: 1800000 }
   ];
 
   const root = $("[data-maple-boss-timer]");
@@ -80,10 +176,12 @@
 
   const els = {
     presetGrid: $("#maplePresetGrid"),
+    iconPicker: $("#mapleIconPicker"),
     icon: $("#mapleTimerIcon"),
     title: $("#mapleTimerTitle"),
     minutes: $("#mapleTimerMinutes"),
     seconds: $("#mapleTimerSeconds"),
+    ms: $("#mapleTimerMs"),
     tts: $("#mapleTtsEnabled"),
     beep: $("#mapleBeepEnabled"),
     add: $("#addMapleTimer"),
@@ -100,6 +198,7 @@
   let tickHandle = null;
   let pipWindow = null;
   let audioContext = null;
+  let activePresetGroup = PRESET_GROUPS[0].id;
 
   init();
 
@@ -131,22 +230,39 @@
     $$("[data-adjust-ms]", root).forEach((button) => {
       button.addEventListener("click", () => adjustTime(Number(button.dataset.adjustMs)));
     });
-    [els.icon, els.title, els.minutes, els.seconds, els.tts, els.beep].forEach((input) => {
+    [els.icon, els.title, els.minutes, els.seconds, els.ms, els.tts, els.beep].forEach((input) => {
       input.addEventListener("input", saveDraft);
       input.addEventListener("change", saveDraft);
     });
   }
 
   function renderPresetGrid() {
-    els.presetGrid.innerHTML = PRESETS.map((preset) => `
-      <button type="button" class="maple-preset-card" data-preset-id="${preset.id}">
-        <img src="${ASSET}${preset.icon}" alt="" loading="lazy">
-        <span>
-          <strong>${escapeHtml(label(preset))}</strong>
-          <small>${escapeHtml(groupLabel(preset))} · ${formatDuration(preset.seconds * 1000)}</small>
-        </span>
+    const groups = PRESET_GROUPS.map((group) => `
+      <button type="button" class="${group.id === activePresetGroup ? "active" : ""}" data-preset-group="${group.id}">
+        ${escapeHtml(groupLabel(group))}
       </button>
     `).join("");
+    const presets = PRESETS.filter((preset) => preset.group === activePresetGroup);
+    els.presetGrid.innerHTML = `
+      <div class="maple-preset-tabs">${groups}</div>
+      <div class="maple-preset-list">
+        ${presets.map((preset) => `
+      <button type="button" class="maple-preset-card" data-preset-id="${preset.id}">
+        <img src="${escapeAttr(iconUrl(preset.icon))}" alt="" loading="lazy">
+        <span>
+          <strong>${escapeHtml(sampleLabel(preset))}</strong>
+          <small>${escapeHtml(label(preset))} · ${formatDuration(preset.ms)}</small>
+        </span>
+      </button>
+        `).join("")}
+      </div>
+    `;
+    $$("[data-preset-group]", els.presetGrid).forEach((button) => {
+      button.addEventListener("click", () => {
+        activePresetGroup = button.dataset.presetGroup;
+        renderPresetGrid();
+      });
+    });
     $$("[data-preset-id]", els.presetGrid).forEach((button) => {
       button.addEventListener("click", () => {
         const preset = PRESETS.find((item) => item.id === button.dataset.presetId);
@@ -156,7 +272,18 @@
   }
 
   function renderIconOptions() {
-    els.icon.innerHTML = ICONS.map(([file, label]) => `<option value="${file}">${escapeHtml(label)}</option>`).join("");
+    const options = uniqueIconOptions();
+    els.iconPicker.innerHTML = options.map(([file, label]) => `
+      <button type="button" class="${file === els.icon.value ? "active" : ""}" data-icon-value="${escapeAttr(file)}" title="${escapeAttr(label)}" aria-label="${escapeAttr(label)}" aria-selected="${file === els.icon.value ? "true" : "false"}">
+        <img src="${escapeAttr(iconUrl(file))}" alt="" loading="lazy">
+      </button>
+    `).join("");
+    $$("[data-icon-value]", els.iconPicker).forEach((button) => {
+      button.addEventListener("click", () => {
+        setIcon(button.dataset.iconValue);
+        saveDraft();
+      });
+    });
   }
 
   function renderPipSupport() {
@@ -204,7 +331,7 @@
       const status = remaining <= 0 ? text.done : timer.running ? text.running : text.ready;
       return `
         <article class="maple-timer-card ${remaining <= 0 ? "is-done" : ""}">
-          <div class="maple-timer-icon"><img src="${ASSET}${escapeHtml(timer.icon)}" alt=""></div>
+        <div class="maple-timer-icon"><img src="${escapeAttr(iconUrl(timer.icon))}" alt=""></div>
           <div class="maple-timer-main">
             <div class="maple-timer-head">
               <strong>${escapeHtml(timer.title)}</strong>
@@ -371,9 +498,9 @@
   }
 
   function applyPreset(preset, notify) {
-    els.icon.value = preset.icon;
+    setIcon(preset.icon);
     els.title.value = label(preset);
-    writeDuration(preset.seconds * 1000);
+    writeDuration(preset.ms);
     if (notify) showToast(text.copied);
     saveDraft();
   }
@@ -384,9 +511,9 @@
       applyPreset(PRESETS[0], false);
       return;
     }
-    els.icon.value = ICONS.some(([file]) => file === draft.icon) ? draft.icon : PRESETS[0].icon;
+    setIcon(isAllowedIcon(draft.icon) ? draft.icon : PRESETS[0].icon);
     els.title.value = String(draft.title || label(PRESETS[0])).slice(0, 32);
-    writeDuration(clamp(Number(draft.duration) || PRESETS[0].seconds * 1000, 0, 999 * 60000));
+    writeDuration(clamp(Number(draft.duration) || PRESETS[0].ms, 0, 999 * 60000 + 59000));
     els.tts.checked = draft.tts !== false;
     els.beep.checked = draft.beep !== false;
   }
@@ -399,13 +526,15 @@
   function readDuration() {
     const minutes = clamp(Number(els.minutes.value) || 0, 0, 999);
     const seconds = clamp(Number(els.seconds.value) || 0, 0, 59);
-    return (minutes * 60 + seconds) * 1000;
+    const milliseconds = clamp(Number(els.ms.value) || 0, 0, 999);
+    return (minutes * 60 + seconds) * 1000 + milliseconds;
   }
 
   function writeDuration(ms) {
-    const total = Math.max(0, Math.round(ms / 1000));
-    els.minutes.value = String(Math.floor(total / 60));
-    els.seconds.value = String(total % 60);
+    const total = Math.max(0, Math.floor(Number(ms) || 0));
+    els.minutes.value = String(Math.floor(total / 60000));
+    els.seconds.value = String(Math.floor((total % 60000) / 1000));
+    els.ms.value = String(total % 1000);
   }
 
   function saveDraft() {
@@ -448,7 +577,7 @@
     return {
       id: String(timer.id || `${Date.now()}-${Math.random()}`),
       title: String(timer.title || "Timer").slice(0, 32),
-      icon: ICONS.some(([file]) => file === timer.icon) ? timer.icon : "horntail.png",
+      icon: isAllowedIcon(timer.icon) ? timer.icon : PRESETS[0].icon,
       duration,
       remaining: clamp(Number(timer.remaining) || duration, 0, duration),
       running: Boolean(timer.running),
@@ -480,21 +609,58 @@
     return lang === "en" ? preset.titleEn : preset.titleKo;
   }
 
-  function groupLabel(preset) {
-    return lang === "en" ? preset.groupEn : preset.groupKo;
+  function sampleLabel(preset) {
+    if (lang === "en") return preset.sampleEn || preset.titleEn || preset.sampleKo || preset.titleKo;
+    return preset.sampleKo || preset.titleKo;
+  }
+
+  function groupLabel(group) {
+    return lang === "en" ? group.en : group.ko;
+  }
+
+  function uniqueIconOptions() {
+    const options = new Map(ICONS);
+    PRESETS.forEach((preset) => {
+      if (!options.has(preset.icon)) options.set(preset.icon, sampleLabel(preset));
+    });
+    return Array.from(options.entries());
+  }
+
+  function isAllowedIcon(value) {
+    return uniqueIconOptions().some(([file]) => file === value);
+  }
+
+  function setIcon(value) {
+    els.icon.value = isAllowedIcon(value) ? value : PRESETS[0].icon;
+    $$("[data-icon-value]", els.iconPicker).forEach((button) => {
+      const active = button.dataset.iconValue === els.icon.value;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  }
+
+  function iconUrl(value) {
+    const icon = String(value || "");
+    if (/^https?:\/\//.test(icon)) return icon;
+    if (icon.startsWith("/")) return icon;
+    return `${ASSET}${icon}`;
   }
 
   function formatDuration(ms) {
-    const total = Math.max(0, Math.round(ms / 1000));
-    const minutes = Math.floor(total / 60);
-    const seconds = total % 60;
-    if (minutes && seconds) return `${minutes}m ${seconds}s`;
+    const total = Math.max(0, Math.floor(Number(ms) || 0));
+    const minutes = Math.floor(total / 60000);
+    const seconds = Math.floor((total % 60000) / 1000);
+    const milliseconds = total % 1000;
+    const secondText = milliseconds ? `${seconds}.${String(milliseconds).padStart(3, "0").replace(/0+$/, "")}s` : `${seconds}s`;
+    if (minutes && (seconds || milliseconds)) return `${minutes}m ${secondText}`;
     if (minutes) return `${minutes}m`;
-    return `${seconds}s`;
+    return secondText;
   }
 
   function formatClock(ms) {
-    const total = Math.max(0, Math.ceil(ms / 1000));
+    const safe = Math.max(0, Number(ms) || 0);
+    if (safe < 60000 && safe % 1000 !== 0) return `${(Math.ceil(safe / 100) / 10).toFixed(1)}s`;
+    const total = Math.max(0, Math.ceil(safe / 1000));
     const minutes = Math.floor(total / 60);
     const seconds = total % 60;
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
@@ -520,6 +686,10 @@
       "\"": "&quot;",
       "'": "&#39;"
     })[char]);
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value);
   }
 
   function pipStyles() {

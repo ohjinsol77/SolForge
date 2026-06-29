@@ -65,7 +65,8 @@
               <div class="inline-fields">
                 <div class="form-row maple-icon-row">
                   <label for="mapleTimerIcon"><span data-i18n="tools.mapleland-boss-timer.text.0031">아이콘</span></label>
-                  <select id="mapleTimerIcon"></select>
+                  <input id="mapleTimerIcon" type="hidden" value="holy_symbol.png">
+                  <div class="maple-icon-picker" id="mapleIconPicker" role="listbox" aria-label="아이콘 선택" data-i18n-attrs="aria-label:tools.mapleland-boss-timer.attr.aria-label.0055"></div>
                 </div>
                 <div class="form-row grow-field">
                   <label for="mapleTimerTitle"><span data-i18n="tools.mapleland-boss-timer.text.0032">타이머 이름</span></label>
@@ -78,6 +79,10 @@
                 <div class="form-row small-field">
                   <label for="mapleTimerSeconds"><span data-i18n="tools.mapleland-boss-timer.text.0035">초</span></label>
                   <input id="mapleTimerSeconds" type="number" min="0" max="59" value="0">
+                </div>
+                <div class="form-row small-field">
+                  <label for="mapleTimerMs"><span data-i18n="tools.mapleland-boss-timer.text.0054">ms</span></label>
+                  <input id="mapleTimerMs" type="number" min="0" max="999" value="0">
                 </div>
               </div>
               <div class="maple-adjust-row">
