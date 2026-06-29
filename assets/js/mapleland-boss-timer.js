@@ -151,7 +151,7 @@
     { id: "yakisoba", group: "etc", icon: "yakisoba.png", sampleKo: "야끼소바", titleKo: "야끼소바", titleEn: "Yakisoba", ms: 300000 },
     { id: "cider", group: "etc", icon: EXTERNAL_ICONS.cider, sampleKo: "사이다", titleKo: "사이다", titleEn: "Cider", ms: 300000 },
     { id: "speed-pill", group: "etc", icon: EXTERNAL_ICONS.speedPill, sampleKo: "속도 알약", titleKo: "속도 알약", titleEn: "Speed pill", ms: 600000 },
-    { id: "pet-food", group: "etc", icon: EXTERNAL_ICONS.petFood, sampleKo: "밥주세요", titleKo: "밥주세요", titleEn: "Pet food", ms: 1800000 }
+    { id: "pet-food", group: "etc", icon: EXTERNAL_ICONS.petFood, sampleKo: "펫 먹이", titleKo: "펫 먹이", titleEn: "Pet food", ms: 1800000 }
   ];
 
   const root = $("[data-maple-boss-timer]");
