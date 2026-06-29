@@ -23,6 +23,7 @@ const SOURCE_HTML_FILES = [
   "tools/global-stocks.html",
   "tools/input-training.html",
   "tools/korea-stocks.html",
+  "tools/mapleland-boss-timer.html",
   "tools/mysql-explain-visual.html",
   "tools/mysql-query-prettier.html",
   "tools/npm-package-info.html",

@@ -61,6 +61,8 @@
       skinLabel: "테마",
       menuOpen: "메뉴",
       menuClose: "메뉴 닫기",
+      navBossTimer: "보스타이머",
+      navMaplelandBossTimer: "메이플랜드 보스타이머",
       navDeveloper: "개발 도구",
       navNpm: "npm 패키지 정보",
       navUtility: "확장 도구 모음",
@@ -104,6 +106,8 @@
       skinLabel: "Theme",
       menuOpen: "Menu",
       menuClose: "Close menu",
+      navBossTimer: "Boss Timers",
+      navMaplelandBossTimer: "Mapleland Boss Timer",
       navDeveloper: "Developer Tools",
       navNpm: "npm Package Info",
       navUtility: "Utility Toolbox",
@@ -263,6 +267,8 @@
     const prefix = nested ? "../" : "";
     const life = `${prefix}calculators/all.html`;
     nav.innerHTML = [
+      `<p class="nav-title">${text("navBossTimer")}</p>`,
+      navLink(`${prefix}tools/mapleland-boss-timer.html`, "BOSS", text("navMaplelandBossTimer")),
       `<p class="nav-title">${text("navDeveloper")}</p>`,
       navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),

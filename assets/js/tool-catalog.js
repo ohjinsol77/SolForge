@@ -2,6 +2,7 @@
   "use strict";
 
   const tools = [
+    ["boss", "BOSS", "메이플랜드 보스타이머", "메이플랜드 보스 패턴과 스킬 쿨타임을 PIP 창으로 관리합니다.", "메이플랜드 보스 타이머 pip 혼테일 자쿰 피아누스 유혹 공무", "mapleland-boss-timer.html"],
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier.html"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual.html"],
     ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info.html"],
@@ -141,6 +142,7 @@
   ];
 
   const categoryLabels = {
+    boss: "보스타이머",
     developer: "개발자",
     text: "텍스트",
     age: "나이·띠",
@@ -179,7 +181,7 @@
   }
 
   function iconClass(category) {
-    if (category === "developer" || category === "text" || category === "life" || category === "media" || category === "game" || category === "finance") return category;
+    if (category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "game" || category === "finance") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
     if (category === "age") return "age";
