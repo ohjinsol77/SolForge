@@ -4,6 +4,7 @@
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
   const STORAGE_KEY = "solforge:mapleland-boss-timer:v1";
+  const STORAGE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
   const SLOT_COUNT = 5;
   const TICK_MS = 250;
   const ASSET = "/assets/img/mapleland/";
@@ -177,7 +178,12 @@
       pipOpen: "PIP 창을 열었습니다.",
       pipError: "PIP 창을 열 수 없습니다. 브라우저 지원 여부를 확인하세요.",
       copied: "프리셋을 불러왔습니다.",
-      alarm: "타이머 종료"
+      alarm: "타이머 종료",
+      storageExpires: "저장 만료",
+      storageWindow: "최대 30일 동안 유지됩니다.",
+      storageDays: "남은 저장일",
+      storageDayUnit: "일",
+      storageRefresh: "저장 기한을 30일 뒤로 갱신했습니다."
     },
     en: {
       supported: "This browser supports PIP. Use Open PIP to launch a small timer window.",
@@ -197,7 +203,12 @@
       pipOpen: "PIP window opened.",
       pipError: "Could not open the PIP window. Check browser support.",
       copied: "Preset loaded.",
-      alarm: "Timer finished"
+      alarm: "Timer finished",
+      storageExpires: "Saved until",
+      storageWindow: "Kept for up to 30 days.",
+      storageDays: "Days left",
+      storageDayUnit: " days",
+      storageRefresh: "Storage was extended for another 30 days."
     }
   }[lang];
 
@@ -220,6 +231,8 @@
     preview: $("#previewMapleAlarm"),
     pip: $("#openMaplePip"),
     pipSupport: $("#maplePipSupport"),
+    storageExpiry: $("#mapleStorageExpiry"),
+    refreshStorage: $("#refreshMapleStorage"),
     slots: $("#mapleSlotTabs"),
     list: $("#mapleTimerList"),
     resetSlot: $("#resetMapleSlot"),
@@ -239,6 +252,7 @@
     renderIconOptions();
     restoreDraft();
     renderPipSupport();
+    renderStorageExpiry();
     renderAll();
     bindEvents();
     tickHandle = window.setInterval(tick, TICK_MS);
@@ -253,6 +267,7 @@
     els.add.addEventListener("click", addTimer);
     els.preview.addEventListener("click", () => playAlarm(els.title.value.trim() || text.alarm));
     els.pip.addEventListener("click", openPip);
+    els.refreshStorage.addEventListener("click", refreshStorage);
     els.iconTrigger.addEventListener("click", openIconPicker);
     els.iconClose.addEventListener("click", closeIconPicker);
     els.iconPopover.addEventListener("mousedown", (event) => {
@@ -345,6 +360,16 @@
     els.pipSupport.className = `maple-support-note ${supported ? "is-supported" : "is-unsupported"}`;
     els.pipSupport.textContent = supported ? text.supported : text.unsupported;
     els.pip.disabled = !supported;
+  }
+
+  function renderStorageExpiry() {
+    if (!els.storageExpiry) return;
+    els.storageExpiry.textContent = `${text.storageExpires}: ${formatExpiryTime(state.expiresAt)} · ${text.storageDays}: ${remainingStorageDays(state.expiresAt)}${text.storageDayUnit} · ${text.storageWindow}`;
+  }
+
+  function refreshStorage() {
+    saveState({ silent: true });
+    showToast(text.storageRefresh);
   }
 
   function renderAll() {
@@ -606,11 +631,16 @@
     const fallback = {
       activeSlot: 0,
       draft: null,
+      expiresAt: Date.now() + STORAGE_TTL_MS,
       slots: Array.from({ length: SLOT_COUNT }, (_item, index) => ({ title: `${text.slot} ${index + 1}`, timers: [] }))
     };
     try {
       const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "null");
       if (!parsed || !Array.isArray(parsed.slots)) return fallback;
+      if (Number(parsed.expiresAt) && Number(parsed.expiresAt) <= Date.now()) {
+        window.localStorage.removeItem(STORAGE_KEY);
+        return fallback;
+      }
       const slots = fallback.slots.map((slot, index) => ({
         title: parsed.slots[index]?.title || slot.title,
         timers: Array.isArray(parsed.slots[index]?.timers) ? parsed.slots[index].timers.map(sanitizeTimer).filter(Boolean) : []
@@ -618,6 +648,7 @@
       return {
         activeSlot: clamp(Number(parsed.activeSlot) || 0, 0, SLOT_COUNT - 1),
         draft: parsed.draft || null,
+        expiresAt: Number(parsed.expiresAt) || Date.now() + STORAGE_TTL_MS,
         slots
       };
     } catch (_error) {
@@ -642,9 +673,12 @@
     };
   }
 
-  function saveState() {
+  function saveState(options = {}) {
     try {
+      state.expiresAt = Date.now() + STORAGE_TTL_MS;
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderStorageExpiry();
+      if (!options.silent) return;
     } catch (_error) {
       // The timer remains usable for the current page session.
     }
@@ -730,6 +764,19 @@
     const minutes = Math.floor(total / 60);
     const seconds = total % 60;
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function formatExpiryTime(timestamp) {
+    const date = new Date(Number(timestamp) || Date.now() + STORAGE_TTL_MS);
+    return new Intl.DateTimeFormat(lang === "en" ? "en-US" : "ko-KR", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(date);
+  }
+
+  function remainingStorageDays(timestamp) {
+    const remaining = Math.max(0, Number(timestamp) - Date.now());
+    return Math.ceil(remaining / (24 * 60 * 60 * 1000));
   }
 
   function showToast(message) {

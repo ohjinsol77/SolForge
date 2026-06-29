@@ -4691,6 +4691,29 @@ th {
   color: #b45309;
 }
 
+.maple-storage-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: -0.35rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.maple-storage-note button {
+  min-height: 32px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .maple-timer-setup .inline-fields {
   grid-template-columns: minmax(210px, 260px) minmax(220px, 1fr) minmax(74px, 88px) minmax(74px, 88px) minmax(74px, 88px);
   align-items: end;
