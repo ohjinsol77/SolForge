@@ -183,7 +183,9 @@
       storageWindow: "최대 30일 동안 유지됩니다.",
       storageDays: "남은 저장일",
       storageDayUnit: "일",
-      storageRefresh: "저장 기한을 30일 뒤로 갱신했습니다."
+      storageRefresh: "저장 기한을 30일 뒤로 갱신했습니다.",
+      repeat: "반복",
+      repeating: "반복 중"
     },
     en: {
       supported: "This browser supports PIP. Use Open PIP to launch a small timer window.",
@@ -208,7 +210,9 @@
       storageWindow: "Kept for up to 30 days.",
       storageDays: "Days left",
       storageDayUnit: " days",
-      storageRefresh: "Storage was extended for another 30 days."
+      storageRefresh: "Storage was extended for another 30 days.",
+      repeat: "Repeat",
+      repeating: "Repeating"
     }
   }[lang];
 
@@ -227,6 +231,7 @@
     ms: $("#mapleTimerMs"),
     tts: $("#mapleTtsEnabled"),
     beep: $("#mapleBeepEnabled"),
+    repeat: $("#mapleRepeatEnabled"),
     add: $("#addMapleTimer"),
     preview: $("#previewMapleAlarm"),
     pip: $("#openMaplePip"),
@@ -285,7 +290,7 @@
     $$("[data-adjust-ms]", root).forEach((button) => {
       button.addEventListener("click", () => adjustTime(Number(button.dataset.adjustMs)));
     });
-    [els.icon, els.title, els.minutes, els.seconds, els.ms, els.tts, els.beep].forEach((input) => {
+    [els.icon, els.title, els.minutes, els.seconds, els.ms, els.tts, els.beep, els.repeat].forEach((input) => {
       input.addEventListener("input", saveDraft);
       input.addEventListener("change", saveDraft);
     });
@@ -414,20 +419,23 @@
       const remaining = remainingMs(timer);
       const percent = timer.duration > 0 ? Math.max(0, Math.min(100, (remaining / timer.duration) * 100)) : 0;
       const status = remaining <= 0 ? text.done : timer.running ? text.running : text.ready;
+      const warning = remaining > 0 && remaining <= 10000;
       return `
-        <article class="maple-timer-card ${remaining <= 0 ? "is-done" : ""}">
+        <article class="maple-timer-card ${remaining <= 0 ? "is-done" : ""} ${warning ? "is-warning" : ""}">
         <div class="maple-timer-icon"><img src="${escapeAttr(iconUrl(timer.icon))}" alt=""></div>
           <div class="maple-timer-main">
             <div class="maple-timer-head">
               <strong>${escapeHtml(timer.title)}</strong>
               <span>${escapeHtml(status)}</span>
             </div>
+            ${timer.repeat ? `<div class="maple-repeat-badge">${escapeHtml(text.repeating)}</div>` : ""}
             <div class="maple-time">${formatClock(remaining)}</div>
             <div class="maple-progress"><span style="width:${percent.toFixed(2)}%"></span></div>
           </div>
           <div class="maple-timer-actions">
             <button type="button" data-action="toggle" data-id="${timer.id}">${timer.running ? text.pause : text.start}</button>
             <button type="button" data-action="reset" data-id="${timer.id}">${text.reset}</button>
+            <button type="button" class="${timer.repeat ? "active" : ""}" data-action="repeat" data-id="${timer.id}">${text.repeat}</button>
             ${compact ? "" : `<button type="button" data-action="remove" data-id="${timer.id}">${text.remove}</button>`}
           </div>
         </article>
@@ -491,6 +499,7 @@
       endsAt: null,
       tts: els.tts.checked,
       beep: els.beep.checked,
+      repeat: els.repeat.checked,
       alerted: false
     });
     saveState();
@@ -516,6 +525,9 @@
       timer.remaining = timer.duration;
       timer.alerted = false;
     }
+    if (action === "repeat") {
+      timer.repeat = !timer.repeat;
+    }
     if (action === "remove") {
       currentSlot().timers = currentSlot().timers.filter((item) => item.id !== id);
     }
@@ -530,12 +542,19 @@
       const remaining = remainingMs(timer);
       timer.remaining = remaining;
       if (remaining <= 0) {
-        timer.running = false;
-        timer.endsAt = null;
-        timer.remaining = 0;
         if (!timer.alerted) {
           timer.alerted = true;
           playAlarm(timer.title, timer);
+        }
+        if (timer.repeat) {
+          timer.remaining = timer.duration;
+          timer.endsAt = Date.now() + timer.duration;
+          timer.running = true;
+          timer.alerted = false;
+        } else {
+          timer.running = false;
+          timer.endsAt = null;
+          timer.remaining = 0;
         }
       }
       changed = true;
@@ -602,6 +621,7 @@
     writeDuration(clamp(Number(draft.duration) || PRESETS[0].ms, 0, 999 * 60000 + 59000));
     els.tts.checked = draft.tts !== false;
     els.beep.checked = draft.beep !== false;
+    els.repeat.checked = Boolean(draft.repeat);
   }
 
   function adjustTime(delta) {
@@ -629,7 +649,8 @@
       title: els.title.value,
       duration: readDuration(),
       tts: els.tts.checked,
-      beep: els.beep.checked
+      beep: els.beep.checked,
+      repeat: els.repeat.checked
     };
     saveState();
   }
@@ -676,6 +697,7 @@
       endsAt: Number(timer.endsAt) || null,
       tts: timer.tts !== false,
       beep: timer.beep !== false,
+      repeat: Boolean(timer.repeat),
       alerted: Boolean(timer.alerted)
     };
   }
@@ -823,12 +845,14 @@
       .pip-slot-tabs button.active{border-color:rgba(96,165,250,.75);background:#2563eb;color:#fff}
       .maple-timer-list{display:grid;gap:10px}.maple-empty-state{padding:28px 12px;border:1px dashed rgba(148,163,184,.35);border-radius:10px;color:#94a3b8;text-align:center}
       .maple-timer-card{display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;padding:10px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:rgba(15,23,42,.88)}
+      .maple-timer-card.is-warning{border-color:rgba(248,113,113,.75);box-shadow:0 0 0 1px rgba(248,113,113,.28),0 0 18px rgba(248,113,113,.22)}
       .maple-timer-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:rgba(30,41,59,.9)}
       .maple-timer-icon img{max-width:26px;max-height:26px}.maple-timer-main{min-width:0}.maple-timer-head{display:flex;justify-content:space-between;gap:8px}
       .maple-timer-head strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.maple-timer-head span{color:#93c5fd;font-size:11px;font-weight:800}
+      .maple-repeat-badge{display:inline-flex;margin-top:3px;padding:2px 6px;border-radius:999px;background:rgba(96,165,250,.16);color:#93c5fd;font-size:10px;font-weight:900}
       .maple-time{font-size:30px;font-weight:950;line-height:1.1;margin:4px 0}.maple-progress{height:6px;overflow:hidden;border-radius:999px;background:rgba(51,65,85,.8)}
       .maple-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#22c55e,#38bdf8)}
-      .maple-timer-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}.maple-timer-actions button{height:30px;border:1px solid rgba(148,163,184,.28);border-radius:8px;background:#1e293b;color:#e2e8f0;font-weight:800;cursor:pointer}
+      .maple-timer-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.maple-timer-actions button{height:30px;border:1px solid rgba(148,163,184,.28);border-radius:8px;background:#1e293b;color:#e2e8f0;font-weight:800;cursor:pointer}.maple-timer-actions button.active{border-color:rgba(96,165,250,.75);background:#2563eb;color:#fff}
       .is-done{border-color:rgba(248,113,113,.45)}.is-done .maple-time{color:#fca5a5}
     `;
   }

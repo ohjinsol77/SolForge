@@ -4934,6 +4934,12 @@ th {
   background: var(--surface-soft);
 }
 
+.maple-timer-card.is-warning {
+  border-color: color-mix(in srgb, #ef4444 72%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, #ef4444 24%, transparent), 0 0 22px color-mix(in srgb, #ef4444 18%, transparent);
+  animation: maple-warning-pulse 1.35s ease-in-out infinite;
+}
+
 .maple-timer-card.is-done {
   border-color: color-mix(in srgb, #ef4444 45%, var(--line));
 }
@@ -4972,6 +4978,18 @@ th {
   font-weight: 900;
 }
 
+.maple-repeat-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 12%, var(--surface));
+  color: var(--brand-strong);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
 .maple-time {
   margin: 0.2rem 0 0.4rem;
   font-family: "SFMono-Regular", Consolas, monospace;
@@ -5001,6 +5019,23 @@ th {
 
 .maple-timer-actions {
   justify-content: flex-end;
+}
+
+.maple-timer-actions button.active {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 13%, var(--surface));
+  color: var(--brand-strong);
+}
+
+@keyframes maple-warning-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px color-mix(in srgb, #ef4444 18%, transparent), 0 0 14px color-mix(in srgb, #ef4444 12%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 1px color-mix(in srgb, #ef4444 34%, transparent), 0 0 28px color-mix(in srgb, #ef4444 28%, transparent);
+  }
 }
 
 .maple-timer-actions button {
