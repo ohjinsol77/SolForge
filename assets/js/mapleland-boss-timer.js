@@ -376,6 +376,8 @@
     renderSlots();
     renderTimerList(document, els.list, false);
     if (pipWindow && !pipWindow.closed) {
+      const slotTabs = pipWindow.document.getElementById("pipSlotTabs");
+      if (slotTabs) renderSlotButtons(slotTabs, true);
       const list = pipWindow.document.getElementById("pipTimerList");
       if (list) renderTimerList(pipWindow.document, list, true);
       const title = pipWindow.document.getElementById("pipSlotTitle");
@@ -384,12 +386,16 @@
   }
 
   function renderSlots() {
-    els.slots.innerHTML = state.slots.map((slot, index) => `
+    renderSlotButtons(els.slots, false);
+  }
+
+  function renderSlotButtons(container, compact) {
+    container.innerHTML = state.slots.map((slot, index) => `
       <button type="button" role="tab" class="${index === state.activeSlot ? "active" : ""}" data-slot-index="${index}" aria-selected="${index === state.activeSlot}">
-        ${escapeHtml(slot.title)}
+        ${escapeHtml(compact ? index + 1 : slot.title)}
       </button>
     `).join("");
-    $$("[data-slot-index]", els.slots).forEach((button) => {
+    $$("[data-slot-index]", container).forEach((button) => {
       button.addEventListener("click", () => {
         state.activeSlot = Number(button.dataset.slotIndex);
         saveState();
@@ -444,6 +450,7 @@
       pipWindow.document.body.innerHTML = `
         <main class="pip-maple-shell">
           <header><strong id="pipSlotTitle">${escapeHtml(currentSlot().title)}</strong><span>PIP</span></header>
+          <nav id="pipSlotTabs" class="pip-slot-tabs" role="tablist" aria-label="${lang === "en" ? "Timer slots" : "타이머 슬롯"}"></nav>
           <section id="pipTimerList" class="maple-timer-list pip-list"></section>
         </main>
       `;
@@ -811,6 +818,9 @@
       .pip-maple-shell{min-height:100vh;padding:12px;background:linear-gradient(180deg,#111827,#020617)}
       header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(148,163,184,.25)}
       header strong{font-size:15px}header span{font-size:11px;color:#93c5fd;font-weight:900}
+      .pip-slot-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+      .pip-slot-tabs button{height:32px;border:1px solid rgba(148,163,184,.28);border-radius:8px;background:#1e293b;color:#cbd5e1;font-weight:900;cursor:pointer}
+      .pip-slot-tabs button.active{border-color:rgba(96,165,250,.75);background:#2563eb;color:#fff}
       .maple-timer-list{display:grid;gap:10px}.maple-empty-state{padding:28px 12px;border:1px dashed rgba(148,163,184,.35);border-radius:10px;color:#94a3b8;text-align:center}
       .maple-timer-card{display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;padding:10px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:rgba(15,23,42,.88)}
       .maple-timer-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:rgba(30,41,59,.9)}
