@@ -415,22 +415,33 @@
       container.innerHTML = `<div class="maple-empty-state">${escapeHtml(text.addFirst)}</div>`;
       return;
     }
-    container.innerHTML = timers.map((timer) => {
-      const remaining = remainingMs(timer);
-      const percent = timer.duration > 0 ? Math.max(0, Math.min(100, (remaining / timer.duration) * 100)) : 0;
-      const status = remaining <= 0 ? text.done : timer.running ? text.running : text.ready;
-      const warning = remaining > 0 && remaining <= 10000;
-      return `
-        <article class="maple-timer-card ${remaining <= 0 ? "is-done" : ""} ${warning ? "is-warning" : ""}">
-        <div class="maple-timer-icon"><img src="${escapeAttr(iconUrl(timer.icon))}" alt=""></div>
+
+    const cards = $$("[data-timer-id]", container);
+    const canPatch = cards.length === timers.length && timers.every((timer, index) => cards[index]?.dataset.timerId === timer.id && cards[index]?.dataset.compact === String(compact));
+    if (canPatch) {
+      updateTimerCards(container, compact);
+      return;
+    }
+
+    container.innerHTML = timers.map((timer) => timerCardHtml(timer, compact)).join("");
+    $$("[data-action]", container).forEach((button) => {
+      button.addEventListener("click", () => handleTimerAction(button.dataset.id, button.dataset.action));
+    });
+  }
+
+  function timerCardHtml(timer, compact) {
+    const view = timerView(timer);
+    return `
+        <article class="maple-timer-card ${view.done ? "is-done" : ""} ${view.warning ? "is-warning" : ""}" data-timer-id="${escapeAttr(timer.id)}" data-compact="${compact}">
+        <div class="maple-timer-icon"><img src="${escapeAttr(imageSrc(timer.icon))}" alt="" loading="eager" decoding="async"></div>
           <div class="maple-timer-main">
             <div class="maple-timer-head">
               <strong>${escapeHtml(timer.title)}</strong>
-              <span>${escapeHtml(status)}</span>
+              <span data-role="status">${escapeHtml(view.status)}</span>
             </div>
-            ${timer.repeat ? `<div class="maple-repeat-badge">${escapeHtml(text.repeating)}</div>` : ""}
-            <div class="maple-time">${formatClock(remaining)}</div>
-            <div class="maple-progress"><span style="width:${percent.toFixed(2)}%"></span></div>
+            <div class="maple-repeat-badge" data-role="repeat-badge" ${timer.repeat ? "" : "hidden"}>${escapeHtml(text.repeating)}</div>
+            <div class="maple-time" data-role="time">${formatClock(view.remaining)}</div>
+            <div class="maple-progress"><span data-role="progress" style="width:${view.percent.toFixed(2)}%"></span></div>
           </div>
           <div class="maple-timer-actions">
             <button type="button" data-action="toggle" data-id="${timer.id}">${timer.running ? text.pause : text.start}</button>
@@ -440,10 +451,40 @@
           </div>
         </article>
       `;
-    }).join("");
-    $$("[data-action]", container).forEach((button) => {
-      button.addEventListener("click", () => handleTimerAction(button.dataset.id, button.dataset.action));
+  }
+
+  function updateTimerCards(container) {
+    $$("[data-timer-id]", container).forEach((card) => {
+      const timer = currentSlot().timers.find((item) => item.id === card.dataset.timerId);
+      if (!timer) return;
+      const view = timerView(timer);
+      card.classList.toggle("is-done", view.done);
+      card.classList.toggle("is-warning", view.warning);
+      const status = $("[data-role='status']", card);
+      const repeatBadge = $("[data-role='repeat-badge']", card);
+      const time = $("[data-role='time']", card);
+      const progress = $("[data-role='progress']", card);
+      const toggle = $("[data-action='toggle']", card);
+      const repeat = $("[data-action='repeat']", card);
+      if (status) status.textContent = view.status;
+      if (repeatBadge) repeatBadge.hidden = !timer.repeat;
+      if (time) time.textContent = formatClock(view.remaining);
+      if (progress) progress.style.width = `${view.percent.toFixed(2)}%`;
+      if (toggle) toggle.textContent = timer.running ? text.pause : text.start;
+      if (repeat) repeat.classList.toggle("active", Boolean(timer.repeat));
     });
+  }
+
+  function timerView(timer) {
+    const remaining = remainingMs(timer);
+    const percent = timer.duration > 0 ? Math.max(0, Math.min(100, (remaining / timer.duration) * 100)) : 0;
+    return {
+      remaining,
+      percent,
+      done: remaining <= 0,
+      warning: remaining > 0 && remaining <= 10000,
+      status: remaining <= 0 ? text.done : timer.running ? text.running : text.ready
+    };
   }
 
   async function openPip() {
@@ -773,6 +814,10 @@
     if (/^https?:\/\//.test(icon)) return icon;
     if (icon.startsWith("/")) return icon;
     return `${ASSET}${icon}`;
+  }
+
+  function imageSrc(value) {
+    return new URL(iconUrl(value), window.location.origin).href;
   }
 
   function formatDuration(ms) {
