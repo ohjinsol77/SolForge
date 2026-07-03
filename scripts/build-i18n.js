@@ -379,6 +379,10 @@ Sitemap: ${SITE_URL}/sitemap.xml
 `);
 }
 
+function writeAdsTxt() {
+  fs.copyFileSync(path.join(ROOT, "ads.txt"), path.join(DIST, "ads.txt"));
+}
+
 function writeSitemap() {
   const urls = [];
   for (const file of sourceFiles()) {
@@ -404,6 +408,7 @@ transformJsForRuntimeI18n(collectJsTranslations());
 buildPages();
 writeRootRedirect();
 writeRobots();
+writeAdsTxt();
 writeSitemap();
 
 console.log(`Built ${sourceFiles().length} source pages for ${LANGS.join(", ")} into dist/`);
