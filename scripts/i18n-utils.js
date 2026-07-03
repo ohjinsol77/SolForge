@@ -114,7 +114,7 @@ function removeAttribute(tag, name) {
 }
 
 function normalizePagePath(file) {
-  return file === "index.html" ? "" : file;
+  return file === "index.html" ? "" : file.replace(/\.html$/, "");
 }
 
 function localizedPath(lang, file) {
