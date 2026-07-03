@@ -167,7 +167,11 @@ function localizeJsonLd(html, lang) {
     try {
       const data = JSON.parse(jsonText.trim());
       data.url = `${SITE_URL}/${lang}/`;
-      if (data.description) data.description = lang === "ko" ? data.description : "Developer tools and life calculators that run directly in your browser.";
+      if (data["@type"] === "WebSite" && data.name === "SolForge") {
+        data.description = t(lang, "home.meta.description", data.description || "");
+      } else if (data.description && lang === "en") {
+        data.description = translateLoose(lang, data.description);
+      }
       if (data.potentialAction?.target) data.potentialAction.target = `${SITE_URL}/${lang}/?q={search_term_string}`;
       return `<script type="application/ld+json">\n      ${JSON.stringify(data, null, 8).replace(/\n/g, "\n      ")}\n    </script>`;
     } catch (_error) {
@@ -365,11 +369,18 @@ function writeRootRedirect() {
   </body>
 </html>
 `);
-  writeText("dist/_redirects", "/ /ko/ 302\n");
+  writeText("dist/_redirects", [
+    "/ /ko/ 301",
+    "/ko/robots.txt /robots.txt 301",
+    "/en/robots.txt /robots.txt 301"
+  ].join("\n") + "\n");
 }
 
 function writeRobots() {
-  writeText("dist/robots.txt", `User-agent: *
+  writeText("dist/robots.txt", `User-agent: Yeti
+Allow: /
+
+User-agent: *
 Allow: /
 
 User-agent: Mediapartners-Google
