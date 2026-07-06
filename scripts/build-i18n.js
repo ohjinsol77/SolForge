@@ -370,14 +370,12 @@ function writeRootRedirect() {
 </html>
 `);
   writeText("dist/_redirects", [
-    "/ /ko/ 301",
-    "/ko/robots.txt /robots.txt 301",
-    "/en/robots.txt /robots.txt 301"
+    "/ /ko/ 301"
   ].join("\n") + "\n");
 }
 
 function writeRobots() {
-  writeText("dist/robots.txt", `User-agent: Yeti
+  const robots = `User-agent: Yeti
 Allow: /
 
 User-agent: *
@@ -387,7 +385,11 @@ User-agent: Mediapartners-Google
 Allow: /
 
 Sitemap: ${SITE_URL}/sitemap.xml
-`);
+`;
+  writeText("dist/robots.txt", robots);
+  for (const lang of LANGS) {
+    writeText(`dist/${lang}/robots.txt`, robots);
+  }
 }
 
 function writeAdsTxt() {
