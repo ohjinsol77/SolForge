@@ -3793,8 +3793,17 @@ th {
 }
 
 #chmod-tool,
-#password-tool {
+#password-tool,
+#server-timezone {
   max-width: 920px;
+}
+
+.server-timezone-fields {
+  margin-top: 0.85rem;
+}
+
+.server-clock-result {
+  margin-top: 0.85rem;
 }
 
 #chmod-tool .result-panel {

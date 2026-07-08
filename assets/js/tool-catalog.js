@@ -44,6 +44,7 @@
     ["developer", "%", "URL 인코더", "URI와 쿼리 컴포넌트를 인코딩·디코딩합니다.", "url uri 인코딩 디코딩", "utility-toolbox.html#url-codec"],
     ["developer", "URL", "URL 파서", "주소의 프로토콜, 호스트, 경로와 쿼리를 분해합니다.", "url parser query 파서", "utility-toolbox.html#url-parser"],
     ["developer", "TS", "Unix Timestamp", "초·밀리초 타임스탬프와 날짜를 변환합니다.", "unix timestamp utc kst", "utility-toolbox.html#timestamp-tool"],
+    ["developer", "TZ", "서버 시간대 추정", "서버 주소에서 시간대 후보와 현재 시각을 확인합니다.", "서버 시간대 timezone host domain utc", "utility-toolbox.html#server-timezone"],
     ["developer", "ID", "UUID 생성기", "암호학적 난수 기반 UUID v4를 생성합니다.", "uuid guid 생성", "utility-toolbox.html#uuid-tool"],
     ["developer", "755", "chmod 계산기", "숫자와 rwx 문자 권한을 상호 변환합니다.", "chmod linux 권한 rwx", "utility-toolbox.html#chmod-tool"],
     ["developer", "PW", "비밀번호 생성기", "조건에 맞는 안전한 랜덤 비밀번호를 생성합니다.", "비밀번호 password 랜덤 보안", "utility-toolbox.html#password-tool"],

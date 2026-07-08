@@ -294,7 +294,7 @@
       navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
       navLink(`${prefix}tools/npm-package-info.html`, "npm", text("navNpm")),
-      navLink(`${prefix}tools/utility-toolbox.html`, "18", text("navUtility")),
+      navLink(`${prefix}tools/utility-toolbox.html`, "19", text("navUtility")),
       navLink(`${prefix}tools/file-media-toolbox.html`, "12", text("navFileMedia")),
       navLink(`${prefix}tools/advanced-toolbox.html`, "10", text("navAdvanced")),
       `<p class="nav-title">${text("navGamingSection")}</p>`,

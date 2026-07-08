@@ -47,7 +47,7 @@
             <p><span data-i18n="tools.utility-toolbox.text.0021">텍스트, 데이터, 개발, 생활 계산 도구를 모두 서버 전송 없이 실행합니다. 도구를 선택하면 필요한 입력 화면만 표시됩니다.</span></p>
           </div>
           <div class="hero-panel">
-            <div class="metric-card"><strong id="utilityToolTotal">18</strong><span><span data-i18n="tools.utility-toolbox.text.0022">정적 도구</span></span></div>
+            <div class="metric-card"><strong id="utilityToolTotal">19</strong><span><span data-i18n="tools.utility-toolbox.text.0022">정적 도구</span></span></div>
             <div class="metric-card"><strong>0</strong><span><span data-i18n="tools.utility-toolbox.text.0023">서버 저장</span></span></div>
           </div>
         </section>
@@ -76,6 +76,7 @@
               <button type="button" data-tool-target="url-codec" data-category="developer" data-keywords="url uri 인코딩 디코딩"><b>%</b><span><strong><span data-i18n="tools.utility-toolbox.text.0055">URL 인코더</span></strong><small><span data-i18n="tools.utility-toolbox.text.0056">URI 문자열 변환</span></small></span></button>
               <button type="button" data-tool-target="url-parser" data-category="developer" data-keywords="url 파서 쿼리 protocol host"><b><span data-i18n="tools.utility-toolbox.text.0057">URL</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0058">URL 파서</span></strong><small><span data-i18n="tools.utility-toolbox.text.0059">주소 구성요소 분석</span></small></span></button>
               <button type="button" data-tool-target="timestamp-tool" data-category="developer" data-keywords="unix timestamp 시간 변환"><b><span data-i18n="tools.utility-toolbox.text.0060">TS</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0061">Unix Timestamp</span></strong><small><span data-i18n="tools.utility-toolbox.text.0062">날짜·타임스탬프 변환</span></small></span></button>
+              <button type="button" data-tool-target="server-timezone" data-category="developer" data-keywords="서버 시간대 timezone time zone host domain"><b><span data-i18n="tools.utility-toolbox.text.0240">TZ</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0241">서버 시간대 추정</span></strong><small><span data-i18n="tools.utility-toolbox.text.0242">주소 기반 후보·현재 시각</span></small></span></button>
               <button type="button" data-tool-target="uuid-tool" data-category="developer" data-keywords="uuid guid 생성"><b><span data-i18n="tools.utility-toolbox.text.0063">ID</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0064">UUID 생성기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0065">UUID v4 복수 생성</span></small></span></button>
               <button type="button" data-tool-target="chmod-tool" data-category="developer" data-keywords="chmod 리눅스 권한 755 rwx"><b>755</b><span><strong><span data-i18n="tools.utility-toolbox.text.0066">chmod 계산기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0067">숫자·문자 권한 변환</span></small></span></button>
               <button type="button" data-tool-target="password-tool" data-category="developer" data-keywords="비밀번호 랜덤 패스워드 보안"><b><span data-i18n="tools.utility-toolbox.text.0068">PW</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0069">비밀번호 생성기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0070">암호학적 랜덤 문자열</span></small></span></button>
@@ -195,6 +196,20 @@
                 <div class="form-row"><label for="timestampDateInput"><span data-i18n="tools.utility-toolbox.text.0160">날짜·시간</span></label><input id="timestampDateInput" type="datetime-local"></div>
               </div>
               <div class="result-panel" id="timestampResult" aria-live="polite"></div>
+            </article>
+
+            <article class="utility-panel" id="server-timezone" data-tool-panel hidden>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0243">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0244">서버 시간대 추정 위젯</span></h2><p><span data-i18n="tools.utility-toolbox.text.0245">서버 주소에서 호스트를 파싱하고 국가 도메인·지역 키워드로 시간대 후보를 제안합니다.</span></p></div><button type="button" class="ghost-button" id="serverClockNow"><span data-i18n="tools.utility-toolbox.text.0246">현재 시각 갱신</span></button></div>
+              <div class="toolbar-form toolbar-wide">
+                <div class="form-row utility-grow"><label for="serverAddressInput"><span data-i18n="tools.utility-toolbox.text.0247">서버 주소</span></label><input id="serverAddressInput" type="text" value="https://api.example.kr:443" placeholder="https://api.example.kr 또는 203.0.113.10" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0248"></div>
+                <button type="button" class="primary-link" id="detectServerTimezone"><span data-i18n="tools.utility-toolbox.text.0249">분석</span></button>
+              </div>
+              <div class="inline-fields two-fields server-timezone-fields">
+                <div class="form-row"><label for="serverTimezoneSelect"><span data-i18n="tools.utility-toolbox.text.0250">표시 시간대</span></label><select id="serverTimezoneSelect"></select></div>
+                <div class="form-row"><label for="serverTimezoneSearch"><span data-i18n="tools.utility-toolbox.text.0251">시간대 직접 입력</span></label><input id="serverTimezoneSearch" type="text" list="serverTimezoneOptions" placeholder="Asia/Seoul" data-i18n-attrs="placeholder:tools.utility-toolbox.attr.placeholder.0252"><datalist id="serverTimezoneOptions"></datalist></div>
+              </div>
+              <div class="result-panel server-clock-result" id="serverTimezoneResult" aria-live="polite"></div>
+              <p class="tool-disclaimer"><span data-i18n="tools.utility-toolbox.text.0253">주소만으로 실제 서버의 OS 시간대는 확인할 수 없습니다. CDN, 로드밸런서, 클라우드 리전, 프록시를 쓰면 추정이 달라질 수 있습니다.</span></p>
             </article>
 
             <article class="utility-panel" id="uuid-tool" data-tool-panel hidden>

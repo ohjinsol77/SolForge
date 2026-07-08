@@ -22,6 +22,7 @@
     initUrlCodec();
     initUrlParser();
     initTimestamp();
+    initServerTimezone();
     initUuid();
     initChmod();
     initPassword();
@@ -383,6 +384,70 @@
     timestamp.addEventListener("input", () => render("timestamp"));
     dateInput.addEventListener("input", () => render("date"));
     setNow();
+  }
+
+  function initServerTimezone() {
+    const input = $("#serverAddressInput");
+    const select = $("#serverTimezoneSelect");
+    const search = $("#serverTimezoneSearch");
+    const options = $("#serverTimezoneOptions");
+    const output = $("#serverTimezoneResult");
+    const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const timeZones = getSupportedTimeZones(browserZone);
+    let parsedHost = "";
+    let guess = { zone: browserZone, confidence: "낮음", source: "브라우저 시간대" };
+    let timer = 0;
+
+    select.innerHTML = timeZones.map((zone) => `<option value="${escapeHtml(zone)}">${escapeHtml(zone)}</option>`).join("");
+    options.innerHTML = timeZones.map((zone) => `<option value="${escapeHtml(zone)}"></option>`).join("");
+
+    const setZone = (zone) => {
+      const target = isValidTimeZone(zone) ? zone : browserZone;
+      select.value = target;
+      search.value = target;
+    };
+
+    const render = () => {
+      const zone = isValidTimeZone(search.value.trim()) ? search.value.trim() : select.value || guess.zone;
+      setZone(zone);
+      const now = new Date();
+      output.innerHTML = resultBlock(
+        formatDateTimeInZone(now, zone),
+        `${zone} · ${formatOffsetInZone(now, zone)}`,
+        [
+          ["호스트", parsedHost || "분석 전"],
+          ["추정 근거", `${guess.source} · 신뢰도 ${guess.confidence}`],
+          ["브라우저 시간", formatDateTimeInZone(now, browserZone)],
+          ["UTC", now.toISOString()]
+        ]
+      );
+    };
+
+    const analyze = () => {
+      const parsed = parseServerAddress(input.value);
+      if (!parsed) {
+        output.innerHTML = errorBlock("URL, 호스트명 또는 IP 주소를 입력하세요.");
+        return;
+      }
+      parsedHost = parsed.hostname;
+      guess = guessTimeZoneFromHost(parsedHost, browserZone);
+      setZone(guess.zone);
+      render();
+    };
+
+    $("#detectServerTimezone").addEventListener("click", analyze);
+    $("#serverClockNow").addEventListener("click", render);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") analyze();
+    });
+    select.addEventListener("change", () => {
+      search.value = select.value;
+      render();
+    });
+    search.addEventListener("change", render);
+    analyze();
+    timer = window.setInterval(render, 1000);
+    window.addEventListener("pagehide", () => window.clearInterval(timer));
   }
 
   function initUuid() {
@@ -754,6 +819,123 @@
     const result = total + section + number;
     if (!Number.isSafeInteger(result)) throw new Error("지원 범위를 초과했습니다.");
     return negative ? -result : result;
+  }
+
+  function parseServerAddress(value) {
+    const raw = String(value || "").trim();
+    if (!raw) return null;
+    const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+    try {
+      return new URL(candidate);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function guessTimeZoneFromHost(hostname, fallbackZone) {
+    const host = hostname.toLowerCase().replace(/\.$/, "");
+    const keywordZones = [
+      [/(\b|[-.])(seoul|kr|korea)(\b|[-.])/, "Asia/Seoul", "호스트명 지역 키워드"],
+      [/(\b|[-.])(tokyo|jp|japan)(\b|[-.])/, "Asia/Tokyo", "호스트명 지역 키워드"],
+      [/(\b|[-.])(singapore|sg|sin)(\b|[-.])/, "Asia/Singapore", "호스트명 지역 키워드"],
+      [/(\b|[-.])(utc|gmt)(\b|[-.])/, "UTC", "호스트명 시간대 키워드"],
+      [/(\b|[-.])(london|uk|gb)(\b|[-.])/, "Europe/London", "호스트명 지역 키워드"],
+      [/(\b|[-.])(frankfurt|de|germany)(\b|[-.])/, "Europe/Berlin", "호스트명 지역 키워드"],
+      [/(\b|[-.])(newyork|nyc|useast|us-east)(\b|[-.])/, "America/New_York", "호스트명 리전 키워드"],
+      [/(\b|[-.])(la|losangeles|uswest|us-west|california)(\b|[-.])/, "America/Los_Angeles", "호스트명 리전 키워드"],
+      [/(\b|[-.])(sydney|au|australia)(\b|[-.])/, "Australia/Sydney", "호스트명 지역 키워드"]
+    ];
+    const keyword = keywordZones.find(([pattern]) => pattern.test(`.${host}.`));
+    if (keyword) return { zone: keyword[1], confidence: "중간", source: keyword[2] };
+    if (host === "localhost" || host.endsWith(".local") || isPrivateIp(host)) {
+      return { zone: fallbackZone, confidence: "낮음", source: "로컬·사설 주소" };
+    }
+    const tld = host.split(".").pop();
+    const tldZones = {
+      kr: "Asia/Seoul",
+      jp: "Asia/Tokyo",
+      cn: "Asia/Shanghai",
+      sg: "Asia/Singapore",
+      hk: "Asia/Hong_Kong",
+      tw: "Asia/Taipei",
+      in: "Asia/Kolkata",
+      au: "Australia/Sydney",
+      nz: "Pacific/Auckland",
+      us: "America/New_York",
+      ca: "America/Toronto",
+      gb: "Europe/London",
+      uk: "Europe/London",
+      de: "Europe/Berlin",
+      fr: "Europe/Paris",
+      es: "Europe/Madrid",
+      it: "Europe/Rome",
+      br: "America/Sao_Paulo"
+    };
+    if (tldZones[tld]) return { zone: tldZones[tld], confidence: "중간", source: `국가 코드 도메인 .${tld}` };
+    return { zone: fallbackZone, confidence: "낮음", source: "시간대 단서 없음" };
+  }
+
+  function getSupportedTimeZones(fallbackZone) {
+    const common = [
+      "UTC",
+      "Asia/Seoul",
+      "Asia/Tokyo",
+      "Asia/Shanghai",
+      "Asia/Singapore",
+      "Asia/Kolkata",
+      "Europe/London",
+      "Europe/Berlin",
+      "Europe/Paris",
+      "America/New_York",
+      "America/Chicago",
+      "America/Denver",
+      "America/Los_Angeles",
+      "America/Sao_Paulo",
+      "Australia/Sydney",
+      "Pacific/Auckland"
+    ];
+    const supported = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [];
+    return Array.from(new Set([fallbackZone, ...common, ...supported])).filter(isValidTimeZone).sort();
+  }
+
+  function isValidTimeZone(zone) {
+    try {
+      Intl.DateTimeFormat("en-US", { timeZone: zone }).format(new Date());
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function formatDateTimeInZone(date, timeZone) {
+    return new Intl.DateTimeFormat(document.documentElement.lang === "en" ? "en-US" : "ko-KR", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).format(date);
+  }
+
+  function formatOffsetInZone(date, timeZone) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      timeZoneName: "shortOffset",
+      hour: "2-digit"
+    }).formatToParts(date);
+    return parts.find((part) => part.type === "timeZoneName")?.value || "GMT";
+  }
+
+  function isPrivateIp(value) {
+    const parts = value.split(".").map(Number);
+    if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) return false;
+    return parts[0] === 10
+      || parts[0] === 127
+      || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)
+      || (parts[0] === 192 && parts[1] === 168);
   }
 
   function stat(label, value) {
