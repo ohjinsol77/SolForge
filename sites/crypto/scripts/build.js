@@ -33,10 +33,12 @@ function route(lang, slug) {
 }
 
 function renderNav(lang, activeSlug) {
-  return nav.map((item) => {
+  const mainSiteLink = `<a class="network-home-link" href="https://solforge.cloud/${lang}/"><span aria-hidden="true">←</span>${text(lang, "nav.mainSite")}</a>`;
+  const siteLinks = nav.map((item) => {
     const current = item.slug === activeSlug ? ' aria-current="page"' : "";
     return `<a href="${route(lang, item.slug)}"${current}>${text(lang, item.key)}</a>`;
   }).join("");
+  return `${mainSiteLink}${siteLinks}`;
 }
 
 function renderSnapshot(lang) {
@@ -133,7 +135,7 @@ function renderPage(lang, page) {
     <meta property="og:site_name" content="SolForge Crypto">
     <meta name="theme-color" content="#08111f">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260713-1">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260713-2">
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <script>window.SFC_LOCALE=${JSON.stringify(lang)};window.SFC_TRANSLATIONS=${JSON.stringify(dynamicTranslations).replace(/</g, "\\u003c")};</script>
     <script src="/assets/app.js?v=20260713-1" defer></script>

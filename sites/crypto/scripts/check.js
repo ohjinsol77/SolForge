@@ -19,6 +19,8 @@ for (const lang of ["ko", "en"]) {
     const html = fs.readFileSync(file, "utf8");
     if (!html.includes(`<html lang="${lang}">`)) throw new Error(`Wrong language marker: ${file}`);
     if (!html.includes(`https://crypto.solforge.cloud/${lang}/`)) throw new Error(`Missing canonical URL: ${file}`);
+    if (!html.includes(`href="https://solforge.cloud/${lang}/"`)) throw new Error(`Missing localized SolForge home link: ${file}`);
+    if (!html.includes('data-i18n="nav.mainSite"')) throw new Error(`Missing translated SolForge home label: ${file}`);
     if (lang === "en" && /[가-힣]/.test(html)) throw new Error(`Korean text remains in English output: ${file}`);
   }
 }

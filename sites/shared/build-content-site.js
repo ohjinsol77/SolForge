@@ -40,10 +40,12 @@ function buildContentSite(config) {
   }
 
   function renderNav(lang, activeSlug) {
-    return nav.map((item) => {
+    const mainSiteLink = `<a class="network-home-link" href="https://solforge.cloud/${lang}/"><span aria-hidden="true">←</span>${text(lang, "nav.mainSite")}</a>`;
+    const siteLinks = nav.map((item) => {
       const current = item.slug === activeSlug ? ' aria-current="page"' : "";
       return `<a href="${route(lang, item.slug)}"${current}>${text(lang, item.key)}</a>`;
     }).join("");
+    return `${mainSiteLink}${siteLinks}`;
   }
 
   function renderSections(lang, page) {
@@ -116,7 +118,7 @@ function buildContentSite(config) {
     <meta property="og:site_name" content="${escapeHtml(siteName)}">
     <meta name="theme-color" content="${escapeHtml(config.themeColor)}">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/base.css?v=20260713-1">
+    <link rel="stylesheet" href="/assets/base.css?v=20260713-2">
     <link rel="stylesheet" href="/assets/site.css?v=20260713-1">
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <script>window.SF_SITE_LOCALE=${JSON.stringify(lang)};window.SF_SITE_TRANSLATIONS=${JSON.stringify(dynamicTranslations).replace(/</g, "\\u003c")};</script>
@@ -202,6 +204,8 @@ function checkContentSite({ root, pages, siteUrl, build }) {
       const html = fs.readFileSync(file, "utf8");
       if (!html.includes(`<html lang="${lang}">`)) throw new Error(`Wrong language marker: ${file}`);
       if (!html.includes(`${siteUrl}/${lang}/`)) throw new Error(`Missing localized canonical: ${file}`);
+      if (!html.includes(`href="https://solforge.cloud/${lang}/"`)) throw new Error(`Missing localized SolForge home link: ${file}`);
+      if (!html.includes('data-i18n="nav.mainSite"')) throw new Error(`Missing translated SolForge home label: ${file}`);
       if (lang === "en" && /[가-힣]/.test(html)) throw new Error(`Korean text remains in English output: ${file}`);
     }
   }

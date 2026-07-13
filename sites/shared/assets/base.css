@@ -27,6 +27,8 @@ a { color: inherit; }
 .primary-nav { display: flex; min-width: 0; justify-content: center; gap: .1rem; }
 .primary-nav a { padding: .48rem .64rem; border-radius: .55rem; color: var(--muted); font-size: .86rem; text-decoration: none; }
 .primary-nav a:hover, .primary-nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+.primary-nav .network-home-link { display: inline-flex; align-items: center; gap: .32rem; margin-right: .25rem; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font-weight: 750; }
+.primary-nav .network-home-link:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .language-toggle { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border: 1px solid var(--line); border-radius: .7rem; text-decoration: none; }
 main, .site-footer { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
 .hero { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(17rem, .7fr); gap: 3rem; align-items: end; padding: 6.5rem 0 4rem; }
