@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="guides.hardware.meta.title">모니터·입력 장치·성능 점검 가이드 - SolForge</title>
+    <meta name="description" content="SolForge의 화면, 마우스·키보드, 오디오·카메라·센서와 성능 도구를 어떤 순서로 사용하고 결과를 어떻게 해석할지 안내합니다." data-i18n-attrs="content:guides.hardware.meta.description">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.cloud/guides/hardware-checks.html">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260618-ads">
+    <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
+  </head>
+  <body data-page="hardware-guide">
+    <a class="skip-link" href="#main"><span data-i18n="guides.common.skip">본문으로 이동</span></a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:guides.common.navLabel">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:guides.common.homeLabel"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small data-i18n="guides.common.brand">Practical guides</small></span></a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card"><strong data-i18n="guides.hardware.side.title">점검 가이드</strong><span data-i18n="guides.hardware.side.body">측정 순서와 브라우저 한계를 함께 확인하세요.</span></div>
+      </aside>
+      <main class="content" id="main">
+        <header class="topbar"><nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:guides.common.topNav"><a href="../features.html" data-top-link data-i18n="guides.common.features">기능소개</a><a href="../about.html" data-top-link data-i18n="guides.common.about">사이트소개</a><a href="../privacy.html" data-top-link data-i18n="guides.common.privacy">개인정보처리방침</a><a href="../contact.html" data-top-link data-i18n="guides.common.contact">문의</a></nav><div class="topbar-controls"><a class="language-toggle" id="languageToggle" data-language-toggle href="/en/guides/hardware-checks" aria-label="Switch to English">🇺🇸</a><button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button></div></header>
+        <section class="page-hero compact-hero"><div><p class="eyebrow" data-i18n="guides.hardware.eyebrow">HARDWARE CHECKS</p><h1 data-i18n="guides.hardware.title">화면과 입력 장치를 점검하는 순서</h1><p data-i18n="guides.hardware.lead">브라우저 테스트는 빠른 이상 확인에 유용하지만 장비 인증이나 수리 진단을 대신하지 않습니다. 한 가지 수치보다 같은 환경에서 반복한 결과와 실제 사용 증상을 함께 보세요.</p></div><div class="hero-panel"><div class="metric-card"><strong>4</strong><span data-i18n="guides.hardware.metric">점검 단계</span></div><div class="metric-card"><strong>LOCAL</strong><span data-i18n="guides.hardware.metric2">브라우저 측정</span></div></div></section>
+        <section class="info-section"><div class="policy-list">
+          <article class="article-card"><h2 data-i18n="guides.hardware.display.title">1. 모니터는 환경을 고정하고 확인하세요</h2><p data-i18n="guides.hardware.display.body">밝기 자동 조절, 야간 모드, HDR, 색상 보정 앱을 잠시 끄고 화면을 충분히 예열한 뒤 단색·블랙·화이트·감마·균일도 순서로 확인하세요. 불량화소나 빛샘은 주변 조명과 화면 밝기에 따라 다르게 보일 수 있어, 스크린샷만으로 패널 문제를 확정할 수는 없습니다.</p><p><a class="secondary-link" href="../tools/display-diagnostics.html" data-i18n="guides.hardware.display.link">화면 진단 도구 열기</a></p></article>
+          <article class="article-card"><h2 data-i18n="guides.hardware.input.title">2. 마우스·키보드는 반복 테스트가 중요합니다</h2><p data-i18n="guides.hardware.input.body">더블클릭, 드래그, 고스팅, 폴링레이트 추정은 동일한 USB 포트와 브라우저에서 여러 번 실행하세요. 브라우저 이벤트 간격은 운영체제, 절전 설정, 백그라운드 탭, 무선 연결 상태의 영향을 받으므로 표시값을 제조사 사양의 정확한 측정값으로 보지 마세요.</p><p><a class="secondary-link" href="../tools/input-training.html" data-i18n="guides.hardware.input.link">입력 장치 테스트 열기</a></p></article>
+          <article class="article-card"><h2 data-i18n="guides.hardware.av.title">3. 권한이 필요한 장치는 목적을 확인하세요</h2><p data-i18n="guides.hardware.av.body">마이크·카메라·모션 센서는 브라우저 권한을 허용해야 동작합니다. 테스트가 끝나면 브라우저의 사이트 권한에서 다시 철회할 수 있으며, 공유 PC에서는 장치 미리보기나 녹음 데이터를 남기지 않도록 주의하세요. 지원 여부는 브라우저와 기기마다 다릅니다.</p><p><a class="secondary-link" href="../tools/device-diagnostics.html" data-i18n="guides.hardware.av.link">오디오·카메라·센서 진단 열기</a></p></article>
+          <article class="article-card"><h2 data-i18n="guides.hardware.performance.title">4. 성능 테스트는 안전한 범위에서 짧게 실행하세요</h2><p data-i18n="guides.hardware.performance.body">CPU·GPU·메모리 테스트는 현재 브라우저 탭의 짧은 부하와 렌더링 상태를 보는 참고 도구입니다. 발열, 배터리, 다른 실행 프로그램, 전원 모드에 따라 결과가 달라집니다. 기기가 과열되거나 반응이 느려지면 즉시 중단하고, 장기 안정성 검증은 운영체제·제조사 도구를 사용하세요.</p><p><a class="secondary-link" href="../tools/performance-lab.html" data-i18n="guides.hardware.performance.link">성능 도구 열기</a></p></article>
+        </div></section>
+        <footer class="footer"><p data-i18n="guides.common.copyright">© 2026 SolForge.</p></footer>
+      </main>
+    </div>
+    <script src="../assets/js/app.js?v=20260612-5"></script>
+  </body>
+</html>

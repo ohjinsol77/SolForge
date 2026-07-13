@@ -277,7 +277,7 @@
   function initNavigation() {
     const nav = $("[data-solforge-nav]") || $(".side-nav");
     if (!nav) return;
-    const nested = /\/(?:tools|calculators)\//.test(window.location.pathname);
+    const nested = /\/(?:tools|calculators|guides)\//.test(window.location.pathname);
     const prefix = nested ? "../" : "";
     const life = `${prefix}calculators/all.html`;
     nav.innerHTML = [
