@@ -1,0 +1,60 @@
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.resolve(__dirname, "..");
+const sites = [
+  { name: "crypto", host: "crypto.solforge.cloud", publicHost: "solforge-crypto.pages.dev", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
+  { name: "stocks", host: "stocks.solforge.cloud", publicHost: "solforge-stocks.pages.dev", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
+  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "solforge-fortune.pages.dev", pages: 9, markers: ["12띠", "Constellations", "오락"] }
+];
+
+function fail(message) {
+  throw new Error(message);
+}
+
+function htmlFiles(dir) {
+  return fs.readdirSync(dir).filter((file) => file.endsWith(".html"));
+}
+
+function expectedFile(dist, href) {
+  const clean = href.split(/[?#]/)[0];
+  const parts = clean.replace(/^\//, "").split("/").filter(Boolean);
+  if (!/^(?:ko|en)$/.test(parts[0] || "")) return null;
+  if (parts.length === 1) return path.join(dist, parts[0], "index.html");
+  return path.join(dist, parts[0], `${parts.slice(1).join("/")}.html`);
+}
+
+for (const site of sites) {
+  const dist = path.join(ROOT, "sites", site.name, "dist");
+  for (const lang of ["ko", "en"]) {
+    const dir = path.join(dist, lang);
+    const files = htmlFiles(dir);
+    if (files.length !== site.pages) fail(`${site.name}/${lang} page count: ${files.length}, expected ${site.pages}`);
+    for (const file of files) {
+      const fullPath = path.join(dir, file);
+      const html = fs.readFileSync(fullPath, "utf8");
+      if (!html.includes(`<html lang="${lang}">`)) fail(`Wrong lang in ${fullPath}`);
+      if (!html.includes(`https://${site.host}/${lang}/`)) fail(`Missing localized canonical in ${fullPath}`);
+      if (/adsbygoogle|googlesyndication/.test(html)) fail(`Ad script found in specialist site: ${fullPath}`);
+      if (/<(?:dialog|input|textarea|select)\b/i.test(html)) fail(`Unexpected input or dialog in reading site: ${fullPath}`);
+      const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+      for (const href of hrefs) {
+        const target = expectedFile(dist, href);
+        if (target && !fs.existsSync(target)) fail(`Broken internal link ${href} in ${fullPath}`);
+      }
+    }
+  }
+
+  const combined = ["ko", "en"].flatMap((lang) => htmlFiles(path.join(dist, lang)).map((file) => fs.readFileSync(path.join(dist, lang, file), "utf8"))).join("\n");
+  for (const marker of site.markers) if (!combined.includes(marker)) fail(`Expected ${site.name} marker not found: ${marker}`);
+  if (/부동산|real estate/i.test(combined)) fail(`Real-estate content found in ${site.name}`);
+}
+
+const mainKo = fs.readFileSync(path.join(ROOT, "dist", "ko", "index.html"), "utf8");
+const mainEn = fs.readFileSync(path.join(ROOT, "dist", "en", "index.html"), "utf8");
+for (const site of sites) {
+  if (!mainKo.includes(`https://${site.publicHost}/ko/`)) fail(`Korean main missing working ${site.name} link`);
+  if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
+}
+
+console.log("Checked SolForge network: 52 localized specialist pages, internal links, content boundaries and main hub links.");

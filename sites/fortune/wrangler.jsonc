@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developers.cloudflare.com/workers/wrangler/configuration-schema.json",
+  "name": "solforge-fortune",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-07-13"
+}

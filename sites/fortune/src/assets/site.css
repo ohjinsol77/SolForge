@@ -1,0 +1,13 @@
+:root { --accent: #8a4f27; --accent-soft: #f6eadb; --bg: #fbf7f0; --surface-2: #f4ecdf; --line: #e5d8c7; --text: #30251e; --muted: #78695f; }
+body { background: radial-gradient(circle at 90% 0, #f1dcc0 0, transparent 33rem), linear-gradient(180deg, #fffaf3, var(--bg)); }
+.brand-mark { background: linear-gradient(135deg, #9d5a2d, #d79a4e); font-size: 1rem; }
+.fortune-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+.fortune-card { min-height: 12rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 1rem; background: color-mix(in srgb, var(--surface) 93%, #f6eadb); }
+.fortune-symbol { display: block; margin-bottom: .85rem; font-size: 1.8rem; }
+.fortune-card strong { display: block; margin-bottom: .55rem; font-size: 1rem; }
+.fortune-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+.daily-date { text-align: right; color: var(--accent); font-weight: 700; }
+.source-note { margin: 1rem 0 0; color: var(--muted); font-size: .82rem; }
+@media (max-width: 900px) { .fortune-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .fortune-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .daily-date { text-align: left; } }
+@media (max-width: 420px) { .fortune-grid { grid-template-columns: 1fr; } }
