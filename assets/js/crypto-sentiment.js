@@ -3,6 +3,8 @@
 
   const FNG_API = "https://api.alternative.me/fng/?limit=31&format=json";
   const COINGECKO_MARKETS = "https://api.coingecko.com/api/v3/coins/markets";
+  const COINGECKO_GLOBAL = "https://api.coingecko.com/api/v3/global";
+  const COINGECKO_CATEGORIES = "https://api.coingecko.com/api/v3/coins/categories";
   const CACHE_PREFIX = "sf-crypto-cache:";
   const MARKET_TTL = 5 * 60 * 1000;
   const FNG_TTL = 30 * 60 * 1000;
@@ -14,6 +16,8 @@
     query: "",
     fng: [],
     coins: [],
+    global: null,
+    sectors: [],
     loading: false
   };
 
@@ -44,11 +48,18 @@
       state.primaryCurrency = event.target.value === "usd" ? "usd" : "krw";
       writeSetting("sf-crypto-primary", state.primaryCurrency);
       renderMarkets();
+      renderGlobal();
+      renderPosition();
     });
     $("#cryptoSearch")?.addEventListener("input", (event) => {
       state.query = event.target.value.trim().toLocaleLowerCase("ko");
       renderMarkets();
     });
+    ["cryptoPositionCost", "cryptoPositionQuantity", "cryptoPositionPrice", "cryptoPositionFee"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("input", renderPosition);
+    });
+    $("#cryptoPositionCalculate")?.addEventListener("click", renderPosition);
+    $("#cryptoPositionReset")?.addEventListener("click", resetPosition);
   }
 
   function restoreSettings() {
@@ -62,12 +73,16 @@
     setLoading(true);
     setStatus("공포탐욕 지수와 거래량 상위 코인을 불러오는 중입니다.", "info");
     try {
-      const [fngResult, marketResult] = await Promise.all([
+      const [fngResult, marketResult, globalResult, sectorResult] = await Promise.all([
         loadFearGreed(options),
-        loadMarkets(options)
+        loadMarkets(options),
+        loadGlobal(options).catch(() => null),
+        loadSectors(options).catch(() => [])
       ]);
       state.fng = fngResult;
       state.coins = marketResult;
+      state.global = globalResult;
+      state.sectors = sectorResult;
       renderAll();
       setStatus("최신 시장 데이터를 표시합니다.", "success");
     } catch (error) {
@@ -97,6 +112,36 @@
     const krwResult = await cachedFetch(krwUrl, `markets:krw:${ids}`, MARKET_TTL, options);
     const krwMap = new Map((Array.isArray(krwResult.data) ? krwResult.data : []).map((coin) => [coin.id, coin]));
     return usdCoins.map((usdCoin, index) => normalizeCoin(usdCoin, krwMap.get(usdCoin.id), index + 1));
+  }
+
+  async function loadGlobal(options = {}) {
+    const result = await cachedFetch(COINGECKO_GLOBAL, "global", MARKET_TTL, options);
+    const data = result.data?.data || {};
+    return {
+      marketCapUsd: numberOrNull(data.total_market_cap?.usd),
+      marketCapKrw: numberOrNull(data.total_market_cap?.krw),
+      volumeUsd: numberOrNull(data.total_volume?.usd),
+      volumeKrw: numberOrNull(data.total_volume?.krw),
+      btcDominance: numberOrNull(data.market_cap_percentage?.btc),
+      ethDominance: numberOrNull(data.market_cap_percentage?.eth),
+      change24h: numberOrNull(data.market_cap_change_percentage_24h_usd),
+      updatedAt: Number.isFinite(Number(data.updated_at)) ? new Date(Number(data.updated_at) * 1000) : null
+    };
+  }
+
+  async function loadSectors(options = {}) {
+    const result = await cachedFetch(COINGECKO_CATEGORIES, "categories", MARKET_TTL, options);
+    return (Array.isArray(result.data) ? result.data : [])
+      .map((item) => ({
+        name: item.name || item.id || "-",
+        marketCap: numberOrNull(item.market_cap),
+        volume: numberOrNull(item.volume_24h),
+        change24h: numberOrNull(item.market_cap_change_24h),
+        updatedAt: item.updated_at || ""
+      }))
+      .filter((item) => Number.isFinite(item.marketCap))
+      .sort((a, b) => b.marketCap - a.marketCap)
+      .slice(0, 10);
   }
 
   async function cachedFetch(url, key, ttl, options = {}) {
@@ -163,6 +208,9 @@
   function renderAll() {
     renderFearGreed();
     renderMarkets();
+    renderGlobal();
+    renderSectors();
+    renderPosition();
   }
 
   function renderFearGreed() {
@@ -212,6 +260,80 @@
 
     renderLeaders();
     renderTable(filtered);
+  }
+
+  function renderGlobal() {
+    const data = state.global;
+    const primaryIsUsd = state.primaryCurrency === "usd";
+    const marketCapPrimary = primaryIsUsd ? formatUsdCompact(data?.marketCapUsd) : formatKrwCompact(data?.marketCapKrw);
+    const marketCapSecondary = primaryIsUsd ? formatKrwCompact(data?.marketCapKrw) : formatUsdCompact(data?.marketCapUsd);
+    const volumePrimary = primaryIsUsd ? formatUsdCompact(data?.volumeUsd) : formatKrwCompact(data?.volumeKrw);
+    const volumeSecondary = primaryIsUsd ? formatKrwCompact(data?.volumeKrw) : formatUsdCompact(data?.volumeUsd);
+    setText("#cryptoGlobalMarketCap", marketCapPrimary);
+    setText("#cryptoGlobalMarketCapSecondary", marketCapSecondary === "-" ? "" : marketCapSecondary);
+    setText("#cryptoGlobalVolume", volumePrimary);
+    setText("#cryptoGlobalVolumeSecondary", volumeSecondary === "-" ? "" : volumeSecondary);
+    setText("#cryptoBtcDominance", Number.isFinite(data?.btcDominance) ? `${percentFormatter.format(data.btcDominance)}%` : "-");
+    setText("#cryptoEthDominance", Number.isFinite(data?.ethDominance) ? `${percentFormatter.format(data.ethDominance)}%` : "-");
+    setText("#cryptoGlobalUpdated", data?.updatedAt ? `${uiText("updated")}: ${formatDate(data.updatedAt)}` : uiText("globalUnavailable"));
+  }
+
+  function renderSectors() {
+    const root = $("#cryptoSectorList");
+    if (!root) return;
+    const maxCap = Math.max(...state.sectors.map((sector) => sector.marketCap), 1);
+    root.innerHTML = state.sectors.map((sector) => {
+      const intensity = Math.max(12, Math.round((sector.marketCap / maxCap) * 100));
+      const direction = Number.isFinite(sector.change24h) ? (sector.change24h > 0 ? "up" : sector.change24h < 0 ? "down" : "neutral") : "neutral";
+      return `<div class="crypto-sector-card ${direction}" style="--sector-intensity:${intensity}%"><span><strong>${escapeHtml(sector.name)}</strong><small>${escapeHtml(uiText("sectorVolume"))} ${escapeHtml(formatUsdCompact(sector.volume))}</small></span><b>${escapeHtml(formatUsdCompact(sector.marketCap))}</b>${renderChange(sector.change24h)}</div>`;
+    }).join("") || emptyMessage(uiText("sectorsUnavailable"));
+  }
+
+  function renderPosition() {
+    const root = $("#cryptoPositionResults");
+    if (!root) return;
+    const cost = readNumber("#cryptoPositionCost");
+    const quantity = readNumber("#cryptoPositionQuantity");
+    const price = readNumber("#cryptoPositionPrice");
+    const feeRate = readNumber("#cryptoPositionFee") / 100;
+    if (!(cost > 0 && quantity > 0 && price >= 0) || feeRate < 0 || feeRate >= 1) {
+      root.innerHTML = `<div class="result-card"><span>${escapeHtml(uiText("positionInput"))}</span><strong>-</strong></div>`;
+      return;
+    }
+    const value = quantity * price;
+    const fee = value * feeRate;
+    const netProfit = value - fee - cost;
+    const breakEven = cost / (quantity * (1 - feeRate));
+    root.innerHTML = [
+      positionCard(uiText("positionValue"), formatPositionCurrency(value)),
+      positionCard(uiText("positionFee"), formatPositionCurrency(fee)),
+      positionCard(uiText("positionNet"), formatPositionCurrency(netProfit), netProfit),
+      positionCard(uiText("positionBreakEven"), formatPositionCurrency(breakEven))
+    ].join("");
+  }
+
+  function resetPosition() {
+    ["cryptoPositionCost", "cryptoPositionQuantity", "cryptoPositionPrice"].forEach((id) => {
+      const input = document.getElementById(id);
+      if (input) input.value = "";
+    });
+    const fee = $("#cryptoPositionFee");
+    if (fee) fee.value = "0.05";
+    renderPosition();
+  }
+
+  function positionCard(label, value, change) {
+    const className = Number.isFinite(change) ? (change > 0 ? " crypto-position-up" : change < 0 ? " crypto-position-down" : "") : "";
+    return `<div class="result-card${className}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+  }
+
+  function readNumber(selector) {
+    const value = Number($(selector)?.value);
+    return Number.isFinite(value) ? value : NaN;
+  }
+
+  function formatPositionCurrency(value) {
+    return state.primaryCurrency === "usd" ? formatUsd(value) : formatKrw(value);
   }
 
   function renderLeaders() {
@@ -296,6 +418,8 @@
     if (select) select.value = "krw";
     if (search) search.value = "";
     renderMarkets();
+    renderGlobal();
+    resetPosition();
   }
 
   async function copySummary() {
@@ -388,6 +512,22 @@
   function setText(selector, value) {
     const element = $(selector);
     if (element) element.textContent = value;
+  }
+
+  function uiText(key) {
+    const english = document.documentElement.lang === "en";
+    const messages = {
+      updated: english ? "Updated" : "업데이트",
+      globalUnavailable: english ? "Global market data is unavailable." : "전체 시장 데이터를 불러오지 못했습니다.",
+      sectorVolume: english ? "24h volume" : "24시간 거래량",
+      sectorsUnavailable: english ? "Sector data is unavailable." : "섹터 데이터를 불러오지 못했습니다."
+      ,positionInput: english ? "Enter purchase cost, quantity, and current price." : "총 매수 비용, 보유 수량과 현재 가격을 입력하세요."
+      ,positionValue: english ? "Current value" : "평가금액"
+      ,positionFee: english ? "Estimated sell fee" : "예상 매도 수수료"
+      ,positionNet: english ? "Net unrealized profit/loss" : "수수료 반영 손익"
+      ,positionBreakEven: english ? "Break-even price" : "손익분기 가격"
+    };
+    return messages[key] || key;
   }
 
   function translateSentiment(label) {

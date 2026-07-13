@@ -105,6 +105,43 @@
             </article>
           </section>
 
+          <section class="api-data-grid crypto-global-grid" aria-labelledby="cryptoGlobalTitle">
+            <article class="utility-panel api-panel">
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.crypto-sentiment.text.0072">Global Market</span></p><h2 id="cryptoGlobalTitle"><span data-i18n="tools.crypto-sentiment.text.0073">전체 시장 요약</span></h2><p id="cryptoGlobalUpdated"><span data-i18n="tools.crypto-sentiment.text.0074">전체 시장 데이터를 불러오는 중입니다.</span></p></div></div>
+              <div class="api-summary-grid crypto-global-summary">
+                <div class="result-card"><span><span data-i18n="tools.crypto-sentiment.text.0075">전체 시가총액</span></span><strong id="cryptoGlobalMarketCap">-</strong><small id="cryptoGlobalMarketCapSecondary"></small></div>
+                <div class="result-card"><span><span data-i18n="tools.crypto-sentiment.text.0076">24시간 거래량</span></span><strong id="cryptoGlobalVolume">-</strong><small id="cryptoGlobalVolumeSecondary"></small></div>
+                <div class="result-card"><span><span data-i18n="tools.crypto-sentiment.text.0077">BTC 도미넌스</span></span><strong id="cryptoBtcDominance">-</strong></div>
+                <div class="result-card"><span><span data-i18n="tools.crypto-sentiment.text.0078">ETH 도미넌스</span></span><strong id="cryptoEthDominance">-</strong></div>
+              </div>
+              <p class="api-footnote"><span data-i18n="tools.crypto-sentiment.text.0079">도미넌스는 전체 시가총액에서 각 자산이 차지하는 비율입니다. 시장 방향이나 성과를 예측하지 않습니다.</span></p>
+            </article>
+
+            <article class="utility-panel api-panel">
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.crypto-sentiment.text.0080">Sector Heatmap</span></p><h2><span data-i18n="tools.crypto-sentiment.text.0081">코인 섹터 히트맵</span></h2><p><span data-i18n="tools.crypto-sentiment.text.0082">시가총액 상위 섹터의 24시간 변화와 거래량을 비교합니다.</span></p></div></div>
+              <div class="crypto-sector-list" id="cryptoSectorList" aria-live="polite"></div>
+              <p class="api-footnote"><span data-i18n="tools.crypto-sentiment.text.0083">섹터 분류와 집계는 CoinGecko 기준이며, 구성 자산과 기준은 제공처에서 바뀔 수 있습니다.</span></p>
+            </article>
+          </section>
+
+          <section class="api-data-grid crypto-position-grid" aria-labelledby="cryptoPositionTitle">
+            <article class="utility-panel api-panel">
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.crypto-sentiment.text.0084">Position Calculator</span></p><h2 id="cryptoPositionTitle"><span data-i18n="tools.crypto-sentiment.text.0085">코인 평단·손익 계산기</span></h2><p><span data-i18n="tools.crypto-sentiment.text.0086">매수 총비용, 현재 보유 수량과 가격으로 평가금액과 수수료 반영 손익을 계산합니다.</span></p></div></div>
+              <div class="inline-fields">
+                <div class="form-row"><label for="cryptoPositionCost"><span data-i18n="tools.crypto-sentiment.text.0087">총 매수 비용</span></label><input id="cryptoPositionCost" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 1000000" data-i18n-attrs="placeholder:tools.crypto-sentiment.attr.placeholder.0088"></div>
+                <div class="form-row"><label for="cryptoPositionQuantity"><span data-i18n="tools.crypto-sentiment.text.0089">현재 보유 수량</span></label><input id="cryptoPositionQuantity" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 0.05" data-i18n-attrs="placeholder:tools.crypto-sentiment.attr.placeholder.0090"></div>
+                <div class="form-row"><label for="cryptoPositionPrice"><span data-i18n="tools.crypto-sentiment.text.0091">현재 가격</span></label><input id="cryptoPositionPrice" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 120000000" data-i18n-attrs="placeholder:tools.crypto-sentiment.attr.placeholder.0092"></div>
+                <div class="form-row"><label for="cryptoPositionFee"><span data-i18n="tools.crypto-sentiment.text.0093">예상 매도 수수료 (%)</span></label><input id="cryptoPositionFee" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="0.05"></div>
+              </div>
+              <div class="button-row"><button type="button" class="primary-link" id="cryptoPositionCalculate"><span data-i18n="tools.crypto-sentiment.text.0094">계산</span></button><button type="button" class="ghost-button" id="cryptoPositionReset"><span data-i18n="tools.crypto-sentiment.text.0095">초기화</span></button></div>
+            </article>
+            <article class="utility-panel api-panel">
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.crypto-sentiment.text.0096">Result</span></p><h2><span data-i18n="tools.crypto-sentiment.text.0097">보유 포지션 요약</span></h2><p><span data-i18n="tools.crypto-sentiment.text.0098">수수료는 매도 시점의 평가금액에만 적용한 단순 추정치입니다.</span></p></div></div>
+              <div class="api-summary-grid" id="cryptoPositionResults" aria-live="polite"></div>
+              <p class="api-footnote"><span data-i18n="tools.crypto-sentiment.text.0099">입력값은 이 브라우저에서만 계산됩니다. 세금, 거래소별 수수료 체계, 펀딩비와 환율은 반영하지 않습니다.</span></p>
+            </article>
+          </section>
+
           <section class="api-data-grid crypto-data-grid">
             <article class="utility-panel api-panel crypto-table-panel">
               <div class="utility-panel-heading">
