@@ -3,9 +3,9 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const sites = [
-  { name: "crypto", host: "crypto.solforge.cloud", publicHost: "solforge-crypto.pages.dev", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
-  { name: "stocks", host: "stocks.solforge.cloud", publicHost: "solforge-stocks.pages.dev", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
-  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "solforge-fortune.pages.dev", pages: 9, markers: ["12띠", "Constellations", "오락"] }
+  { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
+  { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
+  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "fortune.solforge.cloud", pages: 9, markers: ["12띠", "Constellations", "오락"] }
 ];
 
 function fail(message) {
