@@ -122,7 +122,7 @@ function buildContentSite(config) {
     <link rel="stylesheet" href="/assets/site.css?v=20260713-1">
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <script>window.SF_SITE_LOCALE=${JSON.stringify(lang)};window.SF_SITE_TRANSLATIONS=${JSON.stringify(dynamicTranslations).replace(/</g, "\\u003c")};</script>
-    <script src="/assets/app.js?v=20260713-1" defer></script>
+    <script src="/assets/app.js?v=20260713-2" defer></script>
   </head>
   <body data-page="${page.slug}">
     <a class="skip-link" href="#main">${text(lang, "accessibility.skip")}</a>
