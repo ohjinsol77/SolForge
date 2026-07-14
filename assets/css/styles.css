@@ -3936,8 +3936,141 @@ th {
 
 #chmod-tool,
 #password-tool,
-#server-timezone {
+#server-timezone,
+#url-parser {
   max-width: 920px;
+}
+
+#urlParserInput {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+}
+
+.get-url-analysis {
+  margin-top: 1rem;
+}
+
+.get-url-analysis[hidden] {
+  display: none;
+}
+
+.get-url-summary {
+  margin-bottom: 1.2rem;
+}
+
+.get-url-section-heading {
+  margin: 1.2rem 0 0.55rem;
+}
+
+.get-url-count {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.get-url-table-wrap {
+  max-height: 520px;
+  overflow: auto;
+  background: var(--surface);
+}
+
+.get-url-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.get-url-table th,
+.get-url-table td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.get-url-table th {
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.get-url-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.get-url-table td:first-child {
+  width: 2.5rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.get-url-table td:nth-child(2) {
+  min-width: 130px;
+}
+
+.get-url-table td:nth-child(3) {
+  min-width: 170px;
+}
+
+.get-url-table code {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  white-space: normal;
+}
+
+.get-url-table td > small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+}
+
+.get-url-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+
+.get-url-type {
+  display: inline-flex;
+  padding: 0.18rem 0.42rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--brand-strong);
+  font-size: 0.66rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.get-url-type[data-param-type="duplicate"],
+.get-url-type[data-param-type="array"] {
+  background: color-mix(in srgb, var(--warning) 14%, var(--surface));
+  color: var(--warning);
+}
+
+.get-url-type[data-param-type="emptyValue"],
+.get-url-type[data-param-type="emptyKey"],
+.get-url-type[data-param-type="decodeError"] {
+  background: color-mix(in srgb, var(--danger) 11%, var(--surface));
+  color: var(--danger);
+}
+
+.get-url-empty,
+.get-url-no-parameters {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.get-url-no-parameters {
+  padding: 1.4rem !important;
+  text-align: center !important;
+}
+
+.get-url-json {
+  min-height: 180px;
+  max-height: 380px;
 }
 
 .server-timezone-fields {

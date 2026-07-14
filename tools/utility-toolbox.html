@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title data-i18n="tools.utility-toolbox.meta.title">텍스트·개발자·생활 도구 모음 - SolForge</title>
-    <meta name="description" content="글자수, 텍스트 정리, 한영타, JSON, Base64, URL, Timestamp, UUID, chmod, 비밀번호, 단위와 BMI를 브라우저에서 처리하는 무료 도구 모음입니다." data-i18n-attrs="content:tools.utility-toolbox.meta.description">
+    <meta name="description" content="글자수, 텍스트 정리, 한영타, JSON, Base64, GET URL 파라미터 분석, Timestamp, UUID, chmod, 비밀번호, 단위와 BMI를 브라우저에서 처리하는 무료 도구 모음입니다." data-i18n-attrs="content:tools.utility-toolbox.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/utility-toolbox.html">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960"
      crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../assets/css/styles.css?v=20260617-1">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260715-1">
     <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
   </head>
@@ -74,7 +74,7 @@
               <button type="button" data-tool-target="json-tool" data-category="developer" data-keywords="json 포맷 압축 검사"><b>{}</b><span><strong><span data-i18n="tools.utility-toolbox.text.0050">JSON 포매터</span></strong><small><span data-i18n="tools.utility-toolbox.text.0051">정렬·압축·검증</span></small></span></button>
               <button type="button" data-tool-target="base64-tool" data-category="developer" data-keywords="base64 인코딩 디코딩"><b><span data-i18n="tools.utility-toolbox.text.0052">B64</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0053">Base64 변환</span></strong><small><span data-i18n="tools.utility-toolbox.text.0054">UTF-8 인코딩·디코딩</span></small></span></button>
               <button type="button" data-tool-target="url-codec" data-category="developer" data-keywords="url uri 인코딩 디코딩"><b>%</b><span><strong><span data-i18n="tools.utility-toolbox.text.0055">URL 인코더</span></strong><small><span data-i18n="tools.utility-toolbox.text.0056">URI 문자열 변환</span></small></span></button>
-              <button type="button" data-tool-target="url-parser" data-category="developer" data-keywords="url 파서 쿼리 protocol host"><b><span data-i18n="tools.utility-toolbox.text.0057">URL</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0058">URL 파서</span></strong><small><span data-i18n="tools.utility-toolbox.text.0059">주소 구성요소 분석</span></small></span></button>
+              <button type="button" data-tool-target="url-parser" data-category="developer" data-keywords="get url query parameter key value 파라미터 키 값 중복 배열 파서"><b><span data-i18n="tools.utility-toolbox.text.0057">GET</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0058">GET URL 분석기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0059">쿼리 키·값 자동 분류</span></small></span></button>
               <button type="button" data-tool-target="timestamp-tool" data-category="developer" data-keywords="unix timestamp 시간 변환"><b><span data-i18n="tools.utility-toolbox.text.0060">TS</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0061">Unix Timestamp</span></strong><small><span data-i18n="tools.utility-toolbox.text.0062">날짜·타임스탬프 변환</span></small></span></button>
               <button type="button" data-tool-target="server-timezone" data-category="developer" data-keywords="서버 시간대 timezone time zone host domain"><b><span data-i18n="tools.utility-toolbox.text.0240">TZ</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0241">서버 시간대 추정</span></strong><small><span data-i18n="tools.utility-toolbox.text.0242">주소 기반 후보·현재 시각</span></small></span></button>
               <button type="button" data-tool-target="uuid-tool" data-category="developer" data-keywords="uuid guid 생성"><b><span data-i18n="tools.utility-toolbox.text.0063">ID</span></b><span><strong><span data-i18n="tools.utility-toolbox.text.0064">UUID 생성기</span></strong><small><span data-i18n="tools.utility-toolbox.text.0065">UUID v4 복수 생성</span></small></span></button>
@@ -184,9 +184,22 @@
             </article>
 
             <article class="utility-panel" id="url-parser" data-tool-panel hidden>
-              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0150">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0151">URL 파서</span></h2><p><span data-i18n="tools.utility-toolbox.text.0152">URL의 프로토콜, 호스트, 경로, 쿼리와 해시를 분해합니다.</span></p></div></div>
-              <div class="toolbar-form toolbar-wide"><div class="form-row utility-grow"><label for="urlParserInput"><span data-i18n="tools.utility-toolbox.text.0153">URL</span></label><input id="urlParserInput" type="url" value="https://example.com:8080/path?q=SolForge&amp;lang=ko#result"></div><button type="button" class="primary-link" id="parseUrl"><span data-i18n="tools.utility-toolbox.text.0154">분석</span></button></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.utility-toolbox.text.0150">개발자</span></p><h2><span data-i18n="tools.utility-toolbox.text.0151">GET URL 분석기</span></h2><p><span data-i18n="tools.utility-toolbox.text.0152">GET 주소를 붙여넣으면 기본 주소와 쿼리 파라미터의 키·값을 분리하고 중복·배열·빈 값을 분류합니다.</span></p></div></div>
+              <form class="toolbar-form toolbar-wide" id="urlParserForm"><div class="form-row utility-grow"><label for="urlParserInput"><span data-i18n="tools.utility-toolbox.text.0153">GET URL</span></label><input id="urlParserInput" type="text" value="https://api.example.com/search?q=한글+검색&amp;tag=js&amp;tag=web&amp;item[]=1&amp;empty=#result" placeholder="https://api.example.com/search?userId=42&amp;status=active" data-i18n-attrs="placeholder:tools.utility-toolbox.get-url.placeholder"></div><button type="submit" class="primary-link" id="parseUrl"><span data-i18n="tools.utility-toolbox.text.0154">분석</span></button></form>
+              <p class="tool-disclaimer" data-i18n="tools.utility-toolbox.get-url.notice">입력한 주소는 서버로 전송되지 않고 현재 브라우저에서만 분석됩니다. 토큰, 비밀번호와 개인정보가 포함된 URL은 공유하거나 저장하지 마세요.</p>
               <div class="result-panel" id="urlParserResult" aria-live="polite"></div>
+              <div class="get-url-analysis" id="getUrlAnalysis" hidden>
+                <div class="stat-grid get-url-summary" id="getUrlSummary"></div>
+                <div class="editor-label-row get-url-section-heading"><span class="editor-label" data-i18n="tools.utility-toolbox.get-url.parameters">쿼리 파라미터</span><span class="get-url-count" id="getUrlParameterCount"></span></div>
+                <div class="data-table-wrap get-url-table-wrap">
+                  <table class="get-url-table">
+                    <thead><tr><th data-i18n="tools.utility-toolbox.get-url.order">#</th><th data-i18n="tools.utility-toolbox.get-url.key">키</th><th data-i18n="tools.utility-toolbox.get-url.value">값</th><th data-i18n="tools.utility-toolbox.get-url.type">분류</th><th data-i18n="tools.utility-toolbox.get-url.raw">원본 쿼리</th></tr></thead>
+                    <tbody id="getUrlParameterRows"></tbody>
+                  </table>
+                </div>
+                <div class="editor-label-row get-url-section-heading"><label class="editor-label" for="getUrlJsonOutput" data-i18n="tools.utility-toolbox.get-url.json">키·값 JSON</label><button type="button" class="copy-button" data-copy-from="getUrlJsonOutput" data-i18n="tools.utility-toolbox.get-url.copy">복사</button></div>
+                <textarea id="getUrlJsonOutput" class="utility-textarea code-textarea get-url-json" readonly></textarea>
+              </div>
             </article>
 
             <article class="utility-panel" id="timestamp-tool" data-tool-panel hidden>
@@ -303,6 +316,7 @@
     </div>
     <div class="toast" id="copyToast" role="status" aria-live="polite"><span data-i18n="tools.utility-toolbox.text.0227">복사했습니다.</span></div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script src="../assets/js/utility-tools.js?v=20260612-4"></script>
+    <script src="../assets/js/get-url-parser.js?v=20260715-1"></script>
+    <script src="../assets/js/utility-tools.js?v=20260715-1"></script>
   </body>
 </html>

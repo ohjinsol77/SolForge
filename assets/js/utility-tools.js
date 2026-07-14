@@ -85,9 +85,9 @@
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
-        showToast("복사했습니다.");
+        showToast(document.documentElement.lang === "en" ? "Copied." : "복사했습니다.");
       } catch (_error) {
-        showToast("복사하지 못했습니다.");
+        showToast(document.documentElement.lang === "en" ? "Could not copy." : "복사하지 못했습니다.");
       }
     }));
   }
@@ -318,27 +318,127 @@
   function initUrlParser() {
     const input = $("#urlParserInput");
     const output = $("#urlParserResult");
-    const render = () => {
-      try {
-        const url = new URL(input.value);
-        const params = Array.from(url.searchParams.entries());
-        output.innerHTML = resultBlock(
-          url.hostname,
-          url.href,
-          [
-            ["프로토콜", url.protocol],
-            ["호스트", url.host],
-            ["경로", url.pathname || "/"],
-            ["해시", url.hash || "없음"],
-            ["쿼리", params.length ? params.map(([key, value]) => `${key} = ${value}`).join(" · ") : "없음"]
-          ]
-        );
-      } catch (_error) {
-        output.innerHTML = errorBlock("http:// 또는 https://로 시작하는 URL을 입력하세요.");
+    const analysis = $("#getUrlAnalysis");
+    const summary = $("#getUrlSummary");
+    const rows = $("#getUrlParameterRows");
+    const count = $("#getUrlParameterCount");
+    const jsonOutput = $("#getUrlJsonOutput");
+    const parser = window.SolForgeGetUrlParser;
+    const en = document.documentElement.lang === "en";
+    const labels = en ? {
+      invalid: "Enter a valid HTTP or HTTPS GET URL.",
+      missingParser: "The GET URL parser could not be loaded.",
+      method: "Method",
+      protocol: "Protocol",
+      host: "Host",
+      path: "Path",
+      hash: "Hash",
+      rawQuery: "Raw query",
+      none: "None",
+      automatic: "added automatically",
+      parameters: "Parameters",
+      uniqueKeys: "Unique keys",
+      duplicateKeys: "Duplicate keys",
+      arrayEntries: "Array entries",
+      emptyValues: "Empty values",
+      parameterCount: (value) => `${value} parameter${value === 1 ? "" : "s"}`,
+      noParameters: "No query parameters were found in this URL.",
+      empty: "(empty)",
+      occurrence: (value) => `occurrence ${value}`,
+      types: {
+        single: "Single",
+        duplicate: "Duplicate key",
+        array: "Array",
+        flag: "Flag",
+        emptyValue: "Empty value",
+        emptyKey: "Empty key",
+        decodeError: "Decode issue"
+      }
+    } : {
+      invalid: "올바른 HTTP 또는 HTTPS GET URL을 입력하세요.",
+      missingParser: "GET URL 분석 모듈을 불러오지 못했습니다.",
+      method: "메서드",
+      protocol: "프로토콜",
+      host: "호스트",
+      path: "경로",
+      hash: "해시",
+      rawQuery: "원본 쿼리",
+      none: "없음",
+      automatic: "자동 추가",
+      parameters: "파라미터",
+      uniqueKeys: "고유 키",
+      duplicateKeys: "중복 키",
+      arrayEntries: "배열 항목",
+      emptyValues: "빈 값",
+      parameterCount: (value) => `총 ${value}개`,
+      noParameters: "이 URL에는 쿼리 파라미터가 없습니다.",
+      empty: "(빈 값)",
+      occurrence: (value) => `${value}번째 값`,
+      types: {
+        single: "단일",
+        duplicate: "중복 키",
+        array: "배열",
+        flag: "플래그",
+        emptyValue: "빈 값",
+        emptyKey: "빈 키",
+        decodeError: "디코딩 확인"
       }
     };
-    $("#parseUrl").addEventListener("click", render);
+
+    const typeBadges = (entry) => entry.types.map((type) => `<span class="get-url-type" data-param-type="${escapeHtml(type)}">${escapeHtml(labels.types[type] || type)}</span>`).join("");
+    const parameterRow = (entry) => {
+      const duplicate = entry.types.includes("duplicate") ? `<small>${escapeHtml(labels.occurrence(entry.occurrence))}</small>` : "";
+      const value = entry.value === "" ? `<span class="get-url-empty">${escapeHtml(labels.empty)}</span>` : `<code>${escapeHtml(entry.value)}</code>`;
+      return [
+        "<tr>",
+        `<td>${entry.index}</td>`,
+        `<td><code>${escapeHtml(entry.key || labels.empty)}</code>${duplicate}</td>`,
+        `<td>${value}</td>`,
+        `<td><div class="get-url-types">${typeBadges(entry)}</div></td>`,
+        `<td><code>${escapeHtml(entry.raw)}</code></td>`,
+        "</tr>"
+      ].join("");
+    };
+
+    const render = () => {
+      try {
+        if (!parser?.parseGetUrl) throw new Error("missing_parser");
+        const result = parser.parseGetUrl(input.value);
+        output.innerHTML = resultBlock(
+          result.method,
+          result.baseUrl,
+          [
+            [labels.protocol, `${result.protocol}${result.addedProtocol ? ` (${labels.automatic})` : ""}`],
+            [labels.host, result.host],
+            [labels.path, result.pathname],
+            [labels.hash, result.hash || labels.none],
+            [labels.rawQuery, result.rawQuery || labels.none]
+          ]
+        );
+        summary.innerHTML = [
+          stat(labels.parameters, result.summary.parameters),
+          stat(labels.uniqueKeys, result.summary.uniqueKeys),
+          stat(labels.duplicateKeys, result.summary.duplicateKeys),
+          stat(labels.arrayEntries, result.summary.arrayEntries),
+          stat(labels.emptyValues, result.summary.emptyValues)
+        ].join("");
+        rows.innerHTML = result.entries.length
+          ? result.entries.map(parameterRow).join("")
+          : `<tr><td colspan="5" class="get-url-no-parameters">${escapeHtml(labels.noParameters)}</td></tr>`;
+        count.textContent = labels.parameterCount(result.summary.parameters);
+        jsonOutput.value = JSON.stringify(result.structured, null, 2);
+        analysis.hidden = false;
+      } catch (_error) {
+        analysis.hidden = true;
+        output.innerHTML = errorBlock(parser?.parseGetUrl ? labels.invalid : labels.missingParser);
+      }
+    };
+    $("#urlParserForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      render();
+    });
     input.addEventListener("change", render);
+    input.addEventListener("paste", () => window.requestAnimationFrame(render));
     render();
   }
 

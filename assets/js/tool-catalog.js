@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  const getUrlTool = document.documentElement.lang === "en"
+    ? ["developer", "GET", "GET URL Analyzer", "Separates query keys and values and classifies duplicates, arrays, flags, and empty values.", "get url query parameter key value duplicate array parser", "utility-toolbox.html#url-parser"]
+    : ["developer", "GET", "GET URL 분석기", "쿼리 키·값을 분리하고 중복, 배열, 플래그와 빈 값을 분류합니다.", "get url query parameter key value 파라미터 키 값 중복 배열 파서", "utility-toolbox.html#url-parser"];
+
   const tools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox.html#pip-clock"],
     ["pip", "TMR", "PIP 타이머", "카운트다운 타이머를 페이지와 PIP 창에서 실행합니다.", "pip 타이머 timer countdown", "pip-toolbox.html#pip-timer"],
@@ -42,7 +46,7 @@
     ["developer", "{}", "JSON 포매터", "JSON을 검증하고 정렬하거나 한 줄로 압축합니다.", "json formatter 포맷 검증 압축", "utility-toolbox.html#json-tool"],
     ["developer", "B64", "Base64 변환", "UTF-8 텍스트를 Base64로 인코딩·디코딩합니다.", "base64 인코더 디코더", "utility-toolbox.html#base64-tool"],
     ["developer", "%", "URL 인코더", "URI와 쿼리 컴포넌트를 인코딩·디코딩합니다.", "url uri 인코딩 디코딩", "utility-toolbox.html#url-codec"],
-    ["developer", "URL", "URL 파서", "주소의 프로토콜, 호스트, 경로와 쿼리를 분해합니다.", "url parser query 파서", "utility-toolbox.html#url-parser"],
+    getUrlTool,
     ["developer", "TS", "Unix Timestamp", "초·밀리초 타임스탬프와 날짜를 변환합니다.", "unix timestamp utc kst", "utility-toolbox.html#timestamp-tool"],
     ["developer", "TZ", "서버 시간대 추정", "서버 주소에서 시간대 후보와 현재 시각을 확인합니다.", "서버 시간대 timezone host domain utc", "utility-toolbox.html#server-timezone"],
     ["developer", "ID", "UUID 생성기", "암호학적 난수 기반 UUID v4를 생성합니다.", "uuid guid 생성", "utility-toolbox.html#uuid-tool"],
