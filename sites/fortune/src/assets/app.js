@@ -11,6 +11,7 @@
   const animalSigns = { 자: "rat", 축: "ox", 인: "tiger", 묘: "rabbit", 진: "dragon", 사: "snake", 오: "horse", 미: "goat", 신: "monkey", 유: "rooster", 술: "dog", 해: "pig" };
   const generates = { 목: "화", 화: "토", 토: "금", 금: "수", 수: "목" };
   const controls = { 목: "토", 토: "수", 수: "화", 화: "금", 금: "목" };
+  const branchRepresentativeHours = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
   const romanization = {
     갑: "Gap", 을: "Eul", 병: "Byeong", 정: "Jeong", 무: "Mu", 기: "Gi", 경: "Gyeong", 신: "Sin", 임: "Im", 계: "Gye",
     자: "Ja", 축: "Chuk", 인: "In", 묘: "Myo", 진: "Jin", 사: "Sa", 오: "O", 미: "Mi", 유: "Yu", 술: "Sul", 해: "Hae"
@@ -110,7 +111,7 @@
     return { hour, minute };
   }
 
-  function renderElementBars(counts) {
+  function renderElementBars(counts, totalCharacters) {
     const container = document.getElementById("element-bars");
     container.replaceChildren();
     elements.forEach((element) => {
@@ -122,10 +123,10 @@
       track.className = "element-track";
       const fill = document.createElement("span");
       fill.className = "element-fill";
-      fill.style.width = `${(counts[element] / 8) * 100}%`;
+      fill.style.width = `${(counts[element] / totalCharacters) * 100}%`;
       track.append(fill);
       const value = document.createElement("strong");
-      value.textContent = t("dynamic.personal.elementCount", { count: counts[element] });
+      value.textContent = t("dynamic.personal.elementCount", { count: counts[element], total: totalCharacters });
       row.append(label, track, value);
       container.append(row);
     });
@@ -139,7 +140,7 @@
     document.getElementById("personal-status").textContent = statusMessage;
   }
 
-  function renderPersonalResult(saju, todayGapja) {
+  function renderPersonalResult(saju, todayGapja, timeBasis) {
     const pillars = [
       [saju.yearPillar, saju.yearPillarHanja],
       [saju.monthPillar, saju.monthPillarHanja],
@@ -147,9 +148,10 @@
       [saju.hourPillar, saju.hourPillarHanja]
     ];
     const counts = Object.fromEntries(elements.map((element) => [element, 0]));
-    for (const [pillar] of pillars) {
+    for (const [pillar] of pillars.filter(([pillar]) => pillar)) {
       for (const character of pillar) counts[elementForPillarCharacter(character)] += 1;
     }
+    const totalCharacters = saju.hourPillar ? 8 : 6;
 
     const ranked = [...elements].sort((a, b) => counts[b] - counts[a] || elements.indexOf(a) - elements.indexOf(b));
     const dominant = ranked[0];
@@ -169,12 +171,15 @@
     const localizedLighter = t(`dynamic.personal.element.${elementIds[lighter]}`);
 
     ["year", "month", "day", "hour"].forEach((name, index) => {
-      document.getElementById(`result-${name}-pillar`).textContent = formatPillar(...pillars[index]);
+      document.getElementById(`result-${name}-pillar`).textContent = pillars[index][0]
+        ? formatPillar(...pillars[index])
+        : t("dynamic.personal.unknownHourPillar");
     });
     document.getElementById("result-zodiac").textContent = zodiac;
     document.getElementById("result-day-master").textContent = localizedDayMaster;
     document.getElementById("result-today").textContent = formatPillar(todayGapja.dayPillar, todayGapja.dayPillarHanja);
-    document.getElementById("personal-result-summary").textContent = t("dynamic.personal.summary", {
+    document.getElementById("result-time-basis").textContent = t(`dynamic.personal.timeBasis.${timeBasis}`);
+    document.getElementById("personal-result-summary").textContent = t(`dynamic.personal.summary.${saju.hourPillar ? "known" : "unknown"}`, {
       zodiac,
       dayMaster: localizedDayMaster,
       dominant: localizedDominant,
@@ -185,7 +190,7 @@
     document.getElementById("result-money").textContent = t(`dynamic.personal.money.${relation}`);
     document.getElementById("result-relationship").textContent = t(`dynamic.personal.relationship.${yinYang}`);
     document.getElementById("result-balance").textContent = t(`dynamic.personal.balance.${elementIds[dominant]}`, { lighter: localizedLighter });
-    renderElementBars(counts);
+    renderElementBars(counts, totalCharacters);
 
     const result = document.getElementById("personal-result");
     result.hidden = false;
@@ -198,7 +203,9 @@
     if (!form) return;
     const calendarInput = document.getElementById("birth-calendar");
     const dateInput = document.getElementById("birth-date");
+    const timeModeInput = document.getElementById("birth-time-mode");
     const timeInput = document.getElementById("birth-time");
+    const exactTimeField = document.getElementById("exact-time-field");
     const leapInput = document.getElementById("birth-leap-month");
     const leapField = document.getElementById("leap-month-field");
     const status = document.getElementById("personal-status");
@@ -211,7 +218,15 @@
       if (!isLunar) leapInput.checked = false;
     }
 
+    function syncTimeFields() {
+      const isExact = timeModeInput.value === "exact";
+      exactTimeField.hidden = !isExact;
+      timeInput.required = isExact;
+      if (!isExact) timeInput.value = "";
+    }
+
     calendarInput.addEventListener("change", syncCalendarFields);
+    timeModeInput.addEventListener("change", syncTimeFields);
     document.getElementById("clear-personal-result").addEventListener("click", () => {
       activeCalculation += 1;
       clearResult(t("dynamic.personal.status.resultCleared"));
@@ -221,6 +236,7 @@
       activeCalculation += 1;
       form.reset();
       syncCalendarFields();
+      syncTimeFields();
       clearResult();
     });
 
@@ -229,36 +245,52 @@
       if (!form.reportValidity()) return;
 
       let rawDate = dateInput.value;
-      let rawTime = timeInput.value;
+      let timeMode = timeModeInput.value;
+      let rawTime = timeMode === "exact" ? timeInput.value : "";
       let calendar = calendarInput.value;
       let isLeapMonth = leapInput.checked;
       const calculationId = ++activeCalculation;
       form.reset();
       syncCalendarFields();
+      syncTimeFields();
       clearResult();
       status.textContent = t("dynamic.personal.status.processing");
       submitButton.disabled = true;
 
       try {
         const enteredDate = parseDate(rawDate);
-        const enteredTime = parseTime(rawTime);
         const library = await loadManseryeok();
         let solarDate = enteredDate;
         if (calendar === "lunar") {
           solarDate = library.lunarToSolar(enteredDate.year, enteredDate.month, enteredDate.day, isLeapMonth).solar;
         }
-        const saju = library.calculateSaju(
-          solarDate.year,
-          solarDate.month,
-          solarDate.day,
-          enteredTime.hour,
-          enteredTime.minute,
-          { longitude: 127, applyTimeCorrection: true }
-        );
+        let saju;
+        let timeBasis;
+        if (timeMode === "unknown") {
+          const gapja = library.getGapja(solarDate.year, solarDate.month, solarDate.day);
+          saju = { ...gapja, gapja, hourPillar: null, hourPillarHanja: null };
+          timeBasis = "unknown";
+        } else if (timeMode === "exact") {
+          const enteredTime = parseTime(rawTime);
+          saju = library.calculateSaju(
+            solarDate.year,
+            solarDate.month,
+            solarDate.day,
+            enteredTime.hour,
+            enteredTime.minute,
+            { longitude: 127, applyTimeCorrection: true }
+          );
+          timeBasis = "exact";
+        } else {
+          const branchIndex = Number(timeMode.replace("branch-", ""));
+          if (!Number.isInteger(branchIndex) || branchIndex < 0 || branchIndex >= branchRepresentativeHours.length) throw new Error("invalid-time");
+          saju = library.calculateSajuSimple(solarDate.year, solarDate.month, solarDate.day, branchRepresentativeHours[branchIndex]);
+          timeBasis = "period";
+        }
         const kstToday = getKoreanDateParts();
         const todayGapja = library.getGapja(kstToday.year, kstToday.month, kstToday.day);
         if (calculationId !== activeCalculation) return;
-        renderPersonalResult(saju, todayGapja);
+        renderPersonalResult(saju, todayGapja, timeBasis);
         status.textContent = t("dynamic.personal.status.complete");
       } catch (error) {
         const message = error?.name === "OutOfRangeError"
@@ -272,6 +304,7 @@
       } finally {
         rawDate = null;
         rawTime = null;
+        timeMode = null;
         calendar = null;
         isLeapMonth = null;
         submitButton.disabled = false;
@@ -279,6 +312,7 @@
     });
 
     syncCalendarFields();
+    syncTimeFields();
     loadManseryeok().catch(() => {});
   }
 

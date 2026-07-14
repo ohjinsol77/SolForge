@@ -5,6 +5,7 @@ const { nav, pages } = require("./content");
 
 const root = path.resolve(__dirname, "..");
 const signs = ["rat", "ox", "tiger", "rabbit", "dragon", "snake", "horse", "goat", "monkey", "rooster", "dog", "pig"];
+const timeBranches = ["ja", "chuk", "in", "myo", "jin", "sa", "o", "mi", "sin", "yu", "sul", "hae"];
 
 function renderFeature({ lang, page, text, t, escapeHtml }) {
   if (page.feature === "daily-zodiac") return `
@@ -45,8 +46,17 @@ function renderFeature({ lang, page, text, t, escapeHtml }) {
               <input id="birth-date" type="date" min="1900-01-01" max="2050-12-31" required autocomplete="off">
             </label>
             <label>
-              ${text(lang, "personal.form.time")}
-              <input id="birth-time" type="time" required autocomplete="off">
+              ${text(lang, "personal.form.timeChoice")}
+              <select id="birth-time-mode" autocomplete="off">
+                ${text(lang, "personal.form.timeOption.unknown", "option", ' value="unknown"')}
+                ${text(lang, "personal.form.timeOption.exact", "option", ' value="exact"')}
+                ${timeBranches.map((branch, index) => text(lang, `personal.form.timeOption.${branch}`, "option", ` value="branch-${index}"`)).join("")}
+              </select>
+              ${text(lang, "personal.form.timeHelp", "small")}
+            </label>
+            <label class="exact-time-field" id="exact-time-field" hidden>
+              ${text(lang, "personal.form.exactTime")}
+              <input id="birth-time" type="time" autocomplete="off">
             </label>
             <label class="leap-month-field" id="leap-month-field" hidden>
               <input id="birth-leap-month" type="checkbox" autocomplete="off">
@@ -73,7 +83,7 @@ function renderFeature({ lang, page, text, t, escapeHtml }) {
           <p><span>${text(lang, "personal.result.zodiac")}</span><strong id="result-zodiac" data-result-value></strong></p>
           <p><span>${text(lang, "personal.result.dayMaster")}</span><strong id="result-day-master" data-result-value></strong></p>
           <p><span>${text(lang, "personal.result.today")}</span><strong id="result-today" data-result-value></strong></p>
-          <p><span>${text(lang, "personal.result.timeBasis")}</span><strong>${text(lang, "personal.result.timeBasisValue")}</strong></p>
+          <p><span>${text(lang, "personal.result.timeBasis")}</span><strong id="result-time-basis" data-result-value></strong></p>
         </div>
         <div class="element-panel">
           <div>${text(lang, "personal.result.elementsTitle", "h4")}${text(lang, "personal.result.elementsIntro", "p")}</div>

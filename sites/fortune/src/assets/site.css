@@ -17,10 +17,12 @@ body { background: radial-gradient(circle at 90% 0, #f1dcc0 0, transparent 33rem
 .birth-form legend { margin-bottom: 1rem; padding: 0; font-size: 1.05rem; font-weight: 800; }
 .birth-fields { display: grid; grid-template-columns: .7fr 1fr 1fr; gap: .85rem; align-items: end; }
 .birth-fields label { display: grid; min-width: 0; gap: .4rem; color: var(--muted); font-size: .82rem; font-weight: 700; }
+.birth-fields label small { color: var(--muted); font-size: .73rem; font-weight: 500; line-height: 1.45; }
 .birth-fields input, .birth-fields select { width: 100%; min-height: 3rem; padding: .65rem .75rem; border: 1px solid var(--line); border-radius: .7rem; background: #fff; color: var(--text); font: inherit; }
 .birth-fields input:focus-visible, .birth-fields select:focus-visible, .primary-button:focus-visible, .secondary-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 28%, transparent); outline-offset: 2px; border-color: var(--accent); }
 .leap-month-field { grid-column: 1 / -1; display: flex !important; align-items: center; gap: .55rem !important; padding: .2rem 0; color: var(--text) !important; }
 .leap-month-field[hidden] { display: none !important; }
+.exact-time-field[hidden] { display: none !important; }
 .leap-month-field input { width: 1.1rem; min-height: 1.1rem; margin: 0; }
 .form-actions { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
 .form-actions p { flex: 1; margin: 0; color: var(--muted); font-size: .82rem; }
