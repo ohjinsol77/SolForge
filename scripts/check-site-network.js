@@ -5,7 +5,7 @@ const ROOT = path.resolve(__dirname, "..");
 const sites = [
   { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
   { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
-  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "fortune.solforge.cloud", pages: 9, markers: ["12띠", "Constellations", "오락"] }
+  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "fortune.solforge.cloud", pages: 10, markers: ["12띠", "Constellations", "오락"] }
 ];
 
 function fail(message) {
@@ -36,7 +36,8 @@ for (const site of sites) {
       if (!html.includes(`<html lang="${lang}">`)) fail(`Wrong lang in ${fullPath}`);
       if (!html.includes(`https://${site.host}/${lang}/`)) fail(`Missing localized canonical in ${fullPath}`);
       if (/adsbygoogle|googlesyndication/.test(html)) fail(`Ad script found in specialist site: ${fullPath}`);
-      if (/<(?:dialog|input|textarea|select)\b/i.test(html)) fail(`Unexpected input or dialog in reading site: ${fullPath}`);
+      const isPersonalFortune = site.name === "fortune" && file === "personal-fortune.html";
+      if (/<(?:dialog|input|textarea|select)\b/i.test(html) && !isPersonalFortune) fail(`Unexpected input or dialog in reading site: ${fullPath}`);
       const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
       for (const href of hrefs) {
         const target = expectedFile(dist, href);
@@ -57,4 +58,4 @@ for (const site of sites) {
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
 }
 
-console.log("Checked SolForge network: 52 localized specialist pages, internal links, content boundaries and main hub links.");
+console.log("Checked SolForge network: 54 localized specialist pages, internal links, content boundaries and main hub links.");

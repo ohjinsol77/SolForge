@@ -18,6 +18,7 @@
     "deploy:fortune": "npm run build:fortune && npm exec -- wrangler pages deploy --cwd sites/fortune"
   },
   "dependencies": {
+    "@fullstackfamily/manseryeok": "^1.0.8",
     "acorn": "^8.17.0",
     "gifenc": "^1.0.3",
     "qrcode-generator": "^2.0.4"

@@ -1,5 +1,6 @@
 const pages = [
-  { slug: "index", key: "home", feature: "daily-zodiac", sections: ["tradition", "rhythm", "relationships", "reflection"], links: ["daily-guide", "zodiac", "constellations", "culture"] },
+  { slug: "index", key: "home", feature: "daily-zodiac", sections: ["tradition", "rhythm", "relationships", "reflection"], links: ["personal-fortune", "daily-guide", "zodiac", "culture"] },
+  { slug: "personal-fortune", key: "personalFortune", feature: "personal-fortune", sections: ["pillars", "dayMaster", "elements", "dailyFlow", "privacy", "limits"] },
   { slug: "daily-guide", key: "dailyGuide", sections: ["overall", "focus", "relationship", "routine", "caution", "reflection"] },
   { slug: "zodiac", key: "zodiac", sections: ["rat", "ox", "tiger", "rabbit", "dragon", "snake", "horse", "goat", "monkey", "rooster", "dog", "pig"] },
   { slug: "constellations", key: "constellations", sections: ["fire", "earth", "air", "water", "boundaries", "reading"] },
@@ -12,6 +13,7 @@ const pages = [
 
 const nav = [
   { slug: "index", key: "nav.home" },
+  { slug: "personal-fortune", key: "nav.personal" },
   { slug: "daily-guide", key: "nav.daily" },
   { slug: "zodiac", key: "nav.zodiac" },
   { slug: "constellations", key: "nav.constellations" },
