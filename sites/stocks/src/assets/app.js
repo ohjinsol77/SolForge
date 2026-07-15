@@ -1,7 +1,8 @@
 (() => {
   const marketBoard = document.getElementById("market-board");
   const koreaDashboard = document.getElementById("korea-dashboard");
-  if (!marketBoard && !koreaDashboard) return;
+  const globalDashboard = document.getElementById("global-dashboard");
+  if (!marketBoard && !koreaDashboard && !globalDashboard) return;
 
   const translations = window.SF_SITE_TRANSLATIONS || {};
   const locale = window.SF_SITE_LOCALE === "en" ? "en-US" : "ko-KR";
@@ -29,6 +30,14 @@
 
   function won(value) {
     return new Intl.NumberFormat(locale, { style: "currency", currency: "KRW", notation: "compact", maximumFractionDigits: 1 }).format(value);
+  }
+
+  function money(value, currency = "USD") {
+    try {
+      return new Intl.NumberFormat(locale, { style: "currency", currency, notation: "compact", maximumFractionDigits: 1 }).format(value);
+    } catch (_error) {
+      return `${compact(value)} ${currency}`;
+    }
   }
 
   function signed(value, maximumFractionDigits = 2) {
@@ -126,12 +135,35 @@
     renderFlows(id, market.flows);
   }
 
+  function renderGlobalIndex(id, market) {
+    const required = [market?.price, market?.change, market?.percent];
+    if (!required.every(Number.isFinite)) throw new Error("missing global index value");
+    setText(`global-${id}-price`, number(market.price));
+    setText(`global-${id}-status`, marketStatus(market.marketStatus));
+    setText(`global-${id}-change`, formatChange(market.change, market.percent));
+    setDirection(document.getElementById(`global-${id}-change`), market.change);
+    if (Number.isFinite(market.previousClose)) setText(`global-${id}-previous`, number(market.previousClose));
+    if (Number.isFinite(market.open)) setText(`global-${id}-open`, number(market.open));
+    if ([market.low, market.high].every(Number.isFinite)) setText(`global-${id}-range`, `${number(market.low)} – ${number(market.high)}`);
+    if (Number.isFinite(market.volume)) setText(`global-${id}-volume`, compact(market.volume));
+    if ([market.low52, market.high52].every(Number.isFinite)) setText(`global-${id}-year-range`, `${number(market.low52)} – ${number(market.high52)}`);
+  }
+
   function renderExchange(id, exchange) {
     const { price, change, percent } = exchange || {};
     if (![price, change, percent].every(Number.isFinite)) throw new Error("missing exchange value");
     setText(`exchange-${id}-price`, number(price));
     setText(`exchange-${id}-change`, formatChange(change, percent));
     setDirection(document.getElementById(`exchange-${id}-change`), change);
+  }
+
+  function renderContext(id, context) {
+    const { price, change, percent, unit } = context || {};
+    if (![price, change, percent].every(Number.isFinite)) throw new Error("missing global context value");
+    const formatted = unit === "%" ? `${number(price, 4)}%` : unit === "KRW" ? `${number(price)} KRW` : number(price);
+    setText(`context-${id}-price`, formatted);
+    setText(`context-${id}-change`, formatChange(change, percent));
+    setDirection(document.getElementById(`context-${id}-change`), change);
   }
 
   function leaderRow(item, rank) {
@@ -145,15 +177,15 @@
     const identity = document.createElement("div");
     identity.className = "leader-identity";
     const name = document.createElement("strong");
-    name.textContent = item.name;
+    name.textContent = item.market === "global" && locale === "en-US" ? item.code : item.name;
     const code = document.createElement("small");
-    code.textContent = item.code;
+    code.textContent = item.market === "global" && locale === "en-US" ? item.exchange : item.code;
     identity.append(name, code);
 
     const quote = document.createElement("div");
     quote.className = "leader-quote";
     const price = document.createElement("strong");
-    price.textContent = number(item.price, 0);
+    price.textContent = number(item.price, item.currency ? 2 : 0);
     const change = document.createElement("small");
     change.textContent = `${signed(item.percent)}%`;
     setDirection(change, item.change);
@@ -161,23 +193,23 @@
 
     const value = document.createElement("span");
     value.className = "leader-value";
-    value.textContent = won(item.tradingValue);
+    value.textContent = item.currency ? money(item.tradingValue, item.currency) : won(item.tradingValue);
     row.append(rankElement, identity, quote, value);
     return row;
   }
 
-  function renderLeaders(id, items) {
-    const list = document.getElementById(`leaders-${id}`);
+  function renderLeaders(id, items, prefix = "leaders") {
+    const list = document.getElementById(`${prefix}-${id}`);
     if (!list || !Array.isArray(items) || !items.length) throw new Error("missing leader list");
     list.replaceChildren(...items.slice(0, 5).map(leaderRow));
   }
 
-  function markLeadersUnavailable(id) {
-    const list = document.getElementById(`leaders-${id}`);
+  function markLeadersUnavailable(id, prefix = "leaders", key = "koreaDashboard.rankUnavailable") {
+    const list = document.getElementById(`${prefix}-${id}`);
     if (!list) return;
     const message = document.createElement("p");
     message.className = "data-placeholder";
-    message.textContent = t("koreaDashboard.rankUnavailable");
+    message.textContent = t(key);
     list.replaceChildren(message);
   }
 
@@ -205,6 +237,7 @@
     loading = true;
     let marketSuccess = 0;
     let dashboardSuccess = 0;
+    let globalSuccess = 0;
     try {
       const payload = await request();
       if (marketBoard) {
@@ -243,6 +276,32 @@
           }
         }
       }
+      if (globalDashboard) {
+        for (const id of ["gspc", "ixic", "dji", "n225"]) {
+          try {
+            renderGlobalIndex(id, payload.globalIndexes?.[id]);
+            globalSuccess += 1;
+          } catch (_error) {
+            // Other global index cards can still render independently.
+          }
+        }
+        for (const id of ["usd", "us10y", "dxy", "vix"]) {
+          try {
+            renderContext(id, payload.globalContext?.[id]);
+            globalSuccess += 1;
+          } catch (_error) {
+            // Leave only the unavailable context value blank.
+          }
+        }
+        for (const id of ["nasdaq", "nyse"]) {
+          try {
+            renderLeaders(id, payload.globalLeaders?.[id], "global-leaders");
+            globalSuccess += 1;
+          } catch (_error) {
+            markLeadersUnavailable(id, "global-leaders", "globalDashboard.rankUnavailable");
+          }
+        }
+      }
     } catch (_error) {
       // Status messages below communicate same-origin endpoint failures.
     } finally {
@@ -250,10 +309,11 @@
     }
     updateStatus("market-status", marketSuccess, indexes.length);
     updateStatus("korea-dashboard-status", dashboardSuccess, 7, "koreaDashboard.loaded");
+    updateStatus("global-dashboard-status", globalSuccess, 10, "globalDashboard.loaded");
   }
 
   load();
-  if (koreaDashboard) {
+  if (koreaDashboard || globalDashboard) {
     window.setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, 60000);

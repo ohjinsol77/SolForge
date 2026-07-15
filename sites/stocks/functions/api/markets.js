@@ -6,6 +6,11 @@ const GLOBAL_INDEXES = {
   dji: ".DJI",
   n225: ".N225"
 };
+const GLOBAL_CONTEXT = {
+  us10y: ["marketindex/bond/US10YT=RR", "%"],
+  dxy: ["marketindex/exchange/.DXY", "index"],
+  vix: ["index/.VIX/basic", "index"]
+};
 const EXCHANGE_RATES = {
   usd: "FX_USDKRW",
   jpy: "FX_JPYKRW",
@@ -29,6 +34,12 @@ function numeric(rawValue, displayValue) {
   return Number.isFinite(value) ? value : null;
 }
 
+function numericText(value) {
+  const match = String(value ?? "").replaceAll(",", "").match(/-?\d+(?:\.\d+)?/);
+  const parsed = match ? Number(match[0]) : NaN;
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function normalize(item) {
   const price = numeric(item?.closePriceRaw, item?.closePrice);
   const change = numeric(item?.compareToPreviousClosePriceRaw, item?.compareToPreviousClosePrice);
@@ -45,6 +56,30 @@ function normalize(item) {
 
 function totalInfoMap(integration) {
   return Object.fromEntries((integration?.totalInfos || []).map((item) => [item.code, item.value]));
+}
+
+function itemInfoMap(items) {
+  return Object.fromEntries((items || []).map((item) => [item.code, item.value]));
+}
+
+function normalizeGlobalIndex(item) {
+  const base = normalize(item);
+  if (!base) return null;
+  const totals = itemInfoMap(item?.stockItemTotalInfos);
+  const volumeText = totals.accumulatedTradingVolume;
+  const volume = numericText(volumeText);
+  return {
+    ...base,
+    open: numericText(totals.openPrice),
+    high: numericText(totals.highPrice),
+    low: numericText(totals.lowPrice),
+    previousClose: numericText(totals.lastClosePrice),
+    volume: Number.isFinite(volume) && String(volumeText).includes("천주") ? volume * 1000 : volume,
+    high52: numericText(totals.highPriceOf52Weeks),
+    low52: numericText(totals.lowPriceOf52Weeks),
+    delayMinutes: numeric(item?.delayTime),
+    exchange: item?.stockExchangeType?.name || null
+  };
 }
 
 function normalizeDomestic(item, integration) {
@@ -93,6 +128,23 @@ function normalizeExchange(payload) {
   };
 }
 
+function normalizeMarketContext(payload, unit) {
+  const base = normalize({
+    closePrice: payload?.closePrice,
+    compareToPreviousClosePrice: payload?.fluctuations,
+    fluctuationsRatio: payload?.fluctuationsRatio,
+    marketStatus: payload?.marketStatus,
+    localTradedAt: payload?.localTradedAt
+  });
+  if (!base) return null;
+  return {
+    ...base,
+    unit,
+    delayMinutes: numeric(payload?.delayTime),
+    delayName: payload?.delayTimeName || null
+  };
+}
+
 function normalizeLeaders(payload) {
   if (!payload?.isSuccess) return [];
   return (payload?.result?.stocks || [])
@@ -109,6 +161,25 @@ function normalizeLeaders(payload) {
     .slice(0, 5);
 }
 
+function normalizeGlobalLeaders(payload) {
+  if (!payload?.isSuccess) return [];
+  return (payload?.result?.stocks || [])
+    .filter((item) => item?.stockEndType === "stock")
+    .map((item) => ({
+      code: String(item.symbolCode || item.reutersCode || ""),
+      name: String(item.name || ""),
+      price: numeric(item.currentPrice),
+      change: numeric(item.fluctuations),
+      percent: numeric(item.fluctuationsRatio),
+      tradingValue: numeric(item.accumulatedTradingValue),
+      currency: String(item.currencyType || "USD"),
+      exchange: String(item.stockExchangeType || ""),
+      market: "global"
+    }))
+    .filter((item) => item.code && item.name && [item.price, item.change, item.percent, item.tradingValue].every(Number.isFinite))
+    .slice(0, 5);
+}
+
 async function fetchJson(url) {
   const response = await fetch(url, {
     headers: { accept: "application/json" },
@@ -120,6 +191,9 @@ async function fetchJson(url) {
 
 export async function onRequestGet() {
   const indexes = {};
+  const globalIndexes = {};
+  const globalContext = {};
+  const globalLeaders = {};
   const exchangeRates = {};
   const leaders = {};
   const integrations = {};
@@ -137,6 +211,12 @@ export async function onRequestGet() {
     ...Object.entries(GLOBAL_INDEXES).map(([id, code]) =>
       fetchJson(`https://api.stock.naver.com/index/${encodeURIComponent(code)}/basic`).then((payload) => {
         indexes[id] = normalize(payload);
+        globalIndexes[id] = normalizeGlobalIndex(payload);
+      })
+    ),
+    ...Object.entries(GLOBAL_CONTEXT).map(([id, [path, unit]]) =>
+      fetchJson(`https://api.stock.naver.com/${path}`).then((payload) => {
+        globalContext[id] = normalizeMarketContext(payload, unit);
       })
     ),
     ...Object.entries(EXCHANGE_RATES).map(([id, code]) =>
@@ -147,6 +227,11 @@ export async function onRequestGet() {
     ...["KOSPI", "KOSDAQ"].map((category) =>
       fetchJson(`${NAVER_FRONT_API}/domestic/stock/list?sortType=priceTop&category=${category}&domesticStockExchangeType=KRX&page=1&pageSize=15`).then((payload) => {
         leaders[category.toLowerCase()] = normalizeLeaders(payload);
+      })
+    ),
+    ...["NASDAQ", "NYSE"].map((exchange) =>
+      fetchJson(`${NAVER_FRONT_API}/worldstock/exchange/stock/list?stockExchangeType=${exchange}&stockPriceSortType=priceTop&page=1&pageSize=15`).then((payload) => {
+        globalLeaders[exchange.toLowerCase()] = normalizeGlobalLeaders(payload);
       })
     )
   ];
@@ -160,8 +245,12 @@ export async function onRequestGet() {
     kospi: normalizeDomestic(domesticItems.KOSPI, integrations.KOSPI),
     kosdaq: normalizeDomestic(domesticItems.KOSDAQ, integrations.KOSDAQ)
   };
+  if (exchangeRates.usd) globalContext.usd = { ...exchangeRates.usd, unit: "KRW" };
 
   for (const [id, value] of Object.entries(indexes)) if (!value) delete indexes[id];
+  for (const [id, value] of Object.entries(globalIndexes)) if (!value) delete globalIndexes[id];
+  for (const [id, value] of Object.entries(globalContext)) if (!value) delete globalContext[id];
+  for (const [id, value] of Object.entries(globalLeaders)) if (!value?.length) delete globalLeaders[id];
   for (const [id, value] of Object.entries(exchangeRates)) if (!value) delete exchangeRates[id];
   for (const [id, value] of Object.entries(domestic)) if (!value) delete domestic[id];
   for (const [id, value] of Object.entries(leaders)) if (!value?.length) delete leaders[id];
@@ -175,6 +264,9 @@ export async function onRequestGet() {
     fetchedAt: new Date().toISOString(),
     indexes,
     domestic,
+    globalIndexes,
+    globalContext,
+    globalLeaders,
     exchangeRates,
     leaders
   });

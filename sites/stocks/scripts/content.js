@@ -1,7 +1,7 @@
 const pages = [
   { slug: "index", key: "home", feature: "market-board", sections: ["marketStructure", "korea", "global", "company"], links: ["korea-market", "global-market", "indicators", "company-reading"] },
   { slug: "korea-market", key: "koreaMarket", feature: "korea-dashboard", sections: ["kospi", "kosdaq", "participants", "currency", "sectors", "disclosures"] },
-  { slug: "global-market", key: "globalMarket", sections: ["indexes", "rates", "dollar", "earnings", "sectors", "sessions"] },
+  { slug: "global-market", key: "globalMarket", feature: "global-dashboard", sections: ["indexes", "rates", "dollar", "earnings", "sectors", "sessions"] },
   { slug: "indicators", key: "indicators", sections: ["price", "volume", "marketCap", "valuation", "profitability", "stability"] },
   { slug: "company-reading", key: "companyReading", sections: ["business", "revenue", "earnings", "balance", "cashflow", "governance"] },
   { slug: "risk", key: "risk", sections: ["volatility", "concentration", "currency", "liquidity", "leverage", "events"] },

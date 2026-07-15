@@ -12,8 +12,8 @@ body { background: radial-gradient(circle at 100% 0, #e7edff 0, transparent 34re
 .source-note { margin: 1rem 0 0; color: var(--muted); font-size: .82rem; }
 .dashboard-heading { align-items: flex-start; }
 .dashboard-heading .section-intro { max-width: 48rem; margin: .65rem 0 0; color: var(--muted); }
-.domestic-index-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-.domestic-index-card { padding: clamp(1.15rem, 2.5vw, 1.65rem); border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); box-shadow: 0 16px 36px rgb(30 49 94 / 6%); }
+.domestic-index-grid, .global-index-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.domestic-index-card, .global-index-card { padding: clamp(1.15rem, 2.5vw, 1.65rem); border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); box-shadow: 0 16px 36px rgb(30 49 94 / 6%); }
 .index-card-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-end; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
 .market-name-row { display: flex; gap: .55rem; align-items: center; margin-bottom: .45rem; }
 .index-card-heading .market-label { display: block; color: var(--muted); font-size: .84rem; font-weight: 700; letter-spacing: .04em; }
@@ -47,6 +47,7 @@ body { background: radial-gradient(circle at 100% 0, #e7edff 0, transparent 34re
 .dashboard-subheading h3 { margin: 0; font-size: clamp(1.15rem, 2vw, 1.45rem); }
 .dashboard-subheading > p { margin: 0; color: var(--muted); font-size: .88rem; }
 .exchange-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.global-context-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
 .exchange-card { padding: 1rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--surface); }
 .exchange-card > span, .exchange-card small { display: block; color: var(--muted); font-size: .78rem; }
 .exchange-card strong { display: block; margin: .55rem 0 .25rem; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
@@ -72,15 +73,17 @@ body { background: radial-gradient(circle at 100% 0, #e7edff 0, transparent 34re
 .dashboard-note { padding: .9rem 1rem; border-radius: .75rem; background: var(--accent-soft); line-height: 1.65; }
 @media (max-width: 900px) {
   .domestic-index-grid, .leader-grid { grid-template-columns: 1fr; }
+  .global-context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dashboard-subheading { grid-template-columns: 1fr; gap: .45rem; }
 }
 @media (max-width: 780px) {
   .market-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .exchange-grid { grid-template-columns: 1fr; }
+  .exchange-grid, .global-context-grid { grid-template-columns: 1fr; }
   .dashboard-heading { display: block; }
   .dashboard-heading .market-status { margin-top: .75rem; text-align: left; }
 }
 @media (max-width: 560px) {
+  .global-index-grid { grid-template-columns: 1fr; }
   .index-card-heading { display: block; }
   .index-card-heading small { display: block; margin-top: .55rem; }
   .leader-row { grid-template-columns: 1.35rem minmax(0, 1fr) minmax(4.8rem, auto); padding-inline: .7rem; }

@@ -27,6 +27,57 @@ function renderFeature({ lang, page, text, t, escapeHtml }) {
       </section>`;
   }
 
+  if (page.feature === "global-dashboard") {
+    const indexCard = (id, nameKey) => `
+      <article class="global-index-card" id="global-${id}">
+        <div class="index-card-heading">
+          <div><div class="market-name-row"><span class="market-label" data-i18n="${escapeHtml(nameKey)}">${escapeHtml(t(lang, nameKey))}</span><span class="session-badge" id="global-${id}-status">—</span></div><strong id="global-${id}-price">—</strong></div>
+          <small id="global-${id}-change">—</small>
+        </div>
+        <dl class="market-metrics">
+          <div><dt data-i18n="globalDashboard.previousClose">${escapeHtml(t(lang, "globalDashboard.previousClose"))}</dt><dd id="global-${id}-previous">—</dd></div>
+          <div><dt data-i18n="globalDashboard.open">${escapeHtml(t(lang, "globalDashboard.open"))}</dt><dd id="global-${id}-open">—</dd></div>
+          <div><dt data-i18n="globalDashboard.dayRange">${escapeHtml(t(lang, "globalDashboard.dayRange"))}</dt><dd id="global-${id}-range">—</dd></div>
+          <div><dt data-i18n="globalDashboard.volume">${escapeHtml(t(lang, "globalDashboard.volume"))}</dt><dd id="global-${id}-volume">—</dd></div>
+          <div><dt data-i18n="globalDashboard.yearRange">${escapeHtml(t(lang, "globalDashboard.yearRange"))}</dt><dd id="global-${id}-year-range">—</dd></div>
+        </dl>
+      </article>`;
+
+    const contextCard = (id, key) => `<article class="exchange-card global-context-card"><span data-i18n="${escapeHtml(key)}">${escapeHtml(t(lang, key))}</span><strong id="context-${id}-price">—</strong><small id="context-${id}-change">—</small></article>`;
+    const leaderPanel = (id, key) => `
+      <article class="leader-panel">
+        <div class="leader-heading"><h3 data-i18n="${escapeHtml(key)}">${escapeHtml(t(lang, key))}</h3><span data-i18n="globalDashboard.rankValue">${escapeHtml(t(lang, "globalDashboard.rankValue"))}</span></div>
+        <div class="leader-list" id="global-leaders-${id}"><p class="data-placeholder" data-i18n="globalDashboard.loading">${escapeHtml(t(lang, "globalDashboard.loading"))}</p></div>
+      </article>`;
+
+    return `
+      <section class="feature-section global-dashboard" id="global-dashboard" aria-labelledby="global-dashboard-title">
+        <div class="section-heading dashboard-heading">
+          <div>${text(lang, "globalDashboard.eyebrow", "p", ' class="eyebrow"')}${text(lang, "globalDashboard.title", "h2", ' id="global-dashboard-title"')}${text(lang, "globalDashboard.intro", "p", ' class="section-intro"')}</div>
+          ${text(lang, "globalDashboard.loading", "p", ' id="global-dashboard-status" class="market-status" aria-live="polite"')}
+        </div>
+        <div class="global-index-grid">
+          ${indexCard("gspc", "snapshot.sp500")}
+          ${indexCard("ixic", "snapshot.nasdaq")}
+          ${indexCard("dji", "snapshot.dow")}
+          ${indexCard("n225", "snapshot.nikkei")}
+        </div>
+        <div class="dashboard-subheading"><div><p class="eyebrow" data-i18n="globalDashboard.contextEyebrow">${escapeHtml(t(lang, "globalDashboard.contextEyebrow"))}</p><h3 data-i18n="globalDashboard.contextTitle">${escapeHtml(t(lang, "globalDashboard.contextTitle"))}</h3></div><p data-i18n="globalDashboard.contextIntro">${escapeHtml(t(lang, "globalDashboard.contextIntro"))}</p></div>
+        <div class="global-context-grid">
+          ${contextCard("usd", "globalDashboard.usd")}
+          ${contextCard("us10y", "globalDashboard.us10y")}
+          ${contextCard("dxy", "globalDashboard.dxy")}
+          ${contextCard("vix", "globalDashboard.vix")}
+        </div>
+        <div class="dashboard-subheading"><div><p class="eyebrow" data-i18n="globalDashboard.rankEyebrow">${escapeHtml(t(lang, "globalDashboard.rankEyebrow"))}</p><h3 data-i18n="globalDashboard.rankTitle">${escapeHtml(t(lang, "globalDashboard.rankTitle"))}</h3></div><p data-i18n="globalDashboard.rankIntro">${escapeHtml(t(lang, "globalDashboard.rankIntro"))}</p></div>
+        <div class="leader-grid">
+          ${leaderPanel("nasdaq", "globalDashboard.nasdaqLeaders")}
+          ${leaderPanel("nyse", "globalDashboard.nyseLeaders")}
+        </div>
+        ${text(lang, "globalDashboard.note", "p", ' class="source-note dashboard-note"')}
+      </section>`;
+  }
+
   if (page.feature !== "korea-dashboard") return "";
   const indexCard = (id, nameKey) => `
     <article class="domestic-index-card" id="domestic-${id}">
@@ -103,6 +154,8 @@ function build() {
     nav,
     pages,
     renderFeature,
+    clientTranslationPrefixes: ["dynamic.", "koreaDashboard.", "globalDashboard."],
+    assetVersion: "20260715-1",
     buildLabel: "SolForge Stocks"
   });
 }

@@ -9,6 +9,8 @@ function buildContentSite(config) {
     pages,
     nav,
     renderFeature = () => "",
+    clientTranslationPrefixes = ["dynamic."],
+    assetVersion = "20260714-2",
     buildLabel = siteName
   } = config;
   const dist = path.join(root, "dist");
@@ -87,7 +89,7 @@ function buildContentSite(config) {
     const otherLang = lang === "ko" ? "en" : "ko";
     const flag = lang === "ko" ? "🇺🇸" : "🇰🇷";
     const languageLabelKey = lang === "ko" ? "language.toEnglish" : "language.toKorean";
-    const dynamicTranslations = Object.fromEntries(Object.entries(locales[lang]).filter(([key]) => key.startsWith("dynamic.")));
+    const dynamicTranslations = Object.fromEntries(Object.entries(locales[lang]).filter(([key]) => clientTranslationPrefixes.some((prefix) => key.startsWith(prefix))));
     const schema = {
       "@context": "https://schema.org",
       "@type": page.slug === "index" ? "WebSite" : "Article",
@@ -119,10 +121,10 @@ function buildContentSite(config) {
     <meta name="theme-color" content="${escapeHtml(config.themeColor)}">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/base.css?v=20260713-2">
-    <link rel="stylesheet" href="/assets/site.css?v=20260714-2">
+    <link rel="stylesheet" href="/assets/site.css?v=${escapeHtml(assetVersion)}">
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <script>window.SF_SITE_LOCALE=${JSON.stringify(lang)};window.SF_SITE_TRANSLATIONS=${JSON.stringify(dynamicTranslations).replace(/</g, "\\u003c")};</script>
-    <script src="/assets/app.js?v=20260714-2" defer></script>
+    <script src="/assets/app.js?v=${escapeHtml(assetVersion)}" defer></script>
   </head>
   <body data-page="${page.slug}">
     <a class="skip-link" href="#main">${text(lang, "accessibility.skip")}</a>
