@@ -5,6 +5,7 @@ const { nav, pages } = require("./content");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
 const SITE_URL = "https://crypto.solforge.cloud";
+const ADSENSE_PUBLISHER_ID = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
 const locales = Object.fromEntries(
   LANGS.map((lang) => [lang, JSON.parse(fs.readFileSync(path.join(ROOT, "src", "locales", `${lang}.json`), "utf8"))])
@@ -128,6 +129,7 @@ function renderPage(lang, page) {
     <link rel="alternate" hreflang="ko" href="${SITE_URL}${route("ko", page.slug)}">
     <link rel="alternate" hreflang="en" href="${SITE_URL}${route("en", page.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}${route("ko", page.slug)}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>
     <meta property="og:type" content="${page.slug === "index" ? "website" : "article"}">
     <meta property="og:title" content="${escapeHtml(t(lang, `pages.${page.key}.meta.title`))}">
     <meta property="og:description" content="${escapeHtml(t(lang, `pages.${page.key}.meta.description`))}">

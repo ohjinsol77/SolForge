@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
+const ADSENSE_CLIENT = "ca-pub-1625988263075960";
+const RETIRED_AFFILIATE_PATTERN = new RegExp(["cou", "pang"].join(""), "i");
 const sites = [
   { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
   { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
@@ -35,7 +37,8 @@ for (const site of sites) {
       const html = fs.readFileSync(fullPath, "utf8");
       if (!html.includes(`<html lang="${lang}">`)) fail(`Wrong lang in ${fullPath}`);
       if (!html.includes(`https://${site.host}/${lang}/`)) fail(`Missing localized canonical in ${fullPath}`);
-      if (/adsbygoogle|googlesyndication/.test(html)) fail(`Ad script found in specialist site: ${fullPath}`);
+      if (!html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`)) fail(`AdSense publisher code missing in specialist site: ${fullPath}`);
+      if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in specialist site: ${fullPath}`);
       const isPersonalFortune = site.name === "fortune" && file === "personal-fortune.html";
       if (/<(?:dialog|input|textarea|select)\b/i.test(html) && !isPersonalFortune) fail(`Unexpected input or dialog in reading site: ${fullPath}`);
       const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
@@ -53,6 +56,22 @@ for (const site of sites) {
 
 const mainKo = fs.readFileSync(path.join(ROOT, "dist", "ko", "index.html"), "utf8");
 const mainEn = fs.readFileSync(path.join(ROOT, "dist", "en", "index.html"), "utf8");
+function nestedHtmlFiles(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return nestedHtmlFiles(fullPath);
+    return entry.name.endsWith(".html") ? [fullPath] : [];
+  });
+}
+
+for (const lang of ["ko", "en"]) {
+  for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
+    const html = fs.readFileSync(fullPath, "utf8");
+    if (!html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`)) fail(`AdSense publisher code missing in main site: ${fullPath}`);
+    if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in main site: ${fullPath}`);
+  }
+}
+
 for (const site of sites) {
   if (!mainKo.includes(`https://${site.publicHost}/ko/`)) fail(`Korean main missing working ${site.name} link`);
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);

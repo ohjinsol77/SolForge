@@ -368,7 +368,7 @@
   "pages.privacy.sections.hosting.title": "호스팅과 접속 로그",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages는 페이지와 정적 계산 파일을 전송하며 보안·장애 대응과 통계를 위한 기본 접속 로그를 처리할 수 있습니다. 출생정보는 네트워크 요청에 포함되지 않아 해당 로그로 전송되지 않습니다.",
   "pages.privacy.sections.advertising.title": "광고와 쿠키",
-  "pages.privacy.sections.advertising.body": "출시 시점의 독립 운세 사이트에는 광고 스크립트를 넣지 않습니다. 향후 추가하면 본문을 가리지 않고 필요한 동의와 고지를 반영합니다.",
+  "pages.privacy.sections.advertising.body": "이 사이트는 Google AdSense 게시자 코드를 사용합니다. Google을 포함한 광고 사업자는 광고 제공과 측정을 위해 쿠키 또는 유사 기술을 사용할 수 있으며, 광고는 운세 설명과 개인정보 입력·결과 영역을 가리지 않도록 운영합니다.",
   "pages.privacy.sections.contact.title": "문의와 변경",
   "pages.privacy.sections.contact.body": "개인정보 관련 문의는 메인 SolForge 문의 페이지에서 접수할 수 있습니다. 처리 방식 변경 시 이 페이지를 함께 갱신합니다."
 }

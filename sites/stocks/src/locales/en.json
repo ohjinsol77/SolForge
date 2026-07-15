@@ -263,9 +263,9 @@
   "pages.about.sections.bilingual.title": "Korean and English",
   "pages.about.sections.bilingual.body": "Core pages share the same structure in both languages, and the language switch preserves the current path.",
   "pages.about.sections.independence.title": "Editorial independence",
-  "pages.about.sections.independence.body": "No broker or stock currently sponsors rankings. Future advertising or affiliations will be separated and disclosed.",
+  "pages.about.sections.independence.body": "No broker or stock sponsors rankings. Google AdSense ads and any future affiliations are separated from editorial material and disclosed.",
   "pages.privacy.meta.title": "Privacy | SolForge Stocks",
-  "pages.privacy.meta.description": "How SolForge Stocks handles user input, quote APIs, hosting logs and potential advertising technologies.",
+  "pages.privacy.meta.description": "How SolForge Stocks handles user input, quote APIs, hosting logs and Google advertising technologies.",
   "pages.privacy.hero.eyebrow": "PRIVACY",
   "pages.privacy.hero.title": "Minimize collection and disclose external data connections",
   "pages.privacy.hero.body": "The independent stock site currently requires no account or portfolio input. External public APIs support the index snapshot.",
@@ -281,7 +281,7 @@
   "pages.privacy.sections.hosting.title": "Hosting and access logs",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages delivers content and may process basic logs for security, reliability and statistics under Cloudflare policy.",
   "pages.privacy.sections.advertising.title": "Advertising and cookies",
-  "pages.privacy.sections.advertising.body": "No advertising script is included at launch. Future ads will not cover main content and will include required notices and consent.",
+  "pages.privacy.sections.advertising.body": "This site uses the Google AdSense publisher code. Google and other advertising providers may use cookies or similar technologies to serve and measure ads. Ads are managed so they do not cover market dashboards or key explanations.",
   "pages.privacy.sections.contact.title": "Contact and changes",
   "pages.privacy.sections.contact.body": "Privacy questions can be submitted through the main SolForge contact page. Processing changes will also update this page."
 }

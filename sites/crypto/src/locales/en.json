@@ -180,9 +180,9 @@
   "pages.about.sections.bilingual.title": "Korean and English",
   "pages.about.sections.bilingual.body": "Every core page follows the same Korean and English structure, and the language switch preserves the current page path.",
   "pages.about.sections.independence.title": "Editorial independence",
-  "pages.about.sections.independence.body": "No exchange or token currently sponsors rankings on this site. Future advertising or affiliations will be separated from editorial material and clearly disclosed.",
+  "pages.about.sections.independence.body": "No exchange or token sponsors rankings on this site. Google AdSense ads and any future affiliations are separated from editorial material and clearly disclosed.",
   "pages.privacy.meta.title": "Privacy | SolForge Crypto",
-  "pages.privacy.meta.description": "How SolForge Crypto handles user input, external APIs, hosting logs and potential advertising technologies.",
+  "pages.privacy.meta.description": "How SolForge Crypto handles user input, external APIs, hosting logs and Google advertising technologies.",
   "pages.privacy.hero.eyebrow": "PRIVACY",
   "pages.privacy.hero.title": "Keep collection limited and make external connections clear",
   "pages.privacy.hero.body": "The site currently requires no account or personal investment information. It uses external public APIs and Cloudflare hosting to present the market snapshot.",
@@ -198,7 +198,7 @@
   "pages.privacy.sections.hosting.title": "Hosting and access logs",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages delivers the content and may process basic access logs for security, reliability and statistics under Cloudflare's policies.",
   "pages.privacy.sections.advertising.title": "Advertising and cookies",
-  "pages.privacy.sections.advertising.body": "No advertising script is included on the independent crypto site at launch. If ads are added, they will not cover the main content and required notices and consent will be implemented.",
+  "pages.privacy.sections.advertising.body": "This site uses the Google AdSense publisher code. Google and other advertising providers may use cookies or similar technologies to serve and measure ads. Ads are managed so they do not cover the main explanations or market data.",
   "pages.privacy.sections.contact.title": "Contact and policy changes",
   "pages.privacy.sections.contact.body": "Privacy questions can be submitted through the main SolForge contact page. Changes in processing will be reflected here with the applicable timing."
 }

@@ -1255,7 +1255,6 @@ const replacements = [
   ["주의", "note"],
   ["광고", "ads"],
   ["제휴", "affiliate"],
-  ["쿠팡 파트너스", "Coupang Partners"],
   ["Google AdSense", "Google AdSense"],
   ["무료", "free"],
   ["로그인", "sign-in"],

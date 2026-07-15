@@ -11,6 +11,7 @@ function buildContentSite(config) {
     renderFeature = () => "",
     clientTranslationPrefixes = ["dynamic."],
     assetVersion = "20260714-2",
+    adsensePublisherId = "",
     buildLabel = siteName
   } = config;
   const dist = path.join(root, "dist");
@@ -113,6 +114,7 @@ function buildContentSite(config) {
     <link rel="alternate" hreflang="ko" href="${siteUrl}${route("ko", page.slug)}">
     <link rel="alternate" hreflang="en" href="${siteUrl}${route("en", page.slug)}">
     <link rel="alternate" hreflang="x-default" href="${siteUrl}${route("ko", page.slug)}">
+    ${adsensePublisherId ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escapeHtml(adsensePublisherId)}" crossorigin="anonymous"></script>` : ""}
     <meta property="og:type" content="${page.slug === "index" ? "website" : "article"}">
     <meta property="og:title" content="${escapeHtml(t(lang, `pages.${page.key}.meta.title`))}">
     <meta property="og:description" content="${escapeHtml(t(lang, `pages.${page.key}.meta.description`))}">

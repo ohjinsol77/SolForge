@@ -180,7 +180,7 @@
   "pages.about.sections.bilingual.title": "한국어·영어 동시 운영",
   "pages.about.sections.bilingual.body": "모든 핵심 페이지를 같은 구조의 한국어와 영어로 제공하며 언어 전환 시 현재 읽고 있는 페이지 경로를 유지합니다.",
   "pages.about.sections.independence.title": "편집 독립성",
-  "pages.about.sections.independence.body": "현재 특정 거래소나 토큰의 후원을 받아 순위를 정하지 않습니다. 향후 광고나 제휴가 추가되면 자료 본문과 구분하고 관련 사실을 명시합니다.",
+  "pages.about.sections.independence.body": "현재 특정 거래소나 토큰의 후원을 받아 순위를 정하지 않습니다. Google AdSense 광고와 향후 제휴는 자료 본문과 구분하고 관련 사실을 명시합니다.",
   "pages.privacy.meta.title": "개인정보처리방침 | SolForge Crypto",
   "pages.privacy.meta.description": "SolForge Crypto의 입력 데이터, 외부 API, 호스팅 로그와 광고 관련 개인정보 처리 범위를 설명합니다.",
   "pages.privacy.hero.eyebrow": "PRIVACY",
@@ -198,7 +198,7 @@
   "pages.privacy.sections.hosting.title": "호스팅과 접속 로그",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages가 콘텐츠를 전송하며 보안, 장애 대응과 통계 목적의 기본 접속 로그가 Cloudflare 정책에 따라 처리될 수 있습니다.",
   "pages.privacy.sections.advertising.title": "광고와 쿠키",
-  "pages.privacy.sections.advertising.body": "현재 독립 코인 사이트에는 광고 스크립트를 넣지 않았습니다. 향후 광고를 추가할 경우 본문을 가리지 않도록 배치하고 필요한 동의·고지 내용을 반영합니다.",
+  "pages.privacy.sections.advertising.body": "이 사이트는 Google AdSense 게시자 코드를 사용합니다. Google을 포함한 광고 사업자는 광고 제공과 측정을 위해 쿠키 또는 유사 기술을 사용할 수 있으며, 광고는 주요 본문과 시장 데이터 이용을 가리지 않도록 운영합니다.",
   "pages.privacy.sections.contact.title": "문의와 방침 변경",
   "pages.privacy.sections.contact.body": "개인정보 관련 문의는 메인 SolForge 문의 페이지에서 접수할 수 있습니다. 처리 방식이 달라지는 경우 이 페이지의 설명과 적용 시점을 함께 갱신합니다."
 }

@@ -521,104 +521,8 @@ button {
   color: var(--text);
 }
 
-.ad-placeholder-live {
-  gap: 0.75rem;
-  padding: 0.85rem;
-  border-style: solid;
-}
-
-.affiliate-disclosure {
-  width: min(100%, 1000px);
-  color: var(--text);
-  font-size: 0.82rem;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.coupang-ad-slot {
-  width: min(100%, 1000px);
-  min-height: 70px;
-  overflow: hidden;
-}
-
-.coupang-ad-slot iframe {
-  max-width: 100%;
-}
-
-.content-with-ad {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 92px;
-  gap: clamp(1rem, 2vw, 1.45rem);
-  align-items: start;
-}
-
-.content-primary {
-  min-width: 0;
-}
-
-.right-ad-rail {
-  position: sticky;
-  top: 1.35rem;
-  align-self: start;
-  z-index: 3;
-  width: 92px;
-}
-
-.right-ad-card {
-  display: grid;
-  justify-items: center;
-  gap: 0.45rem;
-  width: 92px;
-  min-height: 260px;
-  padding: 0.5rem 0.38rem 0.65rem;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 14px 30px rgba(20, 43, 72, 0.09);
-}
-
-:root[data-theme="dark"] .right-ad-card {
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26);
-}
-
-.right-ad-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 34px;
-  min-height: 22px;
-  padding: 0.12rem 0.35rem;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface-soft);
-  color: var(--muted);
-  font-size: 0.64rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.coupang-vertical-slot {
-  width: 70px;
-  min-height: 1100px;
-  overflow: hidden;
-}
-
-.coupang-vertical-slot iframe {
-  display: block;
-  max-width: 70px;
-}
-
-.right-ad-disclosure {
-  max-height: 240px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.62rem;
-  font-weight: 800;
-  line-height: 1.35;
-  text-align: left;
-  writing-mode: vertical-rl;
+.future-ad-slot[hidden] {
+  display: none !important;
 }
 
 .tool-section,
@@ -2331,16 +2235,6 @@ th {
 
   .home-hero h1 {
     font-size: clamp(2.9rem, 4vw, 3.65rem);
-  }
-}
-
-@media (max-width: 1280px) {
-  .content-with-ad {
-    grid-template-columns: 1fr;
-  }
-
-  .right-ad-rail {
-    display: none;
   }
 }
 

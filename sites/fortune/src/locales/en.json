@@ -352,7 +352,7 @@
   "pages.about.sections.independence.title": "Editorial independence",
   "pages.about.sections.independence.body": "We do not sell readings, charms or divination products or claim that one service is uniquely accurate.",
   "pages.privacy.meta.title": "Privacy | SolForge Fortune",
-  "pages.privacy.meta.description": "How SolForge Fortune handles user input, browser processing, hosting logs and potential advertising.",
+  "pages.privacy.meta.description": "How SolForge Fortune handles user input, browser processing, hosting logs and Google advertising technologies.",
   "pages.privacy.hero.eyebrow": "PRIVACY",
   "pages.privacy.hero.title": "Optional birth input never leaves your browser",
   "pages.privacy.hero.body": "Daily animal material needs no input. A birth date and optional time selection for a personal reading are processed briefly in browser memory without transmission or storage.",
@@ -368,7 +368,7 @@
   "pages.privacy.sections.hosting.title": "Hosting and access logs",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages delivers the page and static calculation files and may process basic access logs for security, reliability and statistics. Birth input is absent from network requests and therefore is not sent into those logs.",
   "pages.privacy.sections.advertising.title": "Advertising and cookies",
-  "pages.privacy.sections.advertising.body": "No advertising script is included at launch. Future ads will not cover main content and will include required notice and consent.",
+  "pages.privacy.sections.advertising.body": "This site uses the Google AdSense publisher code. Google and other advertising providers may use cookies or similar technologies to serve and measure ads. Ads are managed so they do not cover fortune explanations, personal inputs or results.",
   "pages.privacy.sections.contact.title": "Contact and changes",
   "pages.privacy.sections.contact.body": "Privacy questions can be submitted through the main SolForge contact page. Processing changes will also update this page."
 }
