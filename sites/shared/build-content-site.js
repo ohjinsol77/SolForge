@@ -190,6 +190,9 @@ function buildContentSite(config) {
   fs.writeFileSync(path.join(dist, "_redirects"), "/ /ko/ 302\n");
   fs.writeFileSync(path.join(dist, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n");
   fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
+  if (adsensePublisherId) {
+    fs.writeFileSync(path.join(dist, "ads.txt"), `google.com, ${adsensePublisherId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
+  }
   const sitemapUrls = pages.flatMap((page) => langs.map((lang) => `${siteUrl}${route(lang, page.slug)}`));
   fs.writeFileSync(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);
   console.log(`Built ${buildLabel}: ${pages.length * langs.length} localized pages.`);

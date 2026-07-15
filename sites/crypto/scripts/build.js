@@ -208,6 +208,7 @@ function build() {
   fs.writeFileSync(path.join(DIST, "_redirects"), "/ /ko/ 302\n");
   fs.writeFileSync(path.join(DIST, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n");
   fs.writeFileSync(path.join(DIST, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  fs.writeFileSync(path.join(DIST, "ads.txt"), `google.com, ${ADSENSE_PUBLISHER_ID.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
 
   const sitemapUrls = pages.flatMap((page) => LANGS.map((lang) => `${SITE_URL}${route(lang, page.slug)}`));
   fs.writeFileSync(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);

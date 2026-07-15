@@ -3,6 +3,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const ADSENSE_CLIENT = "ca-pub-1625988263075960";
+const ADS_TXT_RECORD = `google.com, ${ADSENSE_CLIENT.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0`;
 const RETIRED_AFFILIATE_PATTERN = new RegExp(["cou", "pang"].join(""), "i");
 const sites = [
   { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
@@ -28,6 +29,8 @@ function expectedFile(dist, href) {
 
 for (const site of sites) {
   const dist = path.join(ROOT, "sites", site.name, "dist");
+  const adsTxt = fs.readFileSync(path.join(dist, "ads.txt"), "utf8").trim();
+  if (adsTxt !== ADS_TXT_RECORD) fail(`Invalid ads.txt record in ${site.name}`);
   for (const lang of ["ko", "en"]) {
     const dir = path.join(dist, lang);
     const files = htmlFiles(dir);
