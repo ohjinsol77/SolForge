@@ -129,8 +129,8 @@ function rewriteLinks(html, lang, currentFile) {
 
 function removeExistingSeo(html) {
   return html
-    .replace(/\n\s*<link rel="canonical"[^>]*>/i, "")
-    .replace(/\n\s*<link rel="alternate" hreflang="[^"]+"[^>]*>/gi, "");
+    .replace(/\s*<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/gi, "")
+    .replace(/\s*<link\b(?=[^>]*\brel=["']alternate["'])(?=[^>]*\bhreflang=["'][^"']+["'])[^>]*>/gi, "");
 }
 
 function injectSeo(html, lang, file) {

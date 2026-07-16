@@ -263,7 +263,7 @@
   "pages.about.sections.bilingual.title": "Korean and English",
   "pages.about.sections.bilingual.body": "Core pages share the same structure in both languages, and the language switch preserves the current path.",
   "pages.about.sections.independence.title": "Editorial independence",
-  "pages.about.sections.independence.body": "No broker or stock sponsors rankings. Google AdSense ads and any future affiliations are separated from editorial material and disclosed.",
+  "pages.about.sections.independence.body": "No broker or stock sponsors rankings. Google AdSense ads are displayed separately from editorial material.",
   "pages.privacy.meta.title": "Privacy | SolForge Stocks",
   "pages.privacy.meta.description": "How SolForge Stocks handles user input, quote APIs, hosting logs and Google advertising technologies.",
   "pages.privacy.hero.eyebrow": "PRIVACY",

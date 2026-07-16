@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
+const MAIN_URL = "https://solforge.cloud";
 const ADSENSE_CLIENT = "ca-pub-1625988263075960";
 const ADS_TXT_RECORD = `google.com, ${ADSENSE_CLIENT.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0`;
 const RETIRED_AFFILIATE_PATTERN = new RegExp(["cou", "pang"].join(""), "i");
@@ -67,9 +68,23 @@ function nestedHtmlFiles(dir) {
   });
 }
 
+const mainSitemap = fs.readFileSync(path.join(ROOT, "dist", "sitemap.xml"), "utf8");
+const mainSitemapUrls = new Set([...mainSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
+const mainHtmlFiles = ["ko", "en"].flatMap((lang) => nestedHtmlFiles(path.join(ROOT, "dist", lang)));
+if (mainSitemapUrls.size !== mainHtmlFiles.length) fail(`Main sitemap URL count: ${mainSitemapUrls.size}, expected ${mainHtmlFiles.length}`);
+
 for (const lang of ["ko", "en"]) {
   for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
     const html = fs.readFileSync(fullPath, "utf8");
+    const relative = path.relative(path.join(ROOT, "dist"), fullPath).split(path.sep).join("/");
+    const expectedCanonical = relative === `${lang}/index.html`
+      ? `${MAIN_URL}/${lang}/`
+      : `${MAIN_URL}/${relative.replace(/\.html$/, "")}`;
+    const canonicals = [...html.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"/g)].map((match) => match[1]);
+    if (canonicals.length !== 1 || canonicals[0] !== expectedCanonical) fail(`Canonical mismatch in main site: ${fullPath}`);
+    if (!mainSitemapUrls.has(expectedCanonical)) fail(`Main page missing from sitemap: ${expectedCanonical}`);
+    if (!html.includes(`<link rel="alternate" hreflang="ko"`) || !html.includes(`<link rel="alternate" hreflang="en"`) || !html.includes(`<link rel="alternate" hreflang="x-default"`)) fail(`Hreflang links missing in main site: ${fullPath}`);
+    if (!/<meta\s+name="robots"\s+content="[^"]*index/i.test(html)) fail(`Index robots meta missing in main site: ${fullPath}`);
     if (!html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`)) fail(`AdSense publisher code missing in main site: ${fullPath}`);
     if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in main site: ${fullPath}`);
   }
