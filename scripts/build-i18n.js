@@ -10,6 +10,7 @@ const {
   htmlEscape,
   localizedPath,
   localizedUrl,
+  normalizePagePath,
   parseAttributes,
   readJson,
   readText,
@@ -369,9 +370,44 @@ function writeRootRedirect() {
   </body>
 </html>
 `);
-  writeText("dist/_redirects", [
-    "/ /ko/ 301"
-  ].join("\n") + "\n");
+  const redirects = [
+    "/ /ko/ 301",
+    "/index /ko/ 301",
+    "/index.html /ko/ 301",
+    "/ko /ko/ 301",
+    "/ko/index /ko/ 301",
+    "/ko/index.html /ko/ 301",
+    "/en /en/ 301",
+    "/en/index /en/ 301",
+    "/en/index.html /en/ 301"
+  ];
+
+  for (const file of sourceFiles()) {
+    if (file === "index.html") continue;
+    const legacyPath = `/${normalizePagePath(file)}`;
+    const koPath = localizedPath("ko", file);
+
+    redirects.push(`${legacyPath} ${koPath} 301`);
+    redirects.push(`${legacyPath}/ ${koPath} 301`);
+    redirects.push(`/${file} ${koPath} 301`);
+
+    for (const lang of LANGS) {
+      const canonicalPath = localizedPath(lang, file);
+      redirects.push(`${canonicalPath}/ ${canonicalPath} 301`);
+      redirects.push(`/${lang}/${file} ${canonicalPath} 301`);
+    }
+  }
+
+  writeText("dist/_redirects", `${redirects.join("\n")}\n`);
+}
+
+function writeHeaders() {
+  writeText("dist/_headers", `https://solforge.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.solforge.pages.dev/*
+  X-Robots-Tag: noindex
+`);
 }
 
 function writeRobots() {
@@ -420,6 +456,7 @@ copyDir(path.join(ROOT, "assets"), path.join(DIST, "assets"));
 transformJsForRuntimeI18n(collectJsTranslations());
 buildPages();
 writeRootRedirect();
+writeHeaders();
 writeRobots();
 writeAdsTxt();
 writeSitemap();

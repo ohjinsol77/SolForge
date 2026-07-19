@@ -72,6 +72,12 @@ const mainSitemap = fs.readFileSync(path.join(ROOT, "dist", "sitemap.xml"), "utf
 const mainSitemapUrls = new Set([...mainSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
 const mainHtmlFiles = ["ko", "en"].flatMap((lang) => nestedHtmlFiles(path.join(ROOT, "dist", lang)));
 if (mainSitemapUrls.size !== mainHtmlFiles.length) fail(`Main sitemap URL count: ${mainSitemapUrls.size}, expected ${mainHtmlFiles.length}`);
+const mainRedirects = fs.readFileSync(path.join(ROOT, "dist", "_redirects"), "utf8");
+const mainHeaders = fs.readFileSync(path.join(ROOT, "dist", "_headers"), "utf8");
+if (!mainRedirects.includes("/tools/all.html /ko/tools/all 301")) fail("Legacy HTML redirect missing");
+if (!mainRedirects.includes("/ko/tools/all.html /ko/tools/all 301")) fail("Localized HTML redirect missing");
+if (!mainRedirects.includes("/en/tools/all/ /en/tools/all 301")) fail("Localized trailing-slash redirect missing");
+if (!mainHeaders.includes("https://solforge.pages.dev/*") || !mainHeaders.includes("https://:version.solforge.pages.dev/*")) fail("Pages preview noindex headers missing");
 
 for (const lang of ["ko", "en"]) {
   for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
@@ -85,9 +91,16 @@ for (const lang of ["ko", "en"]) {
     if (!mainSitemapUrls.has(expectedCanonical)) fail(`Main page missing from sitemap: ${expectedCanonical}`);
     if (!html.includes(`<link rel="alternate" hreflang="ko"`) || !html.includes(`<link rel="alternate" hreflang="en"`) || !html.includes(`<link rel="alternate" hreflang="x-default"`)) fail(`Hreflang links missing in main site: ${fullPath}`);
     if (!/<meta\s+name="robots"\s+content="[^"]*index/i.test(html)) fail(`Index robots meta missing in main site: ${fullPath}`);
+    if (/\shref="[^"]*\.html(?:[?#][^"]*)?"/i.test(html)) fail(`Non-canonical HTML link in main site: ${fullPath}`);
     if (!html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`)) fail(`AdSense publisher code missing in main site: ${fullPath}`);
     if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in main site: ${fullPath}`);
   }
+}
+
+for (const file of ["app.js", "tool-catalog.js"]) {
+  const source = fs.readFileSync(path.join(ROOT, "dist", "assets", "js", file), "utf8");
+  if (/(?:tools|calculators|guides)\/[a-z0-9-]+\.html(?:[?#"'`])/i.test(source)) fail(`Non-canonical runtime route in ${file}`);
+  if (file === "tool-catalog.js" && /\.html(?:[?#"])/i.test(source)) fail(`Non-canonical catalog route in ${file}`);
 }
 
 for (const site of sites) {

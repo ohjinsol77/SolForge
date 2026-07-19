@@ -279,31 +279,31 @@
     if (!nav) return;
     const nested = /\/(?:tools|calculators|guides)\//.test(window.location.pathname);
     const prefix = nested ? "../" : "";
-    const life = `${prefix}calculators/all.html`;
+    const life = `${prefix}calculators/all`;
     nav.innerHTML = [
       `<p class="nav-title">${text("navPipTools")}</p>`,
-      navLink(`${prefix}tools/pip-toolbox.html#pip-clock`, "CLK", text("navPipClock")),
-      navLink(`${prefix}tools/pip-toolbox.html#pip-timer`, "TMR", text("navPipTimer")),
-      navLink(`${prefix}tools/pip-toolbox.html#pip-pomodoro`, "POM", text("navPipPomodoro")),
-      navLink(`${prefix}tools/pip-toolbox.html#pip-color`, "HEX", text("navPipColor")),
-      navLink(`${prefix}tools/pip-toolbox.html#pip-image`, "IMG", text("navPipImage")),
-      navLink(`${prefix}tools/pip-toolbox.html#pip-memo`, "MEM", text("navPipMemo")),
+      navLink(`${prefix}tools/pip-toolbox#pip-clock`, "CLK", text("navPipClock")),
+      navLink(`${prefix}tools/pip-toolbox#pip-timer`, "TMR", text("navPipTimer")),
+      navLink(`${prefix}tools/pip-toolbox#pip-pomodoro`, "POM", text("navPipPomodoro")),
+      navLink(`${prefix}tools/pip-toolbox#pip-color`, "HEX", text("navPipColor")),
+      navLink(`${prefix}tools/pip-toolbox#pip-image`, "IMG", text("navPipImage")),
+      navLink(`${prefix}tools/pip-toolbox#pip-memo`, "MEM", text("navPipMemo")),
       `<p class="nav-title">${text("navBossTimer")}</p>`,
-      navLink(`${prefix}tools/mapleland-boss-timer.html`, "BOSS", text("navMaplelandBossTimer")),
+      navLink(`${prefix}tools/mapleland-boss-timer`, "BOSS", text("navMaplelandBossTimer")),
       `<p class="nav-title">${text("navDeveloper")}</p>`,
-      navLink(`${prefix}tools/mysql-query-prettier.html`, "Q", "Query Prettier"),
-      navLink(`${prefix}tools/mysql-explain-visual.html`, "E", "EXPLAIN Visual"),
-      navLink(`${prefix}tools/npm-package-info.html`, "npm", text("navNpm")),
-      navLink(`${prefix}tools/utility-toolbox.html`, "19", text("navUtility")),
-      navLink(`${prefix}tools/file-media-toolbox.html`, "12", text("navFileMedia")),
-      navLink(`${prefix}tools/advanced-toolbox.html`, "10", text("navAdvanced")),
+      navLink(`${prefix}tools/mysql-query-prettier`, "Q", "Query Prettier"),
+      navLink(`${prefix}tools/mysql-explain-visual`, "E", "EXPLAIN Visual"),
+      navLink(`${prefix}tools/npm-package-info`, "npm", text("navNpm")),
+      navLink(`${prefix}tools/utility-toolbox`, "19", text("navUtility")),
+      navLink(`${prefix}tools/file-media-toolbox`, "12", text("navFileMedia")),
+      navLink(`${prefix}tools/advanced-toolbox`, "10", text("navAdvanced")),
       `<p class="nav-title">${text("navGamingSection")}</p>`,
-      navLink(`${prefix}tools/gaming-lab.html`, "12", text("navGamingLab")),
-      navLink(`${prefix}tools/gaming-calculators.html`, "12", text("navGamingCalculators")),
-      navLink(`${prefix}tools/device-diagnostics.html`, "12", text("navDeviceDiagnostics")),
-      navLink(`${prefix}tools/display-diagnostics.html`, "12", text("navDisplayDiagnostics")),
-      navLink(`${prefix}tools/input-training.html`, "16", text("navInputTraining")),
-      navLink(`${prefix}tools/performance-lab.html`, "8", text("navPerformanceLab")),
+      navLink(`${prefix}tools/gaming-lab`, "12", text("navGamingLab")),
+      navLink(`${prefix}tools/gaming-calculators`, "12", text("navGamingCalculators")),
+      navLink(`${prefix}tools/device-diagnostics`, "12", text("navDeviceDiagnostics")),
+      navLink(`${prefix}tools/display-diagnostics`, "12", text("navDisplayDiagnostics")),
+      navLink(`${prefix}tools/input-training`, "16", text("navInputTraining")),
+      navLink(`${prefix}tools/performance-lab`, "8", text("navPerformanceLab")),
       `<p class="nav-title">${text("navLife")}</p>`,
       navGroup(text("navAgeGroup"), [
         [`${life}#age-calculator`, text("navAgeCalculator")],
@@ -322,13 +322,13 @@
         [`${life}#lunar-anniversary`, text("navLunarAnniversary")]
       ]),
       navGroup(text("navFinanceGroup"), [
-        [`${prefix}tools/korea-stocks.html`, text("navKoreaStocks")],
-        [`${prefix}tools/global-stocks.html`, text("navGlobalStocks")],
-        [`${prefix}tools/crypto-sentiment.html`, text("navCrypto")]
+        [`${prefix}tools/korea-stocks`, text("navKoreaStocks")],
+        [`${prefix}tools/global-stocks`, text("navGlobalStocks")],
+        [`${prefix}tools/crypto-sentiment`, text("navCrypto")]
       ]),
       navGroup(text("navCalendarGroup"), [
         [`${life}#holidays`, text("navHolidays")],
-        [`${prefix}tools/world-holidays.html`, text("navWorldHolidays")],
+        [`${prefix}tools/world-holidays`, text("navWorldHolidays")],
         [`${life}#no-hand-days`, text("navNoHandDays")],
         [`${life}#school-tools`, text("navSchool")],
         [`${life}#fun-names`, text("navFunNames")]
