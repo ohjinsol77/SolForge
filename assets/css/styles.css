@@ -3492,6 +3492,161 @@ th {
   color: var(--brand-strong);
 }
 
+.exchange-content-section .section-heading {
+  align-items: flex-start;
+}
+
+.exchange-content-section .section-heading p {
+  max-width: 860px;
+  margin-bottom: 0;
+}
+
+.exchange-method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.exchange-method-grid article {
+  min-width: 0;
+  padding: 1rem 0 0 1rem;
+  border-top: 2px solid var(--line);
+  border-left: 2px solid var(--line);
+}
+
+.exchange-method-grid h3 {
+  margin: 0.65rem 0 0.4rem;
+  font-size: 1rem;
+}
+
+.exchange-method-grid p {
+  margin: 0;
+}
+
+.exchange-step-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.exchange-method-grid code {
+  display: block;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: normal;
+}
+
+.exchange-reference-section {
+  margin-top: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.exchange-reference-section h2 {
+  margin: 0;
+}
+
+.exchange-currency-reference {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.exchange-currency-reference > div {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.8rem 0;
+  border-top: 2px solid var(--brand);
+}
+
+.exchange-currency-reference span {
+  color: var(--muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.exchange-faq-list {
+  border-top: 1px solid var(--line);
+}
+
+.exchange-faq-list details {
+  border-bottom: 1px solid var(--line);
+}
+
+.exchange-faq-list summary {
+  position: relative;
+  padding: 1rem 2.2rem 1rem 0;
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+  list-style: none;
+}
+
+.exchange-faq-list summary::-webkit-details-marker {
+  display: none;
+}
+
+.exchange-faq-list summary::after {
+  content: "+";
+  position: absolute;
+  top: 0.8rem;
+  right: 0.2rem;
+  color: var(--brand-strong);
+  font-size: 1.25rem;
+}
+
+.exchange-faq-list details[open] summary::after {
+  content: "−";
+}
+
+.exchange-faq-list p {
+  max-width: 900px;
+  margin: -0.25rem 0 1rem;
+}
+
+.exchange-related-links {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+
+.exchange-related-links strong {
+  margin-right: 0.2rem;
+}
+
+.exchange-related-links a {
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--brand-strong);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.exchange-related-links a:hover {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+}
+
 @media (max-width: 1120px) {
   .api-toolbar,
   .holiday-main-grid,
@@ -5618,6 +5773,20 @@ th {
 
   .exchange-rate-card {
     min-height: 118px;
+  }
+
+  .exchange-method-grid,
+  .exchange-currency-reference {
+    grid-template-columns: 1fr;
+  }
+
+  .exchange-related-links {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .exchange-related-links a {
+    width: 100%;
   }
 
   .crypto-toolbar {

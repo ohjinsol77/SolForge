@@ -205,13 +205,18 @@ function localizeLooseAttributes(html, lang) {
     .replace(/(\sdata-keywords=")([^"]*)(")/g, (match, before, value, after) => `${before}${attrEscape(translateLoose(lang, value))}${after}`);
 }
 
-function localizeJsonLd(html, lang) {
+function localizeJsonLd(html, lang, file) {
   return html.replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi, (match, jsonText) => {
     try {
       const data = JSON.parse(jsonText.trim());
-      data.url = `${SITE_URL}/${lang}/`;
+      data.url = localizedUrl(lang, file);
       if (data["@type"] === "WebSite" && data.name === "SolForge") {
         data.description = t(lang, "home.meta.description", data.description || "");
+      } else if (data["@type"] === "WebApplication" && file === "tools/exchange-rates.html") {
+        data.name = t(lang, "tools.exchange-rates.schema.name", data.name || "");
+        data.description = t(lang, "tools.exchange-rates.schema.description", data.description || "");
+        data.inLanguage = lang;
+        if (data.offers) data.offers.priceCurrency = lang === "ko" ? "KRW" : "USD";
       } else if (data.description && lang === "en") {
         data.description = translateLoose(lang, data.description);
       }
@@ -379,7 +384,7 @@ function renderFile(file, lang) {
   html = rewriteLinks(html, lang, file);
   html = updateLanguageToggle(html, lang, file);
   html = localizeLooseAttributes(html, lang);
-  html = localizeJsonLd(html, lang);
+  html = localizeJsonLd(html, lang, file);
   html = injectLocaleScript(html, lang);
   html = injectDynamicI18nScript(html);
   html = injectSeo(html, lang, file);
