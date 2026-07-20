@@ -96,10 +96,11 @@
       navLunarGroup: "양력 · 음력",
       navLunarConverter: "양음력 변환",
       navLunarAnniversary: "음력 기념일 변환",
-      navFinanceGroup: "주식 및 코인",
+      navFinanceGroup: "금융 · 시장",
       navKoreaStocks: "국내 주식 조회",
       navGlobalStocks: "해외 주식 조회",
       navCrypto: "코인 공포탐욕 지표",
+      navExchangeRates: "환율 계산기",
       navCalendarGroup: "달력 · 학교",
       navHolidays: "우리나라 공휴일",
       navWorldHolidays: "세계 공휴일 달력",
@@ -148,10 +149,11 @@
       navLunarGroup: "Solar & Lunar",
       navLunarConverter: "Solar/Lunar Converter",
       navLunarAnniversary: "Lunar Anniversary Converter",
-      navFinanceGroup: "Stocks & Crypto",
+      navFinanceGroup: "Finance & Markets",
       navKoreaStocks: "Korean Stocks",
       navGlobalStocks: "Global Stocks",
       navCrypto: "Crypto Fear & Greed",
+      navExchangeRates: "Currency Converter",
       navCalendarGroup: "Calendar & School",
       navHolidays: "Korean Holidays",
       navWorldHolidays: "World Holiday Calendar",
@@ -322,6 +324,7 @@
         [`${life}#lunar-anniversary`, text("navLunarAnniversary")]
       ]),
       navGroup(text("navFinanceGroup"), [
+        [`${prefix}tools/exchange-rates`, text("navExchangeRates")],
         [`${prefix}tools/korea-stocks`, text("navKoreaStocks")],
         [`${prefix}tools/global-stocks`, text("navGlobalStocks")],
         [`${prefix}tools/crypto-sentiment`, text("navCrypto")]

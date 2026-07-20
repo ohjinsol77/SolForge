@@ -3337,6 +3337,161 @@ th {
   font-size: 0.9rem;
 }
 
+.exchange-converter {
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.exchange-fields {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.25fr) minmax(190px, 1fr) 44px minmax(190px, 1fr);
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.exchange-swap-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 1px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--brand-strong);
+  font-size: 1.2rem;
+  font-weight: 950;
+}
+
+.exchange-swap-button:hover {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+}
+
+.exchange-primary-result {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border-left: 4px solid var(--brand);
+  background: var(--surface-soft);
+}
+
+.exchange-primary-result > span,
+.exchange-primary-result > small {
+  color: var(--muted);
+}
+
+.exchange-primary-result > strong {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.15;
+}
+
+.exchange-actions {
+  margin-top: 1rem;
+}
+
+.exchange-list-section {
+  margin-top: 1.2rem;
+}
+
+.exchange-auto-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.exchange-auto-refresh > span:first-child {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.exchange-rate-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.exchange-rate-card {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  min-height: 142px;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.exchange-rate-card:hover,
+.exchange-rate-card.active {
+  border-color: color-mix(in srgb, var(--brand) 65%, var(--line));
+  box-shadow: 0 10px 24px rgba(20, 43, 72, 0.1);
+}
+
+.exchange-rate-card.active {
+  background: var(--brand-soft);
+}
+
+.exchange-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.exchange-flag {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.exchange-rate-card b {
+  overflow-wrap: anywhere;
+  font-size: 1.08rem;
+}
+
+.exchange-rate-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.exchange-info-grid {
+  margin-top: 1.2rem;
+}
+
+.exchange-info-grid .result-card {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.exchange-info-grid .result-card > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.exchange-info-grid .result-card > strong {
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+}
+
+.exchange-info-grid .result-card a {
+  color: var(--brand-strong);
+}
+
 @media (max-width: 1120px) {
   .api-toolbar,
   .holiday-main-grid,
@@ -5448,6 +5603,23 @@ th {
 }
 
 @media (max-width: 680px) {
+  .exchange-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .exchange-swap-button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .exchange-rate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exchange-rate-card {
+    min-height: 118px;
+  }
+
   .crypto-toolbar {
     grid-template-columns: 1fr;
   }

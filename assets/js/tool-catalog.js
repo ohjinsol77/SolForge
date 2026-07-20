@@ -4,6 +4,9 @@
   const getUrlTool = document.documentElement.lang === "en"
     ? ["developer", "GET", "GET URL Analyzer", "Separates query keys and values and classifies duplicates, arrays, flags, and empty values.", "get url query parameter key value duplicate array parser", "utility-toolbox#url-parser"]
     : ["developer", "GET", "GET URL 분석기", "쿼리 키·값을 분리하고 중복, 배열, 플래그와 빈 값을 분류합니다.", "get url query parameter key value 파라미터 키 값 중복 배열 파서", "utility-toolbox#url-parser"];
+  const exchangeRateTool = document.documentElement.lang === "en"
+    ? ["finance", "FX", "Currency Converter", "Convert an amount across major currencies using the latest available reference rates.", "currency converter exchange rate fx won dollar yen euro", "exchange-rates"]
+    : ["finance", "FX", "환율 계산기", "최근 기준환율로 금액을 주요 국가 통화로 한 번에 환산합니다.", "환율 계산기 환전 원 달러 엔 유로 위안 외화", "exchange-rates"];
 
   const tools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox#pip-clock"],
@@ -30,6 +33,7 @@
     ["lunar", "年", "음력 기념일 변환", "같은 음력 기념일의 연도별 양력 날짜를 봅니다.", "음력 기념일 제사 생일", "../calculators/all#lunar-anniversary"],
     ["calendar", "휴", "우리나라 공휴일", "연도별 고정·음력·대체 공휴일을 확인합니다.", "대한민국 공휴일 대체공휴일", "../calculators/all#holidays"],
     ["calendar", "WORLD", "세계 공휴일 달력", "Nager.Date 공개 API로 국가별 공휴일 달력과 영업일을 조회합니다.", "세계 공휴일 국가 holiday calendar nager 영업일", "world-holidays"],
+    exchangeRateTool,
     ["finance", "KR", "국내 주식 조회", "종목코드로 국내 주식 현재가, 등락률, 거래량과 최근 가격 흐름을 확인합니다.", "국내 주식 코스피 코스닥 삼성전자 하이닉스 stock korea quote chart", "korea-stocks"],
     ["finance", "US", "해외 주식 조회", "티커로 해외 주식 현재가, 등락률, 거래량과 최근 가격 흐름을 확인합니다.", "해외 주식 미국주식 나스닥 애플 엔비디아 stock global quote chart", "global-stocks"],
     ["finance", "COIN", "코인 공포탐욕 지표", "공포탐욕 지수와 주요 암호화폐 거래량 상위 20개의 KRW·USD 시세를 조회합니다.", "코인 암호화폐 비트코인 공포탐욕 fear greed coingecko price volume", "crypto-sentiment"],
@@ -161,7 +165,7 @@
     date: "날짜",
     lunar: "양력·음력",
     calendar: "달력·학교",
-    finance: "주식·코인",
+    finance: document.documentElement.lang === "en" ? "Finance & Markets" : "금융·시장",
     life: "생활",
     media: "이미지·미디어",
     game: "게임·장치"

@@ -21,6 +21,7 @@ const SOURCE_HTML_FILES = [
   "tools/crypto-sentiment.html",
   "tools/device-diagnostics.html",
   "tools/display-diagnostics.html",
+  "tools/exchange-rates.html",
   "tools/file-media-toolbox.html",
   "tools/gaming-calculators.html",
   "tools/gaming-lab.html",
