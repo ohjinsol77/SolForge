@@ -41,6 +41,46 @@ function copyDir(from, to) {
   }
 }
 
+function writeFavicon() {
+  const size = 32;
+  const xorBytes = size * size * 4;
+  const maskBytes = size * Math.ceil(size / 32) * 4;
+  const bitmapBytes = 40 + xorBytes + maskBytes;
+  const directory = Buffer.alloc(22);
+  directory.writeUInt16LE(1, 2);
+  directory.writeUInt16LE(1, 4);
+  directory[6] = size;
+  directory[7] = size;
+  directory.writeUInt16LE(1, 10);
+  directory.writeUInt16LE(32, 12);
+  directory.writeUInt32LE(bitmapBytes, 14);
+  directory.writeUInt32LE(directory.length, 18);
+
+  const bitmap = Buffer.alloc(bitmapBytes);
+  bitmap.writeUInt32LE(40, 0);
+  bitmap.writeInt32LE(size, 4);
+  bitmap.writeInt32LE(size * 2, 8);
+  bitmap.writeUInt16LE(1, 12);
+  bitmap.writeUInt16LE(32, 14);
+  bitmap.writeUInt32LE(xorBytes, 20);
+
+  for (let row = 0; row < size; row += 1) {
+    const y = size - 1 - row;
+    for (let x = 0; x < size; x += 1) {
+      const isMark = (x >= 8 && x <= 12 && y >= 6 && y <= 25)
+        || (x >= 8 && x <= 24 && y >= 6 && y <= 10)
+        || (x >= 8 && x <= 21 && y >= 14 && y <= 18);
+      const offset = 40 + (row * size + x) * 4;
+      bitmap[offset] = 255;
+      bitmap[offset + 1] = isMark ? 255 : 119;
+      bitmap[offset + 2] = isMark ? 255 : 22;
+      bitmap[offset + 3] = 255;
+    }
+  }
+
+  fs.writeFileSync(path.join(DIST, "favicon.ico"), Buffer.concat([directory, bitmap]));
+}
+
 function walkFiles(dir, predicate, files = []) {
   if (!fs.existsSync(dir)) return files;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -131,17 +171,19 @@ function rewriteLinks(html, lang, currentFile) {
 function removeExistingSeo(html) {
   return html
     .replace(/\s*<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/gi, "")
-    .replace(/\s*<link\b(?=[^>]*\brel=["']alternate["'])(?=[^>]*\bhreflang=["'][^"']+["'])[^>]*>/gi, "");
+    .replace(/\s*<link\b(?=[^>]*\brel=["']alternate["'])(?=[^>]*\bhreflang=["'][^"']+["'])[^>]*>/gi, "")
+    .replace(/\s*<link\b(?=[^>]*\brel=["'](?:shortcut\s+)?icon["'])[^>]*>/gi, "");
 }
 
 function injectSeo(html, lang, file) {
+  const favicon = '<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">';
   const canonical = `<link rel="canonical" href="${localizedUrl(lang, file)}">`;
   const alternates = [
     `<link rel="alternate" hreflang="ko" href="${localizedUrl("ko", file)}">`,
     `<link rel="alternate" hreflang="en" href="${localizedUrl("en", file)}">`,
     `<link rel="alternate" hreflang="x-default" href="${localizedUrl(DEFAULT_LANG, file)}">`
   ].join("\n    ");
-  return html.replace(/<\/head>/i, `    ${canonical}\n    ${alternates}\n  </head>`);
+  return html.replace(/<\/head>/i, `    ${favicon}\n    ${canonical}\n    ${alternates}\n  </head>`);
 }
 
 function updateLanguageToggle(html, lang, file) {
@@ -362,6 +404,7 @@ function writeRootRedirect() {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="refresh" content="0; url=/ko/">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     <link rel="canonical" href="${SITE_URL}/ko/">
     <title>SolForge</title>
   </head>
@@ -379,7 +422,11 @@ function writeRootRedirect() {
     "/ko/index.html /ko/ 301",
     "/en /en/ 301",
     "/en/index /en/ 301",
-    "/en/index.html /en/ 301"
+    "/en/index.html /en/ 301",
+    "/public /ko/ 301",
+    "/public/ /ko/ 301",
+    "/public/index /ko/ 301",
+    "/public/index.html /ko/ 301"
   ];
 
   for (const file of sourceFiles()) {
@@ -390,6 +437,9 @@ function writeRootRedirect() {
     redirects.push(`${legacyPath} ${koPath} 301`);
     redirects.push(`${legacyPath}/ ${koPath} 301`);
     redirects.push(`/${file} ${koPath} 301`);
+    redirects.push(`/public${legacyPath} ${koPath} 301`);
+    redirects.push(`/public${legacyPath}/ ${koPath} 301`);
+    redirects.push(`/public/${file} ${koPath} 301`);
 
     for (const lang of LANGS) {
       const canonicalPath = localizedPath(lang, file);
@@ -453,6 +503,7 @@ ${urls.join("\n")}
 
 cleanDist();
 copyDir(path.join(ROOT, "assets"), path.join(DIST, "assets"));
+writeFavicon();
 transformJsForRuntimeI18n(collectJsTranslations());
 buildPages();
 writeRootRedirect();

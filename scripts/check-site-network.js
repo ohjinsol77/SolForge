@@ -75,9 +75,12 @@ if (mainSitemapUrls.size !== mainHtmlFiles.length) fail(`Main sitemap URL count:
 const mainRedirects = fs.readFileSync(path.join(ROOT, "dist", "_redirects"), "utf8");
 const mainHeaders = fs.readFileSync(path.join(ROOT, "dist", "_headers"), "utf8");
 if (!mainRedirects.includes("/tools/all.html /ko/tools/all 301")) fail("Legacy HTML redirect missing");
+if (!mainRedirects.includes("/public/tools/all.html /ko/tools/all 301")) fail("Historical public HTML redirect missing");
 if (!mainRedirects.includes("/ko/tools/all.html /ko/tools/all 301")) fail("Localized HTML redirect missing");
 if (!mainRedirects.includes("/en/tools/all/ /en/tools/all 301")) fail("Localized trailing-slash redirect missing");
 if (!mainHeaders.includes("https://solforge.pages.dev/*") || !mainHeaders.includes("https://:version.solforge.pages.dev/*")) fail("Pages preview noindex headers missing");
+if (!fs.existsSync(path.join(ROOT, "dist", "assets", "img", "favicon.svg"))) fail("Main favicon asset missing");
+if (!fs.existsSync(path.join(ROOT, "dist", "favicon.ico"))) fail("Legacy favicon asset missing");
 
 for (const lang of ["ko", "en"]) {
   for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
@@ -90,6 +93,7 @@ for (const lang of ["ko", "en"]) {
     if (canonicals.length !== 1 || canonicals[0] !== expectedCanonical) fail(`Canonical mismatch in main site: ${fullPath}`);
     if (!mainSitemapUrls.has(expectedCanonical)) fail(`Main page missing from sitemap: ${expectedCanonical}`);
     if (!html.includes(`<link rel="alternate" hreflang="ko"`) || !html.includes(`<link rel="alternate" hreflang="en"`) || !html.includes(`<link rel="alternate" hreflang="x-default"`)) fail(`Hreflang links missing in main site: ${fullPath}`);
+    if (!html.includes('<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">')) fail(`Favicon link missing in main site: ${fullPath}`);
     if (!/<meta\s+name="robots"\s+content="[^"]*index/i.test(html)) fail(`Index robots meta missing in main site: ${fullPath}`);
     if (/\shref="[^"]*\.html(?:[?#][^"]*)?"/i.test(html)) fail(`Non-canonical HTML link in main site: ${fullPath}`);
     if (!html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`)) fail(`AdSense publisher code missing in main site: ${fullPath}`);
