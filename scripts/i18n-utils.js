@@ -12,6 +12,7 @@ const SOURCE_HTML_FILES = [
   "terms.html",
   "privacy.html",
   "contact.html",
+  "tempdb.html",
   "guides/hardware-checks.html",
   "guides/local-file-processing.html",
   "guides/korean-life-calculations.html",

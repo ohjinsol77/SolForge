@@ -7,6 +7,9 @@
   const exchangeRateTool = document.documentElement.lang === "en"
     ? ["finance", "FX", "Currency Converter", "Convert an amount across major currencies using the latest available reference rates.", "currency converter exchange rate fx won dollar yen euro", "exchange-rates"]
     : ["finance", "FX", "환율 계산기", "최근 기준환율로 금액을 주요 국가 통화로 한 번에 환산합니다.", "환율 계산기 환전 원 달러 엔 유로 위안 외화", "exchange-rates"];
+  const tempDbTool = document.documentElement.lang === "en"
+    ? ["developer", "DB", "TempDB Fake Data", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb fake data database schema mysql postgresql mongodb oracle mssql redis sql json csv", "../tempdb"]
+    : ["developer", "DB", "TempDB 가짜 데이터", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb 가짜 데이터 임시 테스트 데이터 스키마 테이블 생성문 mysql postgresql mongodb oracle mssql redis sql json csv", "../tempdb"];
 
   const tools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox#pip-clock"],
@@ -18,6 +21,7 @@
     ["boss", "BOSS", "메이플랜드 보스타이머", "메이플랜드 보스 패턴과 스킬 쿨타임을 PIP 창으로 관리합니다.", "메이플랜드 보스 타이머 pip 혼테일 자쿰 피아누스 유혹 공무", "mapleland-boss-timer"],
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual"],
+    tempDbTool,
     ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info"],
     ["age", "만", "나이·만나이 계산기", "만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.", "나이 만나이 세는나이 생년월일", "../calculators/all#age-calculator"],
     ["age", "표", "연도별 나이표", "출생연도별 나이와 전통적인 나이 용어를 확인합니다.", "나이표 환갑 칠순 출생연도", "../calculators/all#age-table"],

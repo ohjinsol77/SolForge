@@ -1,0 +1,822 @@
+(function () {
+  "use strict";
+
+  const page = document.querySelector(".tempdb-page");
+  if (!page) return;
+
+  const lang = document.documentElement.lang === "en" ? "en" : "ko";
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+
+  const copy = {
+    ko: {
+      help: {
+        mysql: "MySQL CREATE TABLE 문을 붙여넣어 주세요.",
+        postgres: "PostgreSQL CREATE TABLE 문을 붙여넣어 주세요.",
+        mongodb: "MongoDB db.createCollection 문과 validator를 붙여넣어 주세요.",
+        oracle: "Oracle CREATE TABLE 문을 붙여넣어 주세요.",
+        mssql: "MSSQL CREATE TABLE 문을 붙여넣어 주세요.",
+        redis: "Redis HASH 또는 JSON 키 스키마를 붙여넣어 주세요."
+      },
+      ready: "생성문을 입력하거나 샘플을 불러온 뒤 구조 분석을 시작하세요.",
+      empty: "먼저 생성문을 입력해 주세요.",
+      mismatch: "선택한 {db} 형식과 맞지 않는 패턴이 발견되었습니다. DB 종류와 생성문을 확인해 주세요.",
+      noColumns: "선택한 형식에서 컬럼 구조를 찾지 못했습니다. 샘플 형식에 맞춰 확인해 주세요.",
+      valid: "{db} 형식에서 {count}개 컬럼을 인식했습니다. 실제 구문 오류 검사는 DB에서 진행해 주세요.",
+      analyzed: "구조 분석이 끝났습니다. 컬럼별 생성 규칙을 확인해 주세요.",
+      generated: "{count}개의 임시 데이터를 생성했습니다.",
+      copied: "생성 결과를 클립보드에 복사했습니다.",
+      customPlaceholder: "예: TEST-{n}",
+      customHint: "{n}은 행 번호로 바뀝니다.",
+      noIncludedColumns: "데이터를 생성할 컬럼을 하나 이상 선택해 주세요.",
+      rules: {
+        sequence: "순차 증가 숫자",
+        uuid: "UUID",
+        email: "이메일 주소",
+        name: "사람 이름",
+        phone: "전화번호",
+        username: "사용자 이름",
+        enum: "허용값 중 선택",
+        boolean: "참 / 거짓",
+        date: "최근 날짜",
+        number: "범위 내 숫자",
+        text: "문맥형 임시 텍스트",
+        custom: "사용자 지정 텍스트",
+        fixed: "고정값",
+        null: "NULL 포함"
+      }
+    },
+    en: {
+      help: {
+        mysql: "Paste a MySQL CREATE TABLE statement.",
+        postgres: "Paste a PostgreSQL CREATE TABLE statement.",
+        mongodb: "Paste a MongoDB db.createCollection statement with a validator.",
+        oracle: "Paste an Oracle CREATE TABLE statement.",
+        mssql: "Paste an MSSQL CREATE TABLE statement.",
+        redis: "Paste a Redis HASH or JSON key schema."
+      },
+      ready: "Enter a schema or load a sample, then analyze its structure.",
+      empty: "Enter a schema first.",
+      mismatch: "Patterns incompatible with the selected {db} format were found. Check the database type and schema.",
+      noColumns: "No column structure was found in the selected format. Check the sample format.",
+      valid: "Detected {count} columns from the {db} pattern. Check actual syntax errors in your database.",
+      analyzed: "Analysis complete. Review the generation rule for each column.",
+      generated: "Generated {count} temporary records.",
+      copied: "Copied the generated output to the clipboard.",
+      customPlaceholder: "e.g. TEST-{n}",
+      customHint: "{n} is replaced with the row number.",
+      noIncludedColumns: "Select at least one column to generate data.",
+      rules: {
+        sequence: "Sequential number",
+        uuid: "UUID",
+        email: "Email address",
+        name: "Person name",
+        phone: "Phone number",
+        username: "Username",
+        enum: "Pick from allowed values",
+        boolean: "True / false",
+        date: "Recent date",
+        number: "Number in range",
+        text: "Contextual placeholder text",
+        custom: "Custom text",
+        fixed: "Fixed value",
+        null: "Include NULL"
+      }
+    }
+  }[lang];
+
+  const databases = {
+    mysql: { label: "MySQL", file: "schema.sql" },
+    postgres: { label: "PostgreSQL", file: "schema.sql" },
+    mongodb: { label: "MongoDB", file: "collection.js" },
+    oracle: { label: "Oracle", file: "schema.sql" },
+    mssql: { label: "MSSQL", file: "schema.sql" },
+    redis: { label: "Redis", file: "schema.redis" }
+  };
+
+  const samples = {
+    mysql: `CREATE TABLE users (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  display_name VARCHAR(100) NOT NULL,
+  status ENUM('active', 'pending', 'blocked') DEFAULT 'active',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+    postgres: `CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  display_name VARCHAR(100) NOT NULL,
+  status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'pending')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);`,
+    mongodb: `db.createCollection("users", {
+  validator: { $jsonSchema: {
+    bsonType: "object",
+    required: ["username", "email"],
+    properties: {
+      _id: { bsonType: "objectId" },
+      username: { bsonType: "string", maxLength: 50 },
+      email: { bsonType: "string" },
+      display_name: { bsonType: "string" },
+      status: { enum: ["active", "pending", "blocked"] },
+      created_at: { bsonType: "date" }
+    }
+  }}
+});`,
+    oracle: `CREATE TABLE users (
+  id NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  username VARCHAR2(50) NOT NULL UNIQUE,
+  email VARCHAR2(255) NOT NULL UNIQUE,
+  display_name VARCHAR2(100) NOT NULL,
+  status VARCHAR2(20) DEFAULT 'active' CHECK (status IN ('active', 'pending')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);`,
+    mssql: `CREATE TABLE dbo.users (
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  username NVARCHAR(50) NOT NULL UNIQUE,
+  email NVARCHAR(255) NOT NULL UNIQUE,
+  display_name NVARCHAR(100) NOT NULL,
+  status NVARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'pending')),
+  created_at DATETIME2 NOT NULL DEFAULT SYSDATETIME()
+);`,
+    redis: `HASH users:{id} {
+  id: integer unique,
+  username: string required unique,
+  email: string required unique,
+  display_name: string required,
+  status: enum(active|pending|blocked),
+  created_at: datetime required
+}`
+  };
+
+  const examples = {
+    sequence: "1, 2, 3…",
+    uuid: "f7c1b9a2-…",
+    email: "minji.kim@example.com",
+    name: lang === "ko" ? "김민지" : "Alex Morgan",
+    phone: lang === "ko" ? "010-2841-7395" : "+1 202-555-0148",
+    username: "minji_kim",
+    enum: "active",
+    boolean: "true",
+    date: "2026-07-23 14:32:08",
+    number: "42",
+    text: lang === "ko" ? "샘플 텍스트" : "Sample text",
+    custom: lang === "ko" ? "직접 입력" : "Enter a value",
+    fixed: "—",
+    null: "NULL"
+  };
+
+  let selectedDb = "mysql";
+  let toastTimer = null;
+  let currentSchema = null;
+  let generatedText = "";
+  let generatedExtension = "txt";
+
+  const schemaInput = $("#schemaInput");
+  const lineNumbers = $("#lineNumbers");
+  const lineCount = $("#lineCount");
+  const status = $("#schemaStatus");
+  const columnsCard = $("#columnsCard");
+  const columnRows = $("#columnRows");
+
+  function format(template, values) {
+    return Object.entries(values).reduce((text, [key, value]) => text.replace(`{${key}}`, String(value)), template);
+  }
+
+  function updateLines() {
+    const count = Math.max(1, schemaInput.value.split("\n").length);
+    lineNumbers.textContent = Array.from({ length: count }, (_, index) => index + 1).join("\n");
+    lineCount.textContent = String(count);
+  }
+
+  function setStatus(type, message) {
+    status.className = `schema-status${type ? ` ${type}` : ""}`;
+    $(".status-icon", status).textContent = type === "success" ? "✓" : type === "error" ? "!" : "i";
+    const messageNode = status.lastElementChild;
+    messageNode.textContent = message;
+  }
+
+  function updateOutputFormats() {
+    const select = $("#outputFormat");
+    const nativeLabel = selectedDb === "mongodb" ? "Mongo insertMany" : selectedDb === "redis" ? "Redis CLI" : "INSERT SQL";
+    const currentValue = select.value;
+    select.replaceChildren();
+    [["insert", nativeLabel], ["json", "JSON"], ["csv", "CSV"]].forEach(([value, label]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      select.append(option);
+    });
+    select.value = currentValue || "insert";
+    updateEstimate();
+  }
+
+  function selectDatabase(db) {
+    selectedDb = db;
+    $$(".database-option").forEach((button) => {
+      const active = button.dataset.db === db;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-checked", String(active));
+    });
+    $("#editorDialect").textContent = databases[db].label;
+    $("#schemaHelp").textContent = copy.help[db];
+    $(".editor-toolbar > span:nth-of-type(2)").textContent = databases[db].file;
+    updateOutputFormats();
+    schemaInput.value = samples[db];
+    $("#resultCard").hidden = true;
+    updateLines();
+    setStatus("", copy.ready);
+    analyzeSchema(false);
+  }
+
+  function splitDefinitions(body) {
+    const parts = [];
+    let current = "";
+    let depth = 0;
+    let quote = "";
+    for (let index = 0; index < body.length; index += 1) {
+      const character = body[index];
+      if (quote) {
+        current += character;
+        if (character === quote && body[index - 1] !== "\\") quote = "";
+        continue;
+      }
+      if (character === "'" || character === '"' || character === "`") {
+        quote = character;
+        current += character;
+      } else if (character === "(") {
+        depth += 1;
+        current += character;
+      } else if (character === ")") {
+        depth = Math.max(0, depth - 1);
+        current += character;
+      } else if (character === "," && depth === 0) {
+        if (current.trim()) parts.push(current.trim());
+        current = "";
+      } else {
+        current += character;
+      }
+    }
+    if (current.trim()) parts.push(current.trim());
+    return parts;
+  }
+
+  function matchingParen(source, start) {
+    let depth = 0;
+    let quote = "";
+    for (let index = start; index < source.length; index += 1) {
+      const character = source[index];
+      if (quote) {
+        if (character === quote && source[index - 1] !== "\\") quote = "";
+        continue;
+      }
+      if (character === "'" || character === '"' || character === "`") quote = character;
+      else if (character === "(") depth += 1;
+      else if (character === ")") {
+        depth -= 1;
+        if (depth === 0) return index;
+      }
+    }
+    return -1;
+  }
+
+  function validateDialect(source) {
+    const rules = {
+      mysql: /^\s*CREATE\s+TABLE\b/i.test(source) && !/\b(?:BIGSERIAL|SERIAL|VARCHAR2|NVARCHAR)\b|\bIDENTITY\s*\(/i.test(source),
+      postgres: /^\s*CREATE\s+TABLE\b/i.test(source) && !/\bAUTO_INCREMENT\b|\bENGINE\s*=|\bVARCHAR2\b|\bNVARCHAR\b/i.test(source),
+      mongodb: /\bdb\.createCollection\s*\(/i.test(source) && /\b(?:validator|\$jsonSchema|properties)\b/i.test(source),
+      oracle: /^\s*CREATE\s+TABLE\b/i.test(source) && !/\bAUTO_INCREMENT\b|\bENGINE\s*=|\bBIGSERIAL\b|\bNVARCHAR\b/i.test(source),
+      mssql: /^\s*CREATE\s+TABLE\b/i.test(source) && !/`|\bAUTO_INCREMENT\b|\bENGINE\s*=|\bBIGSERIAL\b|\bVARCHAR2\b/i.test(source),
+      redis: /^\s*(?:HASH|JSON)\s+[\w:{}.-]+\s*\{/i.test(source)
+    };
+    return rules[selectedDb];
+  }
+
+  function parseRelational(source) {
+    const tableMatch = source.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([^\s(]+)/i);
+    const open = source.indexOf("(", tableMatch ? tableMatch.index : 0);
+    const close = open >= 0 ? matchingParen(source, open) : -1;
+    if (!tableMatch || open < 0 || close < 0) return { table: "table", columns: [] };
+    const table = tableMatch[1].split(".").map((part) => part.replace(/^[`"[]|[`"\]]$/g, "")).join(".");
+    const columns = splitDefinitions(source.slice(open + 1, close)).flatMap((definition) => {
+      if (/^(?:CONSTRAINT|PRIMARY\s+KEY|FOREIGN\s+KEY|UNIQUE\s*\(|CHECK\s*\()/i.test(definition)) return [];
+      const match = definition.match(/^\s*(?:`([^`]+)`|"([^"]+)"|\[([^\]]+)\]|([\w$#]+))\s+([A-Z][A-Z0-9_]*(?:\s+WITH(?:OUT)?\s+TIME\s+ZONE)?(?:\s*\([^)]*\))?)([\s\S]*)$/i);
+      if (!match) return [];
+      const name = match[1] || match[2] || match[3] || match[4];
+      const type = match[5].trim().replace(/\s+/g, " ");
+      const constraints = match[6].trim();
+      return [{ name, type, constraints }];
+    });
+    return { table, columns };
+  }
+
+  function parseMongo(source) {
+    const tableMatch = source.match(/createCollection\s*\(\s*["']([^"']+)/i);
+    const requiredMatch = source.match(/["']?required["']?\s*:\s*\[([^\]]*)\]/i);
+    const required = new Set((requiredMatch?.[1].match(/["']([^"']+)["']/g) || []).map((value) => value.replace(/["']/g, "")));
+    const marker = source.search(/["']?properties["']?\s*:/i);
+    if (marker < 0) return { table: tableMatch?.[1] || "collection", columns: [] };
+    const open = source.indexOf("{", marker);
+    const close = open >= 0 ? findClosingBrace(source, open) : -1;
+    const body = close > open ? source.slice(open + 1, close) : "";
+    const columns = [];
+    const propertyPattern = /(?:^|,)\s*(?:["']([^"']+)["']|([\w$]+))\s*:\s*\{([^{}]*)\}/g;
+    let match;
+    while ((match = propertyPattern.exec(body))) {
+      const name = match[1] || match[2];
+      const definition = match[3];
+      const typeMatch = definition.match(/["']?bsonType["']?\s*:\s*["']([^"']+)/i);
+      const enumMatch = definition.match(/["']?enum["']?\s*:\s*\[([^\]]*)\]/i);
+      const enumValues = enumMatch ? (enumMatch[1].match(/["']([^"']+)["']/g) || []).map((value) => value.replace(/["']/g, "")) : [];
+      const type = enumValues.length ? `enum(${enumValues.join("|")})` : (typeMatch?.[1] || "mixed");
+      columns.push({ name, type, constraints: required.has(name) ? "required" : "" });
+    }
+    return { table: tableMatch?.[1] || "collection", columns };
+  }
+
+  function findClosingBrace(source, start) {
+    let depth = 0;
+    let quote = "";
+    for (let index = start; index < source.length; index += 1) {
+      const character = source[index];
+      if (quote) {
+        if (character === quote && source[index - 1] !== "\\") quote = "";
+        continue;
+      }
+      if (character === "'" || character === '"') quote = character;
+      else if (character === "{") depth += 1;
+      else if (character === "}") {
+        depth -= 1;
+        if (depth === 0) return index;
+      }
+    }
+    return -1;
+  }
+
+  function parseRedis(source) {
+    const match = source.match(/^\s*(?:HASH|JSON)\s+([\w:{}.-]+)\s*\{([\s\S]*)\}\s*$/i);
+    if (!match) return { table: "key", kind: "HASH", columns: [] };
+    const columns = match[2].split(/[,\n]/).flatMap((line) => {
+      const field = line.trim().match(/^([\w.-]+)\s*:\s*([^\s,]+)(.*)$/);
+      return field ? [{ name: field[1], type: field[2], constraints: field[3].trim() }] : [];
+    });
+    return { table: match[1], kind: source.trimStart().slice(0, 4).toUpperCase() === "JSON" ? "JSON" : "HASH", columns };
+  }
+
+  function recommendRule(column) {
+    const name = column.name.toLowerCase();
+    const type = column.type.toLowerCase();
+    const constraints = column.constraints.toLowerCase();
+    if (name === "id" && /int|number|serial/.test(type)) return "sequence";
+    if (/uuid|objectid/.test(type) || /uuid|_id$/.test(name)) return "uuid";
+    if (/e-?mail/.test(name)) return "email";
+    if (/user_?name|login|handle/.test(name)) return "username";
+    if (/display_?name|full_?name|first_?name|last_?name|nickname/.test(name)) return "name";
+    if (/phone|mobile|tel/.test(name)) return "phone";
+    if (/enum/.test(type) || /\bcheck\b|\benum\b/.test(constraints) || name === "status") return "enum";
+    if (/bool|bit/.test(type)) return "boolean";
+    if (/date|time/.test(type) || /_at$|_date$/.test(name)) return "date";
+    if (/int|number|numeric|decimal|float|double|real/.test(type)) return "number";
+    return "text";
+  }
+
+  function renderColumns(result) {
+    columnRows.replaceChildren();
+    const rules = Object.entries(copy.rules);
+    result.columns.forEach((column, index) => {
+      const rule = recommendRule(column);
+      const row = document.createElement("tr");
+
+      const includeCell = document.createElement("td");
+      const include = document.createElement("input");
+      include.type = "checkbox";
+      include.checked = true;
+      include.setAttribute("aria-label", `${column.name} ${lang === "ko" ? "포함" : "include"}`);
+      includeCell.append(include);
+
+      const nameCell = document.createElement("td");
+      const nameWrap = document.createElement("span");
+      nameWrap.className = "column-name";
+      const nameText = document.createElement("b");
+      nameText.textContent = column.name;
+      const order = document.createElement("small");
+      order.textContent = `#${index + 1}`;
+      nameWrap.append(nameText, order);
+      nameCell.append(nameWrap);
+
+      const typeCell = document.createElement("td");
+      const typeChip = document.createElement("span");
+      typeChip.className = "type-chip";
+      typeChip.textContent = column.type;
+      typeCell.append(typeChip);
+      if (column.constraints) {
+        const constraint = document.createElement("span");
+        constraint.className = "constraint-text";
+        constraint.textContent = column.constraints.replace(/\s+/g, " ").slice(0, 36);
+        typeCell.append(constraint);
+      }
+
+      const ruleCell = document.createElement("td");
+      const select = document.createElement("select");
+      select.className = "column-rule-select";
+      select.setAttribute("aria-label", `${column.name} ${lang === "ko" ? "생성 규칙" : "generation rule"}`);
+      rules.forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        option.selected = value === rule;
+        select.append(option);
+      });
+      ruleCell.append(select);
+
+      const exampleCell = document.createElement("td");
+      const example = document.createElement("span");
+      example.className = "example-value";
+      example.textContent = examples[rule];
+      exampleCell.append(example);
+      const customInput = document.createElement("input");
+      customInput.className = "custom-text-input";
+      customInput.type = "text";
+      customInput.placeholder = copy.customPlaceholder;
+      customInput.title = copy.customHint;
+      customInput.setAttribute("aria-label", `${column.name} ${lang === "ko" ? "사용자 지정 텍스트" : "custom text"}`);
+      customInput.hidden = true;
+      exampleCell.append(customInput);
+      select.addEventListener("change", () => {
+        const custom = select.value === "custom";
+        example.hidden = custom;
+        customInput.hidden = !custom;
+        if (custom) customInput.focus();
+        else example.textContent = examples[select.value];
+      });
+
+      row.append(includeCell, nameCell, typeCell, ruleCell, exampleCell);
+      row._column = column;
+      columnRows.append(row);
+    });
+    $("#tableSummary").textContent = `${result.table} · ${result.columns.length}`;
+    currentSchema = result;
+  }
+
+  function analyzeSchema(announce = true) {
+    const source = schemaInput.value.trim();
+    if (!source) {
+      setStatus("error", copy.empty);
+      return;
+    }
+    if (!validateDialect(source)) {
+      setStatus("error", format(copy.mismatch, { db: databases[selectedDb].label }));
+      columnsCard.classList.add("is-pending");
+      return;
+    }
+    let result;
+    if (selectedDb === "mongodb") result = parseMongo(source);
+    else if (selectedDb === "redis") result = parseRedis(source);
+    else result = parseRelational(source);
+    if (!result.columns.length) {
+      setStatus("error", copy.noColumns);
+      columnsCard.classList.add("is-pending");
+      return;
+    }
+    renderColumns(result);
+    columnsCard.classList.remove("is-pending");
+    setStatus("success", format(copy.valid, { db: databases[selectedDb].label, count: result.columns.length }));
+    if (announce) {
+      showToast(copy.analyzed);
+      columnsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function hashSeed(value) {
+    let hash = 2166136261;
+    for (let index = 0; index < value.length; index += 1) {
+      hash ^= value.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+
+  function createRandom(seed) {
+    let state = hashSeed(seed) || 1;
+    return function random() {
+      state += 0x6D2B79F5;
+      let value = state;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function pick(values, random) {
+    return values[Math.floor(random() * values.length)];
+  }
+
+  function uuid(random) {
+    const hex = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+    return hex.replace(/[xy]/g, (character) => {
+      const value = Math.floor(random() * 16);
+      return (character === "x" ? value : (value & 3) | 8).toString(16);
+    });
+  }
+
+  function allowedValues(column) {
+    const definition = `${column.type} ${column.constraints}`;
+    const enumMatch = definition.match(/enum\s*\(([^)]*)\)/i);
+    const checkMatch = definition.match(/\bIN\s*\(([^)]*)\)/i);
+    const raw = enumMatch?.[1] || checkMatch?.[1] || "";
+    if (!raw) return ["active", "pending", "inactive"];
+    return raw.split(/[|,]/).map((value) => value.trim().replace(/^['"]|['"]$/g, "")).filter(Boolean);
+  }
+
+  function defaultValue(column) {
+    const match = column.constraints.match(/\bDEFAULT\s+(?:N)?(?:'([^']*)'|"([^"]*)"|([^\s,]+))/i);
+    if (!match) return "";
+    const value = match[1] ?? match[2] ?? match[3] ?? "";
+    if (/^null$/i.test(value)) return null;
+    if (/^(?:true|false)$/i.test(value)) return /^true$/i.test(value);
+    if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+    return value;
+  }
+
+  function limitText(value, column) {
+    if (typeof value !== "string") return value;
+    const lengthMatch = column.type.match(/(?:char|string)\s*\((\d+)/i) || column.constraints.match(/maxLength\s*[:=]?\s*(\d+)/i);
+    const limit = Number(lengthMatch?.[1] || 0);
+    return limit > 0 ? value.slice(0, limit) : value;
+  }
+
+  function generateValue(config, rowNumber, random, respectConstraints, linkRelations) {
+    const { column, rule, customText } = config;
+    const name = column.name.toLowerCase();
+    const required = /not\s+null|required|primary\s+key/i.test(column.constraints);
+    const unique = /unique|primary\s+key/i.test(column.constraints);
+    const koreanNames = ["김민준", "이서연", "박지후", "최하윤", "정도윤", "윤지민", "한유진", "오시우"];
+    const englishNames = ["Alex Morgan", "Jordan Lee", "Taylor Kim", "Casey Park", "Jamie Chen", "Robin Smith", "Avery Brown", "Morgan Davis"];
+    let value;
+
+    switch (rule) {
+      case "sequence":
+        value = rowNumber;
+        break;
+      case "uuid":
+        value = uuid(random);
+        break;
+      case "email":
+        value = `user${rowNumber}.${Math.floor(random() * 9000 + 1000)}@example.com`;
+        break;
+      case "name":
+        value = pick(lang === "ko" ? koreanNames : englishNames, random);
+        if (unique) value = `${value} ${rowNumber}`;
+        break;
+      case "phone":
+        value = lang === "ko"
+          ? `010-${String(Math.floor(random() * 10000)).padStart(4, "0")}-${String(Math.floor(random() * 10000)).padStart(4, "0")}`
+          : `+1-202-${String(Math.floor(random() * 1000)).padStart(3, "0")}-${String(Math.floor(random() * 10000)).padStart(4, "0")}`;
+        break;
+      case "username":
+        value = `user_${String(rowNumber).padStart(4, "0")}`;
+        break;
+      case "enum":
+        value = pick(allowedValues(column), random);
+        break;
+      case "boolean":
+        value = random() >= 0.5;
+        break;
+      case "date": {
+        const base = Date.UTC(2026, 6, 23, 12, 0, 0);
+        const past = Math.floor(random() * 365 * 24 * 60 * 60 * 1000);
+        value = new Date(base - past).toISOString().replace("T", " ").replace(/\.000Z$/, "");
+        break;
+      }
+      case "number":
+        value = linkRelations && /_id$/.test(name) ? ((rowNumber - 1) % 100) + 1 : Math.floor(random() * 9999) + 1;
+        if (/decimal|numeric|float|double|real/.test(column.type.toLowerCase())) value = Number((value + random()).toFixed(2));
+        break;
+      case "custom":
+        value = (customText || "").replace(/\{n\}/g, String(rowNumber)).replace(/\{column\}/g, column.name);
+        if (respectConstraints && unique && !/\{n\}/.test(customText || "")) value = `${value}-${rowNumber}`;
+        break;
+      case "fixed":
+        value = defaultValue(column);
+        break;
+      case "null":
+        value = respectConstraints && required ? (defaultValue(column) || `sample_${rowNumber}`) : null;
+        break;
+      default:
+        if (/address/.test(name)) value = lang === "ko" ? `서울시 샘플로 ${rowNumber}` : `${rowNumber} Example Street`;
+        else if (/city/.test(name)) value = pick(lang === "ko" ? ["서울", "부산", "대전", "광주"] : ["Seattle", "Austin", "Boston", "Denver"], random);
+        else if (/title|subject/.test(name)) value = lang === "ko" ? `테스트 제목 ${rowNumber}` : `Test title ${rowNumber}`;
+        else if (/description|content|memo|note/.test(name)) value = lang === "ko" ? `자동 생성된 테스트 데이터 ${rowNumber}` : `Generated test data ${rowNumber}`;
+        else value = `sample_${name}_${rowNumber}`;
+    }
+    return limitText(value, column);
+  }
+
+  function collectColumnConfigs() {
+    return $$("#columnRows tr").flatMap((row) => {
+      const include = $('input[type="checkbox"]', row);
+      if (!include?.checked) return [];
+      return [{
+        column: row._column,
+        rule: $(".column-rule-select", row).value,
+        customText: $(".custom-text-input", row).value
+      }];
+    });
+  }
+
+  function buildRows(count, configs) {
+    const random = createRandom($("#seedInput").value || "solforge");
+    const respectConstraints = $("#respectConstraints").checked;
+    const linkRelations = $("#linkRelations").checked;
+    return Array.from({ length: count }, (_, index) => Object.fromEntries(configs.map((config) => [
+      config.column.name,
+      generateValue(config, index + 1, random, respectConstraints, linkRelations)
+    ])));
+  }
+
+  function sqlIdentifier(identifier) {
+    if (selectedDb === "mysql") return `\`${String(identifier).replace(/`/g, "``")}\``;
+    if (selectedDb === "mssql") {
+      const escaped = String(identifier).split("]").join("]]");
+      return `[${escaped}]`;
+    }
+    if (selectedDb === "oracle" && /^[A-Za-z][A-Za-z0-9_$#]*$/.test(identifier)) return String(identifier).toUpperCase();
+    return `"${String(identifier).replace(/"/g, '""')}"`;
+  }
+
+  function sqlValue(value) {
+    if (value === null) return "NULL";
+    if (typeof value === "number") return String(value);
+    if (typeof value === "boolean") return selectedDb === "postgres" ? (value ? "TRUE" : "FALSE") : (value ? "1" : "0");
+    const prefix = selectedDb === "mssql" && /[^\u0000-\u007f]/.test(value) ? "N" : "";
+    return `${prefix}'${String(value).replace(/'/g, "''")}'`;
+  }
+
+  function formatSql(rows, columns) {
+    const table = currentSchema.table.split(".").map((part) => sqlIdentifier(part)).join(".");
+    const names = columns.map((column) => sqlIdentifier(column.name)).join(", ");
+    return rows.map((row) => {
+      const values = columns.map((column) => sqlValue(row[column.name])).join(", ");
+      return `INSERT INTO ${table} (${names}) VALUES (${values});`;
+    }).join("\n");
+  }
+
+  function formatMongo(rows) {
+    const collection = /^[A-Za-z_$][\w$]*$/.test(currentSchema.table)
+      ? `db.${currentSchema.table}`
+      : `db.getCollection(${JSON.stringify(currentSchema.table)})`;
+    return `${collection}.insertMany(${JSON.stringify(rows, null, 2)});`;
+  }
+
+  function redisValue(value) {
+    if (value === null) return "";
+    return typeof value === "object" ? JSON.stringify(value) : String(value);
+  }
+
+  function shellQuote(value) {
+    return `"${String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+  }
+
+  function formatRedis(rows, columns) {
+    return rows.map((row, index) => {
+      const key = currentSchema.table.replace(/\{id\}/gi, String(row.id ?? index + 1));
+      if (currentSchema.kind === "JSON") return `JSON.SET ${shellQuote(key)} $ ${shellQuote(JSON.stringify(row))}`;
+      const fields = columns.flatMap((column) => [shellQuote(column.name), shellQuote(redisValue(row[column.name]))]);
+      return `HSET ${shellQuote(key)} ${fields.join(" ")}`;
+    }).join("\n");
+  }
+
+  function formatCsv(rows, columns) {
+    const escape = (value) => {
+      if (value === null) return "";
+      const text = String(value);
+      return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+    };
+    return [columns.map((column) => escape(column.name)).join(","), ...rows.map((row) => columns.map((column) => escape(row[column.name])).join(","))].join("\n");
+  }
+
+  function generateData() {
+    if (!currentSchema || columnsCard.classList.contains("is-pending")) {
+      analyzeSchema(false);
+      if (!currentSchema || columnsCard.classList.contains("is-pending")) return;
+    }
+    const configs = collectColumnConfigs();
+    if (!configs.length) {
+      showToast(copy.noIncludedColumns);
+      return;
+    }
+    updateEstimate();
+    const count = Number($("#rowCount").value);
+    const rows = buildRows(count, configs);
+    const columns = configs.map((config) => config.column);
+    const formatValue = $("#outputFormat").value;
+    if (formatValue === "json") {
+      generatedText = JSON.stringify(rows, null, 2);
+      generatedExtension = "json";
+    } else if (formatValue === "csv") {
+      generatedText = formatCsv(rows, columns);
+      generatedExtension = "csv";
+    } else if (selectedDb === "mongodb") {
+      generatedText = formatMongo(rows);
+      generatedExtension = "js";
+    } else if (selectedDb === "redis") {
+      generatedText = formatRedis(rows, columns);
+      generatedExtension = "redis";
+    } else {
+      generatedText = formatSql(rows, columns);
+      generatedExtension = "sql";
+    }
+    $("#generatedOutput").textContent = generatedText;
+    const label = $("#outputFormat").options[$("#outputFormat").selectedIndex].textContent;
+    $("#resultSummary").textContent = `${count.toLocaleString(lang === "ko" ? "ko-KR" : "en-US")} rows · ${label}`;
+    const card = $("#resultCard");
+    card.hidden = false;
+    showToast(format(copy.generated, { count: count.toLocaleString(lang === "ko" ? "ko-KR" : "en-US") }));
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function copyGeneratedData() {
+    if (!generatedText) return;
+    try {
+      await navigator.clipboard.writeText(generatedText);
+    } catch (_error) {
+      const area = document.createElement("textarea");
+      area.value = generatedText;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.append(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+    }
+    showToast(copy.copied);
+  }
+
+  function downloadGeneratedData() {
+    if (!generatedText) return;
+    const blob = new Blob([generatedText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${currentSchema.table || "tempdb"}-fake-data.${generatedExtension}`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function updateEstimate() {
+    const count = Math.max(1, Math.min(10000, Number($("#rowCount").value) || 1));
+    $("#rowCount").value = String(count);
+    const select = $("#outputFormat");
+    const label = select.options[select.selectedIndex].textContent;
+    $("#estimateSummary").textContent = `${count.toLocaleString(lang === "ko" ? "ko-KR" : "en-US")} rows · ${label}`;
+    $(".generation-summary i").textContent = `≈ ${Math.max(1, Math.round(count * 0.18))} KB`;
+  }
+
+  function showToast(message) {
+    const toast = $("#tempdbToast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2800);
+  }
+
+  $$(".database-option").forEach((button) => button.addEventListener("click", () => selectDatabase(button.dataset.db)));
+  $("#loadSample").addEventListener("click", () => {
+    schemaInput.value = samples[selectedDb];
+    updateLines();
+    setStatus("", copy.ready);
+  });
+  schemaInput.addEventListener("input", () => {
+    updateLines();
+    columnsCard.classList.add("is-pending");
+    $("#resultCard").hidden = true;
+    setStatus("", copy.ready);
+  });
+  schemaInput.addEventListener("scroll", () => { lineNumbers.scrollTop = schemaInput.scrollTop; });
+  schemaInput.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    event.preventDefault();
+    const start = schemaInput.selectionStart;
+    schemaInput.setRangeText("  ", start, schemaInput.selectionEnd, "end");
+    updateLines();
+  });
+  $("#analyzeSchema").addEventListener("click", () => analyzeSchema(true));
+  $("#decreaseRows").addEventListener("click", () => { $("#rowCount").value = String(Math.max(1, Number($("#rowCount").value) - 10)); updateEstimate(); $("#resultCard").hidden = true; });
+  $("#increaseRows").addEventListener("click", () => { $("#rowCount").value = String(Math.min(10000, Number($("#rowCount").value) + 10)); updateEstimate(); $("#resultCard").hidden = true; });
+  $("#rowCount").addEventListener("change", updateEstimate);
+  $("#outputFormat").addEventListener("change", () => { updateEstimate(); $("#resultCard").hidden = true; });
+  $("#randomSeed").addEventListener("click", () => { $("#seedInput").value = Math.random().toString(36).slice(2, 10); });
+  $("#generatePreview").addEventListener("click", generateData);
+  $("#copyResult").addEventListener("click", copyGeneratedData);
+  $("#downloadResult").addEventListener("click", downloadGeneratedData);
+
+  schemaInput.value = samples.mysql;
+  updateOutputFormats();
+  updateLines();
+  analyzeSchema(false);
+  updateEstimate();
+})();
