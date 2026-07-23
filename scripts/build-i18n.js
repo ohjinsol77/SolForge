@@ -457,7 +457,13 @@ function writeRootRedirect() {
 }
 
 function writeHeaders() {
-  writeText("dist/_headers", `https://solforge.pages.dev/*
+  writeText("dist/_headers", `/ko/tempdb
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/en/tempdb
+  Cache-Control: no-cache, no-store, must-revalidate
+
+https://solforge.pages.dev/*
   X-Robots-Tag: noindex
 
 https://:version.solforge.pages.dev/*

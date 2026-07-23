@@ -726,7 +726,8 @@
     generatedText = fullOutput.text;
     generatedExtension = fullOutput.extension;
     $("#generatedOutput").textContent = previewOutput.text;
-    $("#previewLimitBadge").hidden = count <= 100;
+    const previewLimitBadge = $("#previewLimitBadge");
+    if (previewLimitBadge) previewLimitBadge.hidden = count <= 100;
     const label = $("#outputFormat").options[$("#outputFormat").selectedIndex].textContent;
     $("#resultSummary").textContent = `${count.toLocaleString(lang === "ko" ? "ko-KR" : "en-US")} rows · ${label}`;
     const card = $("#resultCard");

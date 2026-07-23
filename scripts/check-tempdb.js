@@ -219,11 +219,14 @@ assert(csv === 'plain,quoted,empty\nhello,"a,b",', "CSV output should quote deli
 const sitemap = fs.readFileSync(path.join(ROOT, "dist/sitemap.xml"), "utf8");
 const redirects = fs.readFileSync(path.join(ROOT, "dist/_redirects"), "utf8");
 const robots = fs.readFileSync(path.join(ROOT, "dist/robots.txt"), "utf8");
+const headers = fs.readFileSync(path.join(ROOT, "dist/_headers"), "utf8");
 assert(sitemap.includes("https://solforge.cloud/ko/tempdb"), "sitemap should include Korean TempDB URL");
 assert(sitemap.includes("https://solforge.cloud/en/tempdb"), "sitemap should include English TempDB URL");
 assert(redirects.includes("/tempdb /ko/tempdb 301"), "legacy /tempdb route should redirect to Korean canonical URL");
 assert(redirects.includes("/ko/tempdb/ /ko/tempdb 301"), "localized trailing slash should redirect to canonical URL");
 assert(robots.includes("Sitemap: https://solforge.cloud/sitemap.xml"), "robots.txt should expose the sitemap");
+assert(headers.includes("/ko/tempdb\n  Cache-Control: no-cache, no-store, must-revalidate"), "Korean TempDB HTML should opt out of stale browser caching");
+assert(headers.includes("/en/tempdb\n  Cache-Control: no-cache, no-store, must-revalidate"), "English TempDB HTML should opt out of stale browser caching");
 
 for (const language of ["ko", "en"]) {
   const html = fs.readFileSync(path.join(ROOT, `dist/${language}/tempdb.html`), "utf8");
