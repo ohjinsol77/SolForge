@@ -697,6 +697,14 @@
     return [columns.map((column) => escape(column.name)).join(","), ...rows.map((row) => columns.map((column) => escape(row[column.name])).join(","))].join("\n");
   }
 
+  function formatGeneratedRows(rows, columns, formatValue) {
+    if (formatValue === "json") return { text: JSON.stringify(rows, null, 2), extension: "json" };
+    if (formatValue === "csv") return { text: formatCsv(rows, columns), extension: "csv" };
+    if (selectedDb === "mongodb") return { text: formatMongo(rows), extension: "js" };
+    if (selectedDb === "redis") return { text: formatRedis(rows, columns), extension: "redis" };
+    return { text: formatSql(rows, columns), extension: "sql" };
+  }
+
   function generateData() {
     if (!currentSchema || columnsCard.classList.contains("is-pending")) {
       analyzeSchema(false);
@@ -712,23 +720,13 @@
     const rows = buildRows(count, configs);
     const columns = configs.map((config) => config.column);
     const formatValue = $("#outputFormat").value;
-    if (formatValue === "json") {
-      generatedText = JSON.stringify(rows, null, 2);
-      generatedExtension = "json";
-    } else if (formatValue === "csv") {
-      generatedText = formatCsv(rows, columns);
-      generatedExtension = "csv";
-    } else if (selectedDb === "mongodb") {
-      generatedText = formatMongo(rows);
-      generatedExtension = "js";
-    } else if (selectedDb === "redis") {
-      generatedText = formatRedis(rows, columns);
-      generatedExtension = "redis";
-    } else {
-      generatedText = formatSql(rows, columns);
-      generatedExtension = "sql";
-    }
-    $("#generatedOutput").textContent = generatedText;
+    const fullOutput = formatGeneratedRows(rows, columns, formatValue);
+    const previewRows = rows.slice(0, 100);
+    const previewOutput = count > 100 ? formatGeneratedRows(previewRows, columns, formatValue) : fullOutput;
+    generatedText = fullOutput.text;
+    generatedExtension = fullOutput.extension;
+    $("#generatedOutput").textContent = previewOutput.text;
+    $("#previewLimitBadge").hidden = count <= 100;
     const label = $("#outputFormat").options[$("#outputFormat").selectedIndex].textContent;
     $("#resultSummary").textContent = `${count.toLocaleString(lang === "ko" ? "ko-KR" : "en-US")} rows · ${label}`;
     const card = $("#resultCard");

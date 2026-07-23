@@ -230,7 +230,7 @@ for (const language of ["ko", "en"]) {
   assert(html.includes(`rel="canonical" href="https://solforge.cloud/${language}/tempdb"`), `${language}: canonical URL missing`);
   assert(html.includes('hreflang="ko"') && html.includes('hreflang="en"') && html.includes('hreflang="x-default"'), `${language}: hreflang links missing`);
   assert(html.includes("ca-pub-1625988263075960"), `${language}: AdSense publisher code missing`);
-  assert(html.includes("tempdb.js?v=20260723-2") && html.includes("tempdb.css?v=20260723-2"), `${language}: TempDB assets missing`);
+  assert(html.includes("tempdb.js?v=20260723-3") && html.includes("tempdb.css?v=20260723-2"), `${language}: TempDB assets missing`);
   assert(!html.includes("data-i18n="), `${language}: source translation attributes should be removed from production output`);
   const home = fs.readFileSync(path.join(ROOT, `dist/${language}/index.html`), "utf8");
   const features = fs.readFileSync(path.join(ROOT, `dist/${language}/features.html`), "utf8");
@@ -240,5 +240,7 @@ for (const language of ["ko", "en"]) {
 
 const catalogSource = fs.readFileSync(path.join(ROOT, "assets/js/tool-catalog.js"), "utf8");
 assert(catalogSource.includes("TempDB Fake Data") && catalogSource.includes("TempDB 가짜 데이터"), "internal tool search should include TempDB in both languages");
+assert(source.includes("rows.slice(0, 100)"), "result preview should be capped at 100 generated rows");
+assert(source.includes("generatedText = fullOutput.text"), "copy and download should retain the full generated output");
 
 console.log(`Checked TempDB: ${assertions} assertions across 6 databases, generation formats, SEO, redirects, and ads.`);

@@ -3349,6 +3349,7 @@
   "tempdb.result.kicker": "RESULT",
   "tempdb.result.title": "Generated temporary data",
   "tempdb.result.local": " · generated only in your browser",
+  "tempdb.result.previewLimit": "Showing the first 100 rows",
   "tempdb.result.copy": "Copy",
   "tempdb.result.download": "Download",
   "tempdb.result.warning": "Generated data is for testing. Review its types, constraints, and possible personal data before using it in a production environment.",

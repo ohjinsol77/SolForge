@@ -151,7 +151,7 @@
 
         <section class="tempdb-card result-card" id="resultCard" hidden aria-labelledby="resultTitle">
           <div class="result-heading">
-            <div><span class="step-kicker"><span>05</span><span data-i18n="tempdb.result.kicker">RESULT</span></span><h2 id="resultTitle" data-i18n="tempdb.result.title">생성된 임시 데이터</h2><p><span id="resultSummary">100 rows · INSERT SQL</span><span data-i18n="tempdb.result.local"> · 브라우저에서만 생성됨</span></p></div>
+            <div><span class="step-kicker"><span>05</span><span data-i18n="tempdb.result.kicker">RESULT</span></span><h2 id="resultTitle" data-i18n="tempdb.result.title">생성된 임시 데이터</h2><p><span id="resultSummary">100 rows · INSERT SQL</span><span class="preview-limit-badge" id="previewLimitBadge" hidden data-i18n="tempdb.result.previewLimit">처음 100행만 표시</span><span data-i18n="tempdb.result.local"> · 브라우저에서만 생성됨</span></p></div>
             <div class="result-actions"><button class="result-action" type="button" id="copyResult"><span aria-hidden="true">⧉</span><span data-i18n="tempdb.result.copy">복사</span></button><button class="result-action primary" type="button" id="downloadResult"><span aria-hidden="true">↓</span><span data-i18n="tempdb.result.download">다운로드</span></button></div>
           </div>
           <pre class="generated-output" id="generatedOutput" tabindex="0"></pre>
@@ -163,6 +163,6 @@
     </div>
     <div class="tempdb-toast" id="tempdbToast" role="status" aria-live="polite"></div>
     <script src="assets/js/app.js?v=20260723-tempdb"></script>
-    <script src="assets/js/tempdb.js?v=20260723-2"></script>
+    <script src="assets/js/tempdb.js?v=20260723-3"></script>
   </body>
 </html>

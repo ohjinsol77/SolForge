@@ -3366,6 +3366,7 @@
   "tempdb.result.kicker": "RESULT",
   "tempdb.result.title": "생성된 임시 데이터",
   "tempdb.result.local": " · 브라우저에서만 생성됨",
+  "tempdb.result.previewLimit": "처음 100행만 표시",
   "tempdb.result.copy": "복사",
   "tempdb.result.download": "다운로드",
   "tempdb.result.warning": "생성된 데이터는 테스트용입니다. 운영 환경에 넣기 전에 타입, 제약조건, 개인정보 포함 여부를 다시 확인하세요.",
