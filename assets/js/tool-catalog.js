@@ -8,8 +8,8 @@
     ? ["finance", "FX", "Currency Converter", "Convert an amount across major currencies using the latest available reference rates.", "currency converter exchange rate fx won dollar yen euro", "exchange-rates"]
     : ["finance", "FX", "환율 계산기", "최근 기준환율로 금액을 주요 국가 통화로 한 번에 환산합니다.", "환율 계산기 환전 원 달러 엔 유로 위안 외화", "exchange-rates"];
   const tempDbTool = document.documentElement.lang === "en"
-    ? ["developer", "DB", "TempDB Fake Data", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb fake data database schema mysql postgresql mongodb oracle mssql redis sql json csv", "../tempdb"]
-    : ["developer", "DB", "TempDB 가짜 데이터", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb 가짜 데이터 임시 테스트 데이터 스키마 테이블 생성문 mysql postgresql mongodb oracle mssql redis sql json csv", "../tempdb"];
+    ? ["developer", "DB", "Database Test & Dummy Data Generator", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb temp db temporary data dummy data dummydata fake data test data testdata mock data mockdata database schema mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"]
+    : ["developer", "DB", "DB 임시·더미 데이터 생성기", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb temp db 임시데이터 임시 데이터 더미데이터 더미 데이터 가짜데이터 가짜 데이터 테스트데이터 테스트 데이터 목데이터 목 데이터 mock data mockdata dummy data dummydata test data testdata 스키마 테이블 생성문 mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"];
 
   const tools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox#pip-clock"],

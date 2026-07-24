@@ -3276,7 +3276,7 @@
   "features.exchange.title": "Currency converter and finance tools",
   "features.exchange.body": "Convert Korean won, US dollars, Japanese yen, euros, and other major currencies using recent central-bank reference rates, then compare one amount across countries.",
   "features.exchange.link": "Open currency converter",
-  "tempdb.meta.title": "TempDB Fake Data Generator - SolForge",
+  "tempdb.meta.title": "Database Test & Dummy Data Generator - SolForge",
   "tempdb.meta.description": "Analyze MySQL, PostgreSQL, MongoDB, Oracle, MSSQL, and Redis schemas and prepare realistic test data with per-column generation rules.",
   "tempdb.common.skip": "Skip to content",
   "tempdb.common.menu": "Feature menu",
@@ -3293,7 +3293,7 @@
   "tempdb.common.required": "Required",
   "tempdb.side.title": "Safe in your browser",
   "tempdb.side.body": "Your schema is analyzed only in this browser and is never stored on our server.",
-  "tempdb.hero.badge": "Schema-aware fake data studio",
+  "tempdb.hero.badge": "Database test & dummy data studio",
   "tempdb.hero.title1": "Keep the schema.",
   "tempdb.hero.title2": "Create test data in seconds.",
   "tempdb.hero.body": "Paste a schema statement, review its structure and constraints, then choose exactly what kind of fake data each column should contain.",
@@ -3355,9 +3355,9 @@
   "tempdb.result.warning": "Generated data is for testing. Review its types, constraints, and possible personal data before using it in a production environment.",
   "home.tempdb.category": "Developer tools",
   "home.tempdb.featured": "New",
-  "home.tempdb.title": "TempDB Fake Data",
+  "home.tempdb.title": "Database Test & Dummy Data Generator",
   "home.tempdb.body": "Detect columns from database schemas and generate configurable test data.",
-  "features.tempdb.title": "TempDB Fake Data Generator",
+  "features.tempdb.title": "Database Test & Dummy Data Generator",
   "features.tempdb.body": "Estimate column structures from MySQL, PostgreSQL, MongoDB, Oracle, MSSQL, and Redis schemas, then generate SQL, JSON, and CSV test data in your browser.",
-  "features.tempdb.link": "Open TempDB"
+  "features.tempdb.link": "Open the data generator"
 }

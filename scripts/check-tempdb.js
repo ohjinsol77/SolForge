@@ -230,11 +230,14 @@ assert(headers.includes("/en/tempdb\n  Cache-Control: no-cache, no-store, must-r
 
 for (const language of ["ko", "en"]) {
   const html = fs.readFileSync(path.join(ROOT, `dist/${language}/tempdb.html`), "utf8");
+  const expectedProductName = language === "ko" ? "DB 임시·더미 데이터 생성기" : "Database Test &amp; Dummy Data Generator";
   assert(html.includes(`rel="canonical" href="https://solforge.cloud/${language}/tempdb"`), `${language}: canonical URL missing`);
   assert(html.includes('hreflang="ko"') && html.includes('hreflang="en"') && html.includes('hreflang="x-default"'), `${language}: hreflang links missing`);
   assert(html.includes("ca-pub-1625988263075960"), `${language}: AdSense publisher code missing`);
   assert(html.includes("tempdb.js?v=20260723-3") && html.includes("tempdb.css?v=20260723-2"), `${language}: TempDB assets missing`);
   assert(!html.includes("data-i18n="), `${language}: source translation attributes should be removed from production output`);
+  assert(html.includes(expectedProductName), `${language}: renamed product title missing from production page`);
+  assert(!html.includes("TempDB 가짜 데이터") && !html.includes("TempDB Fake Data"), `${language}: old public product name should not remain`);
   const home = fs.readFileSync(path.join(ROOT, `dist/${language}/index.html`), "utf8");
   const features = fs.readFileSync(path.join(ROOT, `dist/${language}/features.html`), "utf8");
   assert(home.includes(`href="/${language}/tempdb"`), `${language}: homepage should link directly to TempDB`);
@@ -242,7 +245,10 @@ for (const language of ["ko", "en"]) {
 }
 
 const catalogSource = fs.readFileSync(path.join(ROOT, "assets/js/tool-catalog.js"), "utf8");
-assert(catalogSource.includes("TempDB Fake Data") && catalogSource.includes("TempDB 가짜 데이터"), "internal tool search should include TempDB in both languages");
+assert(catalogSource.includes("Database Test & Dummy Data Generator") && catalogSource.includes("DB 임시·더미 데이터 생성기"), "internal tool search should include the data generator in both languages");
+for (const keyword of ["tempdb", "temp db", "임시데이터", "임시 데이터", "더미데이터", "더미 데이터", "가짜 데이터", "테스트 데이터", "mock data", "dummy data", "mysql", "postgresql", "mongodb", "oracle", "mssql", "redis"]) {
+  assert(catalogSource.toLowerCase().includes(keyword), `internal tool search should match: ${keyword}`);
+}
 assert(source.includes("rows.slice(0, 100)"), "result preview should be capped at 100 generated rows");
 assert(source.includes("generatedText = fullOutput.text"), "copy and download should retain the full generated output");
 

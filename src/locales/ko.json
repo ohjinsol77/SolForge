@@ -3293,8 +3293,8 @@
   "features.exchange.title": "환율 계산기와 금융 도구",
   "features.exchange.body": "최근 중앙은행 기준환율로 원화, 달러, 엔화, 유로와 주요 통화를 환산하고 한 금액의 국가별 환산 결과를 비교합니다.",
   "features.exchange.link": "환율 계산기 열기",
-  "tempdb.meta.title": "TempDB 가짜 데이터 생성기 - SolForge",
-  "tempdb.meta.description": "MySQL, PostgreSQL, MongoDB, Oracle, MSSQL, Redis 스키마를 분석해 컬럼별 규칙에 맞는 테스트 데이터 생성을 준비하는 TempDB 도구입니다.",
+  "tempdb.meta.title": "DB 임시·더미 데이터 생성기 - SolForge",
+  "tempdb.meta.description": "MySQL, PostgreSQL, MongoDB, Oracle, MSSQL, Redis 스키마를 분석해 컬럼별 규칙에 맞는 임시·더미 테스트 데이터를 생성하는 도구입니다.",
   "tempdb.common.skip": "본문으로 이동",
   "tempdb.common.menu": "기능 메뉴",
   "tempdb.common.homeLabel": "SolForge 홈",
@@ -3310,7 +3310,7 @@
   "tempdb.common.required": "필수",
   "tempdb.side.title": "브라우저 안에서 안전하게",
   "tempdb.side.body": "입력한 스키마는 서버에 저장하지 않고 현재 브라우저에서만 분석합니다.",
-  "tempdb.hero.badge": "Schema-aware fake data studio",
+  "tempdb.hero.badge": "DB 임시·더미 데이터 스튜디오",
   "tempdb.hero.title1": "스키마는 그대로,",
   "tempdb.hero.title2": "테스트 데이터는 순식간에.",
   "tempdb.hero.body": "테이블 생성문을 붙여넣으면 구조와 제약조건을 읽고, 각 컬럼에 어떤 가짜 데이터를 채울지 직접 설정할 수 있습니다.",
@@ -3372,9 +3372,9 @@
   "tempdb.result.warning": "생성된 데이터는 테스트용입니다. 운영 환경에 넣기 전에 타입, 제약조건, 개인정보 포함 여부를 다시 확인하세요.",
   "home.tempdb.category": "개발 도구",
   "home.tempdb.featured": "신규",
-  "home.tempdb.title": "TempDB 가짜 데이터",
+  "home.tempdb.title": "DB 임시·더미 데이터 생성기",
   "home.tempdb.body": "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 테스트 데이터를 생성합니다.",
-  "features.tempdb.title": "TempDB 가짜 데이터 생성기",
+  "features.tempdb.title": "DB 임시·더미 데이터 생성기",
   "features.tempdb.body": "MySQL, PostgreSQL, MongoDB, Oracle, MSSQL, Redis 생성문에서 컬럼 구조를 추정하고 컬럼별 규칙에 따라 SQL, JSON, CSV 테스트 데이터를 브라우저에서 생성합니다.",
-  "features.tempdb.link": "TempDB 열기"
+  "features.tempdb.link": "DB 데이터 생성기 열기"
 }
