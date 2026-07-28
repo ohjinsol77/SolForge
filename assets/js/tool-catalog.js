@@ -8,10 +8,10 @@
     ? ["finance", "FX", "Currency Converter", "Convert an amount across major currencies using the latest available reference rates.", "currency converter exchange rate fx won dollar yen euro", "exchange-rates"]
     : ["finance", "FX", "환율 계산기", "최근 기준환율로 금액을 주요 국가 통화로 한 번에 환산합니다.", "환율 계산기 환전 원 달러 엔 유로 위안 외화", "exchange-rates"];
   const tempDbTool = document.documentElement.lang === "en"
-    ? ["developer", "DB", "Database Test & Dummy Data Generator", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb temp db temporary data dummy data dummydata fake data test data testdata mock data mockdata database schema mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"]
+    ? ["developer", "DB", "Database Test Data Generator", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb temp db temporary data dummy data dummydata fake data test data testdata mock data mockdata database schema mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"]
     : ["developer", "DB", "DB 임시·더미 데이터 생성기", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb temp db 임시데이터 임시 데이터 더미데이터 더미 데이터 가짜데이터 가짜 데이터 테스트데이터 테스트 데이터 목데이터 목 데이터 mock data mockdata dummy data dummydata test data testdata 스키마 테이블 생성문 mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"];
 
-  const tools = [
+  const sourceTools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox#pip-clock"],
     ["pip", "TMR", "PIP 타이머", "카운트다운 타이머를 페이지와 PIP 창에서 실행합니다.", "pip 타이머 timer countdown", "pip-toolbox#pip-timer"],
     ["pip", "POM", "PIP 뽀모도로 타이머", "집중·휴식 시간을 반복하는 뽀모도로 타이머입니다.", "pip 뽀모도로 pomodoro 집중 휴식", "pip-toolbox#pip-pomodoro"],
@@ -159,6 +159,42 @@
     ["game", "RES", "해상도 테스트", "뷰포트, 화면 크기, DPR과 색심도를 표시합니다.", "resolution screen dpr", "performance-lab#resolution-test"],
     ["game", "RTC", "WebRTC 후보 확인", "외부 STUN 없이 로컬 ICE 후보 노출 여부를 확인합니다.", "webrtc leak candidate", "performance-lab#webrtc-test"]
   ];
+
+  const duplicateDetailSlugs = {
+    "zodiac-tools": ["zodiac-year-finder", "zodiac-compatibility-samjae"],
+    "lunar-converter": ["solar-to-lunar", "lunar-to-solar"],
+    "school-tools": ["school-years", "csat-dday"]
+  };
+  const duplicateDetailIndexes = {};
+  const routedTools = sourceTools.map((tool) => {
+    const sourceHref = tool[5];
+    const hashIndex = sourceHref.indexOf("#");
+    if (hashIndex < 0) return [...tool, sourceHref];
+    const fragment = sourceHref.slice(hashIndex + 1);
+    const alternatives = duplicateDetailSlugs[fragment];
+    const detailSlug = alternatives
+      ? alternatives[duplicateDetailIndexes[fragment] = (duplicateDetailIndexes[fragment] || 0)] || fragment
+      : fragment;
+    duplicateDetailIndexes[fragment] += alternatives ? 1 : 0;
+    return [...tool.slice(0, 5), detailSlug, sourceHref];
+  });
+  const tools = routedTools.map((tool) => {
+    if (document.documentElement.lang !== "en") return tool;
+    const copy = window.SF_TOOL_COPY?.[tool[5]];
+    return copy
+      ? [tool[0], copy.icon || tool[1], copy.title || tool[2], copy.description || tool[3], tool[4], tool[5], tool[6]]
+      : tool;
+  });
+
+  window.SF_TOOL_CATALOG = tools.map(([category, icon, title, description, keywords, href, sourceHref]) => ({
+    category,
+    icon,
+    title,
+    description,
+    keywords,
+    href,
+    sourceHref
+  }));
 
   const categoryLabels = {
     pip: "pip 도구모음",

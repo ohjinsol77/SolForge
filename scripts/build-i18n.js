@@ -20,10 +20,46 @@ const {
   writeText
 } = require("./i18n-utils");
 const { translate } = require("./generate-en-locale");
+const {
+  AD_FREE_TOOL_SLUGS,
+  buildToolPages,
+  generatedToolRecords,
+  loadToolCatalog,
+  writeEnglishToolCopyAsset
+} = require("./build-tool-pages");
 
 const DIST = path.join(ROOT, "dist");
+const toolCatalog = loadToolCatalog();
+const generatedTools = generatedToolRecords(toolCatalog);
 const locales = Object.fromEntries(LANGS.map((lang) => [lang, readJson(`src/locales/${lang}.json`, {})]));
-const koToEn = new Map(Object.entries(locales.ko || {}).map(([key, value]) => [value, locales.en?.[key] || value]));
+const koToEn = new Map();
+for (const [key, value] of Object.entries(locales.ko || {})) {
+  const english = locales.en?.[key];
+  if (typeof english === "string" && english.trim() && !/[가-힣]/.test(english)) koToEn.set(value, english);
+}
+const GROUP_CONTAINER_FILES = new Set([
+  "calculators/all.html",
+  "tools/advanced-toolbox.html",
+  "tools/device-diagnostics.html",
+  "tools/display-diagnostics.html",
+  "tools/file-media-toolbox.html",
+  "tools/gaming-calculators.html",
+  "tools/gaming-lab.html",
+  "tools/input-training.html",
+  "tools/performance-lab.html",
+  "tools/pip-toolbox.html",
+  "tools/utility-toolbox.html"
+]);
+const AD_FREE_FILES = new Set([
+  "about.html",
+  "contact.html",
+  "features.html",
+  "privacy.html",
+  "terms.html",
+  "tools/all.html",
+  ...[...AD_FREE_TOOL_SLUGS].map((slug) => `tools/${slug}.html`),
+  ...GROUP_CONTAINER_FILES
+]);
 
 function cleanDist() {
   fs.rmSync(DIST, { recursive: true, force: true });
@@ -188,7 +224,7 @@ function injectSeo(html, lang, file) {
 
 function updateLanguageToggle(html, lang, file) {
   const other = lang === "ko" ? "en" : "ko";
-  const label = lang === "ko" ? "Switch to English" : "한국어로 변경";
+  const label = lang === "ko" ? "영어로 전환" : "Switch to Korean";
   const flag = lang === "ko" ? "🇺🇸" : "🇰🇷";
   return html.replace(/<a\b([^>]*\bdata-language-toggle\b[^>]*)>[\s\S]*?<\/a>/g, (match, attrs) => {
     let open = `<a${attrs}>`;
@@ -232,9 +268,24 @@ function injectLocaleScript(html, lang) {
   const payload = JSON.stringify({
     lang,
     switchTo: lang === "ko" ? "en" : "ko",
-    switchLabel: lang === "ko" ? "Switch to English" : "한국어로 변경"
+    switchLabel: lang === "ko" ? "영어로 전환" : "Switch to Korean"
   }).replace(/</g, "\\u003c");
   return html.replace(/<\/head>/i, `    <script>window.SF_I18N=${payload};</script>\n  </head>`);
+}
+
+function removeAdSenseCode(html) {
+  return html.replace(/\s*<script\b[^>]*\bsrc="https:\/\/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=[^"]+"[^>]*><\/script>/gi, "");
+}
+
+function setRobotsDirective(html, content) {
+  if (/<meta\b[^>]*\bname="robots"[^>]*>/i.test(html)) {
+    return html.replace(/<meta\b[^>]*\bname="robots"[^>]*>/i, `<meta name="robots" content="${content}">`);
+  }
+  return html.replace(/<\/head>/i, `    <meta name="robots" content="${content}">\n  </head>`);
+}
+
+function isIndexableSourceFile(file) {
+  return !GROUP_CONTAINER_FILES.has(file);
 }
 
 function injectDynamicI18nScript(html) {
@@ -328,11 +379,12 @@ function collectJsTranslations() {
       if (!/[가-힣]/.test(literal)) continue;
       for (const value of values) {
         if (typeof value === "string" && /[가-힣]/.test(value)) {
-          map[value] = translate(value);
+          if (!Object.prototype.hasOwnProperty.call(map, value)) map[value] = translate(value);
         }
       }
     }
   }
+  Object.assign(map, readJson("src/runtime-en.json", {}));
   return map;
 }
 
@@ -361,11 +413,31 @@ function transformJsForRuntimeI18n(map) {
   "use strict";
   const config = window.SF_I18N || {};
   const dictionary = ${payload};
-  const entries = Object.entries(dictionary).sort((a, b) => b[0].length - a[0].length);
+  const entries = Object.entries(dictionary)
+    .filter(([ko]) => ko.length > 1)
+    .sort((a, b) => b[0].length - a[0].length);
+  const patterns = [
+    [/^만 ([0-9]+)세$/, "$1 years old (international age)"],
+    [/^([0-9]+)년 ([0-9]+)개월 ([0-9]+)일$/, "$1 years, $2 months, $3 days"],
+    [/^([0-9]+)년생$/, "Born in $1"],
+    [/^총 ([0-9]+)개$/, "$1 total"],
+    [/^([0-9]+)개$/, "$1 items"],
+    [/^([0-9]+)세$/, "$1 years old"],
+    [/^([0-9]+)개월$/, "$1 months"],
+    [/^([0-9]+)주$/, "$1 weeks"],
+    [/^([0-9]+)일$/, "$1 days"],
+    [/^([0-9]+)시간$/, "$1 hours"],
+    [/^([0-9]+)분$/, "$1 minutes"],
+    [/^([0-9]+)초$/, "$1 seconds"],
+    [/^([0-9]+)번째 값$/, "Value $1"]
+  ];
   window.sfT = function sfT(value) {
     if (config.lang !== "en" || value == null) return value;
     let output = String(value);
     if (dictionary[output]) return dictionary[output];
+    for (const [pattern, replacement] of patterns) {
+      if (pattern.test(output)) return output.replace(pattern, replacement);
+    }
     for (const [ko, en] of entries) {
       if (ko && output.includes(ko)) output = output.split(ko).join(en);
     }
@@ -377,6 +449,7 @@ function transformJsForRuntimeI18n(map) {
 
 function renderFile(file, lang) {
   let html = readText(file);
+  if (AD_FREE_FILES.has(file)) html = removeAdSenseCode(html);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);
   html = removeExistingSeo(html);
   html = translateTaggedContent(html, lang);
@@ -388,6 +461,7 @@ function renderFile(file, lang) {
   html = injectLocaleScript(html, lang);
   html = injectDynamicI18nScript(html);
   html = injectSeo(html, lang, file);
+  if (GROUP_CONTAINER_FILES.has(file)) html = setRobotsDirective(html, "noindex, follow");
   html = html.replace(/\sdata-i18n="[^"]*"/g, "");
   html = html.replace(/\sdata-i18n-attrs="[^"]*"/g, "");
   return html;
@@ -453,6 +527,29 @@ function writeRootRedirect() {
     }
   }
 
+  for (const item of generatedTools) {
+    for (const lang of LANGS) {
+      const canonicalPath = localizedPath(lang, item.file);
+      redirects.push(`${canonicalPath}/ ${canonicalPath} 301`);
+      redirects.push(`/${lang}/${item.file} ${canonicalPath} 301`);
+    }
+  }
+
+  const retiredCalculators = {
+    age: "age-calculator",
+    anniversary: "anniversary",
+    date: "date-difference",
+    school: "school-years"
+  };
+  for (const [legacy, replacement] of Object.entries(retiredCalculators)) {
+    redirects.push(`/calculators/${legacy} /ko/tools/${replacement} 301`);
+    redirects.push(`/calculators/${legacy}.html /ko/tools/${replacement} 301`);
+    for (const lang of LANGS) {
+      redirects.push(`/${lang}/calculators/${legacy} /${lang}/tools/${replacement} 301`);
+      redirects.push(`/${lang}/calculators/${legacy}.html /${lang}/tools/${replacement} 301`);
+    }
+  }
+
   writeText("dist/_redirects", `${redirects.join("\n")}\n`);
 }
 
@@ -495,7 +592,11 @@ function writeAdsTxt() {
 
 function writeSitemap() {
   const urls = [];
-  for (const file of sourceFiles()) {
+  const files = [
+    ...sourceFiles().filter(isIndexableSourceFile),
+    ...generatedTools.map((item) => item.file)
+  ];
+  for (const file of files) {
     for (const lang of LANGS) {
       urls.push(`  <url>
     <loc>${localizedUrl(lang, file)}</loc>
@@ -517,10 +618,12 @@ copyDir(path.join(ROOT, "assets"), path.join(DIST, "assets"));
 writeFavicon();
 transformJsForRuntimeI18n(collectJsTranslations());
 buildPages();
+writeEnglishToolCopyAsset(toolCatalog);
+buildToolPages(toolCatalog);
 writeRootRedirect();
 writeHeaders();
 writeRobots();
 writeAdsTxt();
 writeSitemap();
 
-console.log(`Built ${sourceFiles().length} source pages for ${LANGS.join(", ")} into dist/`);
+console.log(`Built ${sourceFiles().length} source pages and ${generatedTools.length} focused tool pages for ${LANGS.join(", ")} into dist/`);

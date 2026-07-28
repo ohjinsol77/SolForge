@@ -37,11 +37,7 @@ const SOURCE_HTML_FILES = [
   "tools/pip-toolbox.html",
   "tools/utility-toolbox.html",
   "tools/world-holidays.html",
-  "calculators/age.html",
-  "calculators/all.html",
-  "calculators/anniversary.html",
-  "calculators/date.html",
-  "calculators/school.html"
+  "calculators/all.html"
 ];
 
 function readText(file) {

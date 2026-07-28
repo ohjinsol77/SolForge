@@ -107,6 +107,7 @@ function renderPage(lang, page) {
   const dynamicTranslations = Object.fromEntries(
     Object.entries(locales[lang]).filter(([key]) => key.startsWith("dynamic."))
   );
+  const allowAds = !["about", "privacy"].includes(page.slug);
   const schema = {
     "@context": "https://schema.org",
     "@type": page.slug === "index" ? "WebSite" : "Article",
@@ -129,7 +130,7 @@ function renderPage(lang, page) {
     <link rel="alternate" hreflang="ko" href="${SITE_URL}${route("ko", page.slug)}">
     <link rel="alternate" hreflang="en" href="${SITE_URL}${route("en", page.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}${route("ko", page.slug)}">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>
+    ${allowAds ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>` : ""}
     <meta property="og:type" content="${page.slug === "index" ? "website" : "article"}">
     <meta property="og:title" content="${escapeHtml(t(lang, `pages.${page.key}.meta.title`))}">
     <meta property="og:description" content="${escapeHtml(t(lang, `pages.${page.key}.meta.description`))}">

@@ -195,7 +195,7 @@
     const targetPath = switchLanguagePath(window.location.pathname, nextLang);
     toggle.href = `${targetPath}${window.location.search}${window.location.hash}`;
     toggle.textContent = nextLang === "en" ? "🇺🇸" : "🇰🇷";
-    toggle.setAttribute("aria-label", nextLang === "en" ? "Switch to English" : "한국어로 변경");
+    toggle.setAttribute("aria-label", nextLang === "en" ? "영어로 전환" : "Switch to Korean");
   }
 
   function switchLanguagePath(pathname, nextLang) {
@@ -283,15 +283,15 @@
     if (!nav) return;
     const nested = /\/(?:tools|calculators|guides)\//.test(window.location.pathname);
     const prefix = nested ? "../" : "";
-    const life = `${prefix}calculators/all`;
+    const tools = `${prefix}tools/`;
     nav.innerHTML = [
       `<p class="nav-title">${text("navPipTools")}</p>`,
-      navLink(`${prefix}tools/pip-toolbox#pip-clock`, "CLK", text("navPipClock")),
-      navLink(`${prefix}tools/pip-toolbox#pip-timer`, "TMR", text("navPipTimer")),
-      navLink(`${prefix}tools/pip-toolbox#pip-pomodoro`, "POM", text("navPipPomodoro")),
-      navLink(`${prefix}tools/pip-toolbox#pip-color`, "HEX", text("navPipColor")),
-      navLink(`${prefix}tools/pip-toolbox#pip-image`, "IMG", text("navPipImage")),
-      navLink(`${prefix}tools/pip-toolbox#pip-memo`, "MEM", text("navPipMemo")),
+      navLink(`${tools}pip-clock`, "CLK", text("navPipClock")),
+      navLink(`${tools}pip-timer`, "TMR", text("navPipTimer")),
+      navLink(`${tools}pip-pomodoro`, "POM", text("navPipPomodoro")),
+      navLink(`${tools}pip-color`, "HEX", text("navPipColor")),
+      navLink(`${tools}pip-image`, "IMG", text("navPipImage")),
+      navLink(`${tools}pip-memo`, "MEM", text("navPipMemo")),
       `<p class="nav-title">${text("navBossTimer")}</p>`,
       navLink(`${prefix}tools/mapleland-boss-timer`, "BOSS", text("navMaplelandBossTimer")),
       `<p class="nav-title">${text("navDeveloper")}</p>`,
@@ -299,32 +299,32 @@
       navLink(`${prefix}tools/mysql-query-prettier`, "Q", "Query Prettier"),
       navLink(`${prefix}tools/mysql-explain-visual`, "E", "EXPLAIN Visual"),
       navLink(`${prefix}tools/npm-package-info`, "npm", text("navNpm")),
-      navLink(`${prefix}tools/utility-toolbox`, "19", text("navUtility")),
-      navLink(`${prefix}tools/file-media-toolbox`, "12", text("navFileMedia")),
-      navLink(`${prefix}tools/advanced-toolbox`, "10", text("navAdvanced")),
+      navLink(`${tools}all?q=developer`, "19", text("navUtility")),
+      navLink(`${tools}all?q=media`, "12", text("navFileMedia")),
+      navLink(`${tools}all?q=advanced`, "10", text("navAdvanced")),
       `<p class="nav-title">${text("navGamingSection")}</p>`,
-      navLink(`${prefix}tools/gaming-lab`, "12", text("navGamingLab")),
-      navLink(`${prefix}tools/gaming-calculators`, "12", text("navGamingCalculators")),
-      navLink(`${prefix}tools/device-diagnostics`, "12", text("navDeviceDiagnostics")),
-      navLink(`${prefix}tools/display-diagnostics`, "12", text("navDisplayDiagnostics")),
-      navLink(`${prefix}tools/input-training`, "16", text("navInputTraining")),
-      navLink(`${prefix}tools/performance-lab`, "8", text("navPerformanceLab")),
+      navLink(`${tools}all?q=game`, "12", text("navGamingLab")),
+      navLink(`${tools}all?q=calculator`, "12", text("navGamingCalculators")),
+      navLink(`${tools}all?q=device`, "12", text("navDeviceDiagnostics")),
+      navLink(`${tools}all?q=display`, "12", text("navDisplayDiagnostics")),
+      navLink(`${tools}all?q=input`, "16", text("navInputTraining")),
+      navLink(`${tools}all?q=performance`, "8", text("navPerformanceLab")),
       `<p class="nav-title">${text("navLife")}</p>`,
       navGroup(text("navAgeGroup"), [
-        [`${life}#age-calculator`, text("navAgeCalculator")],
-        [`${life}#age-table`, text("navAgeTable")],
-        [`${life}#zodiac-tools`, text("navZodiac")]
+        [`${tools}age-calculator`, text("navAgeCalculator")],
+        [`${tools}age-table`, text("navAgeTable")],
+        [`${tools}zodiac-compatibility-samjae`, text("navZodiac")]
       ]),
       navGroup(text("navDateGroup"), [
-        [`${life}#date-info`, text("navDateInfo")],
-        [`${life}#date-difference`, text("navDateDiff")],
-        [`${life}#date-range-list`, text("navDateRange")],
-        [`${life}#date-move`, text("navDateMove")],
-        [`${life}#anniversary`, text("navAnniversary")]
+        [`${tools}date-info`, text("navDateInfo")],
+        [`${tools}date-difference`, text("navDateDiff")],
+        [`${tools}date-range-list`, text("navDateRange")],
+        [`${tools}date-move`, text("navDateMove")],
+        [`${tools}anniversary`, text("navAnniversary")]
       ]),
       navGroup(text("navLunarGroup"), [
-        [`${life}#lunar-converter`, text("navLunarConverter")],
-        [`${life}#lunar-anniversary`, text("navLunarAnniversary")]
+        [`${tools}solar-to-lunar`, text("navLunarConverter")],
+        [`${tools}lunar-anniversary`, text("navLunarAnniversary")]
       ]),
       navGroup(text("navFinanceGroup"), [
         [`${prefix}tools/exchange-rates`, text("navExchangeRates")],
@@ -333,11 +333,11 @@
         [`${prefix}tools/crypto-sentiment`, text("navCrypto")]
       ]),
       navGroup(text("navCalendarGroup"), [
-        [`${life}#holidays`, text("navHolidays")],
+        [`${tools}holidays`, text("navHolidays")],
         [`${prefix}tools/world-holidays`, text("navWorldHolidays")],
-        [`${life}#no-hand-days`, text("navNoHandDays")],
-        [`${life}#school-tools`, text("navSchool")],
-        [`${life}#fun-names`, text("navFunNames")]
+        [`${tools}no-hand-days`, text("navNoHandDays")],
+        [`${tools}school-years`, text("navSchool")],
+        [`${tools}fun-names`, text("navFunNames")]
       ])
     ].join("");
     initMobileNavigation(nav);
@@ -590,9 +590,14 @@
       }
     });
 
-    const initialQuery = new URLSearchParams(window.location.search).get("q");
+    const searchParams = new URLSearchParams(window.location.search);
+    const initialQuery = searchParams.get("q");
     if (initialQuery) input.value = initialQuery;
-    selectFilter("all");
+    const initialCategory = searchParams.get("category");
+    const validCategory = filterButtons.some((button) => button.dataset.toolFilter === initialCategory)
+      ? initialCategory
+      : "all";
+    selectFilter(validCategory);
   }
 
   function initFormatter() {
