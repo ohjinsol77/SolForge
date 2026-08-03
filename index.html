@@ -106,6 +106,9 @@
               <a href="tools/mysql-query-prettier.html" class="quick-tool quick-tool-orange">
                 <span class="quick-tool-icon"><span data-i18n="home.text.0056">SQL</span></span><span><strong><span data-i18n="home.text.0057">SQL Query 정리</span></strong><small><span data-i18n="home.text.0058">쿼리를 읽기 좋게 정렬</span></small></span><b aria-hidden="true">→</b>
               </a>
+              <a href="tempdb.html" class="quick-tool quick-tool-blue">
+                <span class="quick-tool-icon">DB</span><span><strong><span data-i18n="home.tempdb.title">DB 임시·더미 데이터 생성기</span></strong><small><span data-i18n="home.tempdb.body">DB 생성문에서 컬럼을 인식하고 규칙에 맞는 테스트 데이터를 생성합니다.</span></small></span><b aria-hidden="true">→</b>
+              </a>
             </div>
           </div>
         </section>
@@ -156,14 +159,18 @@
             <a class="secondary-link" href="tools/all.html"><span data-i18n="home.text.0070">전체 146개 도구 보기</span></a>
           </div>
           <div class="home-category-grid">
-            <a href="tempdb.html"><span>DB</span><strong><span data-i18n="home.tempdb.title">DB 임시·더미 데이터 생성기</span></strong><small><span data-i18n="home.tempdb.body">DB 생성문에서 컬럼을 인식하고 규칙에 맞는 테스트 데이터를 생성합니다.</span></small></a>
-            <a href="tools/all.html?category=developer"><span><span data-i18n="home.text.0071">DEV</span></span><strong><span data-i18n="home.text.0072">개발자 도구</span></strong><small><span data-i18n="home.text.0073">SQL, JSON, URL, UUID, Base64</span></small></a>
-            <a href="tools/all.html?category=text"><span><span data-i18n="home.text.0074">TXT</span></span><strong><span data-i18n="home.text.0075">텍스트 도구</span></strong><small><span data-i18n="home.text.0076">글자수, 한영타, 정리, 마스킹</span></small></a>
-            <a href="tools/all.html?category=media"><span><span data-i18n="home.text.0077">MEDIA</span></span><strong><span data-i18n="home.text.0078">파일·미디어</span></strong><small><span data-i18n="home.text.0079">이미지, 자막, 체크섬, 음성, EML</span></small></a>
-            <a href="tools/all.html?category=game"><span><span data-i18n="home.text.0080">GAME</span></span><strong><span data-i18n="home.text.0081">게임·장치 도구</span></strong><small><span data-i18n="home.text.0082">입력, 화면, 오디오, 성능 테스트</span></small></a>
-            <a href="tools/all.html?category=date"><span><span data-i18n="home.text.0083">CAL</span></span><strong><span data-i18n="home.text.0084">날짜·생활 계산</span></strong><small><span data-i18n="home.text.0085">나이, D-Day, 양음력, 공휴일</span></small></a>
-            <a href="tools/unit-tool.html"><span><span data-i18n="home.text.0086">UNIT</span></span><strong><span data-i18n="home.text.0087">단위·생활 도구</span></strong><small><span data-i18n="home.text.0088">단위, BMI, 전통 무게, 로또</span></small></a>
-            <a href="tools/exchange-rates.html"><span><span data-i18n="home.exchange.code">FX</span></span><strong><span data-i18n="home.exchange.title">환율 계산기</span></strong><small><span data-i18n="home.exchange.body">원화, 달러, 엔화, 유로 등 16개 통화 환산</span></small></a>
+            <a href="tools/developer.html"><span><span data-i18n="home.text.0071">DEV</span></span><strong><span data-i18n="home.text.0072">개발자 도구</span></strong><small><span data-i18n="home.text.0073">SQL, JSON, URL, UUID, Base64</span></small></a>
+            <a href="tools/text.html"><span><span data-i18n="home.text.0074">TXT</span></span><strong><span data-i18n="home.text.0075">텍스트 도구</span></strong><small><span data-i18n="home.text.0076">글자수, 한영타, 정리, 마스킹</span></small></a>
+            <a href="tools/media.html"><span><span data-i18n="home.text.0077">MEDIA</span></span><strong><span data-i18n="home.text.0078">파일·미디어</span></strong><small><span data-i18n="home.text.0079">이미지, 자막, 체크섬, 음성, EML</span></small></a>
+            <a href="tools/game.html"><span><span data-i18n="home.text.0080">GAME</span></span><strong><span data-i18n="home.text.0081">게임 플레이 테스트</span></strong><small><span data-i18n="home.text.0082">클릭, 반응속도, 에임, 기본 입력 테스트</span></small></a>
+            <a href="tools/game-calculator.html"><span>CALC</span><strong><span data-i18n="home.category.gameCalculator.title">게임 계산 도구</span></strong><small><span data-i18n="home.category.gameCalculator.body">감도, FOV, TTK, 화면 비율과 하드웨어 계산</span></small></a>
+            <a href="tools/device.html"><span>DEVICE</span><strong><span data-i18n="home.category.device.title">장치 진단</span></strong><small><span data-i18n="home.category.device.body">오디오, 카메라, 게임패드와 센서 점검</span></small></a>
+            <a href="tools/display.html"><span>DISPLAY</span><strong><span data-i18n="home.category.display.title">화면 진단</span></strong><small><span data-i18n="home.category.display.body">색상, 명암, 픽셀과 움직임 테스트</span></small></a>
+            <a href="tools/input.html"><span>INPUT</span><strong><span data-i18n="home.category.input.title">입력 장치 테스트</span></strong><small><span data-i18n="home.category.input.body">키보드·마우스 속도, 지연과 고스팅 점검</span></small></a>
+            <a href="tools/performance.html"><span>PERF</span><strong><span data-i18n="home.category.performance.title">성능·네트워크 점검</span></strong><small><span data-i18n="home.category.performance.body">CPU, GPU, 메모리, 대역폭과 화면 환경</span></small></a>
+            <a href="tools/date.html"><span><span data-i18n="home.text.0083">DATE</span></span><strong><span data-i18n="home.text.0084">날짜 계산 도구</span></strong><small><span data-i18n="home.text.0085">날짜 정보, D-Day, 기간과 기념일</span></small></a>
+            <a href="tools/life.html"><span><span data-i18n="home.text.0086">LIFE</span></span><strong><span data-i18n="home.text.0087">생활 도구</span></strong><small><span data-i18n="home.text.0088">단위, BMI, 전통 무게, 로또</span></small></a>
+            <a href="tools/finance.html"><span><span data-i18n="home.exchange.code">FIN</span></span><strong><span data-i18n="home.exchange.title">금융·시장 도구</span></strong><small><span data-i18n="home.exchange.body">환율, 국내외 주식과 암호화폐 시장 정보</span></small></a>
           </div>
         </section>
 

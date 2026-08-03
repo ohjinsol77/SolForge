@@ -61,53 +61,9 @@
       skinLabel: "테마",
       menuOpen: "메뉴",
       menuClose: "메뉴 닫기",
-      navPipTools: "pip 도구모음",
-      navPipClock: "시계",
-      navPipTimer: "타이머",
-      navPipPomodoro: "뽀모도로 타이머",
-      navPipColor: "색상 선택",
-      navPipImage: "이미지 리사이즈",
-      navPipMemo: "메모",
-      navBossTimer: "보스타이머",
-      navMaplelandBossTimer: "메이플랜드 보스타이머",
-      navDeveloper: "개발 도구",
-      navTempDb: "DB 임시·더미 데이터",
-      navNpm: "npm 패키지 정보",
-      navUtility: "확장 도구 모음",
-      navFileMedia: "파일·미디어 도구",
-      navAdvanced: "고급 도구",
-      navGamingSection: "게임 · 장치 테스트",
-      navGamingLab: "게임 테스트 랩",
-      navGamingCalculators: "게임 계산기 랩",
-      navDeviceDiagnostics: "장치 진단 랩",
-      navDisplayDiagnostics: "화면 진단 랩",
-      navInputTraining: "입력 연습 랩",
-      navPerformanceLab: "성능 진단 랩",
-      navLife: "생활 계산기",
-      navAgeGroup: "나이 · 띠",
-      navAgeCalculator: "나이·만나이 계산기",
-      navAgeTable: "나이표·나이 용어",
-      navZodiac: "띠·띠궁합·삼재",
-      navDateGroup: "날짜",
-      navDateInfo: "날짜 정보",
-      navDateDiff: "디데이·날짜 차이",
-      navDateRange: "기간 날짜 목록·평일",
-      navDateMove: "날짜 더하기·빼기",
-      navAnniversary: "기념일·아기 100일",
-      navLunarGroup: "양력 · 음력",
-      navLunarConverter: "양음력 변환",
-      navLunarAnniversary: "음력 기념일 변환",
-      navFinanceGroup: "금융 · 시장",
-      navKoreaStocks: "국내 주식 조회",
-      navGlobalStocks: "해외 주식 조회",
-      navCrypto: "코인 공포탐욕 지표",
-      navExchangeRates: "환율 계산기",
-      navCalendarGroup: "달력 · 학교",
-      navHolidays: "우리나라 공휴일",
-      navWorldHolidays: "세계 공휴일 달력",
-      navNoHandDays: "손없는 날",
-      navSchool: "입학·졸업·학생 나이",
-      navFunNames: "재미 이름짓기"
+      navDirectory: "전체 도구",
+      navCategories: "도구 카테고리",
+      navCategoryOverview: "카테고리 전체 보기"
     },
     en: {
       skinApply: "Apply",
@@ -115,53 +71,9 @@
       skinLabel: "Theme",
       menuOpen: "Menu",
       menuClose: "Close menu",
-      navPipTools: "PIP Toolbox",
-      navPipClock: "Clock",
-      navPipTimer: "Timer",
-      navPipPomodoro: "Pomodoro Timer",
-      navPipColor: "Color Picker",
-      navPipImage: "Image Resize",
-      navPipMemo: "Memo",
-      navBossTimer: "Boss Timers",
-      navMaplelandBossTimer: "Mapleland Boss Timer",
-      navDeveloper: "Developer Tools",
-      navTempDb: "DB Test Data Generator",
-      navNpm: "npm Package Info",
-      navUtility: "Utility Toolbox",
-      navFileMedia: "File & Media Tools",
-      navAdvanced: "Advanced Tools",
-      navGamingSection: "Game & Device Tests",
-      navGamingLab: "Game Test Lab",
-      navGamingCalculators: "Game Calculator Lab",
-      navDeviceDiagnostics: "Device Diagnostics Lab",
-      navDisplayDiagnostics: "Display Diagnostics Lab",
-      navInputTraining: "Input Training Lab",
-      navPerformanceLab: "Performance Lab",
-      navLife: "Life Calculators",
-      navAgeGroup: "Age & Zodiac",
-      navAgeCalculator: "Age Calculator",
-      navAgeTable: "Age Table",
-      navZodiac: "Zodiac Match & Samjae",
-      navDateGroup: "Dates",
-      navDateInfo: "Date Info",
-      navDateDiff: "D-Day & Date Difference",
-      navDateRange: "Date Range & Weekdays",
-      navDateMove: "Add or Subtract Dates",
-      navAnniversary: "Anniversary Calculator",
-      navLunarGroup: "Solar & Lunar",
-      navLunarConverter: "Solar/Lunar Converter",
-      navLunarAnniversary: "Lunar Anniversary Converter",
-      navFinanceGroup: "Finance & Markets",
-      navKoreaStocks: "Korean Stocks",
-      navGlobalStocks: "Global Stocks",
-      navCrypto: "Crypto Fear & Greed",
-      navExchangeRates: "Currency Converter",
-      navCalendarGroup: "Calendar & School",
-      navHolidays: "Korean Holidays",
-      navWorldHolidays: "World Holiday Calendar",
-      navNoHandDays: "No-Hand Days",
-      navSchool: "School Year Calculator",
-      navFunNames: "Fun Name Generator"
+      navDirectory: "All Tools",
+      navCategories: "Tool Categories",
+      navCategoryOverview: "View Category"
     }
   };
   function init() {
@@ -281,66 +193,46 @@
   function initNavigation() {
     const nav = $("[data-solforge-nav]") || $(".side-nav");
     if (!nav) return;
-    const nested = /\/(?:tools|calculators|guides)\//.test(window.location.pathname);
-    const prefix = nested ? "../" : "";
-    const tools = `${prefix}tools/`;
+    const lang = document.documentElement.lang === "en" ? "en" : "ko";
+    const root = `/${lang}/`;
+    const catalog = Array.isArray(window.SF_TOOL_CATALOG) ? window.SF_TOOL_CATALOG : [];
+    const categories = Array.isArray(window.SF_TOOL_CATEGORIES) ? window.SF_TOOL_CATEGORIES : [];
+    const pathSlug = window.location.pathname.replace(/\/+$/, "").split("/").pop()?.replace(/\.html$/, "") || "";
+    const pageTool = document.body.dataset.pageTool || pathSlug;
+    const activeTool = catalog.find((item) => item.href.replace(/^\.\.\//, "").split("/").pop() === pageTool);
+    const activeCategory = document.body.dataset.pageCategory || activeTool?.category || "";
+
+    if (!catalog.length || !categories.length) {
+      nav.innerHTML = navLink(`${root}tools/all`, "ALL", text("navDirectory"));
+      initMobileNavigation(nav);
+      return;
+    }
+
     nav.innerHTML = [
-      `<p class="nav-title">${text("navPipTools")}</p>`,
-      navLink(`${tools}pip-clock`, "CLK", text("navPipClock")),
-      navLink(`${tools}pip-timer`, "TMR", text("navPipTimer")),
-      navLink(`${tools}pip-pomodoro`, "POM", text("navPipPomodoro")),
-      navLink(`${tools}pip-color`, "HEX", text("navPipColor")),
-      navLink(`${tools}pip-image`, "IMG", text("navPipImage")),
-      navLink(`${tools}pip-memo`, "MEM", text("navPipMemo")),
-      `<p class="nav-title">${text("navBossTimer")}</p>`,
-      navLink(`${prefix}tools/mapleland-boss-timer`, "BOSS", text("navMaplelandBossTimer")),
-      `<p class="nav-title">${text("navDeveloper")}</p>`,
-      navLink(`${prefix}tempdb`, "DB", text("navTempDb")),
-      navLink(`${prefix}tools/mysql-query-prettier`, "Q", "Query Prettier"),
-      navLink(`${prefix}tools/mysql-explain-visual`, "E", "EXPLAIN Visual"),
-      navLink(`${prefix}tools/npm-package-info`, "npm", text("navNpm")),
-      navLink(`${tools}all?q=developer`, "19", text("navUtility")),
-      navLink(`${tools}all?q=media`, "12", text("navFileMedia")),
-      navLink(`${tools}all?q=advanced`, "10", text("navAdvanced")),
-      `<p class="nav-title">${text("navGamingSection")}</p>`,
-      navLink(`${tools}all?q=game`, "12", text("navGamingLab")),
-      navLink(`${tools}all?q=calculator`, "12", text("navGamingCalculators")),
-      navLink(`${tools}all?q=device`, "12", text("navDeviceDiagnostics")),
-      navLink(`${tools}all?q=display`, "12", text("navDisplayDiagnostics")),
-      navLink(`${tools}all?q=input`, "16", text("navInputTraining")),
-      navLink(`${tools}all?q=performance`, "8", text("navPerformanceLab")),
-      `<p class="nav-title">${text("navLife")}</p>`,
-      navGroup(text("navAgeGroup"), [
-        [`${tools}age-calculator`, text("navAgeCalculator")],
-        [`${tools}age-table`, text("navAgeTable")],
-        [`${tools}zodiac-compatibility-samjae`, text("navZodiac")]
-      ]),
-      navGroup(text("navDateGroup"), [
-        [`${tools}date-info`, text("navDateInfo")],
-        [`${tools}date-difference`, text("navDateDiff")],
-        [`${tools}date-range-list`, text("navDateRange")],
-        [`${tools}date-move`, text("navDateMove")],
-        [`${tools}anniversary`, text("navAnniversary")]
-      ]),
-      navGroup(text("navLunarGroup"), [
-        [`${tools}solar-to-lunar`, text("navLunarConverter")],
-        [`${tools}lunar-anniversary`, text("navLunarAnniversary")]
-      ]),
-      navGroup(text("navFinanceGroup"), [
-        [`${prefix}tools/exchange-rates`, text("navExchangeRates")],
-        [`${prefix}tools/korea-stocks`, text("navKoreaStocks")],
-        [`${prefix}tools/global-stocks`, text("navGlobalStocks")],
-        [`${prefix}tools/crypto-sentiment`, text("navCrypto")]
-      ]),
-      navGroup(text("navCalendarGroup"), [
-        [`${tools}holidays`, text("navHolidays")],
-        [`${prefix}tools/world-holidays`, text("navWorldHolidays")],
-        [`${tools}no-hand-days`, text("navNoHandDays")],
-        [`${tools}school-years`, text("navSchool")],
-        [`${tools}fun-names`, text("navFunNames")]
-      ])
+      navLink(`${root}tools/all`, "ALL", text("navDirectory")),
+      `<p class="nav-title">${escapeHtml(text("navCategories"))}</p>`,
+      categories.map((category) => navCategory(category, catalog, root, activeCategory)).join("")
     ].join("");
     initMobileNavigation(nav);
+  }
+
+  function navCategory(category, catalog, root, activeCategory) {
+    const items = catalog.filter((item) => item.category === category.id);
+    const open = category.id === activeCategory ? " open" : "";
+    const toolLinks = items.map((item) => {
+      const href = item.href.startsWith("../")
+        ? `${root}${item.href.slice(3)}`
+        : `${root}tools/${item.href}`;
+      return `<a href="${escapeHtml(href)}" data-nav-link>${escapeHtml(item.title)}</a>`;
+    }).join("");
+    return [
+      `<details class="nav-group nav-category"${open} data-nav-category="${escapeHtml(category.id)}">`,
+      `<summary><span class="nav-category-code">${escapeHtml(category.code)}</span><span>${escapeHtml(category.label)}</span><small>${items.length}</small></summary>`,
+      '<div class="nav-submenu">',
+      `<a class="nav-category-overview" href="${root}tools/${escapeHtml(category.href)}" data-nav-link>${escapeHtml(text("navCategoryOverview"))}</a>`,
+      toolLinks,
+      "</div></details>"
+    ].join("");
   }
 
   function initMobileNavigation(nav) {

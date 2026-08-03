@@ -23,6 +23,7 @@ const { translate } = require("./generate-en-locale");
 const {
   AD_FREE_TOOL_SLUGS,
   buildToolPages,
+  generatedCategoryRecords,
   generatedToolRecords,
   loadToolCatalog,
   writeEnglishToolCopyAsset
@@ -31,6 +32,7 @@ const {
 const DIST = path.join(ROOT, "dist");
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
+const generatedCategories = generatedCategoryRecords(toolCatalog);
 const locales = Object.fromEntries(LANGS.map((lang) => [lang, readJson(`src/locales/${lang}.json`, {})]));
 const koToEn = new Map();
 for (const [key, value] of Object.entries(locales.ko || {})) {
@@ -292,6 +294,18 @@ function injectDynamicI18nScript(html) {
   return html.replace(/<\/head>/i, `    <script src="/assets/js/i18n-dynamic.js"></script>\n  </head>`);
 }
 
+function injectToolCatalogScripts(html) {
+  if (/assets\/js\/tool-catalog\.js/.test(html)) return html;
+  const scripts = [
+    '<script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>',
+    '<script src="/assets/js/tool-catalog.js?v=20260803-categories"></script>'
+  ].join("\n    ");
+  return html.replace(
+    /(<script\b[^>]*\bsrc="[^"]*assets\/js\/app\.js[^"]*"[^>]*><\/script>)/i,
+    `${scripts}\n    $1`
+  );
+}
+
 function parseJs(source) {
   const options = { ecmaVersion: "latest", allowHashBang: true };
   try {
@@ -449,6 +463,8 @@ function transformJsForRuntimeI18n(map) {
 
 function renderFile(file, lang) {
   let html = readText(file);
+  html = html.replace(/assets\/js\/app\.js(?:\?v=[^"]*)?/g, "assets/js/app.js?v=20260803-categories");
+  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20260803-categories");
   if (AD_FREE_FILES.has(file)) html = removeAdSenseCode(html);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);
   html = removeExistingSeo(html);
@@ -460,6 +476,7 @@ function renderFile(file, lang) {
   html = localizeJsonLd(html, lang, file);
   html = injectLocaleScript(html, lang);
   html = injectDynamicI18nScript(html);
+  html = injectToolCatalogScripts(html);
   html = injectSeo(html, lang, file);
   if (GROUP_CONTAINER_FILES.has(file)) html = setRobotsDirective(html, "noindex, follow");
   html = html.replace(/\sdata-i18n="[^"]*"/g, "");
@@ -508,8 +525,36 @@ function writeRootRedirect() {
     "/public/index.html /ko/ 301"
   ];
 
+  const groupReplacements = {
+    "calculators/all.html": "tools/all",
+    "tools/advanced-toolbox.html": "tools/all",
+    "tools/device-diagnostics.html": "tools/device",
+    "tools/display-diagnostics.html": "tools/display",
+    "tools/file-media-toolbox.html": "tools/media",
+    "tools/gaming-calculators.html": "tools/game-calculator",
+    "tools/gaming-lab.html": "tools/game",
+    "tools/input-training.html": "tools/input",
+    "tools/performance-lab.html": "tools/performance",
+    "tools/pip-toolbox.html": "tools/pip",
+    "tools/utility-toolbox.html": "tools/developer"
+  };
+  for (const [file, target] of Object.entries(groupReplacements)) {
+    const legacyPath = `/${normalizePagePath(file)}`;
+    redirects.push(`${legacyPath} /ko/${target} 301`);
+    redirects.push(`${legacyPath}/ /ko/${target} 301`);
+    redirects.push(`/${file} /ko/${target} 301`);
+    redirects.push(`/public${legacyPath} /ko/${target} 301`);
+    redirects.push(`/public/${file} /ko/${target} 301`);
+    for (const lang of LANGS) {
+      redirects.push(`/${lang}/${normalizePagePath(file)} /${lang}/${target} 301`);
+      redirects.push(`/${lang}/${normalizePagePath(file)}/ /${lang}/${target} 301`);
+      redirects.push(`/${lang}/${file} /${lang}/${target} 301`);
+    }
+  }
+
   for (const file of sourceFiles()) {
     if (file === "index.html") continue;
+    if (GROUP_CONTAINER_FILES.has(file)) continue;
     const legacyPath = `/${normalizePagePath(file)}`;
     const koPath = localizedPath("ko", file);
 
@@ -532,6 +577,14 @@ function writeRootRedirect() {
       const canonicalPath = localizedPath(lang, item.file);
       redirects.push(`${canonicalPath}/ ${canonicalPath} 301`);
       redirects.push(`/${lang}/${item.file} ${canonicalPath} 301`);
+    }
+  }
+
+  for (const category of generatedCategories) {
+    for (const lang of LANGS) {
+      const canonicalPath = localizedPath(lang, category.file);
+      redirects.push(`${canonicalPath}/ ${canonicalPath} 301`);
+      redirects.push(`/${lang}/${category.file} ${canonicalPath} 301`);
     }
   }
 
@@ -594,7 +647,8 @@ function writeSitemap() {
   const urls = [];
   const files = [
     ...sourceFiles().filter(isIndexableSourceFile),
-    ...generatedTools.map((item) => item.file)
+    ...generatedTools.map((item) => item.file),
+    ...generatedCategories.map((item) => item.file)
   ];
   for (const file of files) {
     for (const lang of LANGS) {
@@ -626,4 +680,4 @@ writeRobots();
 writeAdsTxt();
 writeSitemap();
 
-console.log(`Built ${sourceFiles().length} source pages and ${generatedTools.length} focused tool pages for ${LANGS.join(", ")} into dist/`);
+console.log(`Built ${sourceFiles().length} source pages, ${generatedTools.length} focused tool pages, and ${generatedCategories.length} category pages for ${LANGS.join(", ")} into dist/`);

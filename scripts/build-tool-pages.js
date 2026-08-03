@@ -7,6 +7,11 @@ const ROOT = path.resolve(__dirname, "..");
 const SITE_URL = "https://solforge.cloud";
 const ADSENSE_CLIENT = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
+const CATEGORY_ORDER = [
+  "developer", "text", "media", "pip", "boss", "game", "game-calculator",
+  "device", "display", "input", "performance", "finance", "life", "age",
+  "date", "lunar", "calendar"
+];
 const AD_FREE_TOOL_SLUGS = new Set([
   "pip-clock",
   "pip-timer",
@@ -46,9 +51,34 @@ const categoryCopy = {
       limit: "브라우저가 지원하는 형식과 메모리 한계가 있으므로 원본 파일을 보관하고 결과 품질을 직접 확인하세요."
     },
     game: {
-      label: "게임·장치 도구",
-      use: "입력 장치의 반응, 화면 상태와 하드웨어 관련 수치를 같은 환경에서 반복 측정할 때 유용합니다.",
+      label: "게임 플레이 테스트",
+      use: "클릭, 반응속도와 에임처럼 플레이에 직접 연결되는 입력을 같은 환경에서 반복 측정할 때 유용합니다.",
       limit: "브라우저 이벤트 주기, 장치 드라이버, 화면 주사율과 시스템 부하에 따라 측정값이 달라질 수 있습니다."
+    },
+    "game-calculator": {
+      label: "게임 계산 도구",
+      use: "감도, FOV, TTK와 화면·하드웨어 수치를 목적별로 계산하고 설정값을 비교할 때 유용합니다.",
+      limit: "게임마다 적용하는 단위, 배율, 시야각 기준과 반올림 방식이 다를 수 있으므로 게임 내 설정과 함께 확인하세요."
+    },
+    device: {
+      label: "장치 진단",
+      use: "오디오, 카메라, 게임패드와 센서처럼 브라우저가 인식하는 장치 상태를 항목별로 점검할 때 유용합니다.",
+      limit: "권한 설정, 운영체제, 드라이버와 브라우저의 장치 API 지원 범위에 따라 사용할 수 있는 측정 항목이 달라집니다."
+    },
+    display: {
+      label: "화면 진단",
+      use: "색상, 명암, 픽셀과 움직임을 서로 다른 테스트 패턴으로 나누어 화면 상태를 확인할 때 유용합니다.",
+      limit: "패널 특성, 밝기 설정, 색상 프로필과 주변 조명에 따라 보이는 결과가 달라질 수 있습니다."
+    },
+    input: {
+      label: "입력 장치 테스트",
+      use: "키보드와 마우스의 속도, 지연, 고스팅과 이동 상태를 같은 조건에서 반복 확인할 때 유용합니다.",
+      limit: "브라우저 이벤트 처리, 운영체제 설정, 연결 방식과 현재 시스템 부하가 측정값에 영향을 줄 수 있습니다."
+    },
+    performance: {
+      label: "성능·네트워크 점검",
+      use: "CPU, GPU, 메모리, 대역폭과 화면 환경을 목적별 점검 항목으로 나누어 비교할 때 유용합니다.",
+      limit: "짧은 브라우저 측정은 전문 벤치마크를 대체하지 않으며 절전 모드, 백그라운드 작업과 발열 상태에 따라 달라질 수 있습니다."
     },
     finance: {
       label: "금융·시장 도구",
@@ -83,62 +113,87 @@ const categoryCopy = {
   },
   en: {
     pip: {
-      label: "PIP workflow tool",
+      label: "PIP Workflow Tools",
       use: "Useful when you want a small companion window that stays visible while you work through a repeating task.",
       limit: "Document Picture-in-Picture support and background-tab behavior vary by browser and operating system."
     },
     boss: {
-      label: "Game timer",
+      label: "Game Timers",
       use: "Use it to record repeating patterns and cooldowns while keeping track of the current play sequence.",
       limit: "Presets may differ from actual timings after game updates or when server, party, and start conditions change."
     },
     developer: {
-      label: "Developer tool",
+      label: "Developer Tools",
       use: "Designed for development tasks that benefit from quick inspection and comparison, including debugging and code review.",
       limit: "Before using the result in production, verify the input format, character encoding, runtime, and security requirements."
     },
     text: {
-      label: "Text tool",
+      label: "Text Tools",
       use: "Useful for reducing repetitive text work before publishing, documenting, or cleaning a data set.",
       limit: "Keep the original text and verify that line breaks, whitespace, and character encoding remain as intended."
     },
     media: {
-      label: "File and media tool",
+      label: "File & Media Tools",
       use: "Use it to inspect a local file or create a converted result without installing a separate desktop application.",
       limit: "Browser format support and available memory vary. Keep the source file and inspect the exported result."
     },
     game: {
-      label: "Game and device tool",
-      use: "Useful for repeating input, display, and hardware-related checks in the same browser environment.",
+      label: "Gameplay Tests",
+      use: "Useful for repeating play-related input checks such as clicking, reaction time, and aim in the same environment.",
       limit: "Results may vary with browser event timing, device drivers, refresh rate, and current system load."
     },
+    "game-calculator": {
+      label: "Gaming Calculators",
+      use: "Useful for comparing sensitivity, FOV, TTK, display, and hardware values one calculation at a time.",
+      limit: "Games may use different units, multipliers, FOV definitions, and rounding rules. Confirm the result against the in-game settings."
+    },
+    device: {
+      label: "Device Diagnostics",
+      use: "Useful for checking browser-visible audio, camera, gamepad, and sensor behavior one device at a time.",
+      limit: "Available readings depend on permissions, the operating system, device drivers, and browser API support."
+    },
+    display: {
+      label: "Display Diagnostics",
+      use: "Useful for inspecting color, contrast, pixels, and motion with a separate pattern for each display check.",
+      limit: "Panel characteristics, brightness, color profiles, and ambient light can change what you see."
+    },
+    input: {
+      label: "Input Device Tests",
+      use: "Useful for repeating keyboard and mouse speed, latency, ghosting, and movement checks under consistent conditions.",
+      limit: "Browser event handling, operating-system settings, connection type, and current system load can affect the readings."
+    },
+    performance: {
+      label: "Performance & Network Checks",
+      use: "Useful for reviewing CPU, GPU, memory, bandwidth, and display environment as separate checks.",
+      limit: "Short browser checks do not replace dedicated benchmarks and can vary with power saving, background work, and thermal conditions."
+    },
     finance: {
-      label: "Finance and market tool",
+      label: "Finance & Market Tools",
       use: "Use it to compare market or currency values quickly and identify items that need further verification.",
       limit: "Displayed data may be delayed or incomplete and is not investment advice. Check official disclosures and live quotes before trading."
     },
     life: {
-      label: "Everyday utility",
+      label: "Everyday Tools",
       use: "Useful for quick unit conversions and reference calculations that come up in everyday tasks.",
       limit: "Rounding and reference standards can affect the result. Confirm critical values with an authoritative source."
     },
     age: {
-      label: "Age and zodiac tool",
+      label: "Age & Zodiac Tools",
       use: "Use it to organize and compare age-related information from a birth date or reference year.",
       limit: "For legal adulthood, administrative eligibility, or age-gated services, follow the applicable law and provider rules."
     },
     date: {
-      label: "Date calculator",
+      label: "Date Calculators",
       use: "Useful for schedules, deadlines, and anniversaries where the exact reference date matters.",
       limit: "Results can change depending on date inclusion, time zone, and business-day rules."
     },
     lunar: {
-      label: "Solar and lunar calendar tool",
+      label: "Solar & Lunar Tools",
       use: "Use it to check lunar birthdays and anniversaries or transfer them to a solar-calendar schedule.",
       limit: "Check leap-month handling and the supported year range, then verify important dates with an authoritative calendar."
     },
     calendar: {
-      label: "Calendar and school tool",
+      label: "Calendar & School Tools",
       use: "Useful for reviewing holidays, school timelines, and other year-based reference information.",
       limit: "Temporary holidays, elections, school-specific calendars, and administrative exceptions may not be included."
     }
@@ -189,7 +244,13 @@ const ui = {
     category: "분류",
     direct: "직접 실행",
     browser: "브라우저 기반",
-    author: "SolForge 편집팀"
+    author: "SolForge 편집팀",
+    categoryBadge: "기능 카테고리",
+    categoryList: (label) => `${label} 목록`,
+    categoryLead: (label, count) => `${label} 카테고리의 ${count}개 기능을 한 화면에 묶어 실행하는 대신, 목적에 맞는 개별 도구 페이지로 나누어 제공합니다.`,
+    chooseTool: "필요한 기능을 선택하세요",
+    categoryCount: (count) => `${count}개 개별 도구`,
+    categoryGuide: "카테고리를 먼저 고른 뒤 하위 메뉴에서 정확한 기능을 선택할 수 있습니다."
   },
   en: {
     skip: "Skip to main content",
@@ -234,7 +295,13 @@ const ui = {
     category: "Category",
     direct: "Direct access",
     browser: "Browser based",
-    author: "SolForge Editorial"
+    author: "SolForge Editorial",
+    categoryBadge: "Tool category",
+    categoryList: (label) => `${label} Directory`,
+    categoryLead: (label, count) => `The ${label} category provides ${count} focused tools on separate pages instead of combining every feature in one workspace.`,
+    chooseTool: "Choose the exact tool you need",
+    categoryCount: (count) => `${count} dedicated tools`,
+    categoryGuide: "Choose a category first, then use its submenu to open the exact feature you need."
   }
 };
 
@@ -300,6 +367,13 @@ function generatedToolRecords(catalog) {
     slugs.add(item.slug);
   }
   return records;
+}
+
+function generatedCategoryRecords(catalog) {
+  const available = new Set(catalog.map((item) => item.category));
+  return CATEGORY_ORDER
+    .filter((id) => available.has(id))
+    .map((id) => ({ id, slug: id, file: `tools/${id}.html` }));
 }
 
 function sourceFileFor(item) {
@@ -397,7 +471,7 @@ function prepareToolMarkup(section, slug) {
 function extractScripts(html) {
   const scripts = [];
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
-    const src = match[1];
+    const src = match[1].replace(/assets\/js\/app\.js(?:\?v=.*)?$/, "assets/js/app.js?v=20260803-categories");
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
   }
@@ -1009,10 +1083,8 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
           <span class="brand-mark">SF</span>
           <span><strong>SolForge</strong><small>${escapeHtml(text.brandTagline)}</small></span>
         </a>
-        <nav class="independent-nav" aria-label="${escapeHtml(text.directory)}">
+        <nav class="side-nav" aria-label="${escapeHtml(text.directory)}" data-solforge-nav>
           <a class="nav-link active" href="/${lang}/tools/all"><span class="nav-icon">ALL</span><span>${escapeHtml(text.directory)}</span></a>
-          <a class="nav-link" href="/${lang}/features"><span class="nav-icon">?</span><span>${escapeHtml(text.features)}</span></a>
-          <a class="nav-link" href="/${lang}/guides/hardware-checks"><span class="nav-icon">G</span><span>${escapeHtml(text.guides)}</span></a>
         </nav>
         <div class="side-card"><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(item.description)}</span></div>
       </aside>
@@ -1033,6 +1105,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
         <nav class="tool-breadcrumb" aria-label="Breadcrumb">
           <a href="/${lang}/">${lang === "ko" ? "홈" : "Home"}</a><span aria-hidden="true">/</span>
           <a href="/${lang}/tools/all">${escapeHtml(text.directory)}</a><span aria-hidden="true">/</span>
+          <a href="/${lang}/tools/${escapeHtml(item.category)}">${escapeHtml(category.label)}</a><span aria-hidden="true">/</span>
           <span aria-current="page">${escapeHtml(item.title)}</span>
         </nav>
 
@@ -1091,7 +1164,154 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
         </footer>
       </main>
     </div>
+    <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
+    <script src="/assets/js/tool-catalog.js?v=20260803-categories"></script>
     ${scripts}
+  </body>
+</html>
+`;
+}
+
+function renderCategoryPage({ catalog, lang, categoryId }) {
+  const text = ui[lang];
+  const category = categoryCopy[lang][categoryId];
+  const items = catalog.filter((item) => item.category === categoryId);
+  const otherLang = lang === "ko" ? "en" : "ko";
+  const canonical = `${SITE_URL}/${lang}/tools/${categoryId}`;
+  const title = text.categoryList(category.label);
+  const description = lang === "ko"
+    ? `${category.label}의 ${items.length}개 기능을 카테고리와 하위 메뉴에서 고른 뒤 각각의 독립 페이지에서 실행하세요.`
+    : `Choose from ${items.length} focused ${category.label.toLowerCase()} and open each feature on its own page.`;
+  const itemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: title,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.title,
+      url: `${SITE_URL}${localizedToolHref(item, lang)}`
+    }))
+  };
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    description,
+    url: canonical,
+    inLanguage: lang,
+    isPartOf: { "@type": "WebSite", name: "SolForge", url: SITE_URL }
+  };
+  const cards = items.map((item) => (
+    `<a class="catalog-card" href="${localizedToolHref(item, lang)}">`
+      + `<span class="catalog-icon icon-${escapeHtml(categoryId)}">${escapeHtml(item.icon)}</span>`
+      + '<span class="catalog-copy">'
+      + `<span class="catalog-meta">${escapeHtml(category.label)}</span>`
+      + `<strong>${escapeHtml(item.title)}</strong>`
+      + `<small>${escapeHtml(item.description)}</small>`
+      + '</span><span class="catalog-arrow" aria-hidden="true">→</span></a>'
+  )).join("");
+
+  return `<!doctype html>
+<html lang="${lang}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${escapeHtml(title)} - SolForge</title>
+    <meta name="description" content="${escapeHtml(description)}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="author" content="SolForge">
+    <meta name="theme-color" content="#f5f8fc">
+    <link rel="canonical" href="${canonical}">
+    <link rel="alternate" hreflang="ko" href="${SITE_URL}/ko/tools/${categoryId}">
+    <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${categoryId}">
+    <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${categoryId}">
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260803-categories">
+    <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SolForge">
+    <meta property="og:title" content="${escapeHtml(title)} - SolForge">
+    <meta property="og:description" content="${escapeHtml(description)}">
+    <meta property="og:url" content="${canonical}">
+    <script type="application/ld+json">${JSON.stringify(collectionSchema).replace(/</g, "\\u003c")}</script>
+    <script type="application/ld+json">${JSON.stringify(itemList).replace(/</g, "\\u003c")}</script>
+    <script>window.SF_I18N=${JSON.stringify({ lang, switchTo: otherLang, switchLabel: text.language }).replace(/</g, "\\u003c")};</script>
+    <script src="/assets/js/i18n-dynamic.js"></script>
+  </head>
+  <body data-page-category="${escapeHtml(categoryId)}">
+    <a class="skip-link" href="#main">${escapeHtml(text.skip)}</a>
+    <div class="site-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/${lang}/" aria-label="SolForge">
+          <span class="brand-mark">SF</span>
+          <span><strong>SolForge</strong><small>${escapeHtml(text.brandTagline)}</small></span>
+        </a>
+        <nav class="side-nav" aria-label="${escapeHtml(text.directory)}" data-solforge-nav>
+          <a class="nav-link active" href="/${lang}/tools/all"><span class="nav-icon">ALL</span><span>${escapeHtml(text.directory)}</span></a>
+        </nav>
+        <div class="side-card"><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(text.categoryGuide)}</span></div>
+      </aside>
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="${escapeHtml(text.about)}">
+            <a href="/${lang}/tools/all">${escapeHtml(text.directory)}</a>
+            <a href="/${lang}/features">${escapeHtml(text.features)}</a>
+            <a href="/${lang}/about">${escapeHtml(text.about)}</a>
+            <a href="/${lang}/contact">${escapeHtml(text.contact)}</a>
+          </nav>
+          <div class="topbar-controls">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/${otherLang}/tools/${categoryId}" aria-label="${escapeHtml(text.language)}">${lang === "ko" ? "🇺🇸" : "🇰🇷"}</a>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          </div>
+        </header>
+
+        <nav class="tool-breadcrumb" aria-label="Breadcrumb">
+          <a href="/${lang}/">${lang === "ko" ? "홈" : "Home"}</a><span aria-hidden="true">/</span>
+          <a href="/${lang}/tools/all">${escapeHtml(text.directory)}</a><span aria-hidden="true">/</span>
+          <span aria-current="page">${escapeHtml(category.label)}</span>
+        </nav>
+
+        <section class="independent-tool-hero category-directory-hero">
+          <div>
+            <p class="eyebrow">${escapeHtml(text.categoryBadge)}</p>
+            <span class="hero-badge">${escapeHtml(text.categoryCount(items.length))}</span>
+            <h1>${escapeHtml(title)}</h1>
+            <p class="hero-description">${escapeHtml(text.categoryLead(category.label, items.length))}</p>
+          </div>
+          <div class="independent-tool-facts" aria-label="${escapeHtml(text.categoryGuide)}">
+            <div><strong>01</strong><span>${escapeHtml(text.categoryGuide)}</span></div>
+            <div><strong>02</strong><span>${escapeHtml(text.ready)}</span></div>
+            <div><strong>03</strong><span>${escapeHtml(text.local)}</span></div>
+          </div>
+        </section>
+
+        <section class="directory-page category-directory" aria-labelledby="category-tools-title">
+          <div class="directory-heading">
+            <div><p class="eyebrow">${escapeHtml(category.label)}</p><h2 id="category-tools-title">${escapeHtml(text.chooseTool)}</h2><p>${escapeHtml(category.use)}</p></div>
+            <strong class="tool-result-count">${escapeHtml(text.categoryCount(items.length))}</strong>
+          </div>
+          <div class="tool-catalog category-tool-grid">${cards}</div>
+        </section>
+
+        <section class="info-section category-directory-note">
+          <div class="policy-list">
+            <article class="article-card"><h2>${escapeHtml(text.limitTitle)}</h2><p>${escapeHtml(category.limit)}</p></article>
+            <article class="article-card"><h2>${escapeHtml(text.privacyTitle)}</h2><p>${escapeHtml(text.localPrivacy)}</p></article>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <p>${escapeHtml(text.footer)}</p>
+          <div><a href="/${lang}/about">${escapeHtml(text.about)}</a><a href="/${lang}/privacy">${escapeHtml(text.privacy)}</a><a href="/${lang}/contact">${escapeHtml(text.contact)}</a></div>
+        </footer>
+      </main>
+    </div>
+    <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
+    <script src="/assets/js/tool-catalog.js?v=20260803-categories"></script>
+    <script src="/assets/js/app.js?v=20260803-categories"></script>
   </body>
 </html>
 `;
@@ -1115,14 +1335,21 @@ function buildToolPages(catalog) {
       fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.writeFileSync(target, output);
     }
+    for (const categoryRecord of generatedCategoryRecords(catalog)) {
+      const output = renderCategoryPage({ catalog: localized, lang, categoryId: categoryRecord.id });
+      const target = path.join(ROOT, "dist", lang, categoryRecord.file);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, output);
+    }
   }
-  console.log(`Built ${records.length} focused tool pages for ${LANGS.join(", ")}.`);
+  console.log(`Built ${records.length} focused tool pages and ${generatedCategoryRecords(catalog).length} category pages for ${LANGS.join(", ")}.`);
   return records;
 }
 
 module.exports = {
   AD_FREE_TOOL_SLUGS,
   buildToolPages,
+  generatedCategoryRecords,
   generatedToolRecords,
   loadToolCatalog,
   writeEnglishToolCopyAsset

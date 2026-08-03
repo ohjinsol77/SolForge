@@ -3,6 +3,7 @@ const path = require("path");
 const vm = require("vm");
 const {
   AD_FREE_TOOL_SLUGS,
+  generatedCategoryRecords,
   generatedToolRecords,
   loadToolCatalog
 } = require("./build-tool-pages");
@@ -36,6 +37,12 @@ const MAIN_AD_FREE_FILES = new Set([
   ...GROUP_CONTAINER_FILES
 ]);
 const GROUP_CONTAINER_ROUTES = new Set([...GROUP_CONTAINER_FILES].map((file) => file.replace(/\.html$/, "")));
+const CATEGORY_IDS = [
+  "developer", "text", "media", "pip", "boss", "game", "game-calculator",
+  "device", "display", "input", "performance", "finance", "life", "age",
+  "date", "lunar", "calendar"
+];
+for (const category of CATEGORY_IDS) MAIN_AD_FREE_FILES.add(`tools/${category}.html`);
 const sites = [
   { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
   { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
@@ -163,8 +170,10 @@ for (const lang of ["ko", "en"]) {
 
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
+const generatedCategories = generatedCategoryRecords(toolCatalog);
 if (toolCatalog.length !== 146) fail(`Tool catalog count: ${toolCatalog.length}, expected 146`);
 if (generatedTools.length !== 136) fail(`Generated focused tool count: ${generatedTools.length}, expected 136`);
+if (generatedCategories.length !== CATEGORY_IDS.length) fail(`Generated category count: ${generatedCategories.length}, expected ${CATEGORY_IDS.length}`);
 const toolTitles = new Set();
 const toolDescriptions = new Set();
 for (const lang of ["ko", "en"]) {
@@ -197,6 +206,21 @@ for (const lang of ["ko", "en"]) {
       toolTitles.add(title);
       toolDescriptions.add(description);
     }
+  }
+  for (const category of generatedCategories) {
+    const fullPath = path.join(ROOT, "dist", lang, "tools", `${category.slug}.html`);
+    if (!fs.existsSync(fullPath)) fail(`Category page missing: ${fullPath}`);
+    const html = fs.readFileSync(fullPath, "utf8");
+    if (!html.includes(`data-page-category="${category.id}"`)) fail(`Category marker missing: ${fullPath}`);
+    if ((html.match(/<h1\b/g) || []).length !== 1) fail(`Category page must have one H1: ${fullPath}`);
+    if (!html.includes('"@type":"CollectionPage"') || !html.includes('"@type":"ItemList"')) fail(`Category structured data missing: ${fullPath}`);
+    if (!mainRedirects.includes(`/${lang}/tools/${category.slug}.html /${lang}/tools/${category.slug} 301`)) fail(`Category HTML redirect missing: ${category.slug}`);
+  }
+}
+
+for (const route of GROUP_CONTAINER_ROUTES) {
+  for (const lang of ["ko", "en"]) {
+    if (!mainRedirects.includes(`/${lang}/${route} /${lang}/`)) fail(`Grouped route replacement missing: /${lang}/${route}`);
   }
 }
 

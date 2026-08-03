@@ -10,6 +10,52 @@
   const tempDbTool = document.documentElement.lang === "en"
     ? ["developer", "DB", "Database Test Data Generator", "Detect columns from database schemas and generate configurable SQL, JSON, CSV, MongoDB, or Redis test data.", "tempdb temp db temporary data dummy data dummydata fake data test data testdata mock data mockdata database schema mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"]
     : ["developer", "DB", "DB 임시·더미 데이터 생성기", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb temp db 임시데이터 임시 데이터 더미데이터 더미 데이터 가짜데이터 가짜 데이터 테스트데이터 테스트 데이터 목데이터 목 데이터 mock data mockdata dummy data dummydata test data testdata 스키마 테이블 생성문 mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"];
+  const lang = document.documentElement.lang === "en" ? "en" : "ko";
+  const categoryOrder = [
+    "developer", "text", "media", "pip", "boss", "game", "game-calculator",
+    "device", "display", "input", "performance", "finance", "life", "age",
+    "date", "lunar", "calendar"
+  ];
+  const categoryCopy = {
+    ko: {
+      developer: ["DEV", "개발자 도구", "SQL, JSON, URL, 패키지 조회와 테스트 데이터 생성 기능을 각각의 페이지에서 사용합니다."],
+      text: ["TXT", "텍스트 도구", "글자 수, 텍스트 정리, 한영타 변환과 개인정보 마스킹 기능을 개별 도구로 제공합니다."],
+      media: ["MEDIA", "파일·미디어 도구", "이미지, 자막, 체크섬, 음성, EML 등 로컬 파일 작업을 기능별로 선택합니다."],
+      pip: ["PIP", "PIP 작업 도구", "시계, 타이머, 메모와 이미지 도구를 각각 독립된 PIP 기능으로 실행합니다."],
+      boss: ["BOSS", "게임 타이머", "게임 진행 중 필요한 패턴과 재사용 시간을 별도의 타이머로 관리합니다."],
+      game: ["GAME", "게임 플레이 테스트", "클릭, 반응속도, 에임과 기본 입력 상태를 목적에 맞는 개별 테스트로 확인합니다."],
+      "game-calculator": ["CALC", "게임 계산 도구", "감도, FOV, TTK, 화면 비율과 하드웨어 수치를 각각 계산합니다."],
+      device: ["DEVICE", "장치 진단", "오디오, 카메라, 게임패드와 센서 상태를 장치별 진단 도구에서 확인합니다."],
+      display: ["DISPLAY", "화면 진단", "색상, 명암, 불량 화소와 화면 움직임을 패턴별 독립 테스트로 점검합니다."],
+      input: ["INPUT", "입력 장치 테스트", "키보드와 마우스의 속도, 지연, 고스팅과 이동 상태를 항목별로 측정합니다."],
+      performance: ["PERF", "성능·네트워크 점검", "CPU, GPU, 메모리, 대역폭과 화면 환경을 목적별 점검 도구로 확인합니다."],
+      finance: ["FIN", "금융·시장 도구", "환율, 국내외 주식과 암호화폐 시장 정보를 기능별 페이지에서 조회합니다."],
+      life: ["LIFE", "생활 도구", "단위, 전통 무게, BMI와 일상에서 필요한 수치를 개별 계산기로 확인합니다."],
+      age: ["AGE", "나이·띠 도구", "만 나이, 연도별 나이표와 띠 관련 정보를 목적별 계산기로 확인합니다."],
+      date: ["DATE", "날짜 계산 도구", "날짜 정보, D-Day, 기간, 날짜 이동과 기념일을 각각 계산합니다."],
+      lunar: ["LUNAR", "양력·음력 도구", "양력과 음력 변환 및 음력 기념일 날짜를 기능별로 확인합니다."],
+      calendar: ["CAL", "달력·학교 도구", "공휴일, 손없는 날, 학교 일정과 생활 달력 정보를 각각 확인합니다."]
+    },
+    en: {
+      developer: ["DEV", "Developer Tools", "Use focused pages for SQL, JSON, URLs, package lookup, and test data generation."],
+      text: ["TXT", "Text Tools", "Choose a dedicated tool for counting, cleaning, keyboard conversion, or personal-data masking."],
+      media: ["MEDIA", "File & Media Tools", "Work with images, subtitles, checksums, speech, EML, and other local files one task at a time."],
+      pip: ["PIP", "PIP Workflow Tools", "Run clocks, timers, notes, and image helpers as separate Picture-in-Picture tools."],
+      boss: ["BOSS", "Game Timers", "Track game patterns and cooldowns with a dedicated timer."],
+      game: ["GAME", "Gameplay Tests", "Check clicking, reaction time, aim, and basic input behavior with focused tests."],
+      "game-calculator": ["CALC", "Gaming Calculators", "Calculate sensitivity, FOV, TTK, aspect ratios, and hardware values with separate tools."],
+      device: ["DEVICE", "Device Diagnostics", "Check audio, cameras, gamepads, and sensors with a diagnostic for each device."],
+      display: ["DISPLAY", "Display Diagnostics", "Inspect color, contrast, pixels, and motion with separate display test patterns."],
+      input: ["INPUT", "Input Device Tests", "Measure keyboard and mouse speed, latency, ghosting, and movement with focused tests."],
+      performance: ["PERF", "Performance & Network Checks", "Review CPU, GPU, memory, bandwidth, and display environment with purpose-built checks."],
+      finance: ["FIN", "Finance & Market Tools", "Open separate pages for exchange rates, Korean and global stocks, and crypto market data."],
+      life: ["LIFE", "Everyday Tools", "Use individual calculators for units, traditional weights, BMI, and everyday reference values."],
+      age: ["AGE", "Age & Zodiac Tools", "Calculate age tables and zodiac information with a tool for each task."],
+      date: ["DATE", "Date Calculators", "Calculate date facts, D-Days, ranges, date shifts, and anniversaries separately."],
+      lunar: ["LUNAR", "Solar & Lunar Tools", "Convert solar and lunar dates or review lunar anniversaries on focused pages."],
+      calendar: ["CAL", "Calendar & School Tools", "Check holidays, no-hand days, school timelines, and calendar references separately."]
+    }
+  };
 
   const sourceTools = [
     ["pip", "CLK", "PIP 시계", "현재 시간을 작은 PIP 창으로 띄워둡니다.", "pip 시계 clock 시간 always on top", "pip-toolbox#pip-clock"],
@@ -160,13 +206,25 @@
     ["game", "RTC", "WebRTC 후보 확인", "외부 STUN 없이 로컬 ICE 후보 노출 여부를 확인합니다.", "webrtc leak candidate", "performance-lab#webrtc-test"]
   ];
 
+  const categoryBySource = {
+    "gaming-lab": "game",
+    "gaming-calculators": "game-calculator",
+    "device-diagnostics": "device",
+    "display-diagnostics": "display",
+    "input-training": "input",
+    "performance-lab": "performance"
+  };
+  const categorizedTools = sourceTools.map((tool) => {
+    const sourcePage = tool[5].split("#")[0];
+    return categoryBySource[sourcePage] ? [categoryBySource[sourcePage], ...tool.slice(1)] : tool;
+  });
   const duplicateDetailSlugs = {
     "zodiac-tools": ["zodiac-year-finder", "zodiac-compatibility-samjae"],
     "lunar-converter": ["solar-to-lunar", "lunar-to-solar"],
     "school-tools": ["school-years", "csat-dday"]
   };
   const duplicateDetailIndexes = {};
-  const routedTools = sourceTools.map((tool) => {
+  const routedTools = categorizedTools.map((tool) => {
     const sourceHref = tool[5];
     const hashIndex = sourceHref.indexOf("#");
     if (hashIndex < 0) return [...tool, sourceHref];
@@ -195,21 +253,12 @@
     href,
     sourceHref
   }));
+  window.SF_TOOL_CATEGORIES = categoryOrder.map((id) => {
+    const [code, label, description] = categoryCopy[lang][id];
+    return { id, code, label, description, href: id };
+  });
 
-  const categoryLabels = {
-    pip: "pip 도구모음",
-    boss: "보스타이머",
-    developer: "개발자",
-    text: "텍스트",
-    age: "나이·띠",
-    date: "날짜",
-    lunar: "양력·음력",
-    calendar: "달력·학교",
-    finance: document.documentElement.lang === "en" ? "Finance & Markets" : "금융·시장",
-    life: "생활",
-    media: "이미지·미디어",
-    game: "게임·장치"
-  };
+  const categoryLabels = Object.fromEntries(window.SF_TOOL_CATEGORIES.map((category) => [category.id, category.label]));
 
   function init() {
     const catalog = document.querySelector("#toolCatalog");
@@ -237,6 +286,7 @@
   }
 
   function iconClass(category) {
+    if (category === "game-calculator" || category === "device" || category === "display" || category === "input" || category === "performance") return "game";
     if (category === "pip" || category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "game" || category === "finance") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
