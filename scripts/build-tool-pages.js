@@ -8,7 +8,7 @@ const SITE_URL = "https://solforge.cloud";
 const ADSENSE_CLIENT = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
 const CATEGORY_ORDER = [
-  "developer", "text", "media", "pip", "boss", "game", "game-calculator",
+  "developer", "text", "media", "pip", "boss", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
@@ -50,7 +50,7 @@ const categoryCopy = {
       use: "별도 프로그램을 설치하지 않고 로컬 파일을 확인하거나 변환 결과를 빠르게 만들 때 사용할 수 있습니다.",
       limit: "브라우저가 지원하는 형식과 메모리 한계가 있으므로 원본 파일을 보관하고 결과 품질을 직접 확인하세요."
     },
-    game: {
+    gameplay: {
       label: "게임 플레이 테스트",
       use: "클릭, 반응속도와 에임처럼 플레이에 직접 연결되는 입력을 같은 환경에서 반복 측정할 때 유용합니다.",
       limit: "브라우저 이벤트 주기, 장치 드라이버, 화면 주사율과 시스템 부하에 따라 측정값이 달라질 수 있습니다."
@@ -137,7 +137,7 @@ const categoryCopy = {
       use: "Use it to inspect a local file or create a converted result without installing a separate desktop application.",
       limit: "Browser format support and available memory vary. Keep the source file and inspect the exported result."
     },
-    game: {
+    gameplay: {
       label: "Gameplay Tests",
       use: "Useful for repeating play-related input checks such as clicking, reaction time, and aim in the same environment.",
       limit: "Results may vary with browser event timing, device drivers, refresh rate, and current system load."

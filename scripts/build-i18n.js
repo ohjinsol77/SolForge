@@ -532,7 +532,7 @@ function writeRootRedirect() {
     "tools/display-diagnostics.html": "tools/display",
     "tools/file-media-toolbox.html": "tools/media",
     "tools/gaming-calculators.html": "tools/game-calculator",
-    "tools/gaming-lab.html": "tools/game",
+    "tools/gaming-lab.html": "tools/gameplay",
     "tools/input-training.html": "tools/input",
     "tools/performance-lab.html": "tools/performance",
     "tools/pip-toolbox.html": "tools/pip",
@@ -550,6 +550,14 @@ function writeRootRedirect() {
       redirects.push(`/${lang}/${normalizePagePath(file)}/ /${lang}/${target} 301`);
       redirects.push(`/${lang}/${file} /${lang}/${target} 301`);
     }
+  }
+  redirects.push("/tools/game /ko/tools/gameplay 301");
+  redirects.push("/tools/game/ /ko/tools/gameplay 301");
+  redirects.push("/tools/game.html /ko/tools/gameplay 301");
+  for (const lang of LANGS) {
+    redirects.push(`/${lang}/tools/game /${lang}/tools/gameplay 301`);
+    redirects.push(`/${lang}/tools/game/ /${lang}/tools/gameplay 301`);
+    redirects.push(`/${lang}/tools/game.html /${lang}/tools/gameplay 301`);
   }
 
   for (const file of sourceFiles()) {

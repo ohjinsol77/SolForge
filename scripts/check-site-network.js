@@ -38,7 +38,7 @@ const MAIN_AD_FREE_FILES = new Set([
 ]);
 const GROUP_CONTAINER_ROUTES = new Set([...GROUP_CONTAINER_FILES].map((file) => file.replace(/\.html$/, "")));
 const CATEGORY_IDS = [
-  "developer", "text", "media", "pip", "boss", "game", "game-calculator",
+  "developer", "text", "media", "pip", "boss", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
