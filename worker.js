@@ -4,6 +4,7 @@ const COINPAPRIKA_TICKERS = "https://api.coinpaprika.com/v1/tickers";
 const BINANCE_TICKER = "https://api.binance.com/api/v3/ticker/24hr";
 const EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/USD";
 const COINBASE_RATES = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
+const CURRENCY_RATES = "https://latest.currency-api.pages.dev/v1/currencies/usd.json";
 const FEAR_GREED_API = "https://api.alternative.me/fng/?limit=31&format=json";
 const STOCK_RANGES = new Set(["1mo", "3mo", "6mo", "1y"]);
 const STOCK_SYMBOL = /^[A-Z0-9.^=_-]{1,24}$/i;
@@ -194,39 +195,53 @@ async function binanceMarkets(options) {
 async function coinbaseMarkets(options) {
   try {
     const response = await providerFetch(COINBASE_RATES, 300);
+    if (!response.ok) return currencyRateMarkets(options);
+    const data = await response.json();
+    return rateMarkets(options, data?.data?.rates);
+  } catch (_error) {
+    return currencyRateMarkets(options);
+  }
+}
+
+async function currencyRateMarkets(options) {
+  try {
+    const response = await providerFetch(CURRENCY_RATES, 300);
     if (!response.ok) return json({ error: `Crypto market providers returned HTTP ${response.status}.` }, 502);
     const data = await response.json();
-    const rates = data?.data?.rates || {};
-    const requested = options.ids ? new Set(options.ids.split(",").filter(Boolean)) : null;
-    const krwRate = Number(rates.KRW);
-    const multiplier = options.currency === "krw" && Number.isFinite(krwRate) && krwRate > 0 ? krwRate : 1;
-    const result = BINANCE_COINS
-      .map(([id, symbol, name], index) => {
-        if (requested && !requested.has(id)) return null;
-        const inverseRate = Number(rates[symbol]);
-        if (!Number.isFinite(inverseRate) || inverseRate <= 0) return null;
-        return normalizeFallbackCoin({
-          id,
-          symbol,
-          name,
-          rank: index + 1,
-          quote: {
-            price: multiplier / inverseRate,
-            volume_24h: null,
-            market_cap: null,
-            percent_change_24h: null,
-            percent_change_7d: null
-          },
-          lastUpdated: new Date().toISOString()
-        });
-      })
-      .filter(Boolean)
-      .slice(0, options.perPage);
-    if (!result.length) return json({ error: "Crypto market providers returned no usable data." }, 502);
-    return marketResponse(result);
+    return rateMarkets(options, data?.usd);
   } catch (_error) {
     return json({ error: "Crypto market providers are temporarily unavailable." }, 502);
   }
+}
+
+function rateMarkets(options, rates = {}) {
+  const requested = options.ids ? new Set(options.ids.split(",").filter(Boolean)) : null;
+  const krwRate = Number(rates.KRW ?? rates.krw);
+  const multiplier = options.currency === "krw" && Number.isFinite(krwRate) && krwRate > 0 ? krwRate : 1;
+  const result = BINANCE_COINS
+    .map(([id, symbol, name], index) => {
+      if (requested && !requested.has(id)) return null;
+      const inverseRate = Number(rates[symbol] ?? rates[symbol.toLowerCase()]);
+      if (!Number.isFinite(inverseRate) || inverseRate <= 0) return null;
+      return normalizeFallbackCoin({
+        id,
+        symbol,
+        name,
+        rank: index + 1,
+        quote: {
+          price: multiplier / inverseRate,
+          volume_24h: null,
+          market_cap: null,
+          percent_change_24h: null,
+          percent_change_7d: null
+        },
+        lastUpdated: new Date().toISOString()
+      });
+    })
+    .filter(Boolean)
+    .slice(0, options.perPage);
+  if (!result.length) return json({ error: "Crypto market providers returned no usable data." }, 502);
+  return marketResponse(result);
 }
 
 async function usdKrwRate() {
@@ -238,6 +253,10 @@ async function usdKrwRate() {
     {
       url: COINBASE_RATES,
       read: (data) => data?.data?.rates?.KRW
+    },
+    {
+      url: CURRENCY_RATES,
+      read: (data) => data?.usd?.krw
     },
     {
       url: `${YAHOO_CHART}/${encodeURIComponent("KRW=X")}?range=1d&interval=1d`,
