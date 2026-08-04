@@ -158,7 +158,7 @@ async function binanceMarkets(options) {
     url.searchParams.set("symbols", JSON.stringify(symbols));
     url.searchParams.set("type", "MINI");
     const response = await providerFetch(url, 300);
-    if (!response.ok) return json({ error: `Crypto market providers returned HTTP ${response.status}.` }, 502);
+    if (!response.ok) return coinbaseMarkets(options);
     const tickers = await response.json();
     const requested = options.ids ? new Set(options.ids.split(",").filter(Boolean)) : null;
     const multiplier = options.currency === "krw" ? await usdKrwRate() : 1;
@@ -185,6 +185,44 @@ async function binanceMarkets(options) {
       .filter(Boolean)
       .sort((a, b) => Number(b.total_volume || 0) - Number(a.total_volume || 0))
       .slice(0, options.perPage);
+    return marketResponse(result);
+  } catch (_error) {
+    return coinbaseMarkets(options);
+  }
+}
+
+async function coinbaseMarkets(options) {
+  try {
+    const response = await providerFetch(COINBASE_RATES, 300);
+    if (!response.ok) return json({ error: `Crypto market providers returned HTTP ${response.status}.` }, 502);
+    const data = await response.json();
+    const rates = data?.data?.rates || {};
+    const requested = options.ids ? new Set(options.ids.split(",").filter(Boolean)) : null;
+    const krwRate = Number(rates.KRW);
+    const multiplier = options.currency === "krw" && Number.isFinite(krwRate) && krwRate > 0 ? krwRate : 1;
+    const result = BINANCE_COINS
+      .map(([id, symbol, name], index) => {
+        if (requested && !requested.has(id)) return null;
+        const inverseRate = Number(rates[symbol]);
+        if (!Number.isFinite(inverseRate) || inverseRate <= 0) return null;
+        return normalizeFallbackCoin({
+          id,
+          symbol,
+          name,
+          rank: index + 1,
+          quote: {
+            price: multiplier / inverseRate,
+            volume_24h: null,
+            market_cap: null,
+            percent_change_24h: null,
+            percent_change_7d: null
+          },
+          lastUpdated: new Date().toISOString()
+        });
+      })
+      .filter(Boolean)
+      .slice(0, options.perPage);
+    if (!result.length) return json({ error: "Crypto market providers returned no usable data." }, 502);
     return marketResponse(result);
   } catch (_error) {
     return json({ error: "Crypto market providers are temporarily unavailable." }, 502);
