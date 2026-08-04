@@ -1,10 +1,10 @@
 (function () {
   "use strict";
 
-  const FNG_API = "https://api.alternative.me/fng/?limit=31&format=json";
-  const COINGECKO_MARKETS = "https://api.coingecko.com/api/v3/coins/markets";
-  const COINGECKO_GLOBAL = "https://api.coingecko.com/api/v3/global";
-  const COINGECKO_CATEGORIES = "https://api.coingecko.com/api/v3/coins/categories";
+  const FNG_API = "/api/crypto/fng";
+  const COINGECKO_MARKETS = "/api/crypto/markets";
+  const COINGECKO_GLOBAL = "/api/crypto/global";
+  const COINGECKO_CATEGORIES = "/api/crypto/categories";
   const CACHE_PREFIX = "sf-crypto-cache:";
   const MARKET_TTL = 5 * 60 * 1000;
   const FNG_TTL = 30 * 60 * 1000;
