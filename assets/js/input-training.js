@@ -6,13 +6,28 @@
   let audioContext = null;
 
   if (document.body.matches('[data-page="input-training"]')) {
-    initWorkbench();
-    initAuditory();
-    initMemory();
-    initTyping();
-    initWasd();
-    initKeyboardTools();
-    initMouseTools();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "auditory-reaction": initAuditory,
+      "memory-test": initMemory,
+      "typing-practice": initTyping,
+      "wasd-trainer": initWasd,
+      "keyboard-clicker": initKeyboardTools,
+      "keyboard-double": initKeyboardTools,
+      "keyboard-ghosting": initKeyboardTools,
+      "keyboard-latency": initKeyboardTools,
+      "keyboard-polling": initKeyboardTools,
+      "mouse-accuracy": initMouseTools,
+      "mouse-drag": initMouseTools,
+      "mouse-drift": initMouseTools,
+      "mouse-speed": initMouseTools,
+      "mouse-latency": initMouseTools,
+      "mouse-spin": initMouseTools,
+      "mouse-tester": initMouseTools
+    };
+    if ($("#inputSearch")) initWorkbench();
+    if (focusedTool) toolInitializers[focusedTool]?.();
+    else [...new Set(Object.values(toolInitializers))].forEach((initializer) => initializer());
   }
 
   function initWorkbench() {
@@ -177,11 +192,11 @@
   }
 
   function initKeyboardTools() {
-    clickCounter("#keyboardClickPad", "#keyboardClickStats", "#resetKeyboardClicker");
+    if ($("#keyboardClickPad")) clickCounter("#keyboardClickPad", "#keyboardClickStats", "#resetKeyboardClicker");
     let lastKey = "";
     let lastTime = 0;
     let doubles = 0;
-    $("#keyDoublePad").addEventListener("keydown", (event) => {
+    $("#keyDoublePad")?.addEventListener("keydown", (event) => {
       event.preventDefault();
       const now = performance.now();
       if (event.code === lastKey && now - lastTime <= Number($("#keyDoubleThreshold").value)) doubles += 1;
@@ -190,12 +205,12 @@
       $("#keyDoubleResult").innerHTML = `<strong>${doubles}회 감지</strong><p>마지막 키: ${escapeHtml(event.code)}</p>`;
     });
     const pressed = new Map();
-    $("#ghostingPad").addEventListener("keydown", (event) => {
+    $("#ghostingPad")?.addEventListener("keydown", (event) => {
       event.preventDefault();
       pressed.set(event.code, event.key);
       renderGhosting();
     });
-    $("#ghostingPad").addEventListener("keyup", (event) => {
+    $("#ghostingPad")?.addEventListener("keyup", (event) => {
       event.preventDefault();
       pressed.delete(event.code);
       renderGhosting();
@@ -203,10 +218,10 @@
     function renderGhosting() {
       $("#ghostingKeys").innerHTML = Array.from(pressed.entries()).map(([code, key]) => `<span>${escapeHtml(key)} <small>${escapeHtml(code)}</small></span>`).join("");
     }
-    latencyTool("#startKeyLatency", "#keyLatencyPad", "#keyLatencyStats", "keydown");
+    if ($("#startKeyLatency")) latencyTool("#startKeyLatency", "#keyLatencyPad", "#keyLatencyStats", "keydown");
     const intervals = [];
     let last = 0;
-    $("#keyPollingPad").addEventListener("keydown", (event) => {
+    $("#keyPollingPad")?.addEventListener("keydown", (event) => {
       event.preventDefault();
       const now = performance.now();
       if (last) intervals.push(now - last);
@@ -218,13 +233,13 @@
   }
 
   function initMouseTools() {
-    aimTool("#startMouseAccuracy", "#accuracyArena", "#accuracyTarget", "#accuracyStats");
-    canvasDraw("#dragCanvas", "#dragStats", "#clearDrag");
-    driftTool();
-    speedTool();
-    latencyTool("#startMouseLatency", "#mouseLatencyPad", "#mouseLatencyStats", "click");
-    spinTool();
-    testerTool();
+    if ($("#accuracyArena")) aimTool("#startMouseAccuracy", "#accuracyArena", "#accuracyTarget", "#accuracyStats");
+    if ($("#dragCanvas")) canvasDraw("#dragCanvas", "#dragStats", "#clearDrag");
+    if ($("#driftZone")) driftTool();
+    if ($("#speedZone")) speedTool();
+    if ($("#startMouseLatency")) latencyTool("#startMouseLatency", "#mouseLatencyPad", "#mouseLatencyStats", "click");
+    if ($("#spinCanvas")) spinTool();
+    if ($("#mouseTesterZone")) testerTool();
   }
 
   function clickCounter(padSelector, statsSelector, resetSelector) {

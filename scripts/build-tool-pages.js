@@ -471,11 +471,20 @@ function prepareToolMarkup(section, slug) {
 function extractScripts(html) {
   const scripts = [];
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
-    const src = match[1].replace(/assets\/js\/app\.js(?:\?v=.*)?$/, "assets/js/app.js?v=20260803-categories");
+    let src = match[1];
+    if (/assets\/js\//.test(src)) {
+      src = `${src.replace(/\?v=.*$/, "")}?v=20260804-focused-tools`;
+    }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
   }
-  return scripts.map((src) => `<script src="${escapeHtml(src)}"></script>`).join("\n    ");
+  return scripts
+    .map((src) => `<script${/\.mjs(?:\?|$)/.test(src) ? ' type="module"' : ""} src="${escapeHtml(src)}"></script>`)
+    .join("\n    ");
+}
+
+function sourcePageId(html) {
+  return html.match(/<body\b[^>]*\bdata-page="([^"]+)"/i)?.[1] || "";
 }
 
 function extractControls(section) {
@@ -1013,6 +1022,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
   const controls = extractControls(section);
   const markup = prepareToolMarkup(section, item.slug);
   const scripts = extractScripts(sourceHtml);
+  const sourcePage = sourcePageId(sourceHtml);
   const privacyAnswer = isExternalTool(item) ? text.externalPrivacy : text.localPrivacy;
   const description = metaDescription(item.title, item.description, lang);
   const adScript = AD_FREE_TOOL_SLUGS.has(item.slug)
@@ -1075,7 +1085,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <script>window.SF_I18N=${JSON.stringify({ lang, switchTo: otherLang, switchLabel: text.language }).replace(/</g, "\\u003c")};</script>
     <script src="/assets/js/i18n-dynamic.js"></script>
   </head>
-  <body data-page-tool="${escapeHtml(item.slug)}">
+  <body${sourcePage ? ` data-page="${escapeHtml(sourcePage)}"` : ""} data-page-tool="${escapeHtml(item.slug)}"${sourcePage === "pip-toolbox" ? " data-pip-toolbox" : ""}>
     <a class="skip-link" href="#main">${escapeHtml(text.skip)}</a>
     <div class="site-shell">
       <aside class="sidebar">

@@ -1725,6 +1725,7 @@
   "tools.file-media-toolbox.text.0098": "Sync adjustment (ms)",
   "tools.file-media-toolbox.text.0099": "result copy",
   "tools.file-media-toolbox.text.0100": "First subtitle\">",
+  "tools.file-media-toolbox.attr.placeholder.subtitle": "<SYNC Start=1000><P Class=ENCC>First subtitle",
   "tools.file-media-toolbox.text.0101": "Developer",
   "tools.file-media-toolbox.text.0102": "HTML web editor/preview",
   "tools.file-media-toolbox.text.0103": "Instantly preview the HTML you write in a sandbox iframe.",

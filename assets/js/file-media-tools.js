@@ -7,20 +7,28 @@
 
   function init() {
     if (!document.body.matches('[data-page="file-media-toolbox"]')) return;
-    initWorkbench();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "character-map": initCharacters,
+      "code-table": initCodeTable,
+      "color-tool": initColor,
+      "text-diff": initDiff,
+      "subtitle-tool": initSubtitle,
+      "html-editor": initHtmlEditor,
+      "checksum-tool": initChecksum,
+      "image-tool": initImage,
+      "tts-tool": initTts,
+      "stt-tool": initStt,
+      "eml-tool": initEml,
+      "key-event-tool": initKeyEvents
+    };
+    if ($("#mediaToolSearch")) initWorkbench();
     initCopy();
-    initCharacters();
-    initCodeTable();
-    initColor();
-    initDiff();
-    initSubtitle();
-    initHtmlEditor();
-    initChecksum();
-    initImage();
-    initTts();
-    initStt();
-    initEml();
-    initKeyEvents();
+    if (focusedTool) {
+      toolInitializers[focusedTool]?.();
+      return;
+    }
+    Object.values(toolInitializers).forEach((initializer) => initializer());
   }
 
   function initWorkbench() {

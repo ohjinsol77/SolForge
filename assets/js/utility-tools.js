@@ -8,28 +8,36 @@
 
   function init() {
     if (!document.body.matches('[data-page="utility-toolbox"]')) return;
-    initWorkbench();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "text-counter": initTextCounter,
+      "text-cleaner": initTextCleaner,
+      "keyboard-converter": initKeyboardConverter,
+      "privacy-mask": initPrivacyMask,
+      "number-format": initNumberFormat,
+      "money-korean": initMoneyConverter,
+      "json-tool": initJsonTool,
+      "base64-tool": initBase64Tool,
+      "url-codec": initUrlCodec,
+      "url-parser": initUrlParser,
+      "timestamp-tool": initTimestamp,
+      "server-timezone": initServerTimezone,
+      "uuid-tool": initUuid,
+      "chmod-tool": initChmod,
+      "password-tool": initPassword,
+      "unit-tool": initUnits,
+      "traditional-weight": initTraditionalWeight,
+      "bmi-tool": initBmi,
+      "lotto-tool": initLotto
+    };
+    if ($("#utilitySearch")) initWorkbench();
     initCopyButtons();
     initClearButtons();
-    initTextCounter();
-    initTextCleaner();
-    initKeyboardConverter();
-    initPrivacyMask();
-    initNumberFormat();
-    initMoneyConverter();
-    initJsonTool();
-    initBase64Tool();
-    initUrlCodec();
-    initUrlParser();
-    initTimestamp();
-    initServerTimezone();
-    initUuid();
-    initChmod();
-    initPassword();
-    initUnits();
-    initTraditionalWeight();
-    initBmi();
-    initLotto();
+    if (focusedTool) {
+      toolInitializers[focusedTool]?.();
+      return;
+    }
+    Object.values(toolInitializers).forEach((initializer) => initializer());
   }
 
   function initWorkbench() {

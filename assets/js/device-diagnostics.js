@@ -10,14 +10,24 @@
   let gamepadAnimation = 0;
 
   if (document.body.matches('[data-page="device-diagnostics"]')) {
-    initWorkbench();
-    initAudio();
-    initMic();
-    initWebcam();
-    initGamepad();
-    initTouch();
-    initSensors();
-    initVibration();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "sound-test": initAudio,
+      "bass-test": initAudio,
+      "frequency-test": initAudio,
+      "headphone-test": initAudio,
+      "surround-test": initAudio,
+      "microphone-test": initMic,
+      "webcam-test": initWebcam,
+      "gamepad-test": initGamepad,
+      "touchscreen-test": initTouch,
+      "accelerometer-test": initSensors,
+      "gyroscope-test": initSensors,
+      "vibration-test": initVibration
+    };
+    if ($("#deviceSearch")) initWorkbench();
+    if (focusedTool) toolInitializers[focusedTool]?.();
+    else [...new Set(Object.values(toolInitializers))].forEach((initializer) => initializer());
   }
 
   function initWorkbench() {
@@ -69,15 +79,15 @@
       setText("#soundStatus", `${button.textContent.trim()} 채널 재생`);
       setText("#headphoneStatus", `${button.textContent.trim()} 채널 재생`);
     }));
-    $("#playBass").addEventListener("click", () => {
+    $("#playBass")?.addEventListener("click", () => {
       playTone(Number($("#bassFrequency").value), Number($("#bassDuration").value), 0);
       setText("#bassStatus", `${$("#bassFrequency").value}Hz 재생 중`);
     });
-    $("#playFrequency").addEventListener("click", () => {
+    $("#playFrequency")?.addEventListener("click", () => {
       playTone(clamp(Number($("#freqTone").value), 20, 20000), 1, 0);
       setText("#freqStatus", `${$("#freqTone").value}Hz 톤 재생`);
     });
-    $("#playSweep").addEventListener("click", () => {
+    $("#playSweep")?.addEventListener("click", () => {
       const context = getAudioContext();
       const oscillator = context.createOscillator();
       const gain = context.createGain();
@@ -91,12 +101,12 @@
       oscillator.stop(context.currentTime + 4);
       setText("#freqStatus", "100Hz~10kHz 스윕 재생");
     });
-    $("#playAlternating").addEventListener("click", () => {
+    $("#playAlternating")?.addEventListener("click", () => {
       playTone(660, 0.45, -1);
       window.setTimeout(() => playTone(660, 0.45, 1), 520);
       setText("#headphoneStatus", "좌우 번갈아 재생");
     });
-    $("#playSurround").addEventListener("click", () => {
+    $("#playSurround")?.addEventListener("click", () => {
       const context = getAudioContext();
       const oscillator = context.createOscillator();
       const gain = context.createGain();
@@ -240,7 +250,7 @@
   }
 
   function initSensors() {
-    $("#startMotion").addEventListener("click", async () => {
+    $("#startMotion")?.addEventListener("click", async () => {
       await requestMotionPermission();
       window.addEventListener("devicemotion", (event) => {
         const a = event.accelerationIncludingGravity || {};
@@ -248,7 +258,7 @@
       });
       setText("#motionStatus", "모션 이벤트 대기 중");
     });
-    $("#startGyro").addEventListener("click", async () => {
+    $("#startGyro")?.addEventListener("click", async () => {
       await requestOrientationPermission();
       window.addEventListener("deviceorientation", (event) => {
         $("#gyroStats").innerHTML = [stat("Alpha", fixed(event.alpha)), stat("Beta", fixed(event.beta)), stat("Gamma", fixed(event.gamma))].join("");

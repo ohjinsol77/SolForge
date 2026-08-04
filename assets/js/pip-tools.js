@@ -7,7 +7,7 @@
   const MEMO_KEY = "solforge:pip-tools:memos:v1";
   const TICK_MS = 250;
 
-  const root = $("[data-pip-toolbox]");
+  const root = $("[data-pip-toolbox]") || (document.body.matches('[data-page="pip-toolbox"]') ? document.body : null);
   if (!root) return;
 
   const lang = document.documentElement.lang === "en" ? "en" : "ko";
@@ -134,8 +134,17 @@
     deleteMemo: $("#pipDeleteMemo")
   };
 
+  const focusedTool = document.body.dataset.pageTool?.replace(/^pip-/, "") || "";
+  const available = {
+    clock: Boolean(els.clockTime),
+    timer: Boolean(els.timerDisplay),
+    pomodoro: Boolean(els.pomodoroDisplay),
+    color: Boolean(els.colorInput),
+    image: Boolean(els.imageFile),
+    memo: Boolean(els.memoBody)
+  };
   const state = {
-    active: readStorage(STORAGE_KEY)?.active || "clock",
+    active: focusedTool || readStorage(STORAGE_KEY)?.active || "clock",
     pipTool: null,
     timer: { duration: 300000, remaining: 300000, running: false, endsAt: null },
     pomodoro: { focus: 1500000, break: 300000, cycles: 4, currentCycle: 1, mode: "focus", remaining: 1500000, running: false, endsAt: null },
@@ -153,24 +162,27 @@
   init();
 
   function init() {
-    if (!state.memos.length) {
+    if (available.memo && !state.memos.length) {
       const memo = createMemo(text.newMemo, "");
       state.memos.push(memo);
       state.activeMemoId = memo.id;
       saveMemos();
     }
-    bindNavigation();
-    bindClock();
-    bindTimer();
-    bindPomodoro();
-    bindColor();
-    bindImage();
-    bindMemo();
+    if (els.list && els.search) bindNavigation();
+    else $$("[data-open-pip]", root).forEach((button) => {
+      button.addEventListener("click", () => openPip(button.dataset.openPip));
+    });
+    if (available.clock) bindClock();
+    if (available.timer) bindTimer();
+    if (available.pomodoro) bindPomodoro();
+    if (available.color) bindColor();
+    if (available.image) bindImage();
+    if (available.memo) bindMemo();
     bindHashNavigation();
     renderSupport();
     setActivePanel(toolFromHash() || state.active);
     renderAll();
-    tickHandle = window.setInterval(tick, TICK_MS);
+    if (available.clock || available.timer || available.pomodoro) tickHandle = window.setInterval(tick, TICK_MS);
     window.addEventListener("beforeunload", () => {
       window.clearInterval(tickHandle);
       if (pipWindow && !pipWindow.closed) pipWindow.close();
@@ -276,13 +288,16 @@
   }
 
   function setActivePanel(tool) {
-    state.active = toolMeta[tool] ? tool : "clock";
+    const firstAvailable = Object.keys(available).find((name) => available[name]) || "clock";
+    state.active = toolMeta[tool] && available[tool] ? tool : firstAvailable;
     $$("[data-pip-panel]", root).forEach((panel) => {
       panel.hidden = panel.id !== `pip-${state.active}`;
     });
-    $$("[data-pip-target]", els.list).forEach((button) => {
-      button.classList.toggle("active", button.dataset.pipTarget === `pip-${state.active}`);
-    });
+    if (els.list) {
+      $$("[data-pip-target]", els.list).forEach((button) => {
+        button.classList.toggle("active", button.dataset.pipTarget === `pip-${state.active}`);
+      });
+    }
     writeStorage(STORAGE_KEY, { active: state.active });
   }
 
@@ -293,8 +308,10 @@
 
   function renderSupport() {
     const supported = "documentPictureInPicture" in window;
-    els.support.className = `pip-support-note ${supported ? "is-supported" : "is-unsupported"}`;
-    els.support.textContent = supported ? text.supported : text.unsupported;
+    if (els.support) {
+      els.support.className = `pip-support-note ${supported ? "is-supported" : "is-unsupported"}`;
+      els.support.textContent = supported ? text.supported : text.unsupported;
+    }
     $$("[data-open-pip]", root).forEach((button) => {
       button.disabled = !supported;
     });
@@ -350,18 +367,18 @@
   }
 
   function renderAll() {
-    renderClock();
-    renderTimer();
-    renderPomodoro();
-    renderColor();
-    renderMemo();
+    if (available.clock) renderClock();
+    if (available.timer) renderTimer();
+    if (available.pomodoro) renderPomodoro();
+    if (available.color) renderColor();
+    if (available.memo) renderMemo();
     renderPip();
   }
 
   function tick() {
-    renderClock();
-    updateTimer();
-    updatePomodoro();
+    if (available.clock) renderClock();
+    if (available.timer) updateTimer();
+    if (available.pomodoro) updatePomodoro();
   }
 
   function renderClock() {

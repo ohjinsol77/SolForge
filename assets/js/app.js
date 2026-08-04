@@ -1001,18 +1001,31 @@
 
   function initLifeCalculators() {
     if (document.body.dataset.page !== "life-calculators") return;
-    initLifeAge();
-    initAgeTable();
-    initZodiacTools();
-    initDateInfo();
-    initDateDifference();
-    initDateRangeList();
-    initDateMove();
-    initLifeAnniversary();
-    initLunarTools();
-    initHolidayTools();
-    initSchoolTools();
-    initFunNames();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "age-calculator": initLifeAge,
+      "age-table": initAgeTable,
+      "zodiac-year-finder": initZodiacTools,
+      "zodiac-compatibility-samjae": initZodiacTools,
+      "date-info": initDateInfo,
+      "date-difference": initDateDifference,
+      "date-range-list": initDateRangeList,
+      "date-move": initDateMove,
+      "anniversary": initLifeAnniversary,
+      "solar-to-lunar": initLunarTools,
+      "lunar-to-solar": initLunarTools,
+      "lunar-anniversary": initLunarTools,
+      "holidays": initHolidayTools,
+      "no-hand-days": initHolidayTools,
+      "school-years": initSchoolTools,
+      "csat-dday": initSchoolTools,
+      "fun-names": initFunNames
+    };
+    if (focusedTool) {
+      toolInitializers[focusedTool]?.();
+      return;
+    }
+    [...new Set(Object.values(toolInitializers))].forEach((initializer) => initializer());
   }
 
   function initLifeAge() {
@@ -1072,14 +1085,6 @@
 
   function initZodiacTools() {
     const options = ZODIAC.map((sign, index) => `<option value="${index}">${sign.branch} ${sign.name}</option>`).join("");
-    $("#zodiacA").innerHTML = options;
-    $("#zodiacB").innerHTML = options;
-    $("#samjaeSign").innerHTML = options;
-    $("#zodiacA").value = "0";
-    $("#zodiacB").value = "4";
-    $("#samjaeSign").value = "6";
-    $("#zodiacBirthYear").value = "1990";
-    $("#samjaeYear").value = String(new Date().getFullYear());
 
     const renderYear = () => {
       const year = numberValue($("#zodiacBirthYear").value);
@@ -1114,12 +1119,26 @@
       ]);
     };
 
-    ["zodiacBirthYear"].forEach((id) => $(`#${id}`).addEventListener("input", renderYear));
-    ["zodiacA", "zodiacB"].forEach((id) => $(`#${id}`).addEventListener("change", renderMatch));
-    ["samjaeYear", "samjaeSign"].forEach((id) => $(`#${id}`).addEventListener("input", renderSamjae));
-    renderYear();
-    renderMatch();
-    renderSamjae();
+    if ($("#zodiacBirthYear")) {
+      $("#zodiacBirthYear").value = "1990";
+      $("#zodiacBirthYear").addEventListener("input", renderYear);
+      renderYear();
+    }
+    if ($("#zodiacA")) {
+      $("#zodiacA").innerHTML = options;
+      $("#zodiacB").innerHTML = options;
+      $("#zodiacA").value = "0";
+      $("#zodiacB").value = "4";
+      ["zodiacA", "zodiacB"].forEach((id) => $(`#${id}`).addEventListener("change", renderMatch));
+      renderMatch();
+    }
+    if ($("#samjaeSign")) {
+      $("#samjaeSign").innerHTML = options;
+      $("#samjaeSign").value = "6";
+      $("#samjaeYear").value = String(new Date().getFullYear());
+      ["samjaeYear", "samjaeSign"].forEach((id) => $(`#${id}`).addEventListener("input", renderSamjae));
+      renderSamjae();
+    }
   }
 
   function zodiacCompatibility(a, b) {
@@ -1291,11 +1310,6 @@
     const solarInput = $("#solarDateInput");
     const now = new Date();
     const supportedToday = now.getFullYear() <= 2050 ? now : new Date(2050, 11, 31);
-    solarInput.value = toInputDate(supportedToday);
-    $("#lunarYearInput").value = String(Math.min(now.getFullYear(), 2050));
-    $("#lunarMonthInput").value = "1";
-    $("#lunarDayInput").value = "1";
-    $("#lunarAnnualStart").value = String(Math.min(now.getFullYear(), 2041));
 
     const renderSolar = () => {
       const date = dateFromInput(solarInput.value);
@@ -1322,19 +1336,28 @@
         : errorResult("존재하지 않거나 지원 범위를 벗어난 음력 날짜입니다.");
     };
 
-    solarInput.addEventListener("input", renderSolar);
-    ["lunarYearInput", "lunarMonthInput", "lunarDayInput", "lunarLeapInput"].forEach((id) => {
-      $(`#${id}`).addEventListener("input", renderLunar);
-    });
-
-    $("#lunarAnnualForm").addEventListener("submit", (event) => {
-      event.preventDefault();
+    if (solarInput) {
+      solarInput.value = toInputDate(supportedToday);
+      solarInput.addEventListener("input", renderSolar);
+      renderSolar();
+    }
+    if ($("#lunarYearInput")) {
+      $("#lunarYearInput").value = String(Math.min(now.getFullYear(), 2050));
+      $("#lunarMonthInput").value = "1";
+      $("#lunarDayInput").value = "1";
+      ["lunarYearInput", "lunarMonthInput", "lunarDayInput", "lunarLeapInput"].forEach((id) => {
+        $(`#${id}`).addEventListener("input", renderLunar);
+      });
+      renderLunar();
+    }
+    if ($("#lunarAnnualForm")) {
+      $("#lunarAnnualStart").value = String(Math.min(now.getFullYear(), 2041));
+      $("#lunarAnnualForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        renderLunarAnnual();
+      });
       renderLunarAnnual();
-    });
-
-    renderSolar();
-    renderLunar();
-    renderLunarAnnual();
+    }
   }
 
   function renderLunarAnnual() {
@@ -1352,18 +1375,22 @@
 
   function initHolidayTools() {
     const currentYear = Math.min(new Date().getFullYear(), 2050);
-    $("#holidayYear").value = String(currentYear);
-    $("#freeDayMonth").value = `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-    $("#holidayForm").addEventListener("submit", (event) => {
-      event.preventDefault();
+    if ($("#holidayForm")) {
+      $("#holidayYear").value = String(currentYear);
+      $("#holidayForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        renderHolidays();
+      });
       renderHolidays();
-    });
-    $("#freeDayForm").addEventListener("submit", (event) => {
-      event.preventDefault();
+    }
+    if ($("#freeDayForm")) {
+      $("#freeDayMonth").value = `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+      $("#freeDayForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        renderFreeDays();
+      });
       renderFreeDays();
-    });
-    renderHolidays();
-    renderFreeDays();
+    }
   }
 
   function renderHolidays() {
@@ -1454,8 +1481,6 @@
   function initSchoolTools() {
     const form = $("#lifeSchoolForm");
     const year = new Date().getFullYear();
-    $("#lifeSchoolBirthYear").value = String(year - 7);
-    $("#lifeSchoolReferenceYear").value = String(year);
     const render = () => {
       const birthYear = numberValue($("#lifeSchoolBirthYear").value);
       const referenceYear = numberValue($("#lifeSchoolReferenceYear").value);
@@ -1474,11 +1499,17 @@
         grades.push(`<tr><td>${label}</td><td>${studentBirth}년생</td><td>${referenceYear - studentBirth + 1}세</td></tr>`);
       }
       $("#studentAgeBody").innerHTML = grades.join("");
+    };
+    if (form) {
+      $("#lifeSchoolBirthYear").value = String(year - 7);
+      $("#lifeSchoolReferenceYear").value = String(year);
+      form.addEventListener("input", render);
+      render();
+    }
+    if ($("#examDayResult")) {
       const exam = nextCsatDate();
       $("#examDayResult").innerHTML = `<strong>대학수학능력시험 참고 D-Day</strong><span>${formatKoreanDate(exam)} (${WEEKDAYS[exam.getDay()]}) · ${ddayText(exam)}</span>`;
-    };
-    form.addEventListener("input", render);
-    render();
+    }
   }
 
   function nextCsatDate() {

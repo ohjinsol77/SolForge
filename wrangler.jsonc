@@ -1,8 +1,10 @@
 {
   "$schema": "https://developers.cloudflare.com/workers/wrangler/configuration-schema.json",
   "name": "solforge",
+  "main": "worker.js",
   "compatibility_date": "2026-06-10",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS"
   }
 }

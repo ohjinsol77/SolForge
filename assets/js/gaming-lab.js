@@ -5,18 +5,24 @@
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
   if (document.body.matches('[data-page="gaming-lab"]')) {
-    initWorkbench();
-    initClickTests();
-    initDoubleClick();
-    initScrollTest();
-    initPolling();
-    initDpi();
-    initSpacebar();
-    initKeyboard();
-    initKeySpeed();
-    initReaction();
-    initAim();
-    initDisplay();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const toolInitializers = {
+      "cps-test": initClickTests,
+      "right-cps-test": initClickTests,
+      "double-click-test": initDoubleClick,
+      "scroll-test": initScrollTest,
+      "polling-test": initPolling,
+      "dpi-tool": initDpi,
+      "spacebar-test": initSpacebar,
+      "keyboard-test": initKeyboard,
+      "key-speed-test": initKeySpeed,
+      "reaction-test": initReaction,
+      "aim-trainer": initAim,
+      "display-test": initDisplay
+    };
+    if ($("#gamingSearch")) initWorkbench();
+    if (focusedTool) toolInitializers[focusedTool]?.();
+    else [...new Set(Object.values(toolInitializers))].forEach((initializer) => initializer());
   }
 
   function initWorkbench() {
@@ -64,22 +70,26 @@
   }
 
   function initClickTests() {
-    createClickTest({
-      kind: "left",
-      pad: $("#leftCpsPad"),
-      secondsInput: $("#leftCpsSeconds"),
-      output: $("#leftCpsStats"),
-      eventName: "click",
-      validEvent: (event) => event.button === 0
-    });
-    createClickTest({
-      kind: "right",
-      pad: $("#rightCpsPad"),
-      secondsInput: $("#rightCpsSeconds"),
-      output: $("#rightCpsStats"),
-      eventName: "contextmenu",
-      validEvent: () => true
-    });
+    if ($("#leftCpsPad")) {
+      createClickTest({
+        kind: "left",
+        pad: $("#leftCpsPad"),
+        secondsInput: $("#leftCpsSeconds"),
+        output: $("#leftCpsStats"),
+        eventName: "click",
+        validEvent: (event) => event.button === 0
+      });
+    }
+    if ($("#rightCpsPad")) {
+      createClickTest({
+        kind: "right",
+        pad: $("#rightCpsPad"),
+        secondsInput: $("#rightCpsSeconds"),
+        output: $("#rightCpsStats"),
+        eventName: "contextmenu",
+        validEvent: () => true
+      });
+    }
   }
 
   function createClickTest({ kind, pad, secondsInput, output, eventName, validEvent }) {

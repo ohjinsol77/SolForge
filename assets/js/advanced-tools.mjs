@@ -7,18 +7,23 @@ const decoder = new TextDecoder();
 const DAY_MS = 86400000;
 
 if (document.body.matches('[data-page="advanced-toolbox"]')) {
-  initWorkbench();
+  const focusedTool = document.body.dataset.pageTool || "";
+  const toolInitializers = {
+    "time-tool": initTime,
+    "code-tool": initCode,
+    "crypto-tool": initCrypto,
+    "qr-barcode-tool": initCodes,
+    "ascii-art-tool": initAscii,
+    "gif-tool": initGif,
+    "magic-eye-tool": initMagicEye,
+    "baseball-tool": initBaseball,
+    "scanner-tool": initScanner,
+    "flashlight-tool": initFlashlight
+  };
+  if ($("#advancedSearch")) initWorkbench();
   initCopy();
-  initTime();
-  initCode();
-  initCrypto();
-  initCodes();
-  initAscii();
-  initGif();
-  initMagicEye();
-  initBaseball();
-  initScanner();
-  initFlashlight();
+  if (focusedTool) toolInitializers[focusedTool]?.();
+  else Object.values(toolInitializers).forEach((initializer) => initializer());
 }
 
 function initWorkbench() {

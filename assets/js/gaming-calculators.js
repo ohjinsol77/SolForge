@@ -5,7 +5,7 @@
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
   if (document.body.matches('[data-page="gaming-calculators"]')) {
-    initWorkbench();
+    if ($("#calcSearch")) initWorkbench();
     initCalculators();
   }
 
@@ -54,30 +54,28 @@
   }
 
   function initCalculators() {
-    bind(["sensOldDpi", "sensOld", "sensNewDpi"], sensitivity);
-    bind(["fovValue", "fovMode", "fovAspectW", "fovAspectH"], fov);
-    bind(["ttkHealth", "ttkDamage", "ttkRpm", "ttkHead"], ttk);
-    bind(["crossColor", "crossLength", "crossGap", "crossThick"], crosshair);
-    bind(["circleDiameter"], minecraftCircle);
-    bind(["aspectW", "aspectH", "aspectNewW"], aspectRatio);
-    bind(["ppiW", "ppiH", "ppiInch"], ppi);
-    bind(["screenInch", "screenAspectW", "screenAspectH"], screenSize);
-    bind(["fileSize", "fileUnit", "bandwidth"], downloadTime);
-    bind(["raidLevel", "raidDisks", "raidSize"], raid);
-    bind(["ramMt", "ramCl"], ramLatency);
-    $("#generateTags").addEventListener("click", gamertag);
-    sensitivity();
-    fov();
-    ttk();
-    crosshair();
-    gamertag();
-    minecraftCircle();
-    aspectRatio();
-    ppi();
-    screenSize();
-    downloadTime();
-    raid();
-    ramLatency();
+    const calculators = [
+      ["#sensResult", ["sensOldDpi", "sensOld", "sensNewDpi"], sensitivity],
+      ["#fovResult", ["fovValue", "fovMode", "fovAspectW", "fovAspectH"], fov],
+      ["#ttkResult", ["ttkHealth", "ttkDamage", "ttkRpm", "ttkHead"], ttk],
+      ["#crosshairCanvas", ["crossColor", "crossLength", "crossGap", "crossThick"], crosshair],
+      ["#circleOutput", ["circleDiameter"], minecraftCircle],
+      ["#aspectResult", ["aspectW", "aspectH", "aspectNewW"], aspectRatio],
+      ["#ppiResult", ["ppiW", "ppiH", "ppiInch"], ppi],
+      ["#screenResult", ["screenInch", "screenAspectW", "screenAspectH"], screenSize],
+      ["#downloadResult", ["fileSize", "fileUnit", "bandwidth"], downloadTime],
+      ["#raidResult", ["raidLevel", "raidDisks", "raidSize"], raid],
+      ["#ramResult", ["ramMt", "ramCl"], ramLatency]
+    ];
+    calculators.forEach(([selector, ids, render]) => {
+      if (!$(selector)) return;
+      bind(ids, render);
+      render();
+    });
+    if ($("#generateTags")) {
+      $("#generateTags").addEventListener("click", gamertag);
+      gamertag();
+    }
   }
 
   function sensitivity() {

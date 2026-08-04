@@ -6,9 +6,14 @@
   let ghostingAnimation = 0;
 
   if (document.body.matches('[data-page="display-diagnostics"]')) {
-    initWorkbench();
-    initPatterns();
-    initMotion();
+    const focusedTool = document.body.dataset.pageTool || "";
+    const patternTools = new Set([
+      "dead-pixel", "backlight-bleed", "black-level", "white-level",
+      "brightness-test", "contrast-test", "gamma-test", "color-range", "uniformity-test"
+    ]);
+    if ($("#displaySearch")) initWorkbench();
+    if (!focusedTool || patternTools.has(focusedTool)) initPatterns();
+    if (!focusedTool || ["ghosting-test", "frame-skipping", "fps-hz"].includes(focusedTool)) initMotion();
   }
 
   function initWorkbench() {
@@ -55,18 +60,19 @@
 
   function initPatterns() {
     const colors = [["흰색", "#fff"], ["검정", "#000"], ["빨강", "#f00"], ["초록", "#0f0"], ["파랑", "#00f"], ["회색", "#808080"]];
-    $("[data-solid-buttons]").innerHTML = colors.map(([label, color]) => `<button type="button" data-solid="${color}">${label}</button>`).join("");
+    const solidButtons = $("[data-solid-buttons]");
+    if (solidButtons) solidButtons.innerHTML = colors.map(([label, color]) => `<button type="button" data-solid="${color}">${label}</button>`).join("");
     $$("[data-solid]").forEach((button) => button.addEventListener("click", () => solid("deadPixelCanvas", button.dataset.solid)));
     $$("[data-fullscreen]").forEach((button) => button.addEventListener("click", () => document.getElementById(button.dataset.fullscreen)?.requestFullscreen?.()));
-    solid("deadPixelCanvas", "#fff");
-    solid("backlightCanvas", "#000");
-    steps("blackLevelCanvas", 0, 48);
-    steps("whiteLevelCanvas", 208, 255);
-    steps("brightnessCanvas", 0, 255);
-    contrast();
-    gamma();
-    colorRange();
-    uniformity();
+    if ($("#deadPixelCanvas")) solid("deadPixelCanvas", "#fff");
+    if ($("#backlightCanvas")) solid("backlightCanvas", "#000");
+    if ($("#blackLevelCanvas")) steps("blackLevelCanvas", 0, 48);
+    if ($("#whiteLevelCanvas")) steps("whiteLevelCanvas", 208, 255);
+    if ($("#brightnessCanvas")) steps("brightnessCanvas", 0, 255);
+    if ($("#contrastCanvas")) contrast();
+    if ($("#gammaCanvas")) gamma();
+    if ($("#colorRangeCanvas")) colorRange();
+    if ($("#uniformityCanvas")) uniformity();
   }
 
   function solid(id, color) {
@@ -136,7 +142,7 @@
   }
 
   function initMotion() {
-    $("#toggleGhosting").addEventListener("click", () => {
+    $("#toggleGhosting")?.addEventListener("click", () => {
       if (ghostingAnimation) {
         cancelAnimationFrame(ghostingAnimation);
         ghostingAnimation = 0;
@@ -146,11 +152,11 @@
         animateGhosting();
       }
     });
-    $("#startFrameSkip").addEventListener("click", frameSkipping);
-    $("#measureFps").addEventListener("click", measureFps);
-    measureFps();
-    drawFrameBase();
-    drawGhostingBase(0);
+    $("#startFrameSkip")?.addEventListener("click", frameSkipping);
+    $("#measureFps")?.addEventListener("click", measureFps);
+    if ($("#fpsStats")) measureFps();
+    if ($("#frameCanvas")) drawFrameBase();
+    if ($("#ghostingCanvas")) drawGhostingBase(0);
   }
 
   function animateGhosting(start = performance.now()) {

@@ -1725,6 +1725,7 @@
   "tools.file-media-toolbox.text.0098": "싱크 조정(ms)",
   "tools.file-media-toolbox.text.0099": "결과 복사",
   "tools.file-media-toolbox.text.0100": "첫 번째 자막\">",
+  "tools.file-media-toolbox.attr.placeholder.subtitle": "<SYNC Start=1000><P Class=KRCC>첫 번째 자막",
   "tools.file-media-toolbox.text.0101": "개발자",
   "tools.file-media-toolbox.text.0102": "HTML 웹 에디터·미리보기",
   "tools.file-media-toolbox.text.0103": "작성한 HTML을 sandbox iframe에서 즉시 미리 봅니다.",

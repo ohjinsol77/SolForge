@@ -10,7 +10,7 @@
   let dpiArmed = false;
 
   if (document.body.matches('[data-page="performance-lab"]')) {
-    initWorkbench();
+    if ($("#perfSearch")) initWorkbench();
     initTools();
   }
 
@@ -57,23 +57,23 @@
   }
 
   function initTools() {
-    $("#runCpuTest").addEventListener("click", cpuTest);
-    $("#runGpuTest").addEventListener("click", gpuTest);
-    $("#runRamTest").addEventListener("click", ramTest);
-    ["bwSize", "bwUnit", "bwMbps"].forEach((id) => document.getElementById(id).addEventListener("input", bandwidth));
-    $("#startDpiTraceButton").addEventListener("click", armDpiTrace);
-    $("#resetDpiTrace").addEventListener("click", resetDpiTrace);
-    $("#dpiTraceZone").addEventListener("pointerdown", startDpiTrace);
-    $("#dpiTraceZone").addEventListener("pointermove", dpiTrace);
-    $("#dpiTraceZone").addEventListener("pointerup", finishDpiTrace);
-    $("#dpiTraceZone").addEventListener("pointercancel", finishDpiTrace);
-    $("#toggleBurnIn").addEventListener("click", toggleBurnIn);
-    $("#refreshResolution").addEventListener("click", resolution);
-    $("#runRtcTest").addEventListener("click", rtcTest);
-    bandwidth();
-    resetDpiTrace();
-    resolution();
-    drawBurn(0);
+    $("#runCpuTest")?.addEventListener("click", cpuTest);
+    $("#runGpuTest")?.addEventListener("click", gpuTest);
+    $("#runRamTest")?.addEventListener("click", ramTest);
+    ["bwSize", "bwUnit", "bwMbps"].forEach((id) => document.getElementById(id)?.addEventListener("input", bandwidth));
+    $("#startDpiTraceButton")?.addEventListener("click", armDpiTrace);
+    $("#resetDpiTrace")?.addEventListener("click", resetDpiTrace);
+    $("#dpiTraceZone")?.addEventListener("pointerdown", startDpiTrace);
+    $("#dpiTraceZone")?.addEventListener("pointermove", dpiTrace);
+    $("#dpiTraceZone")?.addEventListener("pointerup", finishDpiTrace);
+    $("#dpiTraceZone")?.addEventListener("pointercancel", finishDpiTrace);
+    $("#toggleBurnIn")?.addEventListener("click", toggleBurnIn);
+    $("#refreshResolution")?.addEventListener("click", resolution);
+    $("#runRtcTest")?.addEventListener("click", rtcTest);
+    if ($("#bwResult")) bandwidth();
+    if ($("#dpiTraceZone")) resetDpiTrace();
+    if ($("#resolutionStats")) resolution();
+    if ($("#burnCanvas")) drawBurn(0);
   }
 
   async function cpuTest() {
@@ -139,33 +139,46 @@
 
   async function ramTest() {
     const button = $("#runRamTest");
+    const isEnglish = document.documentElement.lang === "en";
     button.disabled = true;
-    button.textContent = "진행 중";
+    button.textContent = isEnglish ? "Running" : "진행 중";
     const sizeMb = clamp(Number($("#ramTestSize").value) || 64, 4, 256);
     const start = performance.now();
-    const bytes = sizeMb * 1024 * 1024;
-    const buffer = new Uint8Array(bytes);
-    setProgress("ramProgress", "#ramTestStats", "메모리 쓰기 진행률", 0);
-    for (let i = 0; i < buffer.length; i += 4096) {
-      buffer[i] = i % 251;
-      if (i % (4096 * 512) === 0) {
-        setProgress("ramProgress", "#ramTestStats", "메모리 쓰기 진행률", i / buffer.length * 50);
-        await frame();
+    try {
+      const bytes = sizeMb * 1024 * 1024;
+      const buffer = new Uint8Array(bytes);
+      setProgress("ramProgress", "#ramTestStats", isEnglish ? "Memory write progress" : "메모리 쓰기 진행률", 0);
+      for (let i = 0; i < buffer.length; i += 4096) {
+        buffer[i] = i % 251;
+        if (i % (4096 * 512) === 0) {
+          setProgress("ramProgress", "#ramTestStats", isEnglish ? "Memory write progress" : "메모리 쓰기 진행률", i / buffer.length * 50);
+          await frame();
+        }
       }
-    }
-    let checksum = 0;
-    for (let i = 0; i < buffer.length; i += 4096) {
-      checksum = (checksum + buffer[i]) % 100000;
-      if (i % (4096 * 512) === 0) {
-        setProgress("ramProgress", "#ramTestStats", "메모리 검증 진행률", 50 + i / buffer.length * 50);
-        await frame();
+      let checksum = 0;
+      let errors = 0;
+      for (let i = 0; i < buffer.length; i += 4096) {
+        const expected = i % 251;
+        if (buffer[i] !== expected) errors += 1;
+        checksum = (checksum + buffer[i]) % 100000;
+        if (i % (4096 * 512) === 0) {
+          setProgress("ramProgress", "#ramTestStats", isEnglish ? "Memory verification progress" : "메모리 검증 진행률", 50 + i / buffer.length * 50);
+          await frame();
+        }
       }
+      const elapsed = performance.now() - start;
+      renderStats("#ramTestStats", isEnglish
+        ? [["Size", `${sizeMb}MB`], ["Time", `${elapsed.toFixed(1)}ms`], ["Verification errors", errors], ["Checksum", checksum]]
+        : [["크기", `${sizeMb}MB`], ["시간", `${elapsed.toFixed(1)}ms`], ["검증 오류", errors], ["체크섬", checksum]]);
+      setProgress("ramProgress", "#ramTestStats", isEnglish ? "Memory test complete" : "메모리 테스트 완료", 100);
+    } catch (error) {
+      renderStats("#ramTestStats", [[isEnglish ? "Error" : "오류", isEnglish ? "Memory could not be allocated." : "메모리를 할당하지 못했습니다."]]);
+      setProgress("ramProgress", "#ramTestStats", isEnglish ? "Memory test failed" : "메모리 테스트 실패", 100);
+      console.error("[SolForge] RAM test failed", error);
+    } finally {
+      button.disabled = false;
+      button.textContent = isEnglish ? "Run" : "실행";
     }
-    const elapsed = performance.now() - start;
-    renderStats("#ramTestStats", [["크기", `${sizeMb}MB`], ["시간", `${elapsed.toFixed(1)}ms`], ["체크섬", checksum]]);
-    setProgress("ramProgress", "#ramTestStats", "메모리 테스트 완료", 100);
-    button.disabled = false;
-    button.textContent = "실행";
   }
 
   function bandwidth() {

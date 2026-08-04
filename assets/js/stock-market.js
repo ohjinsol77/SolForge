@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const YAHOO_CHART = "https://query1.finance.yahoo.com/v8/finance/chart";
+  const STOCK_CHART_API = "/api/yahoo-chart";
   const CACHE_PREFIX = "sf-stock-cache:";
   const SETTINGS_PREFIX = "sf-stock-setting:";
   const QUOTE_TTL = 5 * 60 * 1000;
@@ -184,8 +184,7 @@
   }
 
   async function fetchChart(symbol, range, options = {}) {
-    const interval = range === "1mo" ? "1d" : "1d";
-    const url = `${YAHOO_CHART}/${encodeURIComponent(symbol)}?range=${encodeURIComponent(range)}&interval=${interval}&includePrePost=false&events=div%2Csplits`;
+    const url = `${STOCK_CHART_API}?symbol=${encodeURIComponent(symbol)}&range=${encodeURIComponent(range)}`;
     return cachedFetch(url, `${state.config.storageKey}:${symbol}:${range}`, QUOTE_TTL, options);
   }
 
@@ -222,22 +221,10 @@
   }
 
   async function fetchJson(url) {
-    const urls = [
-      url,
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      `https://corsproxy.io/?${encodeURIComponent(url)}`
-    ];
-    let lastError = null;
-    for (const target of urls) {
-      try {
-        const response = await fetch(target, { headers: { accept: "application/json" } });
-        if (!response.ok) throw new Error(`API 오류: HTTP ${response.status}`);
-        return await response.json();
-      } catch (error) {
-        lastError = error;
-      }
-    }
-    throw lastError || new Error("주식 데이터를 불러오지 못했습니다.");
+    const response = await fetch(url, { headers: { accept: "application/json" } });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(data?.error || `API 오류: HTTP ${response.status}`);
+    return data;
   }
 
   function normalizeChart(result, symbol) {
