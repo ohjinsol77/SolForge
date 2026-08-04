@@ -100,6 +100,11 @@ for (const site of sites) {
 
 const mainKo = fs.readFileSync(path.join(ROOT, "dist", "ko", "index.html"), "utf8");
 const mainEn = fs.readFileSync(path.join(ROOT, "dist", "en", "index.html"), "utf8");
+if (/specialized-sites|trust-strip|home-guide/.test(mainKo)) fail("Korean homepage still contains a removed promotional section");
+if (/specialized-sites|trust-strip|home-guide/.test(mainEn)) fail("English homepage still contains a removed promotional section");
+if (mainKo.includes("하나의 독립 페이지") || mainEn.includes("One focused page")) fail("Retired homepage headline is still present");
+if (!mainKo.includes("필요한 도구를,") || !mainKo.includes("가장 빠른 경로로.")) fail("New Korean homepage headline is missing");
+if (!mainEn.includes("The right tool,") || !mainEn.includes("right when you need it.")) fail("New English homepage headline is missing");
 function nestedHtmlFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
