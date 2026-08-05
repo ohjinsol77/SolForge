@@ -131,6 +131,19 @@ test("representative tool actions and RAM verification complete", async ({ page 
   const pixelAlpha = await page.locator("#deadPixelCanvas").evaluate((canvas) => canvas.getContext("2d").getImageData(0, 0, 1, 1).data[3]);
   expect(pixelAlpha).toBe(255);
 
+  await page.goto(`${BASE_URL}/ko/tools/code-tool.html`);
+  const codeCopyButton = page.locator('[data-advanced-copy="codeOutput"]');
+  const codeResultHeader = codeCopyButton.locator("xpath=..");
+  await expect(codeCopyButton).toBeVisible();
+  expect(await codeCopyButton.evaluate((button) => getComputedStyle(button).position)).toBe("static");
+  const [copyBox, headerBox] = await Promise.all([codeCopyButton.boundingBox(), codeResultHeader.boundingBox()]);
+  expect(copyBox).not.toBeNull();
+  expect(headerBox).not.toBeNull();
+  expect(copyBox.x).toBeGreaterThanOrEqual(headerBox.x);
+  expect(copyBox.x + copyBox.width).toBeLessThanOrEqual(headerBox.x + headerBox.width + 1);
+  expect(copyBox.y).toBeGreaterThanOrEqual(headerBox.y);
+  expect(copyBox.y + copyBox.height).toBeLessThanOrEqual(headerBox.y + headerBox.height + 1);
+
   await page.goto(`${BASE_URL}/ko/tools/ram-test.html`);
   await page.locator("#ramTestSize").fill("4");
   await page.locator("#runRamTest").click();

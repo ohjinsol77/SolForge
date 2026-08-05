@@ -1072,7 +1072,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${escapeHtml(item.slug)}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     ${adScript}
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260804-mascot">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260805-copy-position">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
     <meta property="og:type" content="website">
@@ -1238,7 +1238,7 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${categoryId}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${categoryId}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260804-mascot">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260805-copy-position">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
     <meta property="og:type" content="website">

@@ -946,10 +946,6 @@ textarea {
 }
 
 .copy-button {
-  position: absolute;
-  top: 0.55rem;
-  right: 0.65rem;
-  z-index: 2;
   min-width: 76px;
   min-height: 34px;
   padding: 0.35rem 0.65rem;
