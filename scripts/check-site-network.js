@@ -44,9 +44,9 @@ const CATEGORY_IDS = [
 ];
 for (const category of CATEGORY_IDS) MAIN_AD_FREE_FILES.add(`tools/${category}.html`);
 const sites = [
-  { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
-  { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
-  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "fortune.solforge.cloud", pages: 10, markers: ["12띠", "Constellations", "오락"] }
+  { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pagesProject: "solforge-crypto", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
+  { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pagesProject: "solforge-stocks", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
+  { name: "fortune", host: "fortune.solforge.cloud", publicHost: "fortune.solforge.cloud", pagesProject: "solforge-fortune", pages: 10, markers: ["12띠", "Constellations", "오락"] }
 ];
 
 function fail(message) {
@@ -68,7 +68,14 @@ function expectedFile(dist, href) {
 for (const site of sites) {
   const dist = path.join(ROOT, "sites", site.name, "dist");
   const adsTxt = fs.readFileSync(path.join(dist, "ads.txt"), "utf8").trim();
+  const redirects = fs.readFileSync(path.join(dist, "_redirects"), "utf8");
+  const headers = fs.readFileSync(path.join(dist, "_headers"), "utf8");
+  const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
+  const sitemapUrls = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
   if (adsTxt !== ADS_TXT_RECORD) fail(`Invalid ads.txt record in ${site.name}`);
+  if (!redirects.includes("/ /ko/ 301")) fail(`Permanent root redirect missing in ${site.name}`);
+  if (!headers.includes(`https://${site.pagesProject}.pages.dev/*`) || !headers.includes(`https://:version.${site.pagesProject}.pages.dev/*`)) fail(`Pages preview noindex headers missing in ${site.name}`);
+  if (sitemapUrls.size !== site.pages * 2) fail(`Sitemap URL count mismatch in ${site.name}`);
   for (const lang of ["ko", "en"]) {
     const dir = path.join(dist, lang);
     const files = htmlFiles(dir);
@@ -76,8 +83,12 @@ for (const site of sites) {
     for (const file of files) {
       const fullPath = path.join(dir, file);
       const html = fs.readFileSync(fullPath, "utf8");
+      const expectedCanonical = file === "index.html" ? `https://${site.host}/${lang}/` : `https://${site.host}/${lang}/${file.replace(/\.html$/, "")}`;
+      const canonicals = [...html.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"/g)].map((match) => match[1]);
       if (!html.includes(`<html lang="${lang}">`)) fail(`Wrong lang in ${fullPath}`);
-      if (!html.includes(`https://${site.host}/${lang}/`)) fail(`Missing localized canonical in ${fullPath}`);
+      if (canonicals.length !== 1 || canonicals[0] !== expectedCanonical) fail(`Canonical mismatch in ${fullPath}`);
+      if (!sitemapUrls.has(expectedCanonical)) fail(`Canonical missing from sitemap in ${site.name}: ${expectedCanonical}`);
+      if (/\bnoindex\b/i.test(html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i)?.[1] || "")) fail(`Unexpected noindex in ${fullPath}`);
       const hasAds = html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`);
       const shouldHaveAds = !["about.html", "privacy.html"].includes(file);
       if (shouldHaveAds && !hasAds) fail(`AdSense publisher code missing in specialist content: ${fullPath}`);
@@ -131,6 +142,14 @@ if (!mainRedirects.includes("/en/tools/all/ /en/tools/all 301")) fail("Localized
 if (!mainHeaders.includes("https://solforge.pages.dev/*") || !mainHeaders.includes("https://:version.solforge.pages.dev/*")) fail("Pages preview noindex headers missing");
 if (!fs.existsSync(path.join(ROOT, "dist", "assets", "img", "favicon.svg"))) fail("Main favicon asset missing");
 if (!fs.existsSync(path.join(ROOT, "dist", "favicon.ico"))) fail("Legacy favicon asset missing");
+for (const file of GROUP_CONTAINER_FILES) {
+  for (const lang of ["ko", "en"]) {
+    if (fs.existsSync(path.join(ROOT, "dist", lang, file))) fail(`Retired grouped page must not be emitted: ${lang}/${file}`);
+  }
+}
+
+const workerSource = fs.readFileSync(path.join(ROOT, "worker.js"), "utf8");
+if (!workerSource.includes('url.hostname === `www.${CANONICAL_HOST}`') || !workerSource.includes('url.hostname.endsWith(".workers.dev")')) fail("Alternate host canonical redirect missing in worker");
 
 for (const lang of ["ko", "en"]) {
   for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
@@ -144,6 +163,7 @@ for (const lang of ["ko", "en"]) {
     const robots = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i)?.[1] || "";
     if (!robots) fail(`Robots meta missing in main site: ${fullPath}`);
     const isIndexable = !/\bnoindex\b/i.test(robots);
+    if (!isIndexable) fail(`Unexpected noindex in main site: ${fullPath}`);
     if (isIndexable && !mainSitemapUrls.has(expectedCanonical)) fail(`Indexable main page missing from sitemap: ${expectedCanonical}`);
     if (!isIndexable && mainSitemapUrls.has(expectedCanonical)) fail(`Noindex main page must be absent from sitemap: ${expectedCanonical}`);
     if (!html.includes(`<link rel="alternate" hreflang="ko"`) || !html.includes(`<link rel="alternate" hreflang="en"`) || !html.includes(`<link rel="alternate" hreflang="x-default"`)) fail(`Hreflang links missing in main site: ${fullPath}`);

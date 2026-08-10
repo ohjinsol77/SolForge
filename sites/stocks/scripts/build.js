@@ -148,6 +148,7 @@ function build() {
   buildContentSite({
     root,
     siteUrl: "https://stocks.solforge.cloud",
+    pagesProject: "solforge-stocks",
     siteName: "SolForge Stocks",
     brandMark: "ST",
     themeColor: "#f5f7fb",

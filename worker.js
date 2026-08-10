@@ -6,6 +6,7 @@ const EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/USD";
 const COINBASE_RATES = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
 const CURRENCY_RATES = "https://latest.currency-api.pages.dev/v1/currencies/usd.json";
 const FEAR_GREED_API = "https://api.alternative.me/fng/?limit=31&format=json";
+const CANONICAL_HOST = "solforge.cloud";
 const STOCK_RANGES = new Set(["1mo", "3mo", "6mo", "1y"]);
 const STOCK_SYMBOL = /^[A-Z0-9.^=_-]{1,24}$/i;
 const BINANCE_COINS = [
@@ -34,6 +35,14 @@ const BINANCE_COINS = [
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const isAlternateSiteHost = url.hostname === `www.${CANONICAL_HOST}` || url.hostname.endsWith(".workers.dev");
+    if (isAlternateSiteHost && !url.pathname.startsWith("/api/") && (request.method === "GET" || request.method === "HEAD")) {
+      const canonicalUrl = new URL(request.url);
+      canonicalUrl.protocol = "https:";
+      canonicalUrl.hostname = CANONICAL_HOST;
+      canonicalUrl.port = "";
+      return Response.redirect(canonicalUrl, 301);
+    }
     if (url.pathname === "/api/yahoo-chart") return yahooChart(request, url);
     if (url.pathname.startsWith("/api/crypto/")) return cryptoData(request, url);
     return env.ASSETS.fetch(request);

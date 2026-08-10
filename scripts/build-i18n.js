@@ -279,13 +279,6 @@ function removeAdSenseCode(html) {
   return html.replace(/\s*<script\b[^>]*\bsrc="https:\/\/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=[^"]+"[^>]*><\/script>/gi, "");
 }
 
-function setRobotsDirective(html, content) {
-  if (/<meta\b[^>]*\bname="robots"[^>]*>/i.test(html)) {
-    return html.replace(/<meta\b[^>]*\bname="robots"[^>]*>/i, `<meta name="robots" content="${content}">`);
-  }
-  return html.replace(/<\/head>/i, `    <meta name="robots" content="${content}">\n  </head>`);
-}
-
 function isIndexableSourceFile(file) {
   return !GROUP_CONTAINER_FILES.has(file);
 }
@@ -478,7 +471,6 @@ function renderFile(file, lang) {
   html = injectDynamicI18nScript(html);
   html = injectToolCatalogScripts(html);
   html = injectSeo(html, lang, file);
-  if (GROUP_CONTAINER_FILES.has(file)) html = setRobotsDirective(html, "noindex, follow");
   html = html.replace(/\sdata-i18n="[^"]*"/g, "");
   html = html.replace(/\sdata-i18n-attrs="[^"]*"/g, "");
   return html;
@@ -490,6 +482,12 @@ function buildPages() {
       const outputFile = path.join(DIST, lang, file);
       writeText(path.relative(ROOT, outputFile), renderFile(file, lang));
     }
+  }
+}
+
+function removeRetiredGroupPages() {
+  for (const file of GROUP_CONTAINER_FILES) {
+    for (const lang of LANGS) fs.rmSync(path.join(DIST, lang, file), { force: true });
   }
 }
 
@@ -682,6 +680,7 @@ transformJsForRuntimeI18n(collectJsTranslations());
 buildPages();
 writeEnglishToolCopyAsset(toolCatalog);
 buildToolPages(toolCatalog);
+removeRetiredGroupPages();
 writeRootRedirect();
 writeHeaders();
 writeRobots();

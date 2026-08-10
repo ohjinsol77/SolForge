@@ -103,6 +103,7 @@ function build() {
   buildContentSite({
     root,
     siteUrl: "https://fortune.solforge.cloud",
+    pagesProject: "solforge-fortune",
     siteName: "SolForge Fortune",
     brandMark: "福",
     themeColor: "#fbf7f0",

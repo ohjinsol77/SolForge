@@ -188,8 +188,18 @@ function buildContentSite(config) {
   }
 
   fs.writeFileSync(path.join(dist, "index.html"), `<!doctype html><html lang="ko"><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=/ko/"><title>${escapeHtml(siteName)}</title><a href="/ko/">한국어 사이트로 이동</a></html>\n`);
-  fs.writeFileSync(path.join(dist, "_redirects"), "/ /ko/ 302\n");
-  fs.writeFileSync(path.join(dist, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n");
+  fs.writeFileSync(path.join(dist, "_redirects"), "/ /ko/ 301\n");
+  fs.writeFileSync(path.join(dist, "_headers"), `/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+https://${config.pagesProject}.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.${config.pagesProject}.pages.dev/*
+  X-Robots-Tag: noindex
+`);
   fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
   if (adsensePublisherId) {
     fs.writeFileSync(path.join(dist, "ads.txt"), `google.com, ${adsensePublisherId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
