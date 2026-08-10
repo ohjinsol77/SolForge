@@ -150,6 +150,8 @@ for (const file of GROUP_CONTAINER_FILES) {
 
 const workerSource = fs.readFileSync(path.join(ROOT, "worker.js"), "utf8");
 if (!workerSource.includes('url.hostname === `www.${CANONICAL_HOST}`') || !workerSource.includes('url.hostname.endsWith(".workers.dev")')) fail("Alternate host canonical redirect missing in worker");
+const workerConfig = JSON.parse(fs.readFileSync(path.join(ROOT, "wrangler.jsonc"), "utf8"));
+if (!Array.isArray(workerConfig.assets?.run_worker_first) || !workerConfig.assets.run_worker_first.includes("/*")) fail("HTML requests must run the Worker before static asset delivery");
 
 for (const lang of ["ko", "en"]) {
   for (const fullPath of nestedHtmlFiles(path.join(ROOT, "dist", lang))) {
