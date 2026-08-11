@@ -190,3 +190,41 @@ test("representative tool actions and RAM verification complete", async ({ page 
 
   expect(errors, errors.join("\n")).toEqual([]);
 });
+
+test("gamertag modes enforce English formats and Korean length limits", async ({ page }) => {
+  await page.goto(`${BASE_URL}/ko/tools/gamertag-generator.html`);
+
+  await expect(page.locator("#tagMinLength")).not.toBeVisible();
+  await page.locator("#tagMode").selectOption("korean");
+  await expect(page.locator("#tagMinLength")).toBeVisible();
+  await expect(page.locator("#tagFormat")).not.toBeVisible();
+  await page.locator("#tagMinLength").fill("2");
+  await page.locator("#tagMaxLength").fill("2");
+  await page.locator("#tagCount").selectOption("36");
+  await page.locator("#tagNumbers").uncheck();
+  await page.locator("#generateTags").click();
+
+  let names = await page.locator("#tagResult .tag-cloud span").allTextContents();
+  expect(names).toHaveLength(36);
+  expect(names.every((name) => Array.from(name).length === 2 && /^[가-힣]+$/.test(name))).toBe(true);
+
+  await page.locator("#tagMinLength").fill("10");
+  await page.locator("#tagMaxLength").fill("10");
+  await page.locator("#tagNumbers").check();
+  await page.locator("#generateTags").click();
+  names = await page.locator("#tagResult .tag-cloud span").allTextContents();
+  expect(names.every((name) => Array.from(name).length === 10 && /^[가-힣]+[0-9]+$/.test(name))).toBe(true);
+
+  await page.locator("#tagMode").selectOption("english");
+  await expect(page.locator("#tagFormat")).toBeVisible();
+  await page.locator("#tagFormat").selectOption("kebab");
+  await page.locator("#tagCount").selectOption("24");
+  await page.locator("#tagNumbers").uncheck();
+  await page.locator("#generateTags").click();
+  names = await page.locator("#tagResult .tag-cloud span").allTextContents();
+  expect(names).toHaveLength(24);
+  expect(names.every((name) => /^[a-z]+-[a-z]+$/.test(name))).toBe(true);
+
+  await page.goto(`${BASE_URL}/en/tools/gamertag-generator.html`);
+  await expect(page.getByRole("heading", { level: 1, name: "Gamertag & Korean ID Generator", exact: true })).toBeVisible();
+});

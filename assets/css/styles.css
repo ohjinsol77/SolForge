@@ -5371,6 +5371,17 @@ th {
   font-weight: 800;
 }
 
+[data-gamertag-mode="english"] .tag-korean-option,
+[data-gamertag-mode="korean"] .tag-english-option {
+  display: none;
+}
+
+.gamertag-number-option {
+  min-height: 42px;
+  align-self: end;
+  padding: 0.55rem 0;
+}
+
 .circle-output {
   min-height: 360px;
   font-family: "SFMono-Regular", Consolas, monospace;

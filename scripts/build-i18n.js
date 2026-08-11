@@ -457,7 +457,7 @@ function transformJsForRuntimeI18n(map) {
 function renderFile(file, lang) {
   let html = readText(file);
   html = html.replace(/assets\/js\/app\.js(?:\?v=[^"]*)?/g, "assets/js/app.js?v=20260803-categories");
-  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20260805-copy-position");
+  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20260811-gamertag");
   if (AD_FREE_FILES.has(file)) html = removeAdSenseCode(html);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);
   html = removeExistingSeo(html);

@@ -148,7 +148,7 @@
     ["game", "FOV", "FOV 계산기", "종횡비 기준으로 수평·수직 시야각을 변환합니다.", "fov field of view", "gaming-calculators#fov-calculator"],
     ["game", "TTK", "TTK 계산기", "피해량, 체력, 연사속도로 처치 시간을 추정합니다.", "ttk damage fire rate", "gaming-calculators#ttk-calculator"],
     ["game", "+", "크로스헤어 생성기", "색상과 간격을 정해 조준점 PNG를 만듭니다.", "crosshair generator", "gaming-calculators#crosshair-generator"],
-    ["game", "ID", "게이머태그 생성기", "닉네임과 길드명 후보를 브라우저에서 생성합니다.", "gamertag guild name generator", "gaming-calculators#gamertag-generator"],
+    ["game", "ID", "게이머태그·한글 아이디 생성기", "다양한 테마의 영문 게이머태그와 2~10자 한글 무작위 아이디를 생성합니다.", "gamertag korean id nickname guild name generator 한글 아이디 닉네임 생성", "gaming-calculators#gamertag-generator"],
     ["game", "MC", "마인크래프트 원 생성기", "블록 단위 원 설계도를 문자 그리드로 만듭니다.", "minecraft circle generator", "gaming-calculators#minecraft-circle"],
     ["game", "16:9", "화면 비율 계산", "원본 비율을 유지하는 새 크기를 계산합니다.", "aspect ratio calculator", "gaming-calculators#aspect-ratio"],
     ["game", "PPI", "PPI 계산기", "해상도와 대각선으로 픽셀 밀도를 계산합니다.", "ppi pixel density", "gaming-calculators#ppi-calculator"],

@@ -74,6 +74,13 @@
     });
     if ($("#generateTags")) {
       $("#generateTags").addEventListener("click", gamertag);
+      ["tagMode", "tagTheme", "tagFormat", "tagMinLength", "tagMaxLength", "tagCount", "tagNumbers"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("change", () => {
+          syncGamertagMode();
+          gamertag();
+        });
+      });
+      syncGamertagMode();
       gamertag();
     }
   }
@@ -135,19 +142,101 @@
   }
 
   function gamertag() {
-    const words = {
-      tech: ["Neon", "Circuit", "Pixel", "Quantum", "Vector", "Byte"],
-      myth: ["Rune", "Titan", "Oracle", "Aegis", "Dragon", "Nova"],
-      speed: ["Dash", "Turbo", "Blitz", "Rapid", "Flash", "Vortex"]
-    };
-    const tails = ["Forge", "Shift", "Core", "Strike", "Pulse", "Unit"];
-    const selected = words[$("#tagTheme").value] || words.tech;
+    syncGamertagMode();
+    const mode = $("#tagMode").value;
+    const count = Math.floor(clamp(Number($("#tagCount").value) || 12, 12, 36));
     const withNumber = $("#tagNumbers").checked;
-    const names = Array.from({ length: 12 }, () => {
-      const base = `${pick(selected)}${pick(tails)}`;
-      return withNumber ? `${base}${Math.floor(10 + Math.random() * 990)}` : base;
-    });
+    const names = mode === "korean"
+      ? koreanGamertags(count, withNumber)
+      : englishGamertags(count, withNumber);
     $("#tagResult").innerHTML = `<div class="tag-cloud">${names.map((name) => `<span>${escapeHtml(name)}</span>`).join("")}</div>`;
+  }
+
+  function syncGamertagMode() {
+    const panel = $("[data-gamertag-tool]");
+    if (panel) panel.dataset.gamertagMode = $("#tagMode").value === "korean" ? "korean" : "english";
+  }
+
+  function englishGamertags(count, withNumber) {
+    const words = {
+      tech: ["Neon", "Circuit", "Pixel", "Quantum", "Vector", "Byte", "Cyber", "Binary", "Kernel", "Glitch", "Chrome", "Signal"],
+      myth: ["Rune", "Titan", "Oracle", "Aegis", "Dragon", "Nova", "Phoenix", "Atlas", "Hydra", "Odin", "Sphinx", "Kraken"],
+      speed: ["Dash", "Turbo", "Blitz", "Rapid", "Flash", "Vortex", "Sonic", "Swift", "Nitro", "Velocity", "Rocket", "Meteor"],
+      fantasy: ["Arcane", "Mystic", "Wizard", "Knight", "Elven", "Goblin", "Fable", "Spell", "Quest", "Ranger", "Druid", "Paladin"],
+      cosmic: ["Cosmic", "Orbit", "Galaxy", "Comet", "Lunar", "Solar", "Nebula", "Astro", "Eclipse", "Zenith", "Quasar", "Void"],
+      nature: ["Storm", "River", "Forest", "Frost", "Ember", "Ocean", "Thunder", "Willow", "Cedar", "Breeze", "Flame", "Snow"],
+      stealth: ["Shadow", "Ghost", "Silent", "Phantom", "Night", "Cloak", "Rogue", "Smoke", "Hidden", "Dusk", "Specter", "Shade"],
+      cute: ["Bunny", "Mochi", "Jelly", "Peach", "Cookie", "Panda", "Kitten", "Pudding", "Berry", "Boba", "Puffy", "Sprout"],
+      royal: ["Royal", "Crown", "Regal", "Noble", "King", "Queen", "Prince", "Duke", "Baron", "Majesty", "Golden", "Throne"],
+      chaos: ["Chaos", "Riot", "Rage", "Havoc", "Venom", "Ruin", "Doom", "Rebel", "Fury", "Anarchy", "Mayhem", "Savage"]
+    };
+    const tails = ["Forge", "Shift", "Core", "Strike", "Pulse", "Unit", "Blade", "Hunter", "Wolf", "Wing", "Guard", "Rider", "Breaker", "Spark", "Master", "Runner"];
+    const selected = words[$("#tagTheme").value] || words.tech;
+    const formatMode = $("#tagFormat").value;
+    return uniqueNames(count, () => {
+      const parts = [pick(selected), pick(tails)];
+      let name;
+      if (formatMode === "lower") name = parts.join("").toLowerCase();
+      else if (formatMode === "upper") name = parts.join("").toUpperCase();
+      else if (formatMode === "snake") name = parts.join("_").toLowerCase();
+      else if (formatMode === "kebab") name = parts.join("-").toLowerCase();
+      else name = parts.join("");
+      if (!withNumber) return name;
+      const separator = formatMode === "snake" ? "_" : formatMode === "kebab" ? "-" : "";
+      return `${name}${separator}${randomDigits(randomInt(2, 4))}`;
+    });
+  }
+
+  function koreanGamertags(count, withNumber) {
+    let banks;
+    try {
+      banks = JSON.parse($("#tagKoreanWords").textContent);
+    } catch (_error) {
+      banks = { tech: ["\uB124\uC628", "\uCF54\uB4DC", "\uD53D\uC140"], tails: ["\uBE5B", "\uBCC4", "\uAC80"], fillers: ["\uB2EC", "\uAFC8", "\uBD88"] };
+    }
+    const minInput = $("#tagMinLength");
+    const maxInput = $("#tagMaxLength");
+    const minLength = Math.floor(clamp(Number(minInput.value) || 2, 2, 10));
+    const maxLength = Math.floor(clamp(Math.max(minLength, Number(maxInput.value) || minLength), 2, 10));
+    minInput.value = String(minLength);
+    maxInput.value = String(maxLength);
+    const selected = banks[$("#tagTheme").value] || banks.tech;
+    const tails = banks.tails || [];
+    const fillers = banks.fillers || [];
+    const syllables = [...new Set(Array.from([...selected, ...tails, ...fillers].join("")))];
+
+    return uniqueNames(count, () => {
+      const targetLength = randomInt(minLength, maxLength);
+      const digitCount = withNumber ? randomInt(1, Math.min(3, Math.max(1, targetLength - 1))) : 0;
+      const koreanLength = targetLength - digitCount;
+      let name = "";
+      if (koreanLength <= 3 && Math.random() < 0.55) {
+        while (Array.from(name).length < koreanLength) name += pick(syllables);
+      } else {
+        const pools = [selected, tails, fillers, selected];
+        while (Array.from(name).length < koreanLength) name += pick(pick(pools));
+      }
+      const base = Array.from(name).slice(0, koreanLength).join("");
+      return `${base}${withNumber ? randomDigits(digitCount) : ""}`;
+    });
+  }
+
+  function uniqueNames(count, createName) {
+    const names = new Set();
+    const maxAttempts = count * 100;
+    for (let attempts = 0; names.size < count && attempts < maxAttempts; attempts += 1) names.add(createName());
+    return [...names];
+  }
+
+  function randomInt(min, max) {
+    return Math.floor(min + Math.random() * (max - min + 1));
+  }
+
+  function randomDigits(length) {
+    if (length <= 0) return "";
+    let value = String(randomInt(1, 9));
+    while (value.length < length) value += String(randomInt(0, 9));
+    return value;
   }
 
   function minecraftCircle() {

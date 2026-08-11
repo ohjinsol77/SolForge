@@ -473,7 +473,7 @@ function extractScripts(html) {
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
     let src = match[1];
     if (/assets\/js\//.test(src)) {
-      src = `${src.replace(/\?v=.*$/, "")}?v=20260804-focused-tools`;
+      src = `${src.replace(/\?v=.*$/, "")}?v=20260811-gamertag`;
     }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
@@ -518,6 +518,10 @@ const englishToolCopyOverrides = {
   "base64-tool": { title: "Base64 Encoder and Decoder" },
   "baseball-tool": { description: "Play Bulls and Cows by guessing a sequence of non-repeating digits." },
   "bass-test": { title: "Bass Test" },
+  "gamertag-generator": {
+    title: "Gamertag & Korean ID Generator",
+    description: "Generate themed English gamertags or random Korean IDs between 2 and 10 characters, with optional numbers."
+  },
   "bmi-tool": { title: "BMI and WHR Calculator" },
   "burn-in-test": {
     description: "Cycle through strong full-screen colors briefly to inspect image retention. Do not leave the pattern running unattended."
@@ -1072,7 +1076,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${escapeHtml(item.slug)}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     ${adScript}
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260805-copy-position">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260811-gamertag">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
     <meta property="og:type" content="website">
@@ -1238,7 +1242,7 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${categoryId}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${categoryId}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260805-copy-position">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20260811-gamertag">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
     <meta property="og:type" content="website">
