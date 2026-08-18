@@ -20,3 +20,14 @@ arduino-cli compile --fqbn "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,Up
 ```
 
 The generated bootloader, partition table, boot app, and app binaries are published under `assets/firmware/grand-koleos-touch-keyboard/` for the browser uploader.
+
+## Browser-generated settings
+
+The SolForge page generates a 4 KB settings image and writes it to the start of the `spiffs` partition at `0x310000`. The packed settings contain:
+
+- three UTF-8 page names;
+- the display label and keyboard codes for all 18 buttons;
+- one optional consumer-control usage per button for mute and volume controls;
+- an FNV-1a checksum checked by the firmware during startup.
+
+If the settings block is missing or invalid, the firmware uses its built-in page names and empty shortcuts.

@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <esp_partition.h>
 #include "Arduino_GFX.h"
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
 #include "Arduino_Canvas.h"
 
 #include "USB.h"
+#include "USBHIDConsumerControl.h"
 #include "USBHIDKeyboard.h"
 #include "TAMC_GT911.h"
 
@@ -47,6 +49,43 @@ Arduino_GFX *gfx = new Arduino_Canvas(kDefaultScreenWidth, kDefaultScreenHeight,
 TAMC_GT911 touch(kTouchSdaPin, kTouchSclPin, kTouchIntPin, kTouchRstPin, kDefaultScreenWidth, kDefaultScreenHeight);
 
 USBHIDKeyboard Keyboard;
+USBHIDConsumerControl ConsumerControl;
+
+static constexpr uint32_t kConfigMagic = 0x4B474653;
+static constexpr uint16_t kConfigVersion = 1;
+static constexpr uint8_t kConfigPageCount = 3;
+static constexpr uint8_t kConfigButtonCount = 6;
+static constexpr uint8_t kConfigKeyCount = 8;
+static constexpr size_t kConfigPageNameBytes = 40;
+static constexpr size_t kConfigComboLabelBytes = 48;
+
+struct __attribute__((packed)) StoredButtonConfig {
+  char comboLabel[kConfigComboLabelBytes];
+  uint8_t keyCount;
+  uint8_t keys[kConfigKeyCount];
+  uint16_t consumerUsage;
+};
+
+struct __attribute__((packed)) StoredPageConfig {
+  char name[kConfigPageNameBytes];
+  StoredButtonConfig buttons[kConfigButtonCount];
+};
+
+struct __attribute__((packed)) StoredTouchConfig {
+  uint32_t magic;
+  uint16_t version;
+  uint16_t payloadSize;
+  uint32_t checksum;
+  uint32_t reserved;
+  StoredPageConfig pages[kConfigPageCount];
+};
+
+static_assert(sizeof(StoredButtonConfig) == 59, "StoredButtonConfig layout changed");
+static_assert(sizeof(StoredPageConfig) == 394, "StoredPageConfig layout changed");
+static_assert(sizeof(StoredTouchConfig) == 1198, "StoredTouchConfig layout changed");
+
+static StoredTouchConfig storedConfig;
+static bool storedConfigValid = false;
 
 struct MacroAction {
   const char *label;
@@ -137,6 +176,61 @@ static void setBacklight(bool on) {
 
 static uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
   return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+}
+
+static uint32_t fnv1a32(const uint8_t *data, size_t length) {
+  uint32_t hash = 2166136261UL;
+  for (size_t i = 0; i < length; ++i) {
+    hash ^= data[i];
+    hash *= 16777619UL;
+  }
+  return hash;
+}
+
+static void loadStoredConfig() {
+  const esp_partition_t *partition = esp_partition_find_first(
+      ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_SPIFFS, nullptr);
+  if (partition == nullptr || partition->size < sizeof(storedConfig)) {
+    Serial.println("touch config partition unavailable");
+    return;
+  }
+  if (esp_partition_read(partition, 0, &storedConfig, sizeof(storedConfig)) != ESP_OK) {
+    Serial.println("touch config read failed");
+    return;
+  }
+  const size_t payloadSize = sizeof(storedConfig.pages);
+  const uint32_t checksum = fnv1a32(reinterpret_cast<const uint8_t *>(storedConfig.pages), payloadSize);
+  if (storedConfig.magic != kConfigMagic || storedConfig.version != kConfigVersion ||
+      storedConfig.payloadSize != payloadSize || storedConfig.checksum != checksum) {
+    Serial.println("touch config invalid; using firmware defaults");
+    return;
+  }
+  for (uint8_t page = 0; page < kConfigPageCount; ++page) {
+    storedConfig.pages[page].name[kConfigPageNameBytes - 1] = '\0';
+    for (uint8_t button = 0; button < kConfigButtonCount; ++button) {
+      StoredButtonConfig &entry = storedConfig.pages[page].buttons[button];
+      entry.comboLabel[kConfigComboLabelBytes - 1] = '\0';
+      if (entry.keyCount > kConfigKeyCount) entry.keyCount = kConfigKeyCount;
+    }
+  }
+  storedConfigValid = true;
+  Serial.println("touch config loaded");
+}
+
+static const char *configuredPageName(uint8_t page) {
+  if (storedConfigValid && page < kConfigPageCount && storedConfig.pages[page].name[0] != '\0') {
+    return storedConfig.pages[page].name;
+  }
+  static const char *defaults[3] = {"1 페이지", "2 페이지", "3 페이지"};
+  return defaults[page < 3 ? page : 0];
+}
+
+static const char *configuredComboLabel(uint8_t page, uint8_t button) {
+  if (storedConfigValid && page < kConfigPageCount && button < kConfigButtonCount) {
+    const char *label = storedConfig.pages[page].buttons[button].comboLabel;
+    if (label[0] != '\0') return label;
+  }
+  return "미설정";
 }
 
 static uint16_t pageBg(uint8_t page) {
@@ -258,6 +352,25 @@ static void sendMacro(const MacroAction &action) {
 
   delay(kMacroHoldMs);
   Keyboard.releaseAll();
+  noteActivity();
+}
+
+static void sendConfiguredMacro(uint8_t page, uint8_t button) {
+  if (!storedConfigValid || page >= kConfigPageCount || button >= kConfigButtonCount) {
+    sendMacro(kPageButtons[page][button].action);
+    return;
+  }
+  const StoredButtonConfig &entry = storedConfig.pages[page].buttons[button];
+  Keyboard.releaseAll();
+  ConsumerControl.release();
+  delay(2);
+  if (entry.consumerUsage != 0) ConsumerControl.press(entry.consumerUsage);
+  for (uint8_t i = 0; i < entry.keyCount; ++i) {
+    if (entry.keys[i] != 0) Keyboard.press(entry.keys[i]);
+  }
+  delay(kMacroHoldMs);
+  Keyboard.releaseAll();
+  ConsumerControl.release();
   noteActivity();
 }
 
@@ -501,9 +614,9 @@ static void drawNavigationBox(int8_t control, int16_t x, int16_t width, const ch
 static void drawBottomNavigation() {
   gfx->fillRect(0, 210, screenWidth, 62, rgb565(21, 29, 41));
   drawNavigationBox(6, 10, 54, "", false, currentPage == 0);
-  drawNavigationBox(7, 74, 104, "1 페이지", currentPage == 0, false);
-  drawNavigationBox(8, 188, 104, "2 페이지", currentPage == 1, false);
-  drawNavigationBox(9, 302, 104, "3 페이지", currentPage == 2, false);
+  drawNavigationBox(7, 74, 104, configuredPageName(0), currentPage == 0, false);
+  drawNavigationBox(8, 188, 104, configuredPageName(1), currentPage == 1, false);
+  drawNavigationBox(9, 302, 104, configuredPageName(2), currentPage == 2, false);
   drawNavigationBox(10, 416, 54, "", false, currentPage == 2);
 }
 
@@ -529,7 +642,7 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
 
   drawButtonIcon(page, index, iconCx, iconCy, accent, fill);
   drawCenteredText(bx + 8, by + 33, w - 16, 26, button.action.label, 1, textColor(), fill);
-  drawCenteredText(bx + 8, by + 55, w - 16, 18, "미설정", 1, mutedColor(), fill);
+  drawCenteredText(bx + 8, by + 55, w - 16, 18, configuredComboLabel(page, index), 1, mutedColor(), fill);
 }
 
 static void drawBootSplash() {
@@ -862,8 +975,7 @@ static void handleTouchFrame() {
         noteActivity();
         renderScreen();
       } else {
-        const MacroAction &action = kPageButtons[touchPage][releasedControl].action;
-        sendMacro(action);
+        sendConfiguredMacro(touchPage, releasedControl);
         postMacroGuardUntilMs = millis() + kPostMacroGuardMs;
       }
     } else {
@@ -955,7 +1067,9 @@ void setup() {
   pinMode(kBacklightPin, OUTPUT);
   setBacklight(false);
 
+  loadStoredConfig();
   Keyboard.begin();
+  ConsumerControl.begin();
   USB.begin();
 
   initDisplay();

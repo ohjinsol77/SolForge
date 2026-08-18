@@ -1,13 +1,15 @@
 {
   "name": "SolForge Touch Keyboard",
-  "version": "2026.08.19-gulim14",
+  "version": "2026.08.19-config1",
   "chip": "ESP32-S3",
   "board": "ESP32-4827S043C",
   "display": "JC4827W543C",
   "flashMode": "dio",
   "flashFreq": "80m",
   "flashSize": "4MB",
-  "sourceSha256": "3d2ab9e6785f27c25831d127318cfe323c2a043e3deb9f20b475bc447a92b6bc",
+  "configAddress": 3211264,
+  "configSize": 4096,
+  "sourceSha256": "aca819234b79f2ee4cc82fff67fdb8b03dd49840071ce907b2e9c08c24391738",
   "files": [
     {
       "path": "bootloader.bin",
@@ -30,8 +32,8 @@
     {
       "path": "grand-koleos-macro.bin",
       "address": 65536,
-      "size": 529024,
-      "sha256": "70133fb97e351d7f50247541a4779ed08dc43af6ce5cb03c468044ae555620bf"
+      "size": 529952,
+      "sha256": "f33a8baef141277ecdb10719682accc89f85f02a03084f1a8202ceb3e3177feb"
     }
   ]
 }

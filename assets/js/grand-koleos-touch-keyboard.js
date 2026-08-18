@@ -22,16 +22,21 @@
     volumeUp: "Volume +",
     pageName: (index) => `Page ${index + 1} name`,
     cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"],
-    firmwareLoading: "Loading and validating the firmware package...",
+    configCreating: "Creating board settings from the current page names and shortcuts...",
+    firmwareLoading: "Loading the firmware package...",
+    firmwareValidating: "Validating firmware files and board settings...",
     firmwareResetting: "Restarting the USB CDC device in bootloader mode...",
     firmwareConnecting: "Connecting to the ESP32-S3 bootloader...",
     firmwareUploading: "Uploading firmware",
+    firmwareVerifying: "Verifying the data written to flash...",
     firmwareRebooting: "Firmware verified. Restarting the board in application mode...",
     firmwareSuccess: "Upload complete. The board has restarted with the SolForge Touch Keyboard screen.",
     firmwareFailed: "Upload failed",
     invalidDevice: "This is not the supported ESP32-S3 USB device.",
     invalidFirmware: "Firmware validation failed. Upload was stopped.",
-    chipMismatch: "The connected chip is not an ESP32-S3. Upload was stopped."
+    chipMismatch: "The connected chip is not an ESP32-S3. Upload was stopped.",
+    tooManyKeys: "A button can contain up to six regular keys and eight keyboard entries total.",
+    tooManyMedia: "Only one volume media key can be assigned to a button."
   } : {
     button: "버튼",
     empty: "키 조합 없음",
@@ -50,16 +55,21 @@
     volumeUp: "볼륨 +",
     pageName: (index) => `${index + 1}페이지 이름`,
     cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"],
-    firmwareLoading: "펌웨어 패키지를 불러와 검증하고 있습니다...",
+    configCreating: "현재 페이지 이름과 키 조합으로 보드 설정을 만들고 있습니다...",
+    firmwareLoading: "펌웨어 패키지를 불러오고 있습니다...",
+    firmwareValidating: "펌웨어 파일과 보드 설정을 검증하고 있습니다...",
     firmwareResetting: "USB CDC 장치를 부트로더 모드로 다시 시작하고 있습니다...",
     firmwareConnecting: "ESP32-S3 부트로더에 연결하고 있습니다...",
     firmwareUploading: "펌웨어 업로드 중",
+    firmwareVerifying: "플래시에 기록된 데이터를 검증하고 있습니다...",
     firmwareRebooting: "펌웨어 검증 완료 · 보드를 앱 모드로 다시 시작하고 있습니다...",
     firmwareSuccess: "업로드를 완료했습니다. SolForge Touch Keyboard 화면으로 보드가 다시 시작되었습니다.",
     firmwareFailed: "업로드 실패",
     invalidDevice: "지원 대상 ESP32-S3 USB 장치가 아닙니다.",
     invalidFirmware: "펌웨어 검증에 실패해 업로드를 중단했습니다.",
-    chipMismatch: "연결된 칩이 ESP32-S3가 아니어서 업로드를 중단했습니다."
+    chipMismatch: "연결된 칩이 ESP32-S3가 아니어서 업로드를 중단했습니다.",
+    tooManyKeys: "버튼 하나에는 일반 키 6개, 전체 키보드 항목 8개까지 지정할 수 있습니다.",
+    tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다."
   };
 
   const key = (id, label = id, units = 1, kind = "standard", comboLabel = id) => ({ id, label, units, kind, comboLabel });
@@ -82,6 +92,18 @@
   [...mediaKeys, ...keyboardRows.flat()].forEach((item) => {
     if (!item.gap && !keyLabels.has(item.id)) keyLabels.set(item.id, item.comboLabel);
   });
+
+  const keyboardCodes = new Map([
+    ["Escape", 0xB1], ["F1", 0xC2], ["F2", 0xC3], ["F3", 0xC4], ["F4", 0xC5], ["F5", 0xC6], ["F6", 0xC7],
+    ["F7", 0xC8], ["F8", 0xC9], ["F9", 0xCA], ["F10", 0xCB], ["F11", 0xCC], ["F12", 0xCD], ["Print Screen", 0xCE],
+    ["Scroll Lock", 0xCF], ["Pause", 0xD0], ["Backspace", 0xB2], ["Insert", 0xD1], ["Home", 0xD2], ["Page Up", 0xD3],
+    ["Tab", 0xB3], ["Delete", 0xD4], ["End", 0xD5], ["Page Down", 0xD6], ["Caps Lock", 0xC1], ["Enter", 0xB0],
+    ["Shift", 0x81], ["Right Shift", 0x85], ["Arrow Up", 0xDA], ["Ctrl", 0x80], ["Win", 0x83], ["Alt", 0x82],
+    ["Space", 0x20], ["Right Alt", 0x86], ["Menu", 0xED], ["Right Ctrl", 0x84], ["Arrow Left", 0xD8],
+    ["Arrow Down", 0xD9], ["Arrow Right", 0xD7]
+  ]);
+  const consumerCodes = new Map([["Volume Mute", 0x00E2], ["Volume Down", 0x00EA], ["Volume Up", 0x00E9]]);
+  const modifierCodes = new Set([0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87]);
 
   const pageStates = Array.from({ length: 3 }, (_value, index) => ({
     name: lang === "en" ? `Page ${index + 1}` : `${index + 1} 페이지`,
@@ -106,7 +128,9 @@
   const portButton = document.querySelector("#gkPortButton");
   const uploadButton = document.querySelector("#gkUploadButton");
   const uploadStatus = document.querySelector("#gkUploadStatus");
+  const uploadProgressRow = document.querySelector("#gkUploadProgressRow");
   const uploadProgress = document.querySelector("#gkUploadProgress");
+  const uploadPercent = document.querySelector("#gkUploadPercent");
   const uploadLog = document.querySelector("#gkUploadLog");
   const scriptBase = new URL(".", document.currentScript.src);
   const flasherModuleUrl = new URL("../vendor/esptool-js-0.6.1.bundle.js", scriptBase).href;
@@ -125,9 +149,13 @@
     return pageStates[index].name.trim() || defaultPageName(index);
   }
 
+  function comboTextFor(pageIndex, index) {
+    const keys = pageStates[pageIndex].assignments[index];
+    return keys.length ? keys.map((id) => keyLabels.get(id) || id).join(" + ") : copy.empty;
+  }
+
   function comboText(index) {
-    const assignments = currentAssignments();
-    return assignments[index].length ? assignments[index].map((id) => keyLabels.get(id) || id).join(" + ") : copy.empty;
+    return comboTextFor(activePage, index);
   }
 
   function buttonText(index) {
@@ -559,6 +587,86 @@
     return window.SparkMD5.ArrayBuffer.hash(view);
   }
 
+  function setUploadProgress(percent, message, log = false) {
+    const value = Math.max(0, Math.min(100, Math.round(percent)));
+    uploadProgress.value = value;
+    uploadPercent.textContent = `${value}%`;
+    uploadStatus.textContent = message;
+    if (log) appendUploadLog(`${value}% · ${message}`);
+  }
+
+  function writeFixedUtf8(target, offset, length, value) {
+    const encoder = new TextEncoder();
+    let cursor = 0;
+    for (const character of String(value)) {
+      const bytes = encoder.encode(character);
+      if (cursor + bytes.length >= length) break;
+      target.set(bytes, offset + cursor);
+      cursor += bytes.length;
+    }
+    target[offset + cursor] = 0;
+  }
+
+  function fnv1a32(bytes) {
+    let hash = 0x811C9DC5;
+    for (const byte of bytes) {
+      hash ^= byte;
+      hash = Math.imul(hash, 0x01000193) >>> 0;
+    }
+    return hash >>> 0;
+  }
+
+  function keyboardCode(keyId) {
+    if (keyboardCodes.has(keyId)) return keyboardCodes.get(keyId);
+    if (keyId.length !== 1) return null;
+    const character = /^[A-Z]$/.test(keyId) ? keyId.toLowerCase() : keyId;
+    return character.charCodeAt(0);
+  }
+
+  function buildBoardConfig(address) {
+    const pageNameBytes = 40;
+    const comboLabelBytes = 48;
+    const storedKeyCount = 8;
+    const buttonBytes = comboLabelBytes + 1 + storedKeyCount + 2;
+    const pageBytes = pageNameBytes + (6 * buttonBytes);
+    const payloadSize = 3 * pageBytes;
+    const config = new Uint8Array(4096);
+    const view = new DataView(config.buffer);
+    view.setUint32(0, 0x4B474653, true);
+    view.setUint16(4, 1, true);
+    view.setUint16(6, payloadSize, true);
+    view.setUint32(12, 0, true);
+
+    let pageOffset = 16;
+    pageStates.forEach((page, pageIndex) => {
+      writeFixedUtf8(config, pageOffset, pageNameBytes, displayPageName(pageIndex));
+      let buttonOffset = pageOffset + pageNameBytes;
+      page.assignments.forEach((assignments, buttonIndex) => {
+        writeFixedUtf8(config, buttonOffset, comboLabelBytes, assignments.length ? comboTextFor(pageIndex, buttonIndex) : copy.unset);
+        const keys = [];
+        const media = [];
+        assignments.forEach((keyId) => {
+          if (consumerCodes.has(keyId)) media.push(consumerCodes.get(keyId));
+          else {
+            const code = keyboardCode(keyId);
+            if (code === null) throw new Error(`${copy.invalidFirmware} (${keyId})`);
+            keys.push(code);
+          }
+        });
+        const regularKeyCount = keys.filter((code) => !modifierCodes.has(code)).length;
+        if (regularKeyCount > 6 || keys.length > storedKeyCount) throw new Error(`${copy.tooManyKeys} (${buttonText(buttonIndex)})`);
+        if (media.length > 1) throw new Error(`${copy.tooManyMedia} (${buttonText(buttonIndex)})`);
+        config[buttonOffset + comboLabelBytes] = keys.length;
+        keys.forEach((code, index) => { config[buttonOffset + comboLabelBytes + 1 + index] = code; });
+        view.setUint16(buttonOffset + comboLabelBytes + 1 + storedKeyCount, media[0] || 0, true);
+        buttonOffset += buttonBytes;
+      });
+      pageOffset += pageBytes;
+    });
+    view.setUint32(8, fnv1a32(config.subarray(16, 16 + payloadSize)), true);
+    return { data: config, address, name: lang === "en" ? "Board settings" : "보드 설정" };
+  }
+
   async function loadFirmwarePackage() {
     const manifestUrl = new URL(uploadSection.dataset.firmwareManifest, document.baseURI);
     const manifestResponse = await fetch(manifestUrl, { cache: "no-store" });
@@ -572,7 +680,7 @@
       const buffer = await response.arrayBuffer();
       const actualHash = await sha256Hex(buffer);
       if (actualHash !== String(entry.sha256).toLowerCase()) throw new Error(`${copy.invalidFirmware} (${entry.path})`);
-      files.push({ data: new Uint8Array(buffer), address: Number(entry.address) });
+      files.push({ data: new Uint8Array(buffer), address: Number(entry.address), name: entry.path });
     }
     if (!files.length) throw new Error(copy.invalidFirmware);
     return { manifest, files };
@@ -622,20 +730,24 @@
     uploadBusy = true;
     portButton.disabled = true;
     uploadButton.disabled = true;
-    uploadProgress.hidden = false;
-    uploadProgress.value = 0;
+    uploadProgressRow.hidden = false;
+    setUploadProgress(0, copy.configCreating);
     uploadLog.textContent = "";
     uploadLog.hidden = true;
     let transport = null;
     try {
-      uploadStatus.textContent = copy.firmwareLoading;
+      setUploadProgress(3, copy.configCreating, true);
+      setUploadProgress(7, copy.firmwareLoading, true);
       const { manifest, files } = await loadFirmwarePackage();
+      setUploadProgress(12, copy.firmwareValidating, true);
+      files.push(buildBoardConfig(Number(manifest.configAddress || 0x310000)));
       const { ESPLoader, Transport } = await import(flasherModuleUrl);
+      setUploadProgress(18, copy.firmwareResetting, true);
       selectedPort = await resetIntoBootloader(selectedPort);
       transport = new Transport(selectedPort, true);
       const terminal = {
         clean() {
-          uploadLog.textContent = "";
+          // Preserve the staged progress messages when esptool clears its terminal.
         },
         writeLine(message) {
           appendUploadLog(message);
@@ -645,10 +757,13 @@
         }
       };
       const loader = new ESPLoader({ transport, baudrate: 460800, terminal, debugLogging: false });
-      uploadStatus.textContent = copy.firmwareConnecting;
+      setUploadProgress(24, copy.firmwareConnecting, true);
       const chipName = await loader.main();
       if (!String(chipName).includes("ESP32-S3")) throw new Error(`${copy.chipMismatch} (${chipName})`);
       appendUploadLog(`${chipName} · ${manifest.version}`);
+      const totalBytes = files.reduce((sum, file) => sum + file.data.byteLength, 0);
+      const precedingBytes = files.map((_file, index) => files.slice(0, index).reduce((sum, file) => sum + file.data.byteLength, 0));
+      setUploadProgress(30, copy.firmwareUploading, true);
       await loader.writeFlash({
         fileArray: files,
         flashMode: manifest.flashMode || "dio",
@@ -658,15 +773,14 @@
         compress: true,
         calculateMD5Hash: md5Hex,
         reportProgress(fileIndex, written, total) {
-          const fileProgress = total ? written / total : 0;
-          const percent = Math.round(((fileIndex + fileProgress) / files.length) * 100);
-          uploadProgress.value = percent;
-          uploadStatus.textContent = `${copy.firmwareUploading} · ${percent}%`;
+          const completed = precedingBytes[fileIndex] + (total ? Math.min(written, total) : 0);
+          const percent = 30 + ((completed / totalBytes) * 65);
+          const fileName = files[fileIndex]?.name || `${fileIndex + 1}/${files.length}`;
+          setUploadProgress(percent, `${copy.firmwareUploading} · ${fileName}`);
         }
       });
-      uploadProgress.value = 100;
-      uploadStatus.textContent = copy.firmwareRebooting;
-      appendUploadLog(copy.firmwareRebooting);
+      setUploadProgress(96, copy.firmwareVerifying, true);
+      setUploadProgress(98, copy.firmwareRebooting, true);
       await watchdogResetIntoApplication(loader);
       try {
         await transport.disconnect();
@@ -675,12 +789,11 @@
       }
       transport = null;
       selectedPort = null;
-      uploadStatus.textContent = copy.firmwareSuccess;
+      setUploadProgress(100, copy.firmwareSuccess, true);
     } catch (error) {
       console.error(error);
       appendUploadLog(error?.message || error);
       uploadStatus.textContent = `${copy.firmwareFailed}: ${error?.message || error}`;
-      uploadProgress.value = 0;
       if (transport) {
         try {
           await transport.disconnect();
