@@ -69,6 +69,9 @@
   const status = document.querySelector("#gkStatus");
   const assignmentList = document.querySelector("#gkAssignmentList");
   const pageNameFields = document.querySelector("#gkPageNameFields");
+  const uploadSection = document.querySelector("#gkUploadSection");
+  const portButton = document.querySelector("#gkPortButton");
+  const uploadStatus = document.querySelector("#gkUploadStatus");
 
   function currentAssignments() {
     return pageStates[activePage].assignments;
@@ -492,6 +495,33 @@
     renderAll();
   });
 
+  function formatUsbId(value) {
+    return Number.isInteger(value) ? `0x${value.toString(16).toUpperCase().padStart(4, "0")}` : "—";
+  }
+
+  function initializePortSelector() {
+    if (!window.isSecureContext) {
+      portButton.disabled = true;
+      uploadStatus.textContent = uploadSection.dataset.copyInsecure;
+      return;
+    }
+    if (!("serial" in navigator)) {
+      portButton.disabled = true;
+      uploadStatus.textContent = uploadSection.dataset.copyUnsupported;
+      return;
+    }
+    portButton.addEventListener("click", async () => {
+      try {
+        const port = await navigator.serial.requestPort();
+        const info = port.getInfo();
+        uploadStatus.textContent = `${uploadSection.dataset.copySelected} VID ${formatUsbId(info.usbVendorId)} · PID ${formatUsbId(info.usbProductId)}`;
+      } catch (error) {
+        if (error?.name !== "NotFoundError") console.error(error);
+        uploadStatus.textContent = uploadSection.dataset.copyCancelled;
+      }
+    });
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -504,4 +534,5 @@
   renderPageNameFields();
   renderKeyboard();
   renderAll();
+  initializePortSelector();
 }());
