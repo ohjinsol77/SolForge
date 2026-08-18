@@ -198,7 +198,7 @@ for (const lang of ["ko", "en"]) {
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
 const generatedCategories = generatedCategoryRecords(toolCatalog);
-if (toolCatalog.length !== 146) fail(`Tool catalog count: ${toolCatalog.length}, expected 146`);
+if (toolCatalog.length !== 147) fail(`Tool catalog count: ${toolCatalog.length}, expected 147`);
 if (generatedTools.length !== 136) fail(`Generated focused tool count: ${generatedTools.length}, expected 136`);
 if (generatedCategories.length !== CATEGORY_IDS.length) fail(`Generated category count: ${generatedCategories.length}, expected ${CATEGORY_IDS.length}`);
 const toolTitles = new Set();
@@ -283,4 +283,4 @@ for (const site of sites) {
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
 }
 
-console.log("Checked SolForge network: 146 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");
+console.log("Checked SolForge network: 147 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");

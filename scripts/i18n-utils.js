@@ -19,6 +19,7 @@ const SOURCE_HTML_FILES = [
   "guides/pip-mapleland.html",
   "tools/advanced-toolbox.html",
   "tools/all.html",
+  "tools/birthday-celebrities.html",
   "tools/crypto-sentiment.html",
   "tools/device-diagnostics.html",
   "tools/display-diagnostics.html",

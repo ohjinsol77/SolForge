@@ -239,7 +239,7 @@ const ui = {
     faqA1: "같은 입력과 같은 브라우저 조건에서는 동일한 계산 규칙을 사용합니다. 실시간 데이터, 장치 상태 또는 브라우저 성능을 사용하는 기능은 실행 시점에 따라 달라질 수 있습니다.",
     faqQ2: "입력한 내용이 SolForge 서버에 저장되나요?",
     related: "같이 사용할 수 있는 도구",
-    allTools: "146개 독립 도구 모두 보기",
+    allTools: "147개 독립 도구 모두 보기",
     footer: "각 기능을 독립 URL에서 실행하고 기준과 한계를 함께 확인할 수 있습니다.",
     category: "분류",
     direct: "직접 실행",
@@ -290,7 +290,7 @@ const ui = {
     faqA1: "The same input uses the same calculation rules under the same browser conditions. Tools that rely on live data, device state, or browser performance can vary between runs.",
     faqQ2: "Does SolForge store what I enter?",
     related: "Related tools",
-    allTools: "Browse all 146 dedicated tools",
+    allTools: "Browse all 147 dedicated tools",
     footer: "Run each feature at its own URL and review the method and limitations alongside it.",
     category: "Category",
     direct: "Direct access",
@@ -728,6 +728,10 @@ const englishToolCopyOverrides = {
     title: "npm Package Lookup",
     description: "Check npm install commands, package metadata, dependencies, versions, and CDN links from the public npm registry."
   },
+  "birthday-celebrities": {
+    title: "Celebrities Who Share My Birthday",
+    description: "Choose a month and day to find up to 50 South Korean celebrities born on the same date."
+  },
   "date-move": {
     title: "Date Add and Subtract Calculator",
     description: "Add or subtract years, months, weeks, and days from a selected date."
@@ -1006,7 +1010,7 @@ function relatedTools(item, catalog, lang) {
 
 function isExternalTool(item) {
   return item.category === "finance"
-    || /npm-package-info|world-holidays|server-timezone/.test(item.sourceHref);
+    || /birthday-celebrities|npm-package-info|world-holidays|server-timezone/.test(item.sourceHref);
 }
 
 function metaDescription(title, description, lang) {

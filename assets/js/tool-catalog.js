@@ -69,6 +69,7 @@
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual"],
     tempDbTool,
     ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info"],
+    ["age", "BDAY", "나와 생일이 같은 유명인", "월과 일을 선택해 같은 날 태어난 대한민국 유명인과 연예인을 최대 50명 찾습니다.", "생일 같은 유명인 연예인 배우 가수 아이돌 wikidata", "birthday-celebrities"],
     ["age", "만", "나이·만나이 계산기", "만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.", "나이 만나이 세는나이 생년월일", "../calculators/all#age-calculator"],
     ["age", "표", "연도별 나이표", "출생연도별 나이와 전통적인 나이 용어를 확인합니다.", "나이표 환갑 칠순 출생연도", "../calculators/all#age-table"],
     ["age", "띠", "띠·띠동갑 찾기", "출생연도의 띠와 같은 띠인 연도를 찾습니다.", "띠 띠동갑 출생년도", "../calculators/all#zodiac-tools"],
