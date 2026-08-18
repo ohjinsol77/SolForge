@@ -20,7 +20,6 @@
 #if __has_include(<U8g2lib.h>)
 #include <U8g2lib.h>
 #define U8G2_FONT_SUPPORT
-#include "font/u8g2_font_quan7_h_cjk.h"
 #endif
 
 #define RGB565(r, g, b) ((((r)&0xF8) << 8) | (((g)&0xFC) << 3) | ((b) >> 3))

@@ -236,7 +236,7 @@ static void selectBuiltInFont(uint8_t size) {
 static void selectLabelFont(uint8_t size) {
 #if defined(U8G2_FONT_SUPPORT)
   gfx->setUTF8Print(true);
-  gfx->setFont(u8g2_font_quan7_h_cjk);
+  gfx->setFont(u8g2_font_gulim14_t_korean2);
   gfx->setTextSize(size);
 #else
   selectBuiltInFont(size + 1);
