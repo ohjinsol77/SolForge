@@ -13,6 +13,15 @@ Required Arduino packages:
 - ESP32 platform 3.3.7
 - U8g2 2.36.19
 
+The display labels use a firmware-embedded 16 px bitmap generated from NAVER
+NanumGothicCoding 2.5 Regular. It contains all 11,172 modern Hangul syllables,
+all 94 assigned Hangul Compatibility Jamo characters (including standalone
+inputs such as `ㅅㄷㄴㅅ`), and printable ASCII. The source font is distributed
+by NAVER under the SIL Open Font License 1.1.
+
+Regenerate the header with `scripts/generate-touch-keyboard-font.py` and the
+official U8g2 `bdfconv` tool when the source font or raster settings change.
+
 Compile with:
 
 ```powershell

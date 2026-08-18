@@ -5,6 +5,7 @@
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
 #include "Arduino_Canvas.h"
+#include "font/NanumGothicCoding16.h"
 
 #include "USB.h"
 #include "USBHIDConsumerControl.h"
@@ -330,7 +331,7 @@ static void selectBuiltInFont(uint8_t size) {
 static void selectLabelFont(uint8_t size) {
 #if defined(U8G2_FONT_SUPPORT)
   gfx->setUTF8Print(true);
-  gfx->setFont(u8g2_font_gulim14_t_korean2);
+  gfx->setFont(solforge_nanum_gothic_coding_16);
   gfx->setTextSize(size);
 #else
   selectBuiltInFont(size + 1);
