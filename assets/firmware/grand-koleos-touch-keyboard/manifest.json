@@ -1,0 +1,37 @@
+{
+  "name": "Grand Koleos Macro",
+  "version": "2026.08.18",
+  "chip": "ESP32-S3",
+  "board": "ESP32-4827S043C",
+  "display": "JC4827W543C",
+  "flashMode": "dio",
+  "flashFreq": "80m",
+  "flashSize": "4MB",
+  "sourceSha256": "4e9d9918bed105e2a68a005ea5e536109180888d5cc02ccd08e3183b7faa3a9e",
+  "files": [
+    {
+      "path": "bootloader.bin",
+      "address": 0,
+      "size": 19984,
+      "sha256": "670896258d62395f1986940214cc4a3223d1b05ab90f43666ec6a712639de516"
+    },
+    {
+      "path": "partitions.bin",
+      "address": 32768,
+      "size": 3072,
+      "sha256": "aaae2888c5a6a348004b5b436f47abb25ae32e72d9003902955a998eda723edd"
+    },
+    {
+      "path": "boot_app0.bin",
+      "address": 57344,
+      "size": 8192,
+      "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0"
+    },
+    {
+      "path": "grand-koleos-macro.bin",
+      "address": 65536,
+      "size": 518336,
+      "sha256": "e340983a802844bcbd293d96fd438624aedd70359c50c0b6120f5df0166e9be4"
+    }
+  ]
+}

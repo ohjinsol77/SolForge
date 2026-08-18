@@ -71,28 +71,31 @@
             <div class="gk-assignment-list" id="gkAssignmentList" aria-label="버튼별 키 조합" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.assignmentLabel"></div>
           </section>
 
-          <section class="gk-upload-section" id="gkUploadSection" aria-labelledby="gkUploadTitle" data-copy-selected="USB 포트를 선택했습니다." data-copy-cancelled="포트 선택을 취소했거나 연결할 수 없습니다." data-copy-unsupported="이 브라우저는 USB 포트 선택을 지원하지 않습니다. 최신 Chrome 또는 Edge를 사용하세요." data-copy-insecure="USB 포트 선택은 HTTPS 또는 localhost에서만 사용할 수 있습니다." data-i18n-attrs="data-copy-selected:tools.grand-koleos-touch-keyboard.upload.status.selected;data-copy-cancelled:tools.grand-koleos-touch-keyboard.upload.status.cancelled;data-copy-unsupported:tools.grand-koleos-touch-keyboard.upload.status.unsupported;data-copy-insecure:tools.grand-koleos-touch-keyboard.upload.status.insecure">
+          <section class="gk-upload-section" id="gkUploadSection" aria-labelledby="gkUploadTitle" data-firmware-manifest="/assets/firmware/grand-koleos-touch-keyboard/manifest.json" data-copy-selected="USB 포트를 선택했습니다." data-copy-cancelled="포트 선택을 취소했거나 연결할 수 없습니다." data-copy-unsupported="이 브라우저는 USB 포트 선택을 지원하지 않습니다. 최신 Chrome 또는 Edge를 사용하세요." data-copy-insecure="USB 포트 선택은 HTTPS 또는 localhost에서만 사용할 수 있습니다." data-i18n-attrs="data-copy-selected:tools.grand-koleos-touch-keyboard.upload.status.selected;data-copy-cancelled:tools.grand-koleos-touch-keyboard.upload.status.cancelled;data-copy-unsupported:tools.grand-koleos-touch-keyboard.upload.status.unsupported;data-copy-insecure:tools.grand-koleos-touch-keyboard.upload.status.insecure">
             <div class="gk-section-heading">
-              <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.upload.eyebrow">BOARD UPLOAD</p><h2 id="gkUploadTitle" data-i18n="tools.grand-koleos-touch-keyboard.upload.title">ESP32-S3 업로드 준비</h2><p data-i18n="tools.grand-koleos-touch-keyboard.upload.body">정전식 터치 모델 JC4827W543C의 USB 포트를 먼저 선택할 수 있습니다. 실제 펌웨어 업로드는 전달받을 터치 소스 검증 후 활성화됩니다.</p></div>
+              <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.upload.eyebrow">BOARD UPLOAD</p><h2 id="gkUploadTitle" data-i18n="tools.grand-koleos-touch-keyboard.upload.title">ESP32-S3 펌웨어 업로드</h2><p data-i18n="tools.grand-koleos-touch-keyboard.upload.body">검증된 그랑 콜레오스 매크로 화면 펌웨어를 정전식 터치 모델 JC4827W543C에 브라우저에서 직접 업로드합니다.</p></div>
               <span class="gk-board-badge">JC4827W543C</span>
             </div>
             <div class="gk-upload-grid">
               <div class="gk-hardware-card">
                 <strong data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.title">대상 하드웨어</strong>
-                <dl><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.model">모델</dt><dd>ESP32-4827S043C</dd></div><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.touch">터치</dt><dd data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.capacitive">정전식</dd></div><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.display">화면</dt><dd>480 × 272</dd></div></dl>
+                <dl><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.model">모델</dt><dd>ESP32-4827S043C</dd></div><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.touch">터치</dt><dd data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.capacitive">정전식</dd></div><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.display">화면</dt><dd>480 × 272</dd></div><div><dt data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.firmware">펌웨어</dt><dd data-i18n="tools.grand-koleos-touch-keyboard.upload.hardware.firmwareName">Grand Koleos Macro</dd></div></dl>
               </div>
               <div class="gk-upload-actions">
-                <p data-i18n="tools.grand-koleos-touch-keyboard.upload.instructions">보드를 USB-C 데이터 케이블로 연결한 뒤 포트 선택을 누르세요. 브라우저의 장치 선택 창에서 ESP32-S3 포트를 직접 고를 수 있습니다.</p>
+                <p data-i18n="tools.grand-koleos-touch-keyboard.upload.instructions">보드를 USB-C 데이터 케이블로 연결하고 ESP32-S3 포트를 선택한 뒤 펌웨어 업로드를 누르세요. 완료될 때까지 케이블을 분리하지 마세요.</p>
                 <div class="button-row"><button type="button" class="secondary-link" id="gkPortButton" data-i18n="tools.grand-koleos-touch-keyboard.upload.selectPort">USB 포트 선택</button><button type="button" class="primary-link" id="gkUploadButton" disabled data-i18n="tools.grand-koleos-touch-keyboard.upload.button">펌웨어 업로드</button></div>
-                <p class="gk-upload-status" id="gkUploadStatus" aria-live="polite" data-i18n="tools.grand-koleos-touch-keyboard.upload.status.pending">펌웨어 소스 연결 전 단계입니다. 포트 선택만 사용할 수 있습니다.</p>
+                <progress class="gk-upload-progress" id="gkUploadProgress" max="100" value="0" hidden aria-label="펌웨어 업로드 진행률" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.upload.progressLabel"></progress>
+                <p class="gk-upload-status" id="gkUploadStatus" aria-live="polite" data-i18n="tools.grand-koleos-touch-keyboard.upload.status.pending">ESP32-S3 USB 포트를 선택하면 업로드할 수 있습니다.</p>
+                <pre class="gk-upload-log" id="gkUploadLog" hidden aria-live="polite"></pre>
               </div>
             </div>
-            <p class="gk-upload-caution" data-i18n="tools.grand-koleos-touch-keyboard.upload.caution">현재 업로드 버튼은 안전을 위해 비활성화되어 있습니다. 검증되지 않은 펌웨어를 올리면 기존 공장 프로그램이 지워질 수 있습니다.</p>
+            <p class="gk-upload-caution" data-i18n="tools.grand-koleos-touch-keyboard.upload.caution">업로드하면 현재 보드의 부트로더·파티션·앱 펌웨어가 교체됩니다. 이 화면에서 고른 키 조합은 아직 펌웨어에 반영되지 않으며, 포함된 Grand Koleos Macro 화면이 설치됩니다.</p>
           </section>
         </section>
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260803-categories"></script>
-    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260818-tkl"></script>
+    <script src="../assets/vendor/spark-md5-3.0.2.min.js"></script>
+    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260819-flash"></script>
   </body>
 </html>

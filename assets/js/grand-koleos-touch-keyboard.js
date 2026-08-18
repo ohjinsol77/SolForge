@@ -21,7 +21,17 @@
     volumeDown: "Volume −",
     volumeUp: "Volume +",
     pageName: (index) => `Page ${index + 1} name`,
-    cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"]
+    cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"],
+    firmwareLoading: "Loading and validating the firmware package...",
+    firmwareResetting: "Restarting the USB CDC device in bootloader mode...",
+    firmwareConnecting: "Connecting to the ESP32-S3 bootloader...",
+    firmwareUploading: "Uploading firmware",
+    firmwareRebooting: "Firmware verified. Restarting the board in application mode...",
+    firmwareSuccess: "Upload complete. The board has restarted with the Grand Koleos Macro screen.",
+    firmwareFailed: "Upload failed",
+    invalidDevice: "This is not the supported ESP32-S3 USB device.",
+    invalidFirmware: "Firmware validation failed. Upload was stopped.",
+    chipMismatch: "The connected chip is not an ESP32-S3. Upload was stopped."
   } : {
     button: "버튼",
     empty: "키 조합 없음",
@@ -39,7 +49,17 @@
     volumeDown: "볼륨 −",
     volumeUp: "볼륨 +",
     pageName: (index) => `${index + 1}페이지 이름`,
-    cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"]
+    cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"],
+    firmwareLoading: "펌웨어 패키지를 불러와 검증하고 있습니다...",
+    firmwareResetting: "USB CDC 장치를 부트로더 모드로 다시 시작하고 있습니다...",
+    firmwareConnecting: "ESP32-S3 부트로더에 연결하고 있습니다...",
+    firmwareUploading: "펌웨어 업로드 중",
+    firmwareRebooting: "펌웨어 검증 완료 · 보드를 앱 모드로 다시 시작하고 있습니다...",
+    firmwareSuccess: "업로드를 완료했습니다. Grand Koleos Macro 화면으로 보드가 다시 시작되었습니다.",
+    firmwareFailed: "업로드 실패",
+    invalidDevice: "지원 대상 ESP32-S3 USB 장치가 아닙니다.",
+    invalidFirmware: "펌웨어 검증에 실패해 업로드를 중단했습니다.",
+    chipMismatch: "연결된 칩이 ESP32-S3가 아니어서 업로드를 중단했습니다."
   };
 
   const key = (id, label = id, units = 1, kind = "standard", comboLabel = id) => ({ id, label, units, kind, comboLabel });
@@ -84,7 +104,14 @@
   const pageNameFields = document.querySelector("#gkPageNameFields");
   const uploadSection = document.querySelector("#gkUploadSection");
   const portButton = document.querySelector("#gkPortButton");
+  const uploadButton = document.querySelector("#gkUploadButton");
   const uploadStatus = document.querySelector("#gkUploadStatus");
+  const uploadProgress = document.querySelector("#gkUploadProgress");
+  const uploadLog = document.querySelector("#gkUploadLog");
+  const scriptBase = new URL(".", document.currentScript.src);
+  const flasherModuleUrl = new URL("../vendor/esptool-js-0.6.1.bundle.js", scriptBase).href;
+  let selectedPort = null;
+  let uploadBusy = false;
 
   function currentAssignments() {
     return pageStates[activePage].assignments;
@@ -514,7 +541,169 @@
     return Number.isInteger(value) ? `0x${value.toString(16).toUpperCase().padStart(4, "0")}` : "—";
   }
 
-  function initializePortSelector() {
+  function appendUploadLog(message) {
+    const line = String(message || "").trim();
+    if (!line) return;
+    const lines = `${uploadLog.textContent}\n${line}`.trim().split("\n").slice(-8);
+    uploadLog.textContent = lines.join("\n");
+    uploadLog.hidden = false;
+  }
+
+  async function sha256Hex(data) {
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  function md5Hex(image) {
+    const view = image.buffer.slice(image.byteOffset, image.byteOffset + image.byteLength);
+    return window.SparkMD5.ArrayBuffer.hash(view);
+  }
+
+  async function loadFirmwarePackage() {
+    const manifestUrl = new URL(uploadSection.dataset.firmwareManifest, document.baseURI);
+    const manifestResponse = await fetch(manifestUrl, { cache: "no-store" });
+    if (!manifestResponse.ok) throw new Error(`Firmware manifest HTTP ${manifestResponse.status}`);
+    const manifest = await manifestResponse.json();
+    const files = [];
+    for (const entry of manifest.files || []) {
+      const fileUrl = new URL(entry.path, manifestUrl);
+      const response = await fetch(fileUrl, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Firmware file HTTP ${response.status}: ${entry.path}`);
+      const buffer = await response.arrayBuffer();
+      const actualHash = await sha256Hex(buffer);
+      if (actualHash !== String(entry.sha256).toLowerCase()) throw new Error(`${copy.invalidFirmware} (${entry.path})`);
+      files.push({ data: new Uint8Array(buffer), address: Number(entry.address) });
+    }
+    if (!files.length) throw new Error(copy.invalidFirmware);
+    return { manifest, files };
+  }
+
+  async function resetIntoBootloader(port) {
+    uploadStatus.textContent = copy.firmwareResetting;
+    appendUploadLog("USB CDC 1200bps bootloader reset");
+    try {
+      await port.open({ baudRate: 1200 });
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      await port.close();
+    } catch (error) {
+      if (port.readable || port.writable) {
+        try {
+          await port.close();
+        } catch (_closeError) {
+          // The device may already have disconnected for its bootloader reset.
+        }
+      }
+      appendUploadLog(error?.message || error);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1800));
+    const authorizedPorts = await navigator.serial.getPorts();
+    return authorizedPorts.find((candidate) => {
+      const info = candidate.getInfo();
+      return info.usbVendorId === 0x303A && info.usbProductId === 0x1001;
+    }) || port;
+  }
+
+  async function watchdogResetIntoApplication(loader) {
+    // USB-Serial/JTAG only performs a core reset via RTS. A watchdog reset is
+    // required to re-sample GPIO0 and leave the ESP32-S3 download mode.
+    const rtcBase = 0x60008000;
+    const wdtConfig0 = rtcBase + 0x0098;
+    const wdtConfig1 = rtcBase + 0x009C;
+    const wdtWriteProtect = rtcBase + 0x00B0;
+    await loader.writeReg(wdtWriteProtect, 0x50D83AA1);
+    await loader.writeReg(wdtConfig1, 2000);
+    await loader.writeReg(wdtConfig0, 0xD0000102);
+    await loader.writeReg(wdtWriteProtect, 0);
+    await new Promise((resolve) => setTimeout(resolve, 750));
+  }
+
+  async function uploadFirmware() {
+    if (!selectedPort || uploadBusy) return;
+    uploadBusy = true;
+    portButton.disabled = true;
+    uploadButton.disabled = true;
+    uploadProgress.hidden = false;
+    uploadProgress.value = 0;
+    uploadLog.textContent = "";
+    uploadLog.hidden = true;
+    let transport = null;
+    try {
+      uploadStatus.textContent = copy.firmwareLoading;
+      const { manifest, files } = await loadFirmwarePackage();
+      const { ESPLoader, Transport } = await import(flasherModuleUrl);
+      selectedPort = await resetIntoBootloader(selectedPort);
+      transport = new Transport(selectedPort, true);
+      const terminal = {
+        clean() {
+          uploadLog.textContent = "";
+        },
+        writeLine(message) {
+          appendUploadLog(message);
+        },
+        write(message) {
+          appendUploadLog(message);
+        }
+      };
+      const loader = new ESPLoader({ transport, baudrate: 460800, terminal, debugLogging: false });
+      uploadStatus.textContent = copy.firmwareConnecting;
+      const chipName = await loader.main();
+      if (!String(chipName).includes("ESP32-S3")) throw new Error(`${copy.chipMismatch} (${chipName})`);
+      appendUploadLog(`${chipName} · ${manifest.version}`);
+      await loader.writeFlash({
+        fileArray: files,
+        flashMode: manifest.flashMode || "dio",
+        flashFreq: manifest.flashFreq || "80m",
+        flashSize: manifest.flashSize || "4MB",
+        eraseAll: false,
+        compress: true,
+        calculateMD5Hash: md5Hex,
+        reportProgress(fileIndex, written, total) {
+          const fileProgress = total ? written / total : 0;
+          const percent = Math.round(((fileIndex + fileProgress) / files.length) * 100);
+          uploadProgress.value = percent;
+          uploadStatus.textContent = `${copy.firmwareUploading} · ${percent}%`;
+        }
+      });
+      uploadProgress.value = 100;
+      uploadStatus.textContent = copy.firmwareRebooting;
+      appendUploadLog(copy.firmwareRebooting);
+      await watchdogResetIntoApplication(loader);
+      try {
+        await transport.disconnect();
+      } catch (_error) {
+        // Native USB can disappear as soon as the board restarts.
+      }
+      transport = null;
+      selectedPort = null;
+      uploadStatus.textContent = copy.firmwareSuccess;
+    } catch (error) {
+      console.error(error);
+      appendUploadLog(error?.message || error);
+      uploadStatus.textContent = `${copy.firmwareFailed}: ${error?.message || error}`;
+      uploadProgress.value = 0;
+      if (transport) {
+        try {
+          await transport.disconnect();
+        } catch (_disconnectError) {
+          // Keep the original upload error visible.
+        }
+      }
+    } finally {
+      uploadBusy = false;
+      portButton.disabled = false;
+      uploadButton.disabled = !selectedPort;
+    }
+  }
+
+  function useSelectedPort(port) {
+    const info = port.getInfo();
+    if (info.usbVendorId !== 0x303A || info.usbProductId !== 0x1001) throw new Error(copy.invalidDevice);
+    selectedPort = port;
+    uploadButton.disabled = false;
+    uploadStatus.textContent = `${uploadSection.dataset.copySelected} VID ${formatUsbId(info.usbVendorId)} · PID ${formatUsbId(info.usbProductId)}`;
+  }
+
+  async function initializePortSelector() {
     if (!window.isSecureContext) {
       portButton.disabled = true;
       uploadStatus.textContent = uploadSection.dataset.copyInsecure;
@@ -525,16 +714,24 @@
       uploadStatus.textContent = uploadSection.dataset.copyUnsupported;
       return;
     }
+    const authorizedPorts = await navigator.serial.getPorts();
+    const authorizedTarget = authorizedPorts.find((port) => {
+      const info = port.getInfo();
+      return info.usbVendorId === 0x303A && info.usbProductId === 0x1001;
+    });
+    if (authorizedTarget) useSelectedPort(authorizedTarget);
     portButton.addEventListener("click", async () => {
       try {
-        const port = await navigator.serial.requestPort();
-        const info = port.getInfo();
-        uploadStatus.textContent = `${uploadSection.dataset.copySelected} VID ${formatUsbId(info.usbVendorId)} · PID ${formatUsbId(info.usbProductId)}`;
+        const port = await navigator.serial.requestPort({ filters: [{ usbVendorId: 0x303A, usbProductId: 0x1001 }] });
+        useSelectedPort(port);
       } catch (error) {
         if (error?.name !== "NotFoundError") console.error(error);
-        uploadStatus.textContent = uploadSection.dataset.copyCancelled;
+        selectedPort = null;
+        uploadButton.disabled = true;
+        uploadStatus.textContent = error?.name === "NotFoundError" ? uploadSection.dataset.copyCancelled : `${uploadSection.dataset.copyCancelled} ${error?.message || ""}`.trim();
       }
     });
+    uploadButton.addEventListener("click", uploadFirmware);
   }
 
   function escapeHtml(value) {
