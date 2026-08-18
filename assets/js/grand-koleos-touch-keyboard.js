@@ -26,6 +26,7 @@
     firmwareLoading: "Loading the firmware package...",
     firmwareValidating: "Validating firmware files and board settings...",
     firmwareResetting: "Restarting the USB CDC device in bootloader mode...",
+    firmwareWaitingPort: "Waiting for the bootloader serial port to appear...",
     firmwareConnecting: "Connecting to the ESP32-S3 bootloader...",
     firmwareUploading: "Uploading firmware",
     firmwareVerifying: "Verifying the data written to flash...",
@@ -35,6 +36,7 @@
     invalidDevice: "This is not the supported ESP32-S3 USB device.",
     invalidFirmware: "Firmware validation failed. Upload was stopped.",
     chipMismatch: "The connected chip is not an ESP32-S3. Upload was stopped.",
+    bootloaderPortUnavailable: "The bootloader serial port did not become available. Reconnect the USB cable and select the port again.",
     tooManyKeys: "A button can contain up to six regular keys and eight keyboard entries total.",
     tooManyMedia: "Only one volume media key can be assigned to a button."
   } : {
@@ -59,6 +61,7 @@
     firmwareLoading: "펌웨어 패키지를 불러오고 있습니다...",
     firmwareValidating: "펌웨어 파일과 보드 설정을 검증하고 있습니다...",
     firmwareResetting: "USB CDC 장치를 부트로더 모드로 다시 시작하고 있습니다...",
+    firmwareWaitingPort: "새 부트로더 USB 포트가 나타나기를 기다리고 있습니다...",
     firmwareConnecting: "ESP32-S3 부트로더에 연결하고 있습니다...",
     firmwareUploading: "펌웨어 업로드 중",
     firmwareVerifying: "플래시에 기록된 데이터를 검증하고 있습니다...",
@@ -68,6 +71,7 @@
     invalidDevice: "지원 대상 ESP32-S3 USB 장치가 아닙니다.",
     invalidFirmware: "펌웨어 검증에 실패해 업로드를 중단했습니다.",
     chipMismatch: "연결된 칩이 ESP32-S3가 아니어서 업로드를 중단했습니다.",
+    bootloaderPortUnavailable: "부트로더 USB 포트를 열 수 없습니다. USB 케이블을 다시 연결한 뒤 포트를 다시 선택해 주세요.",
     tooManyKeys: "버튼 하나에는 일반 키 6개, 전체 키보드 항목 8개까지 지정할 수 있습니다.",
     tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다."
   };
@@ -686,6 +690,47 @@
     return { manifest, files };
   }
 
+  function isTargetPort(port) {
+    const info = port.getInfo();
+    return info.usbVendorId === 0x303A && info.usbProductId === 0x1001;
+  }
+
+  async function waitForBootloaderPort(previousPort, timeoutMs = 12000) {
+    const deadline = Date.now() + timeoutMs;
+    let lastOpenError = null;
+    setUploadProgress(21, copy.firmwareWaitingPort, true);
+
+    while (Date.now() < deadline) {
+      const authorizedPorts = (await navigator.serial.getPorts()).filter(isTargetPort);
+      // Windows exposes the ESP32-S3 application and ROM bootloader as separate
+      // COM ports. Prefer the newly appeared object instead of the stale app port.
+      authorizedPorts.sort((left, right) => Number(left === previousPort) - Number(right === previousPort));
+
+      for (const candidate of authorizedPorts) {
+        try {
+          if (candidate.readable || candidate.writable) await candidate.close();
+          await candidate.open({ baudRate: 115200 });
+          await candidate.close();
+          await new Promise((resolve) => setTimeout(resolve, 180));
+          appendUploadLog("Bootloader serial port ready");
+          return candidate;
+        } catch (error) {
+          lastOpenError = error;
+          if (candidate.readable || candidate.writable) {
+            try {
+              await candidate.close();
+            } catch (_closeError) {
+              // A disappearing application-mode port is expected here.
+            }
+          }
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
+    throw new Error(`${copy.bootloaderPortUnavailable}${lastOpenError?.message ? ` (${lastOpenError.message})` : ""}`);
+  }
+
   async function resetIntoBootloader(port) {
     uploadStatus.textContent = copy.firmwareResetting;
     appendUploadLog("USB CDC 1200bps bootloader reset");
@@ -703,12 +748,8 @@
       }
       appendUploadLog(error?.message || error);
     }
-    await new Promise((resolve) => setTimeout(resolve, 1800));
-    const authorizedPorts = await navigator.serial.getPorts();
-    return authorizedPorts.find((candidate) => {
-      const info = candidate.getInfo();
-      return info.usbVendorId === 0x303A && info.usbProductId === 0x1001;
-    }) || port;
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    return waitForBootloaderPort(port);
   }
 
   async function watchdogResetIntoApplication(loader) {
