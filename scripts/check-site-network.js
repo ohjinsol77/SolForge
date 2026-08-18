@@ -30,6 +30,7 @@ const MAIN_AD_FREE_FILES = new Set([
   "about.html",
   "contact.html",
   "features.html",
+  "tools/grand-koleos-touch-keyboard.html",
   "privacy.html",
   "terms.html",
   "tools/all.html",
@@ -38,7 +39,7 @@ const MAIN_AD_FREE_FILES = new Set([
 ]);
 const GROUP_CONTAINER_ROUTES = new Set([...GROUP_CONTAINER_FILES].map((file) => file.replace(/\.html$/, "")));
 const CATEGORY_IDS = [
-  "developer", "text", "media", "pip", "boss", "gameplay", "game-calculator",
+  "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
@@ -51,6 +52,18 @@ const sites = [
 
 function fail(message) {
   throw new Error(message);
+}
+
+function htmlText(value) {
+  return String(value || "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function htmlFiles(dir) {
@@ -198,16 +211,26 @@ for (const lang of ["ko", "en"]) {
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
 const generatedCategories = generatedCategoryRecords(toolCatalog);
-if (toolCatalog.length !== 147) fail(`Tool catalog count: ${toolCatalog.length}, expected 147`);
+if (toolCatalog.length !== 149) fail(`Tool catalog count: ${toolCatalog.length}, expected 149`);
 if (generatedTools.length !== 136) fail(`Generated focused tool count: ${generatedTools.length}, expected 136`);
 if (generatedCategories.length !== CATEGORY_IDS.length) fail(`Generated category count: ${generatedCategories.length}, expected ${CATEGORY_IDS.length}`);
 const toolTitles = new Set();
 const toolDescriptions = new Set();
+const englishCopySource = fs.readFileSync(path.join(ROOT, "dist", "assets", "js", "tool-copy-en.js"), "utf8");
+const englishCopy = JSON.parse(englishCopySource.replace(/^\s*window\.SF_TOOL_COPY\s*=\s*/, "").replace(/;\s*$/, ""));
 for (const lang of ["ko", "en"]) {
-  for (const tool of toolCatalog) {
+  const localizedTools = toolCatalog.map((tool) => lang === "en" && englishCopy[tool.href]
+    ? { ...tool, ...englishCopy[tool.href] }
+    : tool);
+  for (const tool of localizedTools) {
     const relative = tool.href.startsWith("../") ? `${tool.href.slice(3)}.html` : `tools/${tool.href}.html`;
     const fullPath = path.join(ROOT, "dist", lang, ...relative.split("/"));
     if (!fs.existsSync(fullPath)) fail(`Catalog target missing: ${fullPath}`);
+    const html = fs.readFileSync(fullPath, "utf8");
+    const heading = htmlText(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]);
+    const documentTitle = htmlText(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]);
+    if (heading !== tool.title) fail(`Catalog/H1 title mismatch: ${tool.title} != ${heading} in ${fullPath}`);
+    if (documentTitle !== `${tool.title} - SolForge`) fail(`Catalog/document title mismatch in ${fullPath}`);
   }
   for (const tool of generatedTools) {
     const fullPath = path.join(ROOT, "dist", lang, "tools", `${tool.slug}.html`);
@@ -283,4 +306,4 @@ for (const site of sites) {
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
 }
 
-console.log("Checked SolForge network: 147 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");
+console.log("Checked SolForge network: 149 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");

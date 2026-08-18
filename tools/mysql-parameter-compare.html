@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="tools.mysql-parameter-compare.meta.title">MySQL 버전별 설정·변수 비교 - SolForge</title>
+    <meta name="description" content="MySQL 버전별 서버 옵션, 시스템 변수, 상태 변수와 스키마 항목을 최대 4개 릴리스까지 비교하고 변경점만 빠르게 찾는 도구입니다." data-i18n-attrs="content:tools.mysql-parameter-compare.meta.description">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.cloud/tools/mysql-parameter-compare.html">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1625988263075960" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260715-ads">
+    <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/mysql-parameter-compare.css?v=20260813-1">
+  </head>
+  <body data-page-tool="mysql-parameter-compare" data-page-category="developer">
+    <a class="skip-link" href="#main"><span data-i18n="tools.mysql-parameter-compare.skip">본문으로 이동</span></a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.nav.aria">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.brand.aria">
+          <span class="brand-mark">SF</span>
+          <span><strong>SolForge</strong><small>Developer Tools</small></span>
+        </a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card">
+          <strong>Version Lens</strong>
+          <span data-i18n="tools.mysql-parameter-compare.side.body">릴리스 사이에서 달라진 설정을 한 줄씩 추적하세요.</span>
+        </div>
+      </aside>
+
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.top.aria">
+            <a href="../features.html" data-top-link><span data-i18n="tools.mysql-parameter-compare.top.features">기능소개</span></a>
+            <a href="../about.html" data-top-link><span data-i18n="tools.mysql-parameter-compare.top.about">사이트소개</span></a>
+            <a href="../terms.html" data-top-link><span data-i18n="tools.mysql-parameter-compare.top.terms">이용약관</span></a>
+            <a href="../privacy.html" data-top-link><span data-i18n="tools.mysql-parameter-compare.top.privacy">개인정보처리방침</span></a>
+            <a href="../contact.html" data-top-link><span data-i18n="tools.mysql-parameter-compare.top.contact">문의</span></a>
+          </nav>
+          <div class="topbar-controls">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/" aria-label="Switch to English" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.language.aria">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.skin.aria">
+              <option value="basic">Basic</option>
+              <option value="saas">SaaS</option>
+              <option value="terminal">Terminal</option>
+            </select>
+            <button class="skin-apply-button" type="button" id="skinApplyButton"><span data-i18n="tools.mysql-parameter-compare.skin.apply">적용</span></button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          </div>
+        </header>
+
+        <section class="parameter-hero">
+          <div class="parameter-hero-copy">
+            <p class="eyebrow"><span data-i18n="tools.mysql-parameter-compare.hero.eyebrow">MYSQL VERSION LENS</span></p>
+            <h1><span data-i18n="tools.mysql-parameter-compare.hero.title">MySQL 버전별 설정·변수 비교</span></h1>
+            <p data-i18n="tools.mysql-parameter-compare.hero.body">여러 MySQL 릴리스의 옵션과 변수를 나란히 놓고, 추가·삭제·변경된 값만 빠르게 추려보세요.</p>
+            <div class="parameter-hero-pills" aria-label="도구 특징" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.hero.pills.aria">
+              <span><i aria-hidden="true"></i><span data-i18n="tools.mysql-parameter-compare.hero.pill.one">최대 4개 버전</span></span>
+              <span><i aria-hidden="true"></i><span data-i18n="tools.mysql-parameter-compare.hero.pill.two">117+ 릴리스</span></span>
+              <span><i aria-hidden="true"></i><span data-i18n="tools.mysql-parameter-compare.hero.pill.three">변경점 필터</span></span>
+            </div>
+          </div>
+          <div class="parameter-hero-visual" aria-hidden="true">
+            <span class="hero-orbit orbit-one"></span>
+            <span class="hero-orbit orbit-two"></span>
+            <div class="hero-version hero-version-back">8.0</div>
+            <div class="hero-version hero-version-front">8.4</div>
+            <div class="hero-diff-line"><span></span><strong>+42</strong></div>
+          </div>
+        </section>
+
+        <section class="parameter-workspace" aria-labelledby="compareWorkspaceTitle">
+          <h2 class="sr-only" id="compareWorkspaceTitle" data-i18n="tools.mysql-parameter-compare.workspace.title">MySQL 버전 비교 작업 영역</h2>
+
+          <div class="parameter-tabs" role="tablist" aria-label="비교 항목" data-i18n-attrs="aria-label:tools.mysql-parameter-compare.tabs.aria">
+            <button type="button" role="tab" aria-selected="true" class="active" data-parameter-type="mysqld"><span data-i18n="tools.mysql-parameter-compare.tab.mysqld">서버 옵션</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="variable"><span data-i18n="tools.mysql-parameter-compare.tab.variable">시스템 변수</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="status"><span data-i18n="tools.mysql-parameter-compare.tab.status">상태 변수</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="mysql"><span data-i18n="tools.mysql-parameter-compare.tab.mysql">mysql 클라이언트</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="charset"><span data-i18n="tools.mysql-parameter-compare.tab.charset">문자 집합</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="collation"><span data-i18n="tools.mysql-parameter-compare.tab.collation">콜레이션</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="privilege"><span data-i18n="tools.mysql-parameter-compare.tab.privilege">권한</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="function"><span data-i18n="tools.mysql-parameter-compare.tab.function">내장 함수</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="statement"><span data-i18n="tools.mysql-parameter-compare.tab.statement">SQL 문</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="ischema">INFORMATION_SCHEMA</button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="pschema">Performance Schema</button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="keyword"><span data-i18n="tools.mysql-parameter-compare.tab.keyword">키워드</span></button>
+            <button type="button" role="tab" aria-selected="false" data-parameter-type="error"><span data-i18n="tools.mysql-parameter-compare.tab.error">오류 코드</span></button>
+          </div>
+
+          <div class="parameter-controls">
+            <div class="version-builder-card">
+              <div class="control-heading">
+                <div>
+                  <span class="control-step">01</span>
+                  <div><strong data-i18n="tools.mysql-parameter-compare.versions.title">비교 버전</strong><small data-i18n="tools.mysql-parameter-compare.versions.body">메이저 계열을 먼저 고른 뒤 정확한 릴리스를 선택하세요.</small></div>
+                </div>
+                <span class="selection-count"><strong id="selectedVersionCount">0</strong>/4</span>
+              </div>
+              <div class="version-builder">
+                <label>
+                  <span data-i18n="tools.mysql-parameter-compare.versions.major">MySQL 계열</span>
+                  <select id="versionFamilySelect" disabled><option data-i18n="tools.mysql-parameter-compare.loading">불러오는 중…</option></select>
+                </label>
+                <span class="version-builder-arrow" aria-hidden="true">→</span>
+                <label>
+                  <span data-i18n="tools.mysql-parameter-compare.versions.release">세부 릴리스</span>
+                  <select id="versionReleaseSelect" disabled><option data-i18n="tools.mysql-parameter-compare.versions.release.placeholder">릴리스 선택</option></select>
+                </label>
+                <button class="version-add-button" id="addVersionButton" type="button" disabled><span aria-hidden="true">+</span><span data-i18n="tools.mysql-parameter-compare.versions.add">비교에 추가</span></button>
+              </div>
+              <div class="selected-versions" id="selectedVersions" aria-live="polite"></div>
+            </div>
+
+            <div class="filter-card">
+              <div class="control-heading">
+                <div>
+                  <span class="control-step">02</span>
+                  <div><strong data-i18n="tools.mysql-parameter-compare.filters.title">결과 좁히기</strong><small data-i18n="tools.mysql-parameter-compare.filters.body">이름 검색과 변경점 필터를 함께 사용할 수 있습니다.</small></div>
+                </div>
+              </div>
+              <label class="parameter-search">
+                <span class="sr-only" data-i18n="tools.mysql-parameter-compare.search.label">변수 이름 검색</span>
+                <span class="parameter-search-icon" aria-hidden="true"></span>
+                <input id="parameterSearch" type="search" autocomplete="off" placeholder="예: innodb, buffer, timeout" data-i18n-attrs="placeholder:tools.mysql-parameter-compare.search.placeholder">
+                <kbd>/</kbd>
+              </label>
+              <label class="difference-toggle">
+                <input id="differenceOnly" type="checkbox">
+                <span class="toggle-track" aria-hidden="true"><i></i></span>
+                <span><strong data-i18n="tools.mysql-parameter-compare.diff.title">변경된 항목만 보기</strong><small data-i18n="tools.mysql-parameter-compare.diff.body">모든 버전에서 값이 같은 행을 숨깁니다.</small></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="parameter-summary" aria-live="polite">
+            <div><span class="summary-icon total-icon" aria-hidden="true">Σ</span><span><small data-i18n="tools.mysql-parameter-compare.summary.total">전체 항목</small><strong id="totalParameterCount">—</strong></span></div>
+            <div><span class="summary-icon changed-icon" aria-hidden="true">≠</span><span><small data-i18n="tools.mysql-parameter-compare.summary.changed">값 변경</small><strong id="changedParameterCount">—</strong></span></div>
+            <div><span class="summary-icon lifecycle-icon" aria-hidden="true">±</span><span><small data-i18n="tools.mysql-parameter-compare.summary.lifecycle">추가·삭제</small><strong id="lifecycleParameterCount">—</strong></span></div>
+            <div class="summary-status"><span class="status-dot" id="dataStatusDot"></span><span id="dataStatus" data-i18n="tools.mysql-parameter-compare.status.preparing">버전 목록 준비 중</span></div>
+          </div>
+
+          <div class="parameter-content" id="parameterContent">
+            <div class="parameter-empty" id="parameterEmpty">
+              <span class="empty-mark" aria-hidden="true">⇄</span>
+              <h3 data-i18n="tools.mysql-parameter-compare.empty.title">버전을 선택해 비교를 시작하세요.</h3>
+              <p data-i18n="tools.mysql-parameter-compare.empty.body">최소 1개, 최대 4개 릴리스를 나란히 확인할 수 있습니다.</p>
+            </div>
+            <div class="parameter-loading" id="parameterLoading" hidden aria-live="polite">
+              <span class="loading-spinner" aria-hidden="true"></span>
+              <strong data-i18n="tools.mysql-parameter-compare.loading.data">버전 데이터를 비교하고 있습니다…</strong>
+            </div>
+            <div class="parameter-error" id="parameterError" hidden>
+              <span aria-hidden="true">!</span>
+              <div><strong data-i18n="tools.mysql-parameter-compare.error.title">데이터를 불러오지 못했습니다.</strong><p id="parameterErrorMessage"></p></div>
+              <button type="button" id="retryParameterButton" data-i18n="tools.mysql-parameter-compare.error.retry">다시 시도</button>
+            </div>
+            <div class="parameter-table-shell" id="parameterTableShell" hidden>
+              <div class="parameter-table-toolbar">
+                <p><strong id="visibleParameterCount">0</strong><span data-i18n="tools.mysql-parameter-compare.table.visible">개 항목 표시</span></p>
+                <div class="table-legend">
+                  <span><i class="legend-changed"></i><span data-i18n="tools.mysql-parameter-compare.legend.changed">값 변경</span></span>
+                  <span><i class="legend-added"></i><span data-i18n="tools.mysql-parameter-compare.legend.added">추가</span></span>
+                  <span><i class="legend-missing"></i><span data-i18n="tools.mysql-parameter-compare.legend.missing">없음</span></span>
+                </div>
+              </div>
+              <div class="parameter-table-wrap">
+                <table class="parameter-table">
+                  <thead id="parameterTableHead"></thead>
+                  <tbody id="parameterTableBody"></tbody>
+                </table>
+              </div>
+              <div class="filtered-empty" id="filteredEmpty" hidden>
+                <strong data-i18n="tools.mysql-parameter-compare.filtered.title">조건에 맞는 항목이 없습니다.</strong>
+                <span data-i18n="tools.mysql-parameter-compare.filtered.body">검색어를 지우거나 변경점 필터를 꺼보세요.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section" aria-labelledby="parameterGuideTitle">
+          <div class="section-heading">
+            <div><p class="eyebrow">COMPARE WITH CONTEXT</p><h2 id="parameterGuideTitle" data-i18n="tools.mysql-parameter-compare.guide.title">업그레이드 검토에 맞춘 비교 방식</h2></div>
+          </div>
+          <div class="policy-list">
+            <article class="article-card"><h3 data-i18n="tools.mysql-parameter-compare.guide.one.title">계열부터 고르고 릴리스를 좁히세요</h3><p data-i18n="tools.mysql-parameter-compare.guide.one.body">MySQL 5, 8, 9처럼 메이저 계열을 먼저 선택하면 긴 버전 목록에서 원하는 패치 릴리스를 훨씬 빠르게 찾을 수 있습니다. 추가한 버전은 비교 순서대로 열에 배치됩니다.</p></article>
+            <article class="article-card"><h3 data-i18n="tools.mysql-parameter-compare.guide.two.title">변경점과 수명 주기를 구분하세요</h3><p data-i18n="tools.mysql-parameter-compare.guide.two.body">노란 셀은 기존 값이 달라진 경우, 초록 표시는 새 버전에 추가된 경우, 빗금 셀은 해당 버전에 항목이 없는 경우입니다. 변경된 항목만 보기를 켜면 동일한 행은 즉시 제외됩니다.</p></article>
+            <article class="article-card"><h3 data-i18n="tools.mysql-parameter-compare.guide.three.title">운영 반영 전 공식 문서를 확인하세요</h3><p data-i18n="tools.mysql-parameter-compare.guide.three.body">표는 버전 간 차이를 빠르게 찾는 용도입니다. 기본값, 동적 변경 가능 여부, 폐기 일정과 플랫폼별 차이는 연결된 MySQL 공식 문서와 실제 대상 서버에서 최종 확인하세요.</p></article>
+          </div>
+        </section>
+
+        <footer class="footer"><p>© 2026 SolForge.</p><div><a href="../features.html"><span data-i18n="tools.mysql-parameter-compare.top.features">기능소개</span></a><a href="../about.html"><span data-i18n="tools.mysql-parameter-compare.top.about">사이트소개</span></a><a href="../terms.html"><span data-i18n="tools.mysql-parameter-compare.top.terms">이용약관</span></a><a href="../privacy.html"><span data-i18n="tools.mysql-parameter-compare.top.privacy">개인정보처리방침</span></a><a href="../contact.html"><span data-i18n="tools.mysql-parameter-compare.top.contact">문의</span></a></div></footer>
+      </main>
+    </div>
+
+    <div class="sr-only" id="parameterRuntimeCopy" aria-hidden="true">
+      <span data-copy="family" data-i18n="tools.mysql-parameter-compare.runtime.family">MySQL {version}.x</span>
+      <span data-copy="remove" data-i18n="tools.mysql-parameter-compare.runtime.remove">MySQL {version} 제거</span>
+      <span data-copy="status-ready" data-i18n="tools.mysql-parameter-compare.runtime.ready">{count}개 버전 사용 가능</span>
+      <span data-copy="status-loading" data-i18n="tools.mysql-parameter-compare.runtime.loading">데이터 불러오는 중</span>
+      <span data-copy="status-loaded" data-i18n="tools.mysql-parameter-compare.runtime.loaded">비교 완료 · {time}</span>
+      <span data-copy="status-filtered" data-i18n="tools.mysql-parameter-compare.runtime.filtered">필터 적용 · {count}개</span>
+      <span data-copy="parameter" data-i18n="tools.mysql-parameter-compare.runtime.parameter">항목</span>
+      <span data-copy="missing" data-i18n="tools.mysql-parameter-compare.runtime.missing">없음</span>
+      <span data-copy="added" data-i18n="tools.mysql-parameter-compare.runtime.added">추가됨</span>
+      <span data-copy="changed" data-i18n="tools.mysql-parameter-compare.runtime.changed">변경됨</span>
+      <span data-copy="same" data-i18n="tools.mysql-parameter-compare.runtime.same">동일</span>
+      <span data-copy="version-error" data-i18n="tools.mysql-parameter-compare.runtime.version.error">버전 목록 요청을 확인하고 다시 시도해 주세요.</span>
+      <span data-copy="data-error" data-i18n="tools.mysql-parameter-compare.runtime.data.error">외부 JSON 요청이 실패했습니다. 잠시 후 다시 시도해 주세요.</span>
+      <span data-copy="limit" data-i18n="tools.mysql-parameter-compare.runtime.limit">최대 4개 버전까지 비교할 수 있습니다.</span>
+      <span data-copy="duplicate" data-i18n="tools.mysql-parameter-compare.runtime.duplicate">이미 비교 중인 버전입니다.</span>
+    </div>
+    <script src="../assets/js/tool-copy-en.js?v=20260728-focused"></script>
+    <script src="../assets/js/tool-catalog.js?v=20260813-mysql-compare"></script>
+    <script src="../assets/js/app.js?v=20260612-5"></script>
+    <script src="../assets/js/mysql-parameter-compare.js?v=20260813-1"></script>
+  </body>
+</html>

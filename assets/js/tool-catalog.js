@@ -12,7 +12,7 @@
     : ["developer", "DB", "DB 임시·더미 데이터 생성기", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb temp db 임시데이터 임시 데이터 더미데이터 더미 데이터 가짜데이터 가짜 데이터 테스트데이터 테스트 데이터 목데이터 목 데이터 mock data mockdata dummy data dummydata test data testdata 스키마 테이블 생성문 mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"];
   const lang = document.documentElement.lang === "en" ? "en" : "ko";
   const categoryOrder = [
-    "developer", "text", "media", "pip", "boss", "gameplay", "game-calculator",
+    "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
     "device", "display", "input", "performance", "finance", "life", "age",
     "date", "lunar", "calendar"
   ];
@@ -21,6 +21,7 @@
       developer: ["DEV", "개발자 도구", "SQL, JSON, URL, 패키지 조회와 테스트 데이터 생성 기능을 각각의 페이지에서 사용합니다."],
       text: ["TXT", "텍스트 도구", "글자 수, 텍스트 정리, 한영타 변환과 개인정보 마스킹 기능을 개별 도구로 제공합니다."],
       media: ["MEDIA", "파일·미디어 도구", "이미지, 자막, 체크섬, 음성, EML 등 로컬 파일 작업을 기능별로 선택합니다."],
+      vehicle: ["CAR", "차량 도구", "차량에서 활용할 수 있는 보조 기능을 차종과 목적에 따라 선택합니다."],
       pip: ["PIP", "PIP 작업 도구", "시계, 타이머, 메모와 이미지 도구를 각각 독립된 PIP 기능으로 실행합니다."],
       boss: ["BOSS", "게임 타이머", "게임 진행 중 필요한 패턴과 재사용 시간을 별도의 타이머로 관리합니다."],
       gameplay: ["GAME", "게임 플레이 테스트", "클릭, 반응속도, 에임과 기본 입력 상태를 목적에 맞는 개별 테스트로 확인합니다."],
@@ -40,6 +41,7 @@
       developer: ["DEV", "Developer Tools", "Use focused pages for SQL, JSON, URLs, package lookup, and test data generation."],
       text: ["TXT", "Text Tools", "Choose a dedicated tool for counting, cleaning, keyboard conversion, or personal-data masking."],
       media: ["MEDIA", "File & Media Tools", "Work with images, subtitles, checksums, speech, EML, and other local files one task at a time."],
+      vehicle: ["CAR", "Vehicle Tools", "Choose vehicle-specific helper tools by model and purpose."],
       pip: ["PIP", "PIP Workflow Tools", "Run clocks, timers, notes, and image helpers as separate Picture-in-Picture tools."],
       boss: ["BOSS", "Game Timers", "Track game patterns and cooldowns with a dedicated timer."],
       gameplay: ["GAME", "Gameplay Tests", "Check clicking, reaction time, aim, and basic input behavior with focused tests."],
@@ -67,8 +69,10 @@
     ["boss", "BOSS", "메이플랜드 보스타이머", "메이플랜드 보스 패턴과 스킬 쿨타임을 PIP 창으로 관리합니다.", "메이플랜드 보스 타이머 pip 혼테일 자쿰 피아누스 유혹 공무", "mapleland-boss-timer"],
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual"],
+    ["developer", "DB", "MySQL 버전별 설정·변수 비교", "버전별 서버 옵션과 시스템 변수의 추가·삭제·변경을 나란히 비교합니다.", "mysql version parameter variable compare mysqld system status 설정 변수 파라미터 비교", "mysql-parameter-compare"],
     tempDbTool,
     ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info"],
+    ["vehicle", "CAR", "그랑 콜레오스 터치 키보드", "480×272 화면의 3×2 터치 버튼에 풀배열 키보드 단축키를 지정하고 미리 봅니다.", "그랑 콜레오스 그랑콜레오스 grand koleos 차량 터치 키보드 esp32", "grand-koleos-touch-keyboard"],
     ["age", "BDAY", "나와 생일이 같은 유명인", "월과 일을 선택해 같은 날 태어난 대한민국 유명인과 연예인을 최대 50명 찾습니다.", "생일 같은 유명인 연예인 배우 가수 아이돌 wikidata", "birthday-celebrities"],
     ["age", "만", "나이·만나이 계산기", "만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.", "나이 만나이 세는나이 생년월일", "../calculators/all#age-calculator"],
     ["age", "표", "연도별 나이표", "출생연도별 나이와 전통적인 나이 용어를 확인합니다.", "나이표 환갑 칠순 출생연도", "../calculators/all#age-table"],
@@ -118,7 +122,7 @@
     ["text", "CC", "SMI → SRT 변환", "SMI 자막을 SRT 형식으로 바꾸고 싱크를 조정합니다.", "smi srt 자막 변환", "file-media-toolbox#subtitle-tool"],
     ["developer", "</>", "HTML 미리보기", "HTML 코드를 sandbox 환경에서 즉시 실행합니다.", "html 웹 에디터 미리보기", "file-media-toolbox#html-editor"],
     ["developer", "SHA", "파일 체크섬", "로컬 파일의 SHA-1·256·384·512 해시를 계산합니다.", "파일 checksum sha hash", "file-media-toolbox#checksum-tool"],
-    ["media", "IMG", "이미지 압축·Data URL", "이미지를 리사이즈하고 압축해 Data URL로 변환합니다.", "이미지 압축 리사이즈 data url", "file-media-toolbox#image-tool"],
+    ["media", "IMG", "이미지 압축·리사이즈", "이미지 크기와 형식을 바꾸고, 압축 결과를 파일이나 Data URL로 저장합니다.", "이미지 압축 리사이즈 data url", "file-media-toolbox#image-tool"],
     ["media", "TTS", "문자 음성 변환", "브라우저 음성 합성으로 입력 문장을 읽습니다.", "tts 문자 음성 읽기", "file-media-toolbox#tts-tool"],
     ["media", "STT", "음성 문자 변환", "지원 브라우저에서 마이크 음성을 텍스트로 바꿉니다.", "stt 음성 문자 마이크", "file-media-toolbox#stt-tool"],
     ["text", "EML", "EML 뷰어", "로컬 이메일 파일의 헤더와 본문을 확인합니다.", "eml 이메일 메일 뷰어", "file-media-toolbox#eml-tool"],
@@ -288,7 +292,7 @@
 
   function iconClass(category) {
     if (category === "gameplay" || category === "game-calculator" || category === "device" || category === "display" || category === "input" || category === "performance") return "game";
-    if (category === "pip" || category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "finance") return category;
+    if (category === "pip" || category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "vehicle" || category === "finance") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
     if (category === "age") return "age";

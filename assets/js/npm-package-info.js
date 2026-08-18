@@ -48,7 +48,7 @@
       $("#npmSearchInput").value = queryPackage;
       lookupPackage(queryPackage);
     } else {
-      setStatus("패키지명을 검색하거나 입력 후 상세 조회를 누르세요.", "info");
+      setStatus("공개 패키지명을 입력하거나 react·axios·vite 예시를 선택하세요.", "info");
     }
   }
 
@@ -81,6 +81,12 @@
     $("#npmSearchButton")?.addEventListener("click", () => runSearch(getSearchValue(), { force: true }));
     $("#npmLookupButton")?.addEventListener("click", () => lookupPackage(getSearchValue()));
     $("#npmResetButton")?.addEventListener("click", resetTool);
+    $$('[data-npm-example]').forEach((button) => {
+      button.addEventListener("click", () => {
+        $("#npmSearchInput").value = button.dataset.npmExample;
+        lookupPackage(button.dataset.npmExample);
+      });
+    });
     $("#npmFavoriteButton")?.addEventListener("click", toggleFavorite);
     $("#npmCopySummary")?.addEventListener("click", copySummary);
     $("#npmInstallManager")?.addEventListener("change", renderInstallCommand);
@@ -311,8 +317,8 @@
 
   function renderDetail() {
     if (!state.meta) {
-      setText("#npmPackageTitle", "패키지를 선택하세요.");
-      setText("#npmPackageDescription", "검색 결과에서 패키지를 선택하거나 정확한 패키지명을 조회하세요.");
+      setText("#npmPackageTitle", "검색 결과에서 패키지를 선택하세요");
+      setText("#npmPackageDescription", "선택한 패키지의 설명, 최신 버전, 라이선스와 저장소 링크가 이곳에 표시됩니다.");
       $("#npmMetaGrid").innerHTML = "";
       $("#npmKeywords").innerHTML = "";
       $("#npmLinks").innerHTML = "";

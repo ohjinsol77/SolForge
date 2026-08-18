@@ -287,9 +287,18 @@
     const stats = $("#imageStats");
     const dataUrlOutput = $("#imageDataUrl");
     const download = $("#imageDownload");
+    const fileName = $("#imageFileName");
+    const emptyResult = $("#imageEmptyResult");
     let sourceFile = null;
+    let downloadUrl = "";
     input.addEventListener("change", () => {
       sourceFile = input.files?.[0] || null;
+      processButton.disabled = !sourceFile;
+      result.hidden = true;
+      if (emptyResult) emptyResult.hidden = false;
+      if (fileName) fileName.textContent = sourceFile
+        ? `${sourceFile.name} · ${bitmapSize(sourceFile.size)}`
+        : "JPG·PNG·WebP · 브라우저 안에서만 처리";
     });
     processButton.addEventListener("click", async () => {
       if (!sourceFile) {
@@ -317,12 +326,24 @@
         const blob = await new Promise((resolve) => canvas.toBlob(resolve, format, quality));
         if (!blob) throw new Error("이미지를 생성하지 못했습니다.");
         const dataUrl = canvas.toDataURL(format, quality);
-        preview.src = dataUrl;
+        preview.width = width;
+        preview.height = height;
+        const previewContext = preview.getContext("2d");
+        previewContext.clearRect(0, 0, width, height);
+        previewContext.drawImage(canvas, 0, 0);
         dataUrlOutput.value = dataUrl;
-        download.href = URL.createObjectURL(blob);
+        if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+        downloadUrl = URL.createObjectURL(blob);
+        download.href = downloadUrl;
         download.download = `solforge-${Date.now()}.${format === "image/png" ? "png" : format === "image/webp" ? "webp" : "jpg"}`;
-        stats.textContent = `${bitmapSize(sourceFile.size)} → ${bitmapSize(blob.size)} · ${width} × ${height}px · ${Math.round((1 - blob.size / sourceFile.size) * 100)}% 변화`;
+        const changeRate = Math.round(Math.abs(1 - blob.size / sourceFile.size) * 100);
+        const isSmaller = blob.size <= sourceFile.size;
+        const changeLabel = document.documentElement.lang === "en"
+          ? `${changeRate}% ${isSmaller ? "smaller" : "larger"}`
+          : `${changeRate}% ${isSmaller ? "감소" : "증가"}`;
+        stats.textContent = `${bitmapSize(sourceFile.size)} → ${bitmapSize(blob.size)} · ${changeLabel} · ${width} × ${height}px`;
         result.hidden = false;
+        if (emptyResult) emptyResult.hidden = true;
       } catch (error) {
         toast(`이미지 변환 실패: ${error.message}`);
       }

@@ -8,7 +8,7 @@ const SITE_URL = "https://solforge.cloud";
 const ADSENSE_CLIENT = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
 const CATEGORY_ORDER = [
-  "developer", "text", "media", "pip", "boss", "gameplay", "game-calculator",
+  "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
@@ -49,6 +49,11 @@ const categoryCopy = {
       label: "파일·미디어 도구",
       use: "별도 프로그램을 설치하지 않고 로컬 파일을 확인하거나 변환 결과를 빠르게 만들 때 사용할 수 있습니다.",
       limit: "브라우저가 지원하는 형식과 메모리 한계가 있으므로 원본 파일을 보관하고 결과 품질을 직접 확인하세요."
+    },
+    vehicle: {
+      label: "차량 도구",
+      use: "차량과 차종에 맞춘 보조 기능을 별도의 페이지에서 사용할 수 있습니다.",
+      limit: "차량 운행 중 화면 조작은 피하고 안전한 장소에 정차한 상태에서 사용하세요."
     },
     gameplay: {
       label: "게임 플레이 테스트",
@@ -136,6 +141,11 @@ const categoryCopy = {
       label: "File & Media Tools",
       use: "Use it to inspect a local file or create a converted result without installing a separate desktop application.",
       limit: "Browser format support and available memory vary. Keep the source file and inspect the exported result."
+    },
+    vehicle: {
+      label: "Vehicle Tools",
+      use: "Use focused helper pages designed for a specific vehicle or model.",
+      limit: "Do not operate the screen while driving. Use vehicle tools only while safely parked."
     },
     gameplay: {
       label: "Gameplay Tests",
@@ -232,14 +242,14 @@ const ui = {
     localPrivacy: "입력한 값과 선택한 로컬 파일은 현재 브라우저 안에서 처리되며 SolForge 서버에 저장되지 않습니다. 페이지를 닫기 전에 필요한 결과를 직접 복사하거나 내려받으세요.",
     externalPrivacy: "계산과 화면 처리는 브라우저에서 진행됩니다. 다만 최신 공개 데이터가 필요한 기능은 화면에 안내된 외부 API로 조회 값을 전송할 수 있습니다. 개인정보, 비밀키와 내부 주소는 입력하지 마세요.",
     reviewed: "기능 동작과 설명을 함께 검토했습니다.",
-    updated: "최종 검토 2026년 7월 28일",
+    updated: "최종 검토 2026년 8월 18일",
     faqEyebrow: "자주 묻는 질문",
     faqTitle: (title) => `${title} 이용 전 확인`,
     faqQ1: (title) => `${title} 결과가 매번 같나요?`,
     faqA1: "같은 입력과 같은 브라우저 조건에서는 동일한 계산 규칙을 사용합니다. 실시간 데이터, 장치 상태 또는 브라우저 성능을 사용하는 기능은 실행 시점에 따라 달라질 수 있습니다.",
     faqQ2: "입력한 내용이 SolForge 서버에 저장되나요?",
     related: "같이 사용할 수 있는 도구",
-    allTools: "147개 독립 도구 모두 보기",
+    allTools: "149개 독립 도구 모두 보기",
     footer: "각 기능을 독립 URL에서 실행하고 기준과 한계를 함께 확인할 수 있습니다.",
     category: "분류",
     direct: "직접 실행",
@@ -283,14 +293,14 @@ const ui = {
     localPrivacy: "Values and local files are processed in your current browser and are not stored on a SolForge server. Copy or download any result you need before leaving the page.",
     externalPrivacy: "Calculations and display logic run in your browser. Features that need current public data may send the lookup value to the API named on the page. Do not enter personal data, secret keys, or internal addresses.",
     reviewed: "The feature behavior and supporting guidance were reviewed together.",
-    updated: "Last reviewed July 28, 2026",
+    updated: "Last reviewed August 18, 2026",
     faqEyebrow: "Frequently asked questions",
     faqTitle: (title) => `Before you use ${title}`,
     faqQ1: (title) => `Will ${title} always return the same result?`,
     faqA1: "The same input uses the same calculation rules under the same browser conditions. Tools that rely on live data, device state, or browser performance can vary between runs.",
     faqQ2: "Does SolForge store what I enter?",
     related: "Related tools",
-    allTools: "Browse all 147 dedicated tools",
+    allTools: "Browse all 149 dedicated tools",
     footer: "Run each feature at its own URL and review the method and limitations alongside it.",
     category: "Category",
     direct: "Direct access",
@@ -587,8 +597,8 @@ const englishToolCopyOverrides = {
     description: "Calculate fixed holidays, Lunar New Year, Buddha's Birthday, and Chuseok. Election days and temporary holidays are not included."
   },
   "image-tool": {
-    title: "Image Compressor, Resizer, and Data URL Converter",
-    description: "Resize JPG, PNG, or WebP files in Canvas and export a compressed image or Data URL."
+    title: "Image Compressor & Resizer",
+    description: "Resize and compress a JPG, PNG, or WebP image, then save the result as a file or copy its Data URL."
   },
   "json-tool": { title: "JSON Formatter and Validator" },
   "key-event-tool": {
@@ -720,8 +730,12 @@ const englishToolCopyOverrides = {
     title: "MySQL EXPLAIN Visualizer",
     description: "Visualize execution order, joins, index usage, and expensive operations from MySQL EXPLAIN output."
   },
+  "mysql-parameter-compare": {
+    title: "MySQL Settings & Variables by Version",
+    description: "Compare server options, system variables, status variables, and schema items across MySQL releases."
+  },
   "../tempdb": {
-    title: "SQL Test Data Generator",
+    title: "Database Test Data Generator",
     description: "Paste a SQL schema, review its constraints, and generate realistic test rows for MySQL, PostgreSQL, SQLite, or SQL Server."
   },
   "npm-package-info": {
@@ -731,6 +745,10 @@ const englishToolCopyOverrides = {
   "birthday-celebrities": {
     title: "Celebrities Who Share My Birthday",
     description: "Choose a month and day to find up to 50 South Korean celebrities born on the same date."
+  },
+  "grand-koleos-touch-keyboard": {
+    title: "Grand Koleos Touch Keyboard",
+    description: "Assign full-size keyboard shortcuts to a 3-by-2 touch layout and preview the result at 480 by 272 pixels."
   },
   "date-move": {
     title: "Date Add and Subtract Calculator",
@@ -962,7 +980,7 @@ function sourceCopy(item, lang) {
     .filter((match) => !/\beyebrow\b/.test(match[1]))
     .map((match) => stripTags(match[2]))
     .filter((value) => value.length >= 22 && !/^©/.test(value));
-  let title = headings[0] || (lang === "ko" ? item.title : translate(item.title));
+  let title = lang === "ko" ? item.title : (headings[0] || translate(item.title));
   let description = paragraphs[0] || (lang === "ko" ? item.description : translate(item.description));
   if (lang === "en" && item.category === "pip" && !/\bPIP\b/i.test(title)) title = `PIP ${title}`;
   if (lang === "en" && englishToolCopyOverrides[item.href]) {
@@ -1051,7 +1069,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     inLanguage: lang,
     isAccessibleForFree: true,
     author: { "@type": "Organization", name: "SolForge" },
-    dateModified: "2026-07-28",
+    dateModified: "2026-08-18",
     offers: { "@type": "Offer", price: "0", priceCurrency: lang === "ko" ? "KRW" : "USD" }
   };
   const faqSchema = {
@@ -1160,7 +1178,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
             <article class="article-card"><h3>${escapeHtml(text.limitTitle)}</h3><p>${escapeHtml(category.limit)}</p></article>
             <article class="article-card"><h3>${escapeHtml(text.privacyTitle)}</h3><p>${escapeHtml(privacyAnswer)}</p></article>
           </div>
-          <div class="editorial-note"><span>${escapeHtml(text.author)}</span><p>${escapeHtml(text.reviewed)} <time datetime="2026-07-28">${escapeHtml(text.updated)}</time></p></div>
+          <div class="editorial-note"><span>${escapeHtml(text.author)}</span><p>${escapeHtml(text.reviewed)} <time datetime="2026-08-18">${escapeHtml(text.updated)}</time></p></div>
         </section>
 
         <section class="independent-faq" aria-labelledby="faq-title">
@@ -1359,9 +1377,25 @@ function buildToolPages(catalog) {
       fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.writeFileSync(target, output);
     }
+    normalizeCatalogPageTitles(localized, lang);
   }
   console.log(`Built ${records.length} focused tool pages and ${generatedCategoryRecords(catalog).length} category pages for ${LANGS.join(", ")}.`);
   return records;
+}
+
+function normalizeCatalogPageTitles(catalog, lang) {
+  for (const item of catalog) {
+    const relative = item.href.startsWith("../")
+      ? `${item.href.slice(3)}.html`
+      : `tools/${item.href}.html`;
+    const target = path.join(ROOT, "dist", lang, ...relative.split("/"));
+    if (!fs.existsSync(target)) continue;
+    let html = fs.readFileSync(target, "utf8");
+    html = html
+      .replace(/(<title\b[^>]*>)[\s\S]*?(<\/title>)/i, `$1${escapeHtml(item.title)} - SolForge$2`)
+      .replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escapeHtml(item.title)}$2`);
+    fs.writeFileSync(target, html);
+  }
 }
 
 module.exports = {
@@ -1369,6 +1403,7 @@ module.exports = {
   buildToolPages,
   generatedCategoryRecords,
   generatedToolRecords,
+  localizedCatalog,
   loadToolCatalog,
   writeEnglishToolCopyAsset
 };

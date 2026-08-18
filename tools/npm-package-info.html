@@ -40,51 +40,57 @@
 
         <section class="page-hero compact-hero utility-hero">
           <div>
-            <p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0019">npm Package Lookup</span></p>
-            <h1><span data-i18n="tools.npm-package-info.text.0020">npm 패키지의 설치, 의존성, CDN 정보를 한 번에 확인하세요.</span></h1>
-            <p><span data-i18n="tools.npm-package-info.text.0021">검색은 디바운스와 취소 처리를 적용하고, 상세 정보는 패키지를 선택하거나 조회할 때만 요청합니다. 민감키나 내부 패키지명은 입력하지 마세요.</span></p>
+            <p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0019">NPM PACKAGE CHECK</span></p>
+            <h1><span data-i18n="tools.npm-package-info.text.0020">npm 패키지 정보 조회</span></h1>
+            <p><span data-i18n="tools.npm-package-info.text.0021">공개 npm 패키지명을 검색하면 최신 버전과 라이선스, 설치 명령어, 다운로드 추이, 의존성, jsDelivr CDN 링크를 한곳에서 확인할 수 있습니다.</span></p>
           </div>
           <div class="hero-panel">
-            <div class="metric-card"><strong id="npmHealthScore">-</strong><span><span data-i18n="tools.npm-package-info.text.0022">건강도 점수</span></span></div>
-            <div class="metric-card"><strong id="npmWeeklyDownloads">-</strong><span><span data-i18n="tools.npm-package-info.text.0023">주간 다운로드</span></span></div>
+            <div class="npm-hero-summary"><span data-i18n="tools.npm-package-info.hero.summary">패키지를 선택하면 바로 확인할 수 있습니다</span><ul><li data-i18n="tools.npm-package-info.hero.item1">설치 전 기본 정보와 라이선스</li><li data-i18n="tools.npm-package-info.hero.item2">npm·pnpm·yarn·Bun 설치 명령어</li><li data-i18n="tools.npm-package-info.hero.item3">의존성·CDN·package.json 조각</li></ul></div>
+            <div class="npm-live-metrics"><div class="metric-card"><strong id="npmHealthScore">-</strong><span><span data-i18n="tools.npm-package-info.text.0022">패키지 점수</span></span></div><div class="metric-card"><strong id="npmWeeklyDownloads">-</strong><span><span data-i18n="tools.npm-package-info.text.0023">주간 다운로드</span></span></div></div>
           </div>
+        </section>
+
+        <section class="tool-process-strip npm-process-strip" aria-label="npm 패키지 조회 순서" data-i18n-attrs="aria-label:tools.npm-package-info.flow.label">
+          <div><span>1</span><strong data-i18n="tools.npm-package-info.flow.step1.title">패키지 검색</strong><small data-i18n="tools.npm-package-info.flow.step1.body">react처럼 공개 패키지명 입력</small></div>
+          <div><span>2</span><strong data-i18n="tools.npm-package-info.flow.step2.title">검색 결과 선택</strong><small data-i18n="tools.npm-package-info.flow.step2.body">설명과 이름을 보고 하나 선택</small></div>
+          <div><span>3</span><strong data-i18n="tools.npm-package-info.flow.step3.title">필요한 정보 확인</strong><small data-i18n="tools.npm-package-info.flow.step3.body">개요·의존성·CDN·비교 탭 사용</small></div>
         </section>
 
         <section class="api-tool-shell">
           <div class="api-toolbar npm-search-toolbar">
             <div class="form-row">
-              <label for="npmSearchInput"><span data-i18n="tools.npm-package-info.text.0024">패키지 검색</span></label>
+              <label for="npmSearchInput"><span class="step-label">1</span><span data-i18n="tools.npm-package-info.text.0024">공개 npm 패키지 검색</span></label>
               <input id="npmSearchInput" type="search" autocomplete="off" placeholder="예: react, @vitejs/plugin-react" data-i18n-attrs="placeholder:tools.npm-package-info.attr.placeholder.0025">
+              <div class="npm-example-row"><span data-i18n="tools.npm-package-info.search.examples">바로 조회:</span><button type="button" data-npm-example="react">react</button><button type="button" data-npm-example="axios">axios</button><button type="button" data-npm-example="vite">vite</button></div>
             </div>
             <div class="button-row api-toolbar-actions">
-              <button type="button" class="primary-link" id="npmSearchButton"><span data-i18n="tools.npm-package-info.text.0026">검색</span></button>
-              <button type="button" class="secondary-link" id="npmLookupButton"><span data-i18n="tools.npm-package-info.text.0027">상세 조회</span></button>
-              <button type="button" class="ghost-button" id="npmResetButton"><span data-i18n="tools.npm-package-info.text.0028">초기화</span></button>
+              <button type="button" class="primary-link" id="npmSearchButton"><span data-i18n="tools.npm-package-info.text.0026">관련 패키지 검색</span></button>
+              <button type="button" class="secondary-link" id="npmLookupButton"><span data-i18n="tools.npm-package-info.text.0027">입력한 이름 바로 조회</span></button>
+              <button type="button" class="ghost-button" id="npmResetButton"><span data-i18n="tools.npm-package-info.text.0028">입력 지우기</span></button>
             </div>
           </div>
+          <p class="npm-search-help"><span data-i18n="tools.npm-package-info.search.help">이름이 정확하지 않으면 ‘관련 패키지 검색’을, 정확한 패키지명을 알고 있으면 ‘입력한 이름 바로 조회’를 누르세요.</span></p>
           <p class="validation-message" id="npmStatus" aria-live="polite"></p>
 
           <section class="npm-layout-grid">
             <aside class="utility-panel api-panel">
-              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0029">Search</span></p><h2><span data-i18n="tools.npm-package-info.text.0030">검색 결과</span></h2><p><span data-i18n="tools.npm-package-info.text.0031">최소 2글자 입력 후 최대 10개 결과를 표시합니다.</span></p></div></div>
+              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0029">STEP 2</span></p><h2><span data-i18n="tools.npm-package-info.text.0030">검색 결과에서 선택</span></h2><p><span data-i18n="tools.npm-package-info.text.0031">패키지 이름과 설명을 확인하고 원하는 항목을 누르세요. 최대 10개까지 표시합니다.</span></p></div></div>
               <div class="compact-list npm-search-results" id="npmSearchResults"></div>
-              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0032">Recent</span></p><h2><span data-i18n="tools.npm-package-info.text.0033">최근 조회</span></h2></div></div>
-              <div class="recent-chip-list" id="npmRecentList"></div>
-              <div class="utility-panel-heading"><div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0034">Favorites</span></p><h2><span data-i18n="tools.npm-package-info.text.0035">즐겨찾기</span></h2></div></div>
-              <div class="recent-chip-list" id="npmFavoriteList"></div>
+              <div class="npm-saved-groups"><div><strong><span data-i18n="tools.npm-package-info.text.0033">최근 조회</span></strong><div class="recent-chip-list" id="npmRecentList"></div></div><div><strong><span data-i18n="tools.npm-package-info.text.0035">즐겨찾기</span></strong><div class="recent-chip-list" id="npmFavoriteList"></div></div></div>
             </aside>
 
             <div class="npm-main-stack">
-              <div class="utility-category-tabs npm-section-tabs" role="tablist" aria-label="npm 정보 섹션" data-i18n-attrs="aria-label:tools.npm-package-info.attr.aria-label.0036">
-                <button type="button" class="active" data-npm-tab="overview"><span data-i18n="tools.npm-package-info.text.0037">개요</span></button>
-                <button type="button" data-npm-tab="dependencies"><span data-i18n="tools.npm-package-info.text.0038">의존성</span></button>
-                <button type="button" data-npm-tab="cdn"><span data-i18n="tools.npm-package-info.text.0039">CDN</span></button>
-                <button type="button" data-npm-tab="compare"><span data-i18n="tools.npm-package-info.text.0040">비교·생성</span></button>
+              <div class="npm-section-nav"><div><span class="step-label">3</span><strong data-i18n="tools.npm-package-info.tabs.title">필요한 정보 확인</strong><small data-i18n="tools.npm-package-info.tabs.body">패키지를 선택한 뒤 아래 탭을 이동하세요.</small></div><div class="utility-category-tabs npm-section-tabs" role="tablist" aria-label="npm 정보 섹션" data-i18n-attrs="aria-label:tools.npm-package-info.attr.aria-label.0036">
+                <button type="button" class="active" data-npm-tab="overview"><span data-i18n="tools.npm-package-info.text.0037">패키지 개요</span></button>
+                <button type="button" data-npm-tab="dependencies"><span data-i18n="tools.npm-package-info.text.0038">의존성 확인</span></button>
+                <button type="button" data-npm-tab="cdn"><span data-i18n="tools.npm-package-info.text.0039">CDN 링크</span></button>
+                <button type="button" data-npm-tab="compare"><span data-i18n="tools.npm-package-info.text.0040">비교·package.json</span></button>
+              </div>
               </div>
 
               <article class="utility-panel api-panel" data-npm-section="overview">
                 <div class="utility-panel-heading">
-                  <div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0041">Package Detail</span></p><h2 id="npmPackageTitle"><span data-i18n="tools.npm-package-info.text.0042">패키지를 선택하세요.</span></h2><p id="npmPackageDescription"><span data-i18n="tools.npm-package-info.text.0043">검색 결과에서 패키지를 선택하거나 URL query `?package=react` 형식으로 열 수 있습니다.</span></p></div>
+                  <div><p class="eyebrow"><span data-i18n="tools.npm-package-info.text.0041">SELECTED PACKAGE</span></p><h2 id="npmPackageTitle"><span data-i18n="tools.npm-package-info.text.0042">검색 결과에서 패키지를 선택하세요</span></h2><p id="npmPackageDescription"><span data-i18n="tools.npm-package-info.text.0043">선택한 패키지의 설명, 최신 버전, 라이선스와 저장소 링크가 이곳에 표시됩니다.</span></p></div>
                   <div class="button-row"><button type="button" class="ghost-button" id="npmFavoriteButton"><span data-i18n="tools.npm-package-info.text.0044">즐겨찾기</span></button><button type="button" class="copy-button" id="npmCopySummary"><span data-i18n="tools.npm-package-info.text.0045">요약 복사</span></button></div>
                 </div>
                 <div class="api-summary-grid npm-meta-grid" id="npmMetaGrid"></div>

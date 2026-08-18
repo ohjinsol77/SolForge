@@ -1,76 +1,79 @@
 /*
  * SolForge — Terminal Theme
- * Inspired by Hyper terminal + macOS aesthetic
+ * High-contrast Catppuccin Mocha terminal aesthetic
  * Applied via: :root[data-skin="terminal"]
  */
 
 /* ── Google Fonts: JetBrains Mono ──────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-/* ── Light (terminal warm ivory) ───────────────────────────────────────── */
+/* ── Catppuccin Mocha base ─────────────────────────────────────────────── */
 :root[data-skin="terminal"] {
   color-scheme: dark;
 
-  --bg:             #1a1b26;
-  --surface:        #1e2030;
-  --surface-soft:   #24283b;
-  --surface-strong: #2f334d;
-  --text:           #c0caf5;
-  --muted:          #565f89;
-  --line:           #2f334d;
+  --bg:             #11111b;
+  --surface:        #181825;
+  --surface-soft:   #1e1e2e;
+  --surface-strong: #313244;
+  --text:           #cdd6f4;
+  --muted:          #bac2de;
+  --line:           #45475a;
 
-  /* macOS terminal green-cyan accent */
-  --brand:          #7dcfff;
-  --brand-strong:   #7aa2f7;
-  --accent:         #9ece6a;
-  --accent-soft:    #1a2a1a;
-  --warning:        #e0af68;
-  --danger:         #f7768e;
-  --code-bg:        #0d0e17;
-  --code-text:      #a9b1d6;
-  --shadow:         0 18px 48px rgba(0, 0, 0, 0.55);
+  --brand:          #89b4fa;
+  --brand-strong:   #b4befe;
+  --accent:         #a6e3a1;
+  --accent-soft:    #1e3a32;
+  --warning:        #f9e2af;
+  --danger:         #f38ba8;
+  --code-bg:        #0b0b12;
+  --code-text:      #cdd6f4;
+  --shadow:         0 14px 34px rgba(0, 0, 0, 0.42);
   --radius:         6px;
 }
 
-/* ── Dark variant: deepens slightly ────────────────────────────────────── */
+/* ── Deep Mocha variant ────────────────────────────────────────────────── */
 :root[data-skin="terminal"][data-theme="dark"] {
   color-scheme: dark;
 
-  --bg:             #13141f;
-  --surface:        #16171f;
-  --surface-soft:   #1c1d2a;
-  --surface-strong: #252637;
-  --text:           #a9b1d6;
-  --muted:          #444c6c;
-  --line:           #252637;
+  --bg:             #0b0b12;
+  --surface:        #11111b;
+  --surface-soft:   #181825;
+  --surface-strong: #313244;
+  --text:           #e6e9f5;
+  --muted:          #c3c9e2;
+  --line:           #4b4d62;
 
-  --brand:          #7dcfff;
-  --brand-strong:   #7aa2f7;
-  --accent:         #9ece6a;
-  --accent-soft:    #111d11;
-  --warning:        #e0af68;
-  --danger:         #f7768e;
-  --code-bg:        #0a0b13;
-  --code-text:      #8892b4;
-  --shadow:         0 18px 48px rgba(0, 0, 0, 0.7);
+  --brand:          #89b4fa;
+  --brand-strong:   #b4befe;
+  --accent:         #a6e3a1;
+  --accent-soft:    #19332d;
+  --warning:        #f9e2af;
+  --danger:         #f38ba8;
+  --code-bg:        #07070d;
+  --code-text:      #e6e9f5;
+  --shadow:         0 14px 34px rgba(0, 0, 0, 0.58);
 }
 
 /* ── Monospace font for terminal feel ──────────────────────────────────── */
 :root[data-skin="terminal"] body {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace,
-               'SF Mono', Menlo, monospace;
-  letter-spacing: -0.01em;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'D2Coding', 'Malgun Gothic',
+               'Apple SD Gothic Neo', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 450;
+  letter-spacing: -0.012em;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   background:
-    radial-gradient(ellipse at top left, rgba(125, 207, 255, 0.06), transparent 40rem),
-    radial-gradient(ellipse at bottom right, rgba(158, 206, 106, 0.04), transparent 30rem),
+    radial-gradient(ellipse at top left, rgba(137, 180, 250, 0.055), transparent 42rem),
+    radial-gradient(ellipse at bottom right, rgba(166, 227, 161, 0.035), transparent 32rem),
     var(--bg);
 }
 
 /* ── macOS traffic-light window decoration on sidebar ──────────────────── */
 :root[data-skin="terminal"] .sidebar {
-  background: rgba(22, 23, 31, 0.95);
+  background: rgba(24, 24, 37, 0.98);
   border-right: 1px solid var(--line);
-  backdrop-filter: blur(24px);
+  backdrop-filter: none;
   position: relative;
 }
 
@@ -93,7 +96,7 @@
 /* ── Brand mark: terminal cursor style ─────────────────────────────────── */
 :root[data-skin="terminal"] .brand-mark {
   background: var(--accent);
-  color: #0d0e17;
+  color: #11111b;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
   letter-spacing: 0;
@@ -114,7 +117,8 @@
 :root[data-skin="terminal"] .brand small {
   color: var(--muted);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 550;
 }
 
 /* ── Nav links: terminal prompt style ──────────────────────────────────── */
@@ -124,7 +128,7 @@
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 :root[data-skin="terminal"] .nav-link {
@@ -150,8 +154,9 @@
 /* ── Topbar ─────────────────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .top-links a {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   color: var(--muted);
+  font-weight: 550;
   border-radius: 4px;
   transition: color 120ms, background 120ms;
 }
@@ -169,8 +174,8 @@
 :root[data-skin="terminal"] .skin-apply-button {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  background: rgba(30, 32, 48, 0.9);
-  border-color: rgba(125, 207, 255, 0.25);
+  background: var(--surface-soft);
+  border-color: rgba(137, 180, 250, 0.38);
   color: var(--brand);
   transition: border-color 160ms, box-shadow 160ms;
 }
@@ -190,8 +195,8 @@
 :root[data-skin="terminal"] .skin-select {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  background: rgba(30, 32, 48, 0.9);
-  border-color: rgba(158, 206, 106, 0.3);
+  background: var(--surface-soft);
+  border-color: rgba(166, 227, 161, 0.42);
   color: var(--accent);
 }
 
@@ -217,7 +222,7 @@
 :root[data-skin="terminal"] .eyebrow {
   color: var(--accent);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   letter-spacing: 0.1em;
 }
 
@@ -237,8 +242,8 @@
 
 /* ── Search box: terminal input style ──────────────────────────────────── */
 :root[data-skin="terminal"] .tool-search {
-  border: 1px solid rgba(125, 207, 255, 0.25);
-  background: rgba(13, 14, 23, 0.8);
+  border: 1px solid rgba(137, 180, 250, 0.4);
+  background: var(--code-bg);
   border-radius: 6px;
   box-shadow: 0 0 0 0 transparent;
   transition: border-color 200ms, box-shadow 200ms;
@@ -258,11 +263,12 @@
 
 :root[data-skin="terminal"] .tool-search input::placeholder {
   color: var(--muted);
+  opacity: 1;
 }
 
 :root[data-skin="terminal"] .tool-search button {
   background: var(--brand);
-  color: #0d0e17;
+  color: #11111b;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   font-size: 0.8rem;
@@ -296,14 +302,14 @@
 
 /* ── Quick-launch cards ─────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .quick-launch {
-  background: rgba(22, 23, 31, 0.7);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
 }
 
 :root[data-skin="terminal"] .quick-tool {
-  background: rgba(22, 23, 31, 0.6);
+  background: var(--surface-soft);
   border: 1px solid var(--line);
   border-radius: 6px;
   transition: border-color 160ms, background 160ms, transform 160ms;
@@ -323,7 +329,7 @@
 /* ── Trust strip ────────────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .trust-strip {
   border: 1px solid var(--line);
-  background: rgba(22, 23, 31, 0.5);
+  background: var(--surface);
   border-radius: 6px;
 }
 
@@ -338,7 +344,7 @@
 
 /* ── Category grid cards ────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .home-category-grid a {
-  background: rgba(22, 23, 31, 0.6);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
   transition: border-color 160ms, background 160ms, transform 160ms;
@@ -363,7 +369,7 @@
 /* ── Catalog cards ──────────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .catalog-card {
   border: 1px solid var(--line);
-  background: rgba(22, 23, 31, 0.5);
+  background: var(--surface);
   border-radius: 6px;
   transition: border-color 160ms, background 160ms, transform 160ms;
 }
@@ -442,7 +448,7 @@
   font-family: 'JetBrains Mono', monospace;
   background: var(--brand);
   border-color: var(--brand);
-  color: #0d0e17;
+  color: #11111b;
   font-weight: 700;
 }
 
@@ -476,8 +482,8 @@
 
 /* ── Side card info box ─────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .side-card {
-  background: rgba(13, 14, 23, 0.5);
-  border-color: rgba(158, 206, 106, 0.2);
+  background: var(--code-bg);
+  border-color: rgba(166, 227, 161, 0.36);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
 }
@@ -489,7 +495,7 @@
 /* ── Footer ─────────────────────────────────────────────────────────────── */
 :root[data-skin="terminal"] .footer {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   color: var(--muted);
   border-top-color: var(--line);
 }
@@ -528,4 +534,104 @@
 }
 :root[data-skin="terminal"] ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
+}
+
+/* ── Catppuccin readability and terminal surface pass ─────────────────── */
+:root[data-skin="terminal"] .topbar {
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+:root[data-skin="terminal"] .page-hero,
+:root[data-skin="terminal"] .tool-section,
+:root[data-skin="terminal"] .info-section,
+:root[data-skin="terminal"] .visual-card,
+:root[data-skin="terminal"] .editor-card,
+:root[data-skin="terminal"] .article-card,
+:root[data-skin="terminal"] .utility-panel,
+:root[data-skin="terminal"] .parameter-workspace,
+:root[data-skin="terminal"] .version-builder-card,
+:root[data-skin="terminal"] .filter-card {
+  border-color: var(--line);
+  background-color: var(--surface);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-skin="terminal"] .article-card,
+:root[data-skin="terminal"] .version-builder-card,
+:root[data-skin="terminal"] .filter-card {
+  background-color: var(--surface-soft);
+}
+
+:root[data-skin="terminal"] :is(
+  .page-hero p,
+  .section-heading p,
+  .info-section p,
+  .info-section li,
+  .article-card p,
+  .side-card span,
+  .catalog-card small,
+  .quick-tool p,
+  .metric-card span,
+  .editor-label,
+  .summary-pill,
+  .footer,
+  small
+) {
+  color: var(--muted);
+  font-weight: 500;
+  opacity: 1;
+}
+
+:root[data-skin="terminal"] .article-card p,
+:root[data-skin="terminal"] .info-section p,
+:root[data-skin="terminal"] .info-section li {
+  font-size: max(1rem, 16px);
+  line-height: 1.85;
+}
+
+:root[data-skin="terminal"] :is(input, select, textarea, button) {
+  color: var(--text);
+  font-weight: 500;
+}
+
+:root[data-skin="terminal"] :is(input, textarea)::placeholder {
+  color: #9399b2;
+  opacity: 1;
+}
+
+:root[data-skin="terminal"] select,
+:root[data-skin="terminal"] option {
+  border-color: var(--line);
+  background-color: var(--surface-soft);
+  color: var(--text);
+}
+
+:root[data-skin="terminal"] a:focus-visible,
+:root[data-skin="terminal"] button:focus-visible,
+:root[data-skin="terminal"] input:focus-visible,
+:root[data-skin="terminal"] select:focus-visible,
+:root[data-skin="terminal"] textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+:root[data-skin="terminal"] code,
+:root[data-skin="terminal"] pre,
+:root[data-skin="terminal"] .code-output,
+:root[data-skin="terminal"] .parameter-table td,
+:root[data-skin="terminal"] .parameter-table th {
+  font-variant-ligatures: none;
+}
+
+:root[data-skin="terminal"] .parameter-table td.cell-missing {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+:root[data-skin="terminal"] .missing-state {
+  border-color: #585b70;
+  background: #313244;
+  color: #f2f3fb;
 }

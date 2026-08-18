@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="tools.grand-koleos-touch-keyboard.meta.title">그랑 콜레오스 터치 키보드 - SolForge</title>
+    <meta name="description" content="480×272 ESP32-S3 화면용 3×2 터치 버튼에 풀배열 가상 키보드로 단축키 조합을 지정하고 미리 확인합니다." data-i18n-attrs="content:tools.grand-koleos-touch-keyboard.meta.description">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.cloud/tools/grand-koleos-touch-keyboard.html">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260813-vehicle">
+    <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
+  </head>
+  <body data-page="grand-koleos-touch-keyboard" data-page-tool="grand-koleos-touch-keyboard">
+    <a class="skip-link" href="#main" data-i18n="tools.grand-koleos-touch-keyboard.skip">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.navLabel">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.homeLabel"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small data-i18n="tools.grand-koleos-touch-keyboard.brand">Vehicle Tools</small></span></a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card"><strong data-i18n="tools.grand-koleos-touch-keyboard.category">차량 도구</strong><span data-i18n="tools.grand-koleos-touch-keyboard.sideBody">차량별 보조 기능을 제공합니다.</span></div>
+      </aside>
+
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.topNav"><a href="../features.html" data-top-link data-i18n="tools.grand-koleos-touch-keyboard.features">기능소개</a><a href="../about.html" data-top-link data-i18n="tools.grand-koleos-touch-keyboard.about">사이트소개</a><a href="../privacy.html" data-top-link data-i18n="tools.grand-koleos-touch-keyboard.privacy">개인정보처리방침</a><a href="../contact.html" data-top-link data-i18n="tools.grand-koleos-touch-keyboard.contact">문의</a></nav>
+          <div class="topbar-controls">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/tools/grand-koleos-touch-keyboard" aria-label="Switch to English">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.skinLabel"><option value="basic">Basic</option><option value="saas">SaaS</option><option value="terminal">Terminal</option></select>
+            <button class="skin-apply-button" type="button" id="skinApplyButton" data-i18n="tools.grand-koleos-touch-keyboard.apply">적용</button>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          </div>
+        </header>
+
+        <section class="page-hero compact-hero utility-hero vehicle-tool-hero">
+          <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.eyebrow">ESP32-S3 · 480 × 272</p><h1 data-i18n="tools.grand-koleos-touch-keyboard.title">그랑 콜레오스 터치 키보드</h1><p data-i18n="tools.grand-koleos-touch-keyboard.lead">차량 화면에 표시할 3×2 터치 버튼을 만들고, 각 버튼에 풀배열 키보드의 단축키 조합을 지정합니다.</p></div>
+          <div class="hero-panel"><div class="metric-card"><strong>480×272</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.resolution">ESP32-S3 화면 해상도</span></div><div class="metric-card"><strong>3×2</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.buttons">터치 버튼 배열</span></div></div>
+        </section>
+
+        <section class="tool-process-strip gk-process-strip" aria-label="단축키 설정 순서" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.flowLabel">
+          <div><span>1</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow1.title">터치 버튼 선택</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow1.body">아래 480×272 미리보기에서 버튼 선택</small></div>
+          <div><span>2</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow2.title">키 조합 지정</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow2.body">풀배열 키보드에서 Win, M 등 선택</small></div>
+          <div><span>3</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow3.title">미리보기 확인</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow3.body">선택한 조합이 버튼에 즉시 표시</small></div>
+        </section>
+
+        <section class="gk-builder" aria-labelledby="gkBuilderTitle">
+          <div class="gk-section-heading">
+            <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.eyebrow">FULL-SIZE KEYBOARD</p><h2 id="gkBuilderTitle" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.title">단축키 조합 선택</h2><p data-i18n="tools.grand-koleos-touch-keyboard.keyboard.body">먼저 아래 미리보기에서 설정할 버튼을 누른 뒤, 가상 키보드에서 조합할 키를 차례로 선택하세요. 같은 키를 다시 누르면 해제됩니다.</p></div>
+            <div class="gk-current-assignment"><span data-i18n="tools.grand-koleos-touch-keyboard.currentButton">현재 설정 버튼</span><strong id="gkActiveButton" data-i18n="tools.grand-koleos-touch-keyboard.initialButton">버튼 1</strong><code id="gkActiveCombo" data-i18n="tools.grand-koleos-touch-keyboard.initialCombo">키 조합 없음</code></div>
+          </div>
+
+          <div class="gk-keyboard-shell">
+            <div class="gk-keyboard" id="gkKeyboard" role="group" aria-label="풀배열 가상 키보드" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.keyboardLabel"></div>
+          </div>
+
+          <div class="gk-keyboard-actions">
+            <p id="gkStatus" aria-live="polite" data-i18n="tools.grand-koleos-touch-keyboard.status.ready">미리보기의 버튼 1이 선택되어 있습니다.</p>
+            <div class="button-row"><button type="button" class="secondary-link" id="gkClearButton" data-i18n="tools.grand-koleos-touch-keyboard.clearButton">선택 버튼 조합 지우기</button><button type="button" class="ghost-button" id="gkClearAll" data-i18n="tools.grand-koleos-touch-keyboard.clearAll">전체 초기화</button></div>
+          </div>
+
+          <section class="gk-preview-section" aria-labelledby="gkPreviewTitle">
+            <div class="gk-section-heading">
+              <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.preview.eyebrow">DISPLAY PREVIEW</p><h2 id="gkPreviewTitle" data-i18n="tools.grand-koleos-touch-keyboard.preview.title">480×272 터치 화면 미리보기</h2><p data-i18n="tools.grand-koleos-touch-keyboard.preview.body">버튼은 화면 가장자리와 서로 사이에 여백을 둔 3×2 배열입니다. 설정할 버튼을 미리보기에서 직접 누르세요.</p></div>
+              <span class="gk-resolution-badge">480 × 272 px</span>
+            </div>
+            <div class="gk-page-name-editor" aria-labelledby="gkPageNameTitle">
+              <div class="gk-page-name-copy"><strong id="gkPageNameTitle" data-i18n="tools.grand-koleos-touch-keyboard.pageEditor.title">페이지 이름 편집</strong><span data-i18n="tools.grand-koleos-touch-keyboard.pageEditor.body">각 페이지 이름은 아래 화면의 하단 탭에 바로 반영됩니다.</span></div>
+              <div class="gk-page-name-fields" id="gkPageNameFields"></div>
+            </div>
+            <div class="gk-device-frame"><canvas id="gkPreview" width="480" height="272" role="img" aria-label="480×272 터치키보드 미리보기" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.previewLabel"></canvas></div>
+            <p class="gk-swipe-hint" data-i18n="tools.grand-koleos-touch-keyboard.swipeHint">화면을 좌우로 밀거나 하단의 화살표·페이지 탭을 눌러 이동하세요.</p>
+            <div class="gk-assignment-list" id="gkAssignmentList" aria-label="버튼별 키 조합" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.assignmentLabel"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="../assets/js/app.js?v=20260803-categories"></script>
+    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260813-2"></script>
+  </body>
+</html>
