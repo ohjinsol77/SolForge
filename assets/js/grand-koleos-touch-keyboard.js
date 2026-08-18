@@ -16,6 +16,10 @@
     touchTitle: "TOUCH KEYBOARD",
     page: "PAGE",
     pageChanged: "page selected.",
+    mediaTitle: "MEDIA KEYS",
+    volumeMute: "Mute",
+    volumeDown: "Volume −",
+    volumeUp: "Volume +",
     pageName: (index) => `Page ${index + 1} name`,
     cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"]
   } : {
@@ -30,24 +34,33 @@
     touchTitle: "터치 키보드",
     page: "페이지",
     pageChanged: "페이지로 이동했습니다.",
+    mediaTitle: "미디어 키",
+    volumeMute: "음소거",
+    volumeDown: "볼륨 −",
+    volumeUp: "볼륨 +",
     pageName: (index) => `${index + 1}페이지 이름`,
     cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"]
   };
 
-  const key = (id, label = id, units = 1) => ({ id, label, units });
+  const key = (id, label = id, units = 1, kind = "standard", comboLabel = id) => ({ id, label, units, kind, comboLabel });
   const gap = (units = 0.45) => ({ gap: true, units });
+  const mediaKeys = [
+    key("Volume Mute", copy.volumeMute, 2.25, "media", copy.volumeMute),
+    key("Volume Down", copy.volumeDown, 2.25, "media", copy.volumeDown),
+    key("Volume Up", copy.volumeUp, 2.25, "media", copy.volumeUp)
+  ];
   const keyboardRows = [
-    [key("Escape", "Esc"), gap(), key("F1"), key("F2"), key("F3"), key("F4"), gap(), key("F5"), key("F6"), key("F7"), key("F8"), gap(), key("F9"), key("F10"), key("F11"), key("F12"), gap(), key("Print Screen", "PrtSc"), key("Scroll Lock", "Scroll"), key("Pause")],
-    [key("`", "~\n`"), key("1", "!\n1"), key("2", "@\n2"), key("3", "#\n3"), key("4", "$\n4"), key("5", "%\n5"), key("6", "^\n6"), key("7", "&\n7"), key("8", "*\n8"), key("9", "(\n9"), key("0", ")\n0"), key("-", "_\n-"), key("=", "+\n="), key("Backspace", "Backspace", 2), gap(), key("Insert", "Ins"), key("Home"), key("Page Up", "PgUp"), gap(), key("Num Lock", "Num"), key("Num /", "/"), key("Num *", "*"), key("Num -", "−")],
-    [key("Tab", "Tab", 1.5), key("Q"), key("W"), key("E"), key("R"), key("T"), key("Y"), key("U"), key("I"), key("O"), key("P"), key("[", "{\n["), key("]", "}\n]"), key("\\", "|\n\\", 1.5), gap(), key("Delete", "Del"), key("End"), key("Page Down", "PgDn"), gap(), key("Num 7", "7"), key("Num 8", "8"), key("Num 9", "9"), key("Num +", "+")],
-    [key("Caps Lock", "Caps", 1.8), key("A"), key("S"), key("D"), key("F"), key("G"), key("H"), key("J"), key("K"), key("L"), key(";", ":\n;"), key("'", "\"\n'"), key("Enter", "Enter", 2.2), gap(), gap(3), gap(), key("Num 4", "4"), key("Num 5", "5"), key("Num 6", "6"), gap(1)],
-    [key("Shift", "Shift", 2.35), key("Z"), key("X"), key("C"), key("V"), key("B"), key("N"), key("M"), key(",", "<\n,"), key(".", ">\n."), key("/", "?\n/"), key("Right Shift", "Shift", 2.65), gap(), gap(), key("Arrow Up", "↑"), gap(), gap(), key("Num 1", "1"), key("Num 2", "2"), key("Num 3", "3"), key("Num Enter", "Enter")],
-    [key("Ctrl", "Ctrl", 1.4), key("Win", "Win", 1.25), key("Alt", "Alt", 1.25), key("Space", "Space", 6.15), key("Right Alt", "Alt", 1.25), key("Fn", "Fn", 1.1), key("Menu", "Menu", 1.1), key("Right Ctrl", "Ctrl", 1.4), gap(), key("Arrow Left", "←"), key("Arrow Down", "↓"), key("Arrow Right", "→"), gap(), key("Num 0", "0", 2.1), key("Num .", "."), gap(1)]
+    [key("Escape", "Esc", 1, "system"), gap(0.7), key("F1", "F1", 1, "function"), key("F2", "F2", 1, "function"), key("F3", "F3", 1, "function"), key("F4", "F4", 1, "function"), gap(0.4), key("F5", "F5", 1, "function"), key("F6", "F6", 1, "function"), key("F7", "F7", 1, "function"), key("F8", "F8", 1, "function"), gap(0.4), key("F9", "F9", 1, "function"), key("F10", "F10", 1, "function"), key("F11", "F11", 1, "function"), key("F12", "F12", 1, "function"), gap(0.8), key("Print Screen", "PrtSc", 1, "system"), key("Scroll Lock", "Scroll", 1, "system"), key("Pause", "Pause", 1, "system")],
+    [key("`", "~\n`"), key("1", "!\n1"), key("2", "@\n2"), key("3", "#\n3"), key("4", "$\n4"), key("5", "%\n5"), key("6", "^\n6"), key("7", "&\n7"), key("8", "*\n8"), key("9", "(\n9"), key("0", ")\n0"), key("-", "_\n-"), key("=", "+\n="), key("Backspace", "Backspace", 2, "editing"), gap(0.7), key("Insert", "Ins", 1, "navigation"), key("Home", "Home", 1, "navigation"), key("Page Up", "PgUp", 1, "navigation")],
+    [key("Tab", "Tab", 1.5, "modifier"), key("Q"), key("W"), key("E"), key("R"), key("T"), key("Y"), key("U"), key("I"), key("O"), key("P"), key("[", "{\n["), key("]", "}\n]"), key("\\", "|\n\\", 1.5), gap(0.7), key("Delete", "Del", 1, "navigation"), key("End", "End", 1, "navigation"), key("Page Down", "PgDn", 1, "navigation")],
+    [key("Caps Lock", "Caps", 1.8, "modifier"), key("A"), key("S"), key("D"), key("F"), key("G"), key("H"), key("J"), key("K"), key("L"), key(";", ":\n;"), key("'", "\"\n'"), key("Enter", "Enter", 2.2, "editing"), gap(0.7), gap(3)],
+    [key("Shift", "Shift", 2.35, "modifier"), key("Z"), key("X"), key("C"), key("V"), key("B"), key("N"), key("M"), key(",", "<\n,"), key(".", ">\n."), key("/", "?\n/"), key("Right Shift", "Shift", 2.65, "modifier"), gap(0.7), gap(), key("Arrow Up", "↑", 1, "arrow"), gap()],
+    [key("Ctrl", "Ctrl", 1.3, "modifier"), key("Win", "Win", 1.25, "modifier"), key("Alt", "Alt", 1.25, "modifier"), key("Space", "Space", 7.5), key("Right Alt", "Alt", 1.25, "modifier"), key("Menu", "Menu", 1.15, "modifier"), key("Right Ctrl", "Ctrl", 1.3, "modifier"), gap(0.7), key("Arrow Left", "←", 1, "arrow"), key("Arrow Down", "↓", 1, "arrow"), key("Arrow Right", "→", 1, "arrow")]
   ];
 
   const keyLabels = new Map();
-  keyboardRows.flat().forEach((item) => {
-    if (!item.gap && !keyLabels.has(item.id)) keyLabels.set(item.id, item.id);
+  [...mediaKeys, ...keyboardRows.flat()].forEach((item) => {
+    if (!item.gap && !keyLabels.has(item.id)) keyLabels.set(item.id, item.comboLabel);
   });
 
   const pageStates = Array.from({ length: 3 }, (_value, index) => ({
@@ -95,11 +108,12 @@
   }
 
   function renderKeyboard() {
-    keyboard.innerHTML = keyboardRows.map((row) => `<div class="gk-key-row">${row.map((item) => {
+    const renderKey = (item, extraClass = "") => {
       if (item.gap) return `<span class="gk-key-gap" style="--key-units:${item.units}" aria-hidden="true"></span>`;
       const label = item.label.split("\n").map((line) => `<span>${escapeHtml(line)}</span>`).join("");
-      return `<button type="button" class="gk-key" style="--key-units:${item.units}" data-gk-key="${escapeHtml(item.id)}" aria-pressed="false" aria-label="${escapeHtml(item.id)}">${label}</button>`;
-    }).join("")}</div>`).join("");
+      return `<button type="button" class="gk-key gk-key-${item.kind}${extraClass ? ` ${extraClass}` : ""}" style="--key-units:${item.units}" data-gk-key="${escapeHtml(item.id)}" aria-pressed="false" aria-label="${escapeHtml(item.comboLabel)}">${label}</button>`;
+    };
+    keyboard.innerHTML = `<div class="gk-media-strip"><span>${escapeHtml(copy.mediaTitle)}</span><div>${mediaKeys.map((item) => renderKey(item, "gk-media-key")).join("")}</div></div><div class="gk-keyboard-rows">${keyboardRows.map((row) => `<div class="gk-key-row">${row.map((item) => renderKey(item)).join("")}</div>`).join("")}</div>`;
     keyboard.querySelectorAll("[data-gk-key]").forEach((button) => {
       button.addEventListener("click", () => toggleKey(button.dataset.gkKey));
     });
@@ -109,12 +123,13 @@
   function toggleKey(keyId) {
     const keys = currentAssignments()[activeButton];
     const index = keys.indexOf(keyId);
+    const displayKey = keyLabels.get(keyId) || keyId;
     if (index >= 0) {
       keys.splice(index, 1);
-      status.textContent = lang === "en" ? `${keyId} ${copy.removed} ${buttonText(activeButton)}.` : `${keyId} · ${buttonText(activeButton)}${copy.removed}`;
+      status.textContent = lang === "en" ? `${displayKey} ${copy.removed} ${buttonText(activeButton)}.` : `${displayKey} · ${buttonText(activeButton)}${copy.removed}`;
     } else {
       keys.push(keyId);
-      status.textContent = lang === "en" ? `${keyId} ${copy.assigned} ${buttonText(activeButton)}.` : `${keyId} · ${buttonText(activeButton)}${copy.assigned}`;
+      status.textContent = lang === "en" ? `${displayKey} ${copy.assigned} ${buttonText(activeButton)}.` : `${displayKey} · ${buttonText(activeButton)}${copy.assigned}`;
     }
     renderAll();
   }

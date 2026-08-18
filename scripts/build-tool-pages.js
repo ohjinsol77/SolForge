@@ -748,7 +748,7 @@ const englishToolCopyOverrides = {
   },
   "grand-koleos-touch-keyboard": {
     title: "Grand Koleos Touch Keyboard",
-    description: "Assign full-size keyboard shortcuts to a 3-by-2 touch layout and preview the result at 480 by 272 pixels."
+    description: "Assign tenkeyless keyboard and volume-media combinations to a 3-by-2 touch layout and preview the result at 480 by 272 pixels."
   },
   "date-move": {
     title: "Date Add and Subtract Calculator",

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title data-i18n="tools.grand-koleos-touch-keyboard.meta.title">그랑 콜레오스 터치 키보드 - SolForge</title>
-    <meta name="description" content="480×272 ESP32-S3 화면용 3×2 터치 버튼에 풀배열 가상 키보드로 단축키 조합을 지정하고 미리 확인합니다." data-i18n-attrs="content:tools.grand-koleos-touch-keyboard.meta.description">
+    <meta name="description" content="480×272 ESP32-S3 화면용 3×2 터치 버튼에 텐키리스 키보드와 볼륨 미디어 키로 단축키 조합을 지정합니다." data-i18n-attrs="content:tools.grand-koleos-touch-keyboard.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/grand-koleos-touch-keyboard.html">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260813-vehicle">
@@ -32,24 +32,24 @@
         </header>
 
         <section class="page-hero compact-hero utility-hero vehicle-tool-hero">
-          <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.eyebrow">ESP32-S3 · 480 × 272</p><h1 data-i18n="tools.grand-koleos-touch-keyboard.title">그랑 콜레오스 터치 키보드</h1><p data-i18n="tools.grand-koleos-touch-keyboard.lead">차량 화면에 표시할 3×2 터치 버튼을 만들고, 각 버튼에 풀배열 키보드의 단축키 조합을 지정합니다.</p></div>
+          <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.eyebrow">ESP32-S3 · 480 × 272</p><h1 data-i18n="tools.grand-koleos-touch-keyboard.title">그랑 콜레오스 터치 키보드</h1><p data-i18n="tools.grand-koleos-touch-keyboard.lead">차량 화면에 표시할 3×2 터치 버튼을 만들고, 각 버튼에 텐키리스 키보드와 볼륨 미디어 키 조합을 지정합니다.</p></div>
           <div class="hero-panel"><div class="metric-card"><strong>480×272</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.resolution">ESP32-S3 화면 해상도</span></div><div class="metric-card"><strong>3×2</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.buttons">터치 버튼 배열</span></div></div>
         </section>
 
         <section class="tool-process-strip gk-process-strip" aria-label="단축키 설정 순서" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.flowLabel">
           <div><span>1</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow1.title">터치 버튼 선택</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow1.body">아래 480×272 미리보기에서 버튼 선택</small></div>
-          <div><span>2</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow2.title">키 조합 지정</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow2.body">풀배열 키보드에서 Win, M 등 선택</small></div>
+          <div><span>2</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow2.title">키 조합 지정</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow2.body">텐키리스·볼륨 키에서 원하는 조합 선택</small></div>
           <div><span>3</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow3.title">미리보기 확인</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow3.body">선택한 조합이 버튼에 즉시 표시</small></div>
         </section>
 
         <section class="gk-builder" aria-labelledby="gkBuilderTitle">
           <div class="gk-section-heading">
-            <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.eyebrow">FULL-SIZE KEYBOARD</p><h2 id="gkBuilderTitle" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.title">단축키 조합 선택</h2><p data-i18n="tools.grand-koleos-touch-keyboard.keyboard.body">먼저 아래 미리보기에서 설정할 버튼을 누른 뒤, 가상 키보드에서 조합할 키를 차례로 선택하세요. 같은 키를 다시 누르면 해제됩니다.</p></div>
+            <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.eyebrow">TENKEYLESS + MEDIA</p><h2 id="gkBuilderTitle" data-i18n="tools.grand-koleos-touch-keyboard.keyboard.title">단축키 조합 선택</h2><p data-i18n="tools.grand-koleos-touch-keyboard.keyboard.body">미리보기에서 설정할 버튼을 고른 뒤 텐키리스 키보드나 상단의 볼륨 키를 선택하세요. 같은 키를 다시 누르면 해제됩니다.</p></div>
             <div class="gk-current-assignment"><span data-i18n="tools.grand-koleos-touch-keyboard.currentButton">현재 설정 버튼</span><strong id="gkActiveButton" data-i18n="tools.grand-koleos-touch-keyboard.initialButton">버튼 1</strong><code id="gkActiveCombo" data-i18n="tools.grand-koleos-touch-keyboard.initialCombo">키 조합 없음</code></div>
           </div>
 
           <div class="gk-keyboard-shell">
-            <div class="gk-keyboard" id="gkKeyboard" role="group" aria-label="풀배열 가상 키보드" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.keyboardLabel"></div>
+            <div class="gk-keyboard" id="gkKeyboard" role="group" aria-label="텐키리스 및 미디어 가상 키보드" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.keyboardLabel"></div>
           </div>
 
           <div class="gk-keyboard-actions">
@@ -93,6 +93,6 @@
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260803-categories"></script>
-    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260818-port"></script>
+    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260818-tkl"></script>
   </body>
 </html>
