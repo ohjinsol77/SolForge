@@ -24,7 +24,6 @@
     iconChanged: "image changed to",
     iconGroups: { basic: "Basic", app: "Apps", media: "Media", direction: "Directions", device: "Device" },
     pageName: (index) => `Page ${index + 1} name`,
-    cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"],
     configCreating: "Creating board settings from the current page names, icons, and shortcuts...",
     firmwareLoading: "Loading the firmware package...",
     firmwareValidating: "Validating firmware files and board settings...",
@@ -64,7 +63,6 @@
     iconChanged: "이미지를 다음으로 변경했습니다:",
     iconGroups: { basic: "기본", app: "앱", media: "미디어", direction: "방향", device: "기기" },
     pageName: (index) => `${index + 1}페이지 이름`,
-    cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"],
     configCreating: "현재 페이지 이름과 버튼별 아이콘·키 조합으로 보드 설정을 만들고 있습니다...",
     firmwareLoading: "펌웨어 패키지를 불러오고 있습니다...",
     firmwareValidating: "펌웨어 파일과 보드 설정을 검증하고 있습니다...",
@@ -542,19 +540,14 @@
       context.strokeStyle = isActive ? "#38bdf8" : "#475569";
       context.stroke();
 
-      drawCanvasIcon(currentIcons()[index], x + buttonWidth / 2, y + 21, 30);
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillStyle = "#f8fafc";
-      context.font = "800 14px Inter, Arial, sans-serif";
-      context.fillText(copy.cardNames[index], x + buttonWidth / 2, y + 46);
+      drawCanvasIcon(currentIcons()[index], x + buttonWidth / 2, y + 25, 32);
 
       const assignments = currentAssignments();
       const combo = assignments[index].length ? comboText(index) : copy.unset;
       context.fillStyle = assignments[index].length ? iconColors[index] : "#64748b";
       const fontSize = fitFont(combo, buttonWidth - 16, 10);
       context.font = `700 ${fontSize}px Inter, Arial, sans-serif`;
-      context.fillText(combo, x + buttonWidth / 2, y + 65);
+      context.fillText(combo, x + buttonWidth / 2, y + 59);
     }
 
     context.fillStyle = "#151d29";

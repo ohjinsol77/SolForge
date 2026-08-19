@@ -761,14 +761,13 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
   const int16_t bx = x;
   const int16_t by = y;
   const int16_t iconCx = bx + (w / 2);
-  const int16_t iconCy = by + 21;
+  const int16_t iconCy = by + 25;
 
   gfx->fillRoundRect(bx, by, w, h, 12, fill);
   gfx->drawRoundRect(bx, by, w, h, 12, buttonBorder(pressed, page));
 
   drawButtonIcon(page, index, iconCx, iconCy, accent, fill);
-  drawCenteredText(bx + 8, by + 33, w - 16, 26, button.action.label, 1, textColor(), fill);
-  drawCenteredText(bx + 8, by + 55, w - 16, 18, configuredComboLabel(page, index), 1, mutedColor(), fill);
+  drawCenteredText(bx + 8, by + 49, w - 16, 22, configuredComboLabel(page, index), 1, mutedColor(), fill);
 }
 
 static void drawBootSplash() {
