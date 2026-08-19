@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <esp_partition.h>
+#include <Preferences.h>
 #include "Arduino_GFX.h"
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
@@ -22,8 +23,13 @@ static constexpr uint8_t kTouchSdaPin = 8;
 static constexpr uint8_t kTouchSclPin = 4;
 static constexpr uint8_t kTouchIntPin = 3;
 static constexpr uint8_t kTouchRstPin = 38;
-static constexpr uint32_t kIdleSleepMs = 20000;
 static constexpr uint32_t kMacroHoldMs = 20;
+static constexpr uint8_t kBacklightLevels = 10;
+static constexpr uint32_t kBacklightPwmFreq = 5000;
+static constexpr uint8_t kBacklightPwmResolution = 8;
+static constexpr uint8_t kDefaultAutoOffIndex = 1;
+static constexpr uint16_t kAutoOffChoices[7] = {10, 30, 60, 180, 300, 600, 0};
+static const char *const kAutoOffLabels[7] = {"10초", "30초", "1분", "3분", "5분", "10분", "OFF"};
 static constexpr bool kTouchDiagnosticMode = false;
 static constexpr int16_t kTopLayoutH = 42;
 static constexpr int16_t kBottomMargin = 70;
@@ -171,9 +177,32 @@ static uint32_t lastTouchSampleMs = 0;
 static uint32_t postSwipeGuardUntilMs = 0;
 static uint32_t postMacroGuardUntilMs = 0;
 
+enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, AutoOff, RebootConfirm };
+static SettingsScreen settingsScreen = SettingsScreen::Off;
+static uint8_t backlightLevel = 8;
+static uint8_t autoOffIndex = kDefaultAutoOffIndex;
+static int16_t settingsPressX = -1;
+static int16_t settingsPressY = -1;
+static int16_t settingsPressedZone = -1;
+static bool settingsPressActive = false;
+static Preferences settingsPrefs;
+
+static void initBacklight() {
+  ledcAttach(kBacklightPin, kBacklightPwmFreq, kBacklightPwmResolution);
+}
+
+static void applyBacklightDuty() {
+  const uint32_t duty = ((uint32_t)backlightLevel * 255U) / kBacklightLevels;
+  ledcWrite(kBacklightPin, duty);
+}
+
 static void setBacklight(bool on) {
   backlightOn = on;
-  digitalWrite(kBacklightPin, on ? HIGH : LOW);
+  if (on) {
+    applyBacklightDuty();
+  } else {
+    ledcWrite(kBacklightPin, 0);
+  }
 }
 
 static uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
@@ -220,6 +249,24 @@ static void loadStoredConfig() {
   Serial.println("touch config loaded");
 }
 
+static void loadDeviceSettings() {
+  settingsPrefs.begin("gk", false);
+  backlightLevel = constrain(settingsPrefs.getUChar("bright", 8), 1, kBacklightLevels);
+  autoOffIndex = constrain(settingsPrefs.getUChar("autoff", kDefaultAutoOffIndex), 0, 6);
+  settingsPrefs.end();
+}
+
+static void saveDeviceSettings() {
+  settingsPrefs.begin("gk", false);
+  settingsPrefs.putUChar("bright", backlightLevel);
+  settingsPrefs.putUChar("autoff", autoOffIndex);
+  settingsPrefs.end();
+}
+
+static uint32_t autoOffMs() {
+  return (uint32_t)kAutoOffChoices[autoOffIndex] * 1000UL;
+}
+
 static const char *configuredPageName(uint8_t page) {
   if (storedConfigValid && page < kConfigPageCount && storedConfig.pages[page].name[0] != '\0') {
     return storedConfig.pages[page].name;
@@ -228,7 +275,17 @@ static const char *configuredPageName(uint8_t page) {
   return defaults[page < 3 ? page : 0];
 }
 
+static bool isSettingsButton(uint8_t page, uint8_t button) {
+  return page == 2 && button == 5;
+}
+
 static const char *configuredComboLabel(uint8_t page, uint8_t button) {
+  if (isSettingsButton(page, button)) {
+    if (storedConfigValid && storedConfig.pages[2].buttons[5].comboLabel[0] != '\0') {
+      return storedConfig.pages[2].buttons[5].comboLabel;
+    }
+    return "설정";
+  }
   if (storedConfigValid && page < kConfigPageCount && button < kConfigButtonCount) {
     const char *label = storedConfig.pages[page].buttons[button].comboLabel;
     if (label[0] != '\0') return label;
@@ -237,6 +294,9 @@ static const char *configuredComboLabel(uint8_t page, uint8_t button) {
 }
 
 static uint8_t configuredIconId(uint8_t page, uint8_t button) {
+  if (isSettingsButton(page, button)) {
+    return 26;
+  }
   if (storedConfigValid && page < kConfigPageCount && button < kConfigButtonCount) {
     return storedConfig.pages[page].buttons[button].iconId;
   }
@@ -366,6 +426,9 @@ static void sendMacro(const MacroAction &action) {
 }
 
 static void sendConfiguredMacro(uint8_t page, uint8_t button) {
+  if (isSettingsButton(page, button)) {
+    return;
+  }
   if (!storedConfigValid || page >= kConfigPageCount || button >= kConfigButtonCount) {
     sendMacro(kPageButtons[page][button].action);
     return;
@@ -821,7 +884,305 @@ static void drawBootSplash() {
   gfx->flush();
 }
 
+static void renderScreen();
+
+static uint16_t settingsBg() {
+  return rgb565(8, 12, 18);
+}
+
+static uint16_t settingsPanel() {
+  return rgb565(21, 29, 41);
+}
+
+static uint16_t settingsPanelPressed() {
+  return rgb565(32, 51, 74);
+}
+
+static uint16_t settingsAccent() {
+  return rgb565(56, 189, 248);
+}
+
+static uint16_t settingsAccentFill() {
+  return rgb565(7, 89, 183);
+}
+
+static uint16_t settingsLine() {
+  return rgb565(52, 65, 84);
+}
+
+static void enterSettings() {
+  settingsScreen = SettingsScreen::Menu;
+  currentPage = 2;
+  touchHeld = false;
+  suppressUntilRelease = false;
+  swipeDetected = false;
+  touchMovedTooFar = false;
+  pressedButton = -1;
+  touchStartButton = -1;
+  settingsPressActive = false;
+  settingsPressedZone = -1;
+  noteActivity();
+  uiDirty = true;
+  renderScreen();
+}
+
+static void leaveSettings() {
+  settingsScreen = SettingsScreen::Off;
+  currentPage = 2;
+  touchHeld = false;
+  suppressUntilRelease = false;
+  swipeDetected = false;
+  touchMovedTooFar = false;
+  pressedButton = -1;
+  touchStartButton = -1;
+  settingsPressActive = false;
+  settingsPressedZone = -1;
+  noteActivity();
+  uiDirty = true;
+  renderScreen();
+}
+
+static void drawBackIcon(int16_t cx, int16_t cy, uint16_t color) {
+  drawThickLine(cx + 7, cy - 7, cx - 7, cy, 3, color);
+  drawThickLine(cx - 7, cy, cx + 7, cy + 7, 3, color);
+}
+
+static void drawHomeIcon(int16_t cx, int16_t cy, uint16_t color) {
+  drawThickLine(cx - 9, cy + 2, cx, cy - 8, 3, color);
+  drawThickLine(cx + 9, cy + 2, cx, cy - 8, 3, color);
+  gfx->drawRect(cx - 6, cy - 1, 12, 9, color);
+}
+
+static void drawSettingsHeader(const char *title) {
+  const uint16_t bg = settingsBg();
+  const uint16_t panel = settingsPanel();
+  gfx->fillScreen(bg);
+  gfx->fillRect(0, 0, screenWidth, 42, panel);
+  gfx->drawLine(0, 41, screenWidth, 41, settingsLine());
+  drawCenteredText(0, 0, screenWidth, 42, title, 1, textColor(), panel);
+  drawBackIcon(30, 21, settingsAccent());
+  drawHomeIcon(screenWidth - 30, 21, settingsAccent());
+}
+
+static void drawSettingsRow(int16_t y, const char *label, bool highlighted, bool pressed) {
+  const uint16_t fill = highlighted ? settingsAccentFill() : pressed ? settingsPanelPressed() : settingsPanel();
+  const uint16_t border = highlighted ? settingsAccent() : settingsLine();
+  const uint16_t color = highlighted ? rgb565(248, 250, 252) : textColor();
+  gfx->fillRoundRect(24, y, screenWidth - 48, 40, 9, fill);
+  gfx->drawRoundRect(24, y, screenWidth - 48, 40, 9, border);
+  drawCenteredText(24, y, screenWidth - 48, 40, label, 1, color, fill);
+}
+
+static void renderSettingsMenu() {
+  static const char *items[3] = {"밝기 조절", "자동 화면 꺼짐", "재부팅"};
+  drawSettingsHeader("설정");
+  for (uint8_t i = 0; i < 3; ++i) {
+    drawSettingsRow(60 + i * 50, items[i], false, settingsPressedZone == (int16_t)(100 + i));
+  }
+}
+
+static void renderSettingsBrightness() {
+  drawSettingsHeader("밝기 조절");
+  char value[8];
+  snprintf(value, sizeof(value), "%u / %u", backlightLevel, kBacklightLevels);
+  drawCenteredText(0, 64, screenWidth, 40, value, 1, textColor(), settingsBg());
+
+  const int16_t barX = 102;
+  const int16_t barY = 118;
+  const int16_t barW = 26;
+  const int16_t barGap = 4;
+  for (uint8_t i = 0; i < kBacklightLevels; ++i) {
+    const bool filled = i < backlightLevel;
+    gfx->fillRoundRect(barX + i * (barW + barGap), barY, barW, 14, 3, filled ? settingsAccent() : settingsLine());
+  }
+
+  const int16_t buttonY = 158;
+  const int16_t buttonH = 52;
+  gfx->fillRoundRect(60, buttonY, 140, buttonH, 10, settingsPressedZone == 200 ? settingsPanelPressed() : settingsPanel());
+  gfx->drawRoundRect(60, buttonY, 140, buttonH, 10, settingsLine());
+  drawCenteredText(60, buttonY, 140, buttonH, "-", 1, textColor(), settingsPanel());
+  gfx->fillRoundRect(280, buttonY, 140, buttonH, 10, settingsPressedZone == 201 ? settingsPanelPressed() : settingsPanel());
+  gfx->drawRoundRect(280, buttonY, 140, buttonH, 10, settingsLine());
+  drawCenteredText(280, buttonY, 140, buttonH, "+", 1, textColor(), settingsPanel());
+}
+
+static void renderSettingsAutoOff() {
+  drawSettingsHeader("자동 화면 꺼짐");
+  for (uint8_t i = 0; i < 7; ++i) {
+    const bool selected = i == autoOffIndex;
+    const int16_t y = 52 + i * 26;
+    const uint16_t fill = selected ? settingsAccentFill() : settingsPressedZone == (int16_t)(300 + i) ? settingsPanelPressed() : settingsPanel();
+    const uint16_t border = selected ? settingsAccent() : settingsLine();
+    const uint16_t color = selected ? rgb565(248, 250, 252) : textColor();
+    gfx->fillRoundRect(24, y, screenWidth - 48, 24, 6, fill);
+    gfx->drawRoundRect(24, y, screenWidth - 48, 24, 6, border);
+    drawCenteredText(24, y, screenWidth - 48, 24, kAutoOffLabels[i], 1, color, fill);
+  }
+}
+
+static void renderSettingsReboot() {
+  drawSettingsHeader("재부팅");
+  drawCenteredText(20, 80, screenWidth - 40, 48, "정말 재부팅 하시겠습니까?", 1, textColor(), settingsBg());
+
+  const int16_t buttonY = 150;
+  const int16_t buttonH = 52;
+  gfx->fillRoundRect(60, buttonY, 160, buttonH, 10, settingsPressedZone == 400 ? settingsPanelPressed() : settingsPanel());
+  gfx->drawRoundRect(60, buttonY, 160, buttonH, 10, settingsLine());
+  drawCenteredText(60, buttonY, 160, buttonH, "진행", 1, textColor(), settingsPanel());
+  gfx->fillRoundRect(260, buttonY, 160, buttonH, 10, settingsPressedZone == 401 ? settingsPanelPressed() : settingsPanel());
+  gfx->drawRoundRect(260, buttonY, 160, buttonH, 10, settingsLine());
+  drawCenteredText(260, buttonY, 160, buttonH, "취소", 1, textColor(), settingsPanel());
+}
+
+static void renderSettingsScreen() {
+  switch (settingsScreen) {
+    case SettingsScreen::Menu:
+      renderSettingsMenu();
+      break;
+    case SettingsScreen::Brightness:
+      renderSettingsBrightness();
+      break;
+    case SettingsScreen::AutoOff:
+      renderSettingsAutoOff();
+      break;
+    case SettingsScreen::RebootConfirm:
+      renderSettingsReboot();
+      break;
+    default:
+      break;
+  }
+  gfx->flush();
+  uiDirty = false;
+}
+
+static int16_t settingsZoneAt(int16_t x, int16_t y) {
+  if (y < 42) {
+    if (x < 64) return 0;
+    if (x >= screenWidth - 64) return 1;
+    return -1;
+  }
+  switch (settingsScreen) {
+    case SettingsScreen::Menu: {
+      if (y >= 60 && y < 210) {
+        const int16_t row = (y - 60) / 50;
+        if (row < 3) return 100 + row;
+      }
+      break;
+    }
+    case SettingsScreen::Brightness: {
+      if (y >= 158 && y < 210) {
+        return x < screenWidth / 2 ? 200 : 201;
+      }
+      break;
+    }
+    case SettingsScreen::AutoOff: {
+      if (y >= 52 && y < 234) {
+        const int16_t row = (y - 52) / 26;
+        if (row < 7) return 300 + row;
+      }
+      break;
+    }
+    case SettingsScreen::RebootConfirm: {
+      if (y >= 150 && y < 202) {
+        return x < screenWidth / 2 ? 400 : 401;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  return -1;
+}
+
+static void settingsTap(int16_t zone) {
+  if (zone == 0) {
+    if (settingsScreen == SettingsScreen::Menu) {
+      leaveSettings();
+    } else {
+      settingsScreen = SettingsScreen::Menu;
+      uiDirty = true;
+      renderScreen();
+    }
+    return;
+  }
+  if (zone == 1) {
+    leaveSettings();
+    return;
+  }
+  switch (settingsScreen) {
+    case SettingsScreen::Menu:
+      if (zone >= 100 && zone < 103) {
+        settingsScreen = zone == 100 ? SettingsScreen::Brightness
+                                     : zone == 101 ? SettingsScreen::AutoOff
+                                                   : SettingsScreen::RebootConfirm;
+      }
+      break;
+    case SettingsScreen::Brightness:
+      if (zone == 200 && backlightLevel > 1) {
+        backlightLevel--;
+        applyBacklightDuty();
+        saveDeviceSettings();
+      } else if (zone == 201 && backlightLevel < kBacklightLevels) {
+        backlightLevel++;
+        applyBacklightDuty();
+        saveDeviceSettings();
+      }
+      break;
+    case SettingsScreen::AutoOff:
+      if (zone >= 300 && zone < 307) {
+        autoOffIndex = (uint8_t)(zone - 300);
+        saveDeviceSettings();
+      }
+      break;
+    case SettingsScreen::RebootConfirm:
+      if (zone == 400) {
+        ESP.restart();
+      } else if (zone == 401) {
+        settingsScreen = SettingsScreen::Menu;
+      }
+      break;
+    default:
+      break;
+  }
+  noteActivity();
+  uiDirty = true;
+  renderScreen();
+}
+
+static void handleSettingsTouchFrame(bool pressed, int16_t x, int16_t y) {
+  if (pressed) {
+    noteActivity();
+    lastTouchSampleMs = millis();
+    if (!settingsPressActive) {
+      settingsPressActive = true;
+      settingsPressX = x;
+      settingsPressY = y;
+      settingsPressedZone = settingsZoneAt(x, y);
+      uiDirty = true;
+    }
+    return;
+  }
+  if (!settingsPressActive) {
+    return;
+  }
+  settingsPressActive = false;
+  const int16_t dx = abs(x - settingsPressX);
+  const int16_t dy = abs(y - settingsPressY);
+  const int16_t zone = settingsZoneAt(x, y);
+  const int16_t pressedZone = settingsPressedZone;
+  settingsPressedZone = -1;
+  uiDirty = true;
+  if (dx > 14 || dy > 14 || zone < 0 || zone != pressedZone) {
+    return;
+  }
+  settingsTap(zone);
+}
+
 static void renderScreen() {
+  if (settingsScreen != SettingsScreen::Off) {
+    renderSettingsScreen();
+    return;
+  }
   gfx->fillScreen(pageBg(currentPage));
   drawHeader();
 
@@ -923,7 +1284,8 @@ static int16_t dominantSwipeDelta() {
 }
 
 static void handleSleepTimeout() {
-  if (backlightOn && (millis() - lastActivityMs >= kIdleSleepMs)) {
+  const uint32_t timeoutMs = autoOffMs();
+  if (backlightOn && timeoutMs != 0 && (millis() - lastActivityMs >= timeoutMs)) {
     Keyboard.releaseAll();
     setBacklight(false);
     touchHeld = false;
@@ -994,6 +1356,17 @@ static void handleTouchFrame() {
       touchPage = currentPage;
       wakeDisplay();
     }
+    return;
+  }
+
+  if (settingsScreen != SettingsScreen::Off) {
+    if (suppressUntilRelease) {
+      if (!pressed) {
+        suppressUntilRelease = false;
+      }
+      return;
+    }
+    handleSettingsTouchFrame(pressed, x, y);
     return;
   }
 
@@ -1109,6 +1482,9 @@ static void handleTouchFrame() {
         activateNavigation(releasedControl);
         noteActivity();
         renderScreen();
+      } else if (isSettingsButton(touchPage, releasedControl)) {
+        enterSettings();
+        postMacroGuardUntilMs = millis() + kPostMacroGuardMs;
       } else {
         sendConfiguredMacro(touchPage, releasedControl);
         postMacroGuardUntilMs = millis() + kPostMacroGuardMs;
@@ -1199,10 +1575,11 @@ void setup() {
   Serial.begin(115200);
   delay(50);
 
-  pinMode(kBacklightPin, OUTPUT);
+  initBacklight();
   setBacklight(false);
 
   loadStoredConfig();
+  loadDeviceSettings();
   Keyboard.begin();
   ConsumerControl.begin();
   USB.begin();

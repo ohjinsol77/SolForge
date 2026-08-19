@@ -5776,6 +5776,13 @@ th {
   background: var(--brand-soft);
 }
 
+.gk-assignment-list button.locked {
+  border-style: dashed;
+  background: var(--surface);
+  cursor: default;
+  opacity: 0.85;
+}
+
 .gk-assignment-list span {
   color: var(--muted);
   font-size: 0.68rem;

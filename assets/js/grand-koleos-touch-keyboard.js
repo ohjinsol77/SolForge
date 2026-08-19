@@ -13,6 +13,8 @@
     cleared: "Shortcut cleared for",
     clearedAll: "All button shortcuts and images have been reset.",
     confirmClearAll: "Reset all button shortcuts and images?",
+    settingsLabel: "Settings",
+    settingsLocked: "The Settings button is fixed and cannot be edited.",
     unset: "Not assigned",
     touchTitle: "TOUCH KEYBOARD",
     page: "PAGE",
@@ -54,6 +56,8 @@
     cleared: "의 키 조합을 지웠습니다.",
     clearedAll: "모든 버튼의 키 조합과 이미지를 초기화했습니다.",
     confirmClearAll: "모든 버튼의 키 조합과 이미지를 초기화할까요?",
+    settingsLabel: "설정",
+    settingsLocked: "설정 버튼은 고정되어 있어 수정할 수 없습니다.",
     unset: "미설정",
     touchTitle: "터치 키보드",
     page: "페이지",
@@ -125,6 +129,10 @@
   ];
   const iconById = new Map(iconCatalog.map((icon) => [icon.id, icon]));
   const defaultIconIds = ["home", "back", "menu", "favorite", "voice", "power"];
+  const settingsPageIndex = 2;
+  const settingsButtonIndex = 5;
+  const settingsIconId = "settings";
+  const isSettingsButton = (pageIndex, buttonIndex) => pageIndex === settingsPageIndex && buttonIndex === settingsButtonIndex;
   const iconLabel = (iconId) => {
     const icon = iconById.get(iconId) || iconCatalog[0];
     return lang === "en" ? icon.en : icon.ko;
@@ -220,6 +228,8 @@
     assignments: Array.from({ length: 6 }, () => []),
     icons: defaultIconIds.slice()
   }));
+  pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
+  pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
   const buttonBoxes = [];
   const navigationBoxes = [];
   let activeButton = 0;
@@ -322,6 +332,10 @@
   }
 
   function selectButton(index, revealIconEditor = true) {
+    if (isSettingsButton(activePage, index)) {
+      status.textContent = copy.settingsLocked;
+      return;
+    }
     activeButton = index;
     if (revealIconEditor) iconEditor.hidden = false;
     status.textContent = `${buttonText(index)} ${copy.selected}`;
@@ -339,7 +353,12 @@
 
   function renderAssignmentSummary() {
     const assignments = currentAssignments();
-    assignmentList.innerHTML = assignments.map((_keys, index) => `<button type="button" class="${index === activeButton ? "active" : ""}" data-gk-button="${index}" aria-pressed="${index === activeButton}"><span>${buttonText(index)}</span><strong>${escapeHtml(comboText(index))}</strong></button>`).join("");
+    assignmentList.innerHTML = assignments.map((_keys, index) => {
+      if (isSettingsButton(activePage, index)) {
+        return `<button type="button" class="locked" data-gk-button="${index}" disabled aria-disabled="true"><span>${escapeHtml(copy.settingsLabel)}</span><strong>${escapeHtml(copy.settingsLabel)}</strong></button>`;
+      }
+      return `<button type="button" class="${index === activeButton ? "active" : ""}" data-gk-button="${index}" aria-pressed="${index === activeButton}"><span>${buttonText(index)}</span><strong>${escapeHtml(comboText(index))}</strong></button>`;
+    }).join("");
     assignmentList.querySelectorAll("[data-gk-button]").forEach((button) => {
       button.addEventListener("click", () => selectButton(Number(button.dataset.gkButton)));
     });
@@ -549,7 +568,8 @@
       const y = outerY + row * (buttonHeight + rowGap);
       buttonBoxes.push({ x, y, width: buttonWidth, height: buttonHeight });
 
-      const isActive = index === activeButton;
+      const isFixed = isSettingsButton(activePage, index);
+      const isActive = index === activeButton && !isFixed;
       roundedRect(context, x, y, buttonWidth, buttonHeight, 12);
       const cardGradient = context.createLinearGradient(x, y, x, y + buttonHeight);
       cardGradient.addColorStop(0, isActive ? "#20334a" : "#1b2532");
@@ -560,11 +580,11 @@
       context.strokeStyle = isActive ? "#38bdf8" : "#475569";
       context.stroke();
 
-      drawCanvasIcon(currentIcons()[index], x + buttonWidth / 2, y + 25, 32);
+      drawCanvasIcon(isFixed ? settingsIconId : currentIcons()[index], x + buttonWidth / 2, y + 25, 32);
 
       const assignments = currentAssignments();
-      const combo = assignments[index].length ? comboText(index) : copy.unset;
-      context.fillStyle = assignments[index].length ? iconColors[index] : "#64748b";
+      const combo = isFixed ? copy.settingsLabel : (assignments[index].length ? comboText(index) : copy.unset);
+      context.fillStyle = isFixed ? "#38bdf8" : assignments[index].length ? iconColors[index] : "#64748b";
       const fontSize = fitFont(combo, buttonWidth - 16, 10);
       context.font = `700 ${fontSize}px Inter, Arial, sans-serif`;
       context.fillText(combo, x + buttonWidth / 2, y + 59);
@@ -748,6 +768,8 @@
       page.assignments.forEach((keys) => keys.splice(0));
       page.icons = defaultIconIds.slice();
     });
+    pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
+    pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
     status.textContent = copy.clearedAll;
     renderAll();
   });
@@ -829,24 +851,27 @@
       writeFixedUtf8(config, pageOffset, pageNameBytes, displayPageName(pageIndex));
       let buttonOffset = pageOffset + pageNameBytes;
       page.assignments.forEach((assignments, buttonIndex) => {
-        writeFixedUtf8(config, buttonOffset, comboLabelBytes, assignments.length ? comboTextFor(pageIndex, buttonIndex) : copy.unset);
+        const isFixed = isSettingsButton(pageIndex, buttonIndex);
+        writeFixedUtf8(config, buttonOffset, comboLabelBytes, isFixed ? copy.settingsLabel : (assignments.length ? comboTextFor(pageIndex, buttonIndex) : copy.unset));
         const keys = [];
         const media = [];
-        assignments.forEach((keyId) => {
-          if (consumerCodes.has(keyId)) media.push(consumerCodes.get(keyId));
-          else {
-            const code = keyboardCode(keyId);
-            if (code === null) throw new Error(`${copy.invalidFirmware} (${keyId})`);
-            keys.push(code);
-          }
-        });
-        const regularKeyCount = keys.filter((code) => !modifierCodes.has(code)).length;
-        if (assignments.length > 3 || regularKeyCount > 6 || keys.length > storedKeyCount) throw new Error(`${copy.tooManyKeys} (${buttonText(buttonIndex)})`);
-        if (media.length > 1) throw new Error(`${copy.tooManyMedia} (${buttonText(buttonIndex)})`);
+        if (!isFixed) {
+          assignments.forEach((keyId) => {
+            if (consumerCodes.has(keyId)) media.push(consumerCodes.get(keyId));
+            else {
+              const code = keyboardCode(keyId);
+              if (code === null) throw new Error(`${copy.invalidFirmware} (${keyId})`);
+              keys.push(code);
+            }
+          });
+          const regularKeyCount = keys.filter((code) => !modifierCodes.has(code)).length;
+          if (assignments.length > 3 || regularKeyCount > 6 || keys.length > storedKeyCount) throw new Error(`${copy.tooManyKeys} (${buttonText(buttonIndex)})`);
+          if (media.length > 1) throw new Error(`${copy.tooManyMedia} (${buttonText(buttonIndex)})`);
+        }
         config[buttonOffset + comboLabelBytes] = keys.length;
         keys.forEach((code, index) => { config[buttonOffset + comboLabelBytes + 1 + index] = code; });
         view.setUint16(buttonOffset + comboLabelBytes + 1 + storedKeyCount, media[0] || 0, true);
-        config[buttonOffset + comboLabelBytes + 1 + storedKeyCount + 2] = iconById.get(page.icons[buttonIndex])?.code || 0;
+        config[buttonOffset + comboLabelBytes + 1 + storedKeyCount + 2] = isFixed ? 26 : (iconById.get(page.icons[buttonIndex])?.code || 0);
         buttonOffset += buttonBytes;
       });
       pageOffset += pageBytes;
