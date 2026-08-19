@@ -591,11 +591,17 @@ static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, 
     gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx + 4, cy + 5, accent);
     gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx - 1, cy - 4, white);
   } else if (icon == 8) {  // TMAP
-    gfx->fillRoundRect(cx - 15, cy - 15, 30, 30, 8, rgb565(237, 23, 76));
-    gfx->fillRect(cx - 9, cy - 8, 18, 5, white);
-    gfx->fillRect(cx - 2, cy - 7, 5, 18, white);
-    drawThickLine(cx + 6, cy - 12, cx + 11, cy - 8, 2, white);
-    drawThickLine(cx + 11, cy - 8, cx + 6, cy - 4, 2, white);
+    const uint16_t pink = rgb565(242, 56, 183);
+    const uint16_t purple = rgb565(139, 57, 245);
+    const uint16_t teal = rgb565(54, 221, 176);
+    const uint16_t blue = rgb565(20, 98, 255);
+    gfx->fillRoundRect(cx - 15, cy - 15, 30, 30, 7, white);
+    gfx->fillRect(cx - 11, cy - 10, 8, 6, pink);
+    gfx->fillRect(cx - 3, cy - 10, 8, 6, purple);
+    gfx->fillRect(cx + 5, cy - 10, 7, 6, teal);
+    drawThickLine(cx + 9, cy - 7, cx + 3, cy - 7, 6, teal);
+    drawThickLine(cx + 3, cy - 7, cx - 2, cy - 2, 6, teal);
+    drawThickLine(cx - 2, cy - 2, cx - 2, cy + 11, 6, blue);
   } else if (icon == 9) {  // YouTube
     gfx->fillRoundRect(cx - 17, cy - 11, 34, 22, 6, red);
     gfx->fillTriangle(cx - 4, cy - 7, cx - 4, cy + 7, cx + 8, cy, white);
@@ -694,8 +700,12 @@ static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, 
     }
   } else if (icon == 30) {  // Bluetooth
     drawThickLine(cx, cy - 14, cx, cy + 14, 2, accent);
-    drawThickLine(cx, cy - 14, cx + 9, cy - 6, 2, accent); drawThickLine(cx + 9, cy - 6, cx - 7, cy + 8, 2, accent);
-    drawThickLine(cx - 7, cy - 8, cx + 9, cy + 6, 2, accent); drawThickLine(cx + 9, cy + 6, cx, cy + 14, 2, accent);
+    drawThickLine(cx, cy - 14, cx + 9, cy - 6, 2, accent);
+    drawThickLine(cx + 9, cy - 6, cx, cy, 2, accent);
+    drawThickLine(cx, cy, cx + 9, cy + 6, 2, accent);
+    drawThickLine(cx + 9, cy + 6, cx, cy + 14, 2, accent);
+    drawThickLine(cx, cy, cx - 8, cy - 8, 2, accent);
+    drawThickLine(cx, cy, cx - 8, cy + 8, 2, accent);
   } else if (icon == 31) {  // Wi-Fi
     gfx->drawCircle(cx, cy + 11, 3, accent);
     gfx->drawCircle(cx, cy + 9, 10, accent); gfx->fillRect(cx - 12, cy - 3, 24, 13, fill);

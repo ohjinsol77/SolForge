@@ -3204,7 +3204,7 @@
   "tools.grand-koleos-touch-keyboard.flow3.body": "Review each button icon and shortcut immediately",
   "tools.grand-koleos-touch-keyboard.flow3.title": "Review icons and preview",
   "tools.grand-koleos-touch-keyboard.flowLabel": "Shortcut setup steps",
-  "tools.grand-koleos-touch-keyboard.keyboard.body": "Choose a button in the preview, then select keys on the tenkeyless keyboard or the volume controls above it. Select the same key again to remove it.",
+  "tools.grand-koleos-touch-keyboard.keyboard.body": "Choose a button in the preview, then assign up to three keys. Select the same key again to remove it.",
   "tools.grand-koleos-touch-keyboard.keyboard.eyebrow": "TENKEYLESS + MEDIA",
   "tools.grand-koleos-touch-keyboard.keyboard.title": "Choose a shortcut combination",
   "tools.grand-koleos-touch-keyboard.keyboardLabel": "Tenkeyless and media virtual keyboard",

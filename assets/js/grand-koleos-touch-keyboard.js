@@ -41,7 +41,8 @@
     chipMismatch: "The connected chip is not an ESP32-S3. Upload was stopped.",
     bootloaderPortUnavailable: "The bootloader serial port did not become available. Reconnect the USB cable and select the port again.",
     bootloaderPortCancelled: "Bootloader port selection was cancelled. Click Apply current settings and select the USB JTAG/serial debug unit port.",
-    tooManyKeys: "A button can contain up to six regular keys and eight keyboard entries total.",
+    tooManyKeys: "You can assign up to three keys to one button.",
+    maxThreeKeys: "You can assign up to three keys to one button.",
     tooManyMedia: "Only one volume media key can be assigned to a button."
   } : {
     button: "버튼",
@@ -80,7 +81,8 @@
     chipMismatch: "연결된 칩이 ESP32-S3가 아니어서 업로드를 중단했습니다.",
     bootloaderPortUnavailable: "부트로더 USB 포트를 열 수 없습니다. USB 케이블을 다시 연결한 뒤 포트를 다시 선택해 주세요.",
     bootloaderPortCancelled: "부트로더 포트 선택이 취소됐습니다. 현재 설정을 보드에 적용을 다시 누르고 USB JTAG/serial debug unit 포트를 선택해 주세요.",
-    tooManyKeys: "버튼 하나에는 일반 키 6개, 전체 키보드 항목 8개까지 지정할 수 있습니다.",
+    tooManyKeys: "버튼 하나에는 키 조합을 최대 3개까지 지정할 수 있습니다.",
+    maxThreeKeys: "버튼 하나에는 키 조합을 최대 3개까지만 지정할 수 있습니다.",
     tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다."
   };
 
@@ -137,7 +139,7 @@
       power: `<path ${stroke} d="M24 6v17M15 11a17 17 0 1 0 18 0"/>`,
       forward: `<path ${stroke} d="m28 12 12 12-12 12M38 24H21c-8 0-13 5-13 13"/>`,
       navigation: `<circle cx="24" cy="24" r="18" ${stroke}/><path d="m32.5 14-6 15-11 5 6-15Z" fill="#38bdf8" stroke="#e8f1fb" stroke-width="2" stroke-linejoin="round"/>`,
-      tmap: `<defs><linearGradient id="tm" x1="8" y1="7" x2="40" y2="41"><stop stop-color="#ff6b45"/><stop offset="1" stop-color="#ed174c"/></linearGradient></defs><rect x="5" y="5" width="38" height="38" rx="11" fill="url(#tm)"/><path d="M14 14h20v6h-7v16h-6V20h-7Z" fill="white"/><path d="m29 10 6 5-6 5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+      tmap: `<defs><linearGradient id="tmBar" x1="7" y1="12" x2="41" y2="12"><stop stop-color="#f238b7"/><stop offset=".5" stop-color="#8b39f5"/><stop offset="1" stop-color="#36ddb0"/></linearGradient><linearGradient id="tmCurve" x1="35" y1="8" x2="21" y2="42"><stop stop-color="#36ddb0"/><stop offset=".48" stop-color="#14a8df"/><stop offset="1" stop-color="#1462ff"/></linearGradient></defs><rect x="4" y="4" width="40" height="40" rx="10" fill="white"/><path d="M8 8h33v8H8Z" fill="url(#tmBar)"/><path d="M41 8h-6c-10 0-17 8-17 19v15h8V27c0-7 4-11 10-11h5Z" fill="url(#tmCurve)"/>`,
       youtube: `<rect x="4" y="10" width="40" height="28" rx="8" fill="#ff0033"/><path d="m21 18 11 6-11 6Z" fill="white"/>`,
       chrome: `<circle cx="24" cy="24" r="20" fill="#fff"/><path d="M24 24 12.5 4.2A20 20 0 0 1 43 17H24Z" fill="#ea4335"/><path d="M24 24h19A20 20 0 0 1 18 43l6-19Z" fill="#34a853"/><path d="m24 24-6 19A20 20 0 0 1 12.5 4.2Z" fill="#fbbc05"/><circle cx="24" cy="24" r="9" fill="#4285f4" stroke="white" stroke-width="2"/>`,
       "volume-up": `<path ${stroke} d="M8 20h8l10-9v26l-10-9H8Zm24-2a9 9 0 0 1 0 12M36 13a16 16 0 0 1 0 22"/>`,
@@ -159,7 +161,7 @@
       phone: `<path ${stroke} d="M14 8 8 13c2 15 12 25 27 27l5-6-9-6-4 5c-6-3-9-6-12-12l5-4Z"/>`,
       car: `<path ${stroke} d="m9 29 3-11h24l3 11M7 29h34v9H7Zm7 9v4M34 38v4M13 33h3M32 33h3"/>`,
       brightness: `<circle cx="24" cy="24" r="8" fill="#facc15"/><path ${stroke} d="M24 5v6M24 37v6M5 24h6M37 24h6M11 11l4 4M33 33l4 4M37 11l-4 4M15 33l-4 4"/>`,
-      bluetooth: `<path ${stroke} d="M24 6v36l12-10-24-16 24 20-12 6"/>`,
+      bluetooth: `<path ${stroke} d="M23 5v38l12-10-12-9 12-9L23 5Zm0 19-10-8m10 8-10 8"/>`,
       wifi: `<path ${stroke} d="M7 18a26 26 0 0 1 34 0M13 25a17 17 0 0 1 22 0M19 32a8 8 0 0 1 10 0"/><circle cx="24" cy="39" r="3" fill="#e8f1fb"/>`,
       camera: `<path ${stroke} d="M8 16h9l3-5h8l3 5h9v24H8Z"/><circle cx="24" cy="28" r="8" ${stroke}/>`
     };
@@ -302,6 +304,11 @@
       keys.splice(index, 1);
       status.textContent = lang === "en" ? `${displayKey} ${copy.removed} ${buttonText(activeButton)}.` : `${displayKey} · ${buttonText(activeButton)}${copy.removed}`;
     } else {
+      if (keys.length >= 3) {
+        status.textContent = copy.maxThreeKeys;
+        window.alert(copy.maxThreeKeys);
+        return;
+      }
       keys.push(keyId);
       status.textContent = lang === "en" ? `${displayKey} ${copy.assigned} ${buttonText(activeButton)}.` : `${displayKey} · ${buttonText(activeButton)}${copy.assigned}`;
     }
@@ -820,7 +827,7 @@
           }
         });
         const regularKeyCount = keys.filter((code) => !modifierCodes.has(code)).length;
-        if (regularKeyCount > 6 || keys.length > storedKeyCount) throw new Error(`${copy.tooManyKeys} (${buttonText(buttonIndex)})`);
+        if (assignments.length > 3 || regularKeyCount > 6 || keys.length > storedKeyCount) throw new Error(`${copy.tooManyKeys} (${buttonText(buttonIndex)})`);
         if (media.length > 1) throw new Error(`${copy.tooManyMedia} (${buttonText(buttonIndex)})`);
         config[buttonOffset + comboLabelBytes] = keys.length;
         keys.forEach((code, index) => { config[buttonOffset + comboLabelBytes + 1 + index] = code; });

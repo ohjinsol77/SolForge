@@ -3204,7 +3204,7 @@
   "tools.grand-koleos-touch-keyboard.flow3.body": "버튼별 아이콘과 키 조합을 즉시 확인",
   "tools.grand-koleos-touch-keyboard.flow3.title": "아이콘·미리보기 확인",
   "tools.grand-koleos-touch-keyboard.flowLabel": "단축키 설정 순서",
-  "tools.grand-koleos-touch-keyboard.keyboard.body": "미리보기에서 설정할 버튼을 고른 뒤 텐키리스 키보드나 상단의 볼륨 키를 선택하세요. 같은 키를 다시 누르면 해제됩니다.",
+  "tools.grand-koleos-touch-keyboard.keyboard.body": "미리보기에서 버튼을 고른 뒤 키를 최대 3개까지 선택하세요. 같은 키를 다시 누르면 해제됩니다.",
   "tools.grand-koleos-touch-keyboard.keyboard.eyebrow": "TENKEYLESS + MEDIA",
   "tools.grand-koleos-touch-keyboard.keyboard.title": "단축키 조합 선택",
   "tools.grand-koleos-touch-keyboard.keyboardLabel": "텐키리스 및 미디어 가상 키보드",
