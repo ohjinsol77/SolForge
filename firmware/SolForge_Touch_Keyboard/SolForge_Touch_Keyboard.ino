@@ -184,6 +184,8 @@ static uint8_t autoOffIndex = kDefaultAutoOffIndex;
 static int16_t settingsPressX = -1;
 static int16_t settingsPressY = -1;
 static int16_t settingsPressedZone = -1;
+static int16_t settingsLastX = -1;
+static int16_t settingsLastY = -1;
 static bool settingsPressActive = false;
 static Preferences settingsPrefs;
 
@@ -937,9 +939,10 @@ static void drawBackIcon(int16_t cx, int16_t cy, uint16_t color) {
 }
 
 static void drawHomeIcon(int16_t cx, int16_t cy, uint16_t color) {
-  drawThickLine(cx - 9, cy + 2, cx, cy - 8, 3, color);
-  drawThickLine(cx + 9, cy + 2, cx, cy - 8, 3, color);
-  gfx->drawRect(cx - 6, cy - 1, 12, 9, color);
+  drawThickLine(cx - 9, cy + 1, cx, cy - 9, 3, color);
+  drawThickLine(cx + 9, cy + 1, cx, cy - 9, 3, color);
+  gfx->fillRect(cx - 6, cy + 1, 12, 8, color);
+  gfx->fillRect(cx - 2, cy + 4, 4, 5, settingsPanel());
 }
 
 static void drawSettingsHeader(const char *title) {
@@ -1141,6 +1144,8 @@ static void settingsTap(int16_t zone) {
 static void handleSettingsTouchFrame(bool pressed, int16_t x, int16_t y) {
   if (pressed) {
     noteActivity();
+    settingsLastX = x;
+    settingsLastY = y;
     lastTouchSampleMs = millis();
     if (!settingsPressActive) {
       settingsPressActive = true;
@@ -1155,9 +1160,9 @@ static void handleSettingsTouchFrame(bool pressed, int16_t x, int16_t y) {
     return;
   }
   settingsPressActive = false;
-  const int16_t dx = abs(x - settingsPressX);
-  const int16_t dy = abs(y - settingsPressY);
-  const int16_t zone = settingsZoneAt(x, y);
+  const int16_t dx = abs(settingsLastX - settingsPressX);
+  const int16_t dy = abs(settingsLastY - settingsPressY);
+  const int16_t zone = settingsZoneAt(settingsLastX, settingsLastY);
   const int16_t pressedZone = settingsPressedZone;
   settingsPressedZone = -1;
   uiDirty = true;
