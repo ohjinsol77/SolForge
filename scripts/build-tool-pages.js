@@ -748,7 +748,7 @@ const englishToolCopyOverrides = {
   },
   "grand-koleos-touch-keyboard": {
     title: "Grand Koleos Touch Keyboard",
-    description: "Assign tenkeyless keyboard and volume-media combinations to a 3-by-2 touch layout and preview the result at 480 by 272 pixels."
+    description: "Assign icons and keyboard or media shortcuts to a 3-by-2 touch layout, then apply the current setup to a supported ESP32-S3 display."
   },
   "date-move": {
     title: "Date Add and Subtract Calculator",

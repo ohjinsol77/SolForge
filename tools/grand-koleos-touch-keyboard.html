@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title data-i18n="tools.grand-koleos-touch-keyboard.meta.title">그랑 콜레오스 터치 키보드 - SolForge</title>
-    <meta name="description" content="480×272 ESP32-S3 화면용 3×2 터치 버튼에 텐키리스 키보드와 볼륨 미디어 키로 단축키 조합을 지정합니다." data-i18n-attrs="content:tools.grand-koleos-touch-keyboard.meta.description">
+    <meta name="description" content="480×272 ESP32-S3 화면용 3×2 터치 버튼의 아이콘과 텐키리스·미디어 키 단축키 조합을 지정합니다." data-i18n-attrs="content:tools.grand-koleos-touch-keyboard.meta.description">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://solforge.cloud/tools/grand-koleos-touch-keyboard.html">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260813-vehicle">
@@ -32,14 +32,14 @@
         </header>
 
         <section class="page-hero compact-hero utility-hero vehicle-tool-hero">
-          <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.eyebrow">ESP32-S3 · 480 × 272</p><h1 data-i18n="tools.grand-koleos-touch-keyboard.title">그랑 콜레오스 터치 키보드</h1><p data-i18n="tools.grand-koleos-touch-keyboard.lead">차량 화면에 표시할 3×2 터치 버튼을 만들고, 각 버튼에 텐키리스 키보드와 볼륨 미디어 키 조합을 지정합니다.</p></div>
+          <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.eyebrow">ESP32-S3 · 480 × 272</p><h1 data-i18n="tools.grand-koleos-touch-keyboard.title">그랑 콜레오스 터치 키보드</h1><p data-i18n="tools.grand-koleos-touch-keyboard.lead">차량 화면에 표시할 3×2 터치 버튼을 만들고, 각 버튼의 아이콘과 텐키리스·미디어 키 조합을 지정합니다.</p></div>
           <div class="hero-panel"><div class="metric-card"><strong>480×272</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.resolution">ESP32-S3 화면 해상도</span></div><div class="metric-card"><strong>3×2</strong><span data-i18n="tools.grand-koleos-touch-keyboard.metric.buttons">터치 버튼 배열</span></div></div>
         </section>
 
         <section class="tool-process-strip gk-process-strip" aria-label="단축키 설정 순서" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.flowLabel">
           <div><span>1</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow1.title">터치 버튼 선택</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow1.body">아래 480×272 미리보기에서 버튼 선택</small></div>
           <div><span>2</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow2.title">키 조합 지정</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow2.body">텐키리스·볼륨 키에서 원하는 조합 선택</small></div>
-          <div><span>3</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow3.title">미리보기 확인</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow3.body">선택한 조합이 버튼에 즉시 표시</small></div>
+          <div><span>3</span><strong data-i18n="tools.grand-koleos-touch-keyboard.flow3.title">아이콘·미리보기 확인</strong><small data-i18n="tools.grand-koleos-touch-keyboard.flow3.body">버튼별 아이콘과 키 조합을 즉시 확인</small></div>
         </section>
 
         <section class="gk-builder" aria-labelledby="gkBuilderTitle">
@@ -67,13 +67,25 @@
               <div class="gk-page-name-fields" id="gkPageNameFields"></div>
             </div>
             <div class="gk-device-frame"><canvas id="gkPreview" width="480" height="272" role="img" aria-label="480×272 터치키보드 미리보기" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.previewLabel"></canvas></div>
+            <div class="gk-icon-editor" id="gkIconEditor" hidden>
+              <span class="gk-selected-icon" id="gkSelectedIcon" aria-hidden="true"></span>
+              <div><strong data-i18n="tools.grand-koleos-touch-keyboard.iconEditor.title">버튼 이미지</strong><span id="gkSelectedIconName" data-i18n="tools.grand-koleos-touch-keyboard.iconEditor.initial">홈</span></div>
+              <button type="button" class="secondary-link" id="gkChangeIconButton" data-i18n="tools.grand-koleos-touch-keyboard.iconEditor.change">이미지 변경</button>
+            </div>
             <p class="gk-swipe-hint" data-i18n="tools.grand-koleos-touch-keyboard.swipeHint">화면을 좌우로 밀거나 하단의 화살표·페이지 탭을 눌러 이동하세요.</p>
             <div class="gk-assignment-list" id="gkAssignmentList" aria-label="버튼별 키 조합" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.assignmentLabel"></div>
+            <dialog class="gk-icon-dialog" id="gkIconDialog" aria-labelledby="gkIconDialogTitle">
+              <div class="gk-icon-dialog-panel">
+                <div class="gk-icon-dialog-heading"><div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.iconPicker.eyebrow">BUTTON ART</p><h3 id="gkIconDialogTitle" data-i18n="tools.grand-koleos-touch-keyboard.iconPicker.title">아이콘 선택</h3><p data-i18n="tools.grand-koleos-touch-keyboard.iconPicker.body">모든 아이콘은 화면에서 같은 크기로 표시되며, 앱 로고는 가벼운 벡터 일러스트로 제공됩니다.</p></div><button type="button" class="gk-icon-dialog-close" id="gkIconDialogClose" aria-label="아이콘 선택 닫기" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.iconPicker.close">×</button></div>
+                <div class="gk-icon-groups" id="gkIconGroups"></div>
+                <div class="gk-icon-dialog-actions"><button type="button" class="secondary-link" id="gkIconDialogDone" data-i18n="tools.grand-koleos-touch-keyboard.iconPicker.done">선택 완료</button></div>
+              </div>
+            </dialog>
           </section>
 
           <section class="gk-upload-section" id="gkUploadSection" aria-labelledby="gkUploadTitle" data-firmware-manifest="/assets/firmware/grand-koleos-touch-keyboard/manifest.json" data-copy-selected="USB 포트를 선택했습니다." data-copy-cancelled="포트 선택을 취소했거나 연결할 수 없습니다." data-copy-unsupported="이 브라우저는 USB 포트 선택을 지원하지 않습니다. 최신 Chrome 또는 Edge를 사용하세요." data-copy-insecure="USB 포트 선택은 HTTPS 또는 localhost에서만 사용할 수 있습니다." data-i18n-attrs="data-copy-selected:tools.grand-koleos-touch-keyboard.upload.status.selected;data-copy-cancelled:tools.grand-koleos-touch-keyboard.upload.status.cancelled;data-copy-unsupported:tools.grand-koleos-touch-keyboard.upload.status.unsupported;data-copy-insecure:tools.grand-koleos-touch-keyboard.upload.status.insecure">
             <div class="gk-section-heading">
-              <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.upload.eyebrow">BOARD UPLOAD</p><h2 id="gkUploadTitle" data-i18n="tools.grand-koleos-touch-keyboard.upload.title">ESP32-S3 펌웨어 업로드</h2><p data-i18n="tools.grand-koleos-touch-keyboard.upload.body">현재 페이지 이름과 버튼별 키 조합을 SolForge Touch Keyboard 펌웨어와 함께 보드에 직접 적용합니다.</p></div>
+              <div><p class="eyebrow" data-i18n="tools.grand-koleos-touch-keyboard.upload.eyebrow">BOARD UPLOAD</p><h2 id="gkUploadTitle" data-i18n="tools.grand-koleos-touch-keyboard.upload.title">ESP32-S3 펌웨어 업로드</h2><p data-i18n="tools.grand-koleos-touch-keyboard.upload.body">현재 페이지 이름과 버튼별 아이콘·키 조합을 SolForge Touch Keyboard 펌웨어와 함께 보드에 직접 적용합니다.</p></div>
               <span class="gk-board-badge">JC4827W543C</span>
             </div>
             <div class="gk-upload-grid">
@@ -89,13 +101,13 @@
                 <pre class="gk-upload-log" id="gkUploadLog" hidden aria-live="polite"></pre>
               </div>
             </div>
-            <p class="gk-upload-caution" data-i18n="tools.grand-koleos-touch-keyboard.upload.caution">업로드하면 현재 보드의 부트로더·파티션·앱 펌웨어가 교체되고, 현재 페이지 이름과 버튼별 키 조합이 보드에 함께 저장됩니다.</p>
+            <p class="gk-upload-caution" data-i18n="tools.grand-koleos-touch-keyboard.upload.caution">업로드하면 현재 보드의 부트로더·파티션·앱 펌웨어가 교체되고, 현재 페이지 이름과 버튼별 아이콘·키 조합이 보드에 함께 저장됩니다.</p>
           </section>
         </section>
       </main>
     </div>
     <script src="../assets/js/app.js?v=20260803-categories"></script>
     <script src="../assets/vendor/spark-md5-3.0.2.min.js"></script>
-    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260819-config4"></script>
+    <script src="../assets/js/grand-koleos-touch-keyboard.js?v=20260819-icons1"></script>
   </body>
 </html>

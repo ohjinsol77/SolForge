@@ -5633,6 +5633,114 @@ th {
   cursor: grabbing;
 }
 
+.gk-icon-editor {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(100%, 860px);
+  margin: 0.75rem auto 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+
+.gk-icon-editor[hidden] { display: none; }
+
+.gk-selected-icon,
+.gk-icon-choice-preview {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line));
+  border-radius: 10px;
+  background: #111b28;
+}
+
+.gk-selected-icon { width: 48px; height: 48px; }
+
+.gk-selected-icon svg,
+.gk-icon-choice-preview svg {
+  display: block;
+  width: 34px;
+  height: 34px;
+}
+
+.gk-icon-editor > div { display: grid; gap: 0.15rem; }
+.gk-icon-editor strong { color: var(--muted); font-size: 0.7rem; font-weight: 850; }
+.gk-icon-editor > div span { color: var(--text); font-size: 0.88rem; font-weight: 850; }
+
+.gk-icon-dialog {
+  width: min(920px, calc(100% - 2rem));
+  max-height: min(820px, calc(100dvh - 2rem));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 28px 80px rgba(2, 6, 23, 0.48);
+}
+
+.gk-icon-dialog::backdrop { background: rgba(2, 6, 23, 0.72); backdrop-filter: blur(4px); }
+.gk-icon-dialog-panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; max-height: min(820px, calc(100dvh - 2rem)); }
+
+.gk-icon-dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.2rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.gk-icon-dialog-heading h3,
+.gk-icon-dialog-heading p { margin: 0; }
+.gk-icon-dialog-heading h3 { margin-top: 0.15rem; font-size: 1.2rem; }
+.gk-icon-dialog-heading p:last-child { margin-top: 0.35rem; color: var(--muted); font-size: 0.78rem; }
+
+.gk-icon-dialog-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font: 500 1.5rem/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.gk-icon-groups { display: grid; gap: 1.1rem; padding: 1rem 1.2rem 1.25rem; overflow-y: auto; }
+.gk-icon-group { display: grid; gap: 0.55rem; }
+.gk-icon-group > strong { color: var(--muted); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; }
+.gk-icon-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.55rem; }
+
+.gk-icon-choice {
+  display: grid;
+  grid-template-rows: 48px auto;
+  justify-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.55rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.gk-icon-choice:hover { border-color: var(--brand); transform: translateY(-1px); }
+.gk-icon-choice.active { border-color: var(--brand); background: var(--brand-soft); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 18%, transparent); }
+.gk-icon-choice-preview { width: 48px; height: 48px; }
+.gk-icon-choice > span:last-child { overflow-wrap: anywhere; font-size: 0.68rem; font-weight: 800; line-height: 1.25; text-align: center; }
+.gk-icon-dialog-actions { display: flex; justify-content: flex-end; padding: 0.85rem 1.2rem; border-top: 1px solid var(--line); background: var(--surface-soft); }
+
 .gk-swipe-hint {
   width: min(100%, 860px);
   margin: 0.65rem auto 0;
@@ -5839,6 +5947,10 @@ th {
   .gk-page-name-editor {
     grid-template-columns: 1fr;
   }
+
+  .gk-icon-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 520px) {
@@ -5852,6 +5964,24 @@ th {
 
   .gk-assignment-list {
     grid-template-columns: 1fr;
+  }
+
+  .gk-icon-editor {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .gk-icon-editor > button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .gk-icon-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gk-icon-dialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 }
 

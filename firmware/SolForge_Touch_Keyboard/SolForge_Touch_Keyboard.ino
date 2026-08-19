@@ -53,7 +53,7 @@ USBHIDKeyboard Keyboard;
 USBHIDConsumerControl ConsumerControl;
 
 static constexpr uint32_t kConfigMagic = 0x4B474653;
-static constexpr uint16_t kConfigVersion = 1;
+static constexpr uint16_t kConfigVersion = 2;
 static constexpr uint8_t kConfigPageCount = 3;
 static constexpr uint8_t kConfigButtonCount = 6;
 static constexpr uint8_t kConfigKeyCount = 8;
@@ -65,6 +65,7 @@ struct __attribute__((packed)) StoredButtonConfig {
   uint8_t keyCount;
   uint8_t keys[kConfigKeyCount];
   uint16_t consumerUsage;
+  uint8_t iconId;
 };
 
 struct __attribute__((packed)) StoredPageConfig {
@@ -81,9 +82,9 @@ struct __attribute__((packed)) StoredTouchConfig {
   StoredPageConfig pages[kConfigPageCount];
 };
 
-static_assert(sizeof(StoredButtonConfig) == 59, "StoredButtonConfig layout changed");
-static_assert(sizeof(StoredPageConfig) == 394, "StoredPageConfig layout changed");
-static_assert(sizeof(StoredTouchConfig) == 1198, "StoredTouchConfig layout changed");
+static_assert(sizeof(StoredButtonConfig) == 60, "StoredButtonConfig layout changed");
+static_assert(sizeof(StoredPageConfig) == 400, "StoredPageConfig layout changed");
+static_assert(sizeof(StoredTouchConfig) == 1216, "StoredTouchConfig layout changed");
 
 static StoredTouchConfig storedConfig;
 static bool storedConfigValid = false;
@@ -212,6 +213,7 @@ static void loadStoredConfig() {
       StoredButtonConfig &entry = storedConfig.pages[page].buttons[button];
       entry.comboLabel[kConfigComboLabelBytes - 1] = '\0';
       if (entry.keyCount > kConfigKeyCount) entry.keyCount = kConfigKeyCount;
+      if (entry.iconId > 32) entry.iconId = button;
     }
   }
   storedConfigValid = true;
@@ -232,6 +234,13 @@ static const char *configuredComboLabel(uint8_t page, uint8_t button) {
     if (label[0] != '\0') return label;
   }
   return "미설정";
+}
+
+static uint8_t configuredIconId(uint8_t page, uint8_t button) {
+  if (storedConfigValid && page < kConfigPageCount && button < kConfigButtonCount) {
+    return storedConfig.pages[page].buttons[button].iconId;
+  }
+  return button < 6 ? button : 0;
 }
 
 static uint16_t pageBg(uint8_t page) {
@@ -543,42 +552,158 @@ static void drawKeyIcon(int16_t cx, int16_t cy, uint16_t accent, uint16_t fill) 
 }
 
 static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, uint16_t accent, uint16_t fill) {
-  static const uint16_t colors[6] = {
-      rgb565(56, 189, 248), rgb565(251, 92, 124), rgb565(74, 222, 85),
-      rgb565(250, 204, 21), rgb565(166, 109, 244), rgb565(34, 211, 238)};
-  const uint16_t color = colors[index % 6];
-  if (index == 0) {
-    drawThickLine(cx - 10, cy, cx, cy - 9, 3, color);
-    drawThickLine(cx, cy - 9, cx + 10, cy, 3, color);
-    drawThickLine(cx - 7, cy - 2, cx - 7, cy + 9, 3, color);
-    drawThickLine(cx + 7, cy - 2, cx + 7, cy + 9, 3, color);
-    drawThickLine(cx - 7, cy + 9, cx + 7, cy + 9, 3, color);
-  } else if (index == 1) {
-    drawThickLine(cx + 10, cy + 8, cx + 8, cy - 2, 3, color);
-    drawThickLine(cx + 8, cy - 2, cx - 6, cy - 4, 3, color);
-    drawThickLine(cx - 6, cy - 4, cx, cy - 10, 3, color);
-    drawThickLine(cx - 6, cy - 4, cx, cy + 2, 3, color);
-  } else if (index == 2) {
-    for (int8_t offset = -7; offset <= 7; offset += 7) {
-      drawThickLine(cx - 10, cy + offset, cx + 10, cy + offset, 3, color);
-    }
-  } else if (index == 3) {
-    const int8_t px[10] = {0, 3, 10, 5, 7, 0, -7, -5, -10, -3};
-    const int8_t py[10] = {-11, -4, -3, 2, 9, 5, 9, 2, -3, -4};
+  (void)page;
+  const uint8_t icon = configuredIconId(page, index);
+  const uint16_t white = rgb565(232, 241, 251);
+  const uint16_t red = rgb565(255, 0, 51);
+  const uint16_t yellow = rgb565(250, 204, 21);
+
+  if (icon == 0) {  // Home
+    gfx->fillTriangle(cx - 12, cy, cx, cy - 11, cx + 12, cy, accent);
+    gfx->drawRoundRect(cx - 9, cy, 18, 11, 2, accent);
+    gfx->fillRect(cx - 2, cy + 5, 5, 6, accent);
+  } else if (icon == 1 || icon == 6) {  // Back / forward
+    const int8_t dir = icon == 6 ? 1 : -1;
+    drawThickLine(cx - (dir * 10), cy, cx + (dir * 9), cy, 3, accent);
+    drawThickLine(cx - (dir * 10), cy, cx - (dir * 2), cy - 8, 3, accent);
+    drawThickLine(cx - (dir * 10), cy, cx - (dir * 2), cy + 8, 3, accent);
+  } else if (icon == 2) {  // Menu
+    for (int8_t offset = -8; offset <= 8; offset += 8) drawThickLine(cx - 11, cy + offset, cx + 11, cy + offset, 3, accent);
+  } else if (icon == 3) {  // Favorite
+    const int8_t px[10] = {0, 3, 11, 5, 7, 0, -7, -5, -11, -3};
+    const int8_t py[10] = {-12, -4, -3, 2, 10, 6, 10, 2, -3, -4};
     for (uint8_t point = 0; point < 10; ++point) {
       const uint8_t next = (point + 1) % 10;
-      drawThickLine(cx + px[point], cy + py[point], cx + px[next], cy + py[next], 2, color);
+      drawThickLine(cx + px[point], cy + py[point], cx + px[next], cy + py[next], 2, accent);
     }
-  } else if (index == 4) {
-    gfx->drawRoundRect(cx - 5, cy - 10, 10, 16, 5, color);
-    gfx->drawCircle(cx, cy - 1, 10, color);
-    gfx->fillRect(cx - 3, cy - 12, 7, 6, fill);
-    drawThickLine(cx, cy + 9, cx, cy + 13, 2, color);
-    drawThickLine(cx - 5, cy + 13, cx + 5, cy + 13, 2, color);
-  } else {
-    gfx->drawCircle(cx, cy + 1, 10, color);
-    gfx->fillRect(cx - 4, cy - 12, 9, 6, fill);
-    drawThickLine(cx, cy - 12, cx, cy + 1, 3, color);
+  } else if (icon == 4) {  // Voice
+    gfx->drawRoundRect(cx - 5, cy - 11, 10, 17, 5, accent);
+    gfx->drawCircle(cx, cy - 1, 11, accent);
+    gfx->fillRect(cx - 7, cy - 13, 15, 9, fill);
+    drawThickLine(cx, cy + 9, cx, cy + 13, 2, accent);
+    drawThickLine(cx - 5, cy + 13, cx + 5, cy + 13, 2, accent);
+  } else if (icon == 5) {  // Power
+    gfx->drawCircle(cx, cy + 1, 11, accent);
+    gfx->fillRect(cx - 4, cy - 13, 9, 7, fill);
+    drawThickLine(cx, cy - 12, cx, cy + 1, 3, accent);
+  } else if (icon == 7) {  // Navigation
+    gfx->drawCircle(cx, cy, 13, accent);
+    gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx + 4, cy + 5, accent);
+    gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx - 1, cy - 4, white);
+  } else if (icon == 8) {  // TMAP
+    gfx->fillRoundRect(cx - 15, cy - 15, 30, 30, 8, rgb565(237, 23, 76));
+    gfx->fillRect(cx - 9, cy - 8, 18, 5, white);
+    gfx->fillRect(cx - 2, cy - 7, 5, 18, white);
+    drawThickLine(cx + 6, cy - 12, cx + 11, cy - 8, 2, white);
+    drawThickLine(cx + 11, cy - 8, cx + 6, cy - 4, 2, white);
+  } else if (icon == 9) {  // YouTube
+    gfx->fillRoundRect(cx - 17, cy - 11, 34, 22, 6, red);
+    gfx->fillTriangle(cx - 4, cy - 7, cx - 4, cy + 7, cx + 8, cy, white);
+  } else if (icon == 10) {  // Chrome
+    const uint16_t chromeRed = rgb565(234, 67, 53);
+    const uint16_t chromeYellow = rgb565(251, 188, 5);
+    const uint16_t chromeGreen = rgb565(52, 168, 83);
+    const uint16_t chromeBlue = rgb565(66, 133, 244);
+    gfx->fillCircle(cx, cy, 15, chromeRed);
+    gfx->fillTriangle(cx, cy, cx + 15, cy - 2, cx + 7, cy + 13, chromeYellow);
+    gfx->fillTriangle(cx, cy, cx - 13, cy + 8, cx - 7, cy - 13, chromeGreen);
+    gfx->fillCircle(cx, cy, 8, white);
+    gfx->fillCircle(cx, cy, 6, chromeBlue);
+  } else if (icon >= 11 && icon <= 13) {  // Volume
+    gfx->fillRect(cx - 13, cy - 5, 7, 10, accent);
+    gfx->fillTriangle(cx - 7, cy - 5, cx + 2, cy - 12, cx + 2, cy + 12, accent);
+    if (icon == 13) {
+      drawThickLine(cx + 7, cy - 7, cx + 14, cy + 7, 2, accent);
+      drawThickLine(cx + 14, cy - 7, cx + 7, cy + 7, 2, accent);
+    } else {
+      gfx->drawCircle(cx + 3, cy, 9, accent);
+      gfx->fillRect(cx - 1, cy - 12, 8, 24, fill);
+      if (icon == 11) {
+        gfx->drawCircle(cx + 3, cy, 14, accent);
+        gfx->fillRect(cx - 2, cy - 16, 8, 32, fill);
+      }
+    }
+  } else if (icon == 14) {  // Fullscreen
+    drawThickLine(cx - 13, cy - 12, cx - 4, cy - 12, 2, accent); drawThickLine(cx - 13, cy - 12, cx - 13, cy - 3, 2, accent);
+    drawThickLine(cx + 13, cy - 12, cx + 4, cy - 12, 2, accent); drawThickLine(cx + 13, cy - 12, cx + 13, cy - 3, 2, accent);
+    drawThickLine(cx - 13, cy + 12, cx - 4, cy + 12, 2, accent); drawThickLine(cx - 13, cy + 12, cx - 13, cy + 3, 2, accent);
+    drawThickLine(cx + 13, cy + 12, cx + 4, cy + 12, 2, accent); drawThickLine(cx + 13, cy + 12, cx + 13, cy + 3, 2, accent);
+  } else if (icon == 15 || icon == 16) {  // 10-second seek
+    const int8_t dir = icon == 15 ? 1 : -1;
+    gfx->drawCircle(cx, cy, 13, accent);
+    gfx->fillRect(cx - 15, cy - 14, 9, 8, fill);
+    drawThickLine(cx + (dir * 13), cy - 8, cx + (dir * 13), cy - 14, 2, accent);
+    drawThickLine(cx + (dir * 13), cy - 14, cx + (dir * 7), cy - 12, 2, accent);
+    drawCenteredBuiltInText(cx - 10, cy - 7, 20, 15, "10", 1, white, fill);
+  } else if (icon == 17) {  // Play / pause
+    gfx->fillTriangle(cx - 13, cy - 11, cx - 13, cy + 11, cx + 1, cy, accent);
+    gfx->fillRect(cx + 5, cy - 11, 4, 22, accent);
+    gfx->fillRect(cx + 12, cy - 11, 4, 22, accent);
+  } else if (icon == 18 || icon == 19) {  // Previous / next track
+    const int8_t dir = icon == 19 ? 1 : -1;
+    gfx->fillRect(cx + (dir * 11) - 2, cy - 11, 4, 22, accent);
+    gfx->fillTriangle(cx - (dir * 10), cy - 11, cx - (dir * 10), cy + 11, cx + (dir * 8), cy, accent);
+  } else if (icon == 20) {  // Notification
+    gfx->fillCircle(cx, cy + 11, 4, accent);
+    gfx->fillRoundRect(cx - 11, cy - 10, 22, 19, 10, accent);
+    gfx->fillRect(cx - 14, cy + 5, 28, 5, accent);
+    gfx->fillRoundRect(cx - 7, cy - 6, 14, 13, 6, fill);
+  } else if (icon >= 21 && icon <= 24) {  // Direction arrows
+    if (icon == 21 || icon == 22) {
+      const int8_t dir = icon == 22 ? 1 : -1;
+      drawThickLine(cx, cy - (dir * 11), cx, cy + (dir * 11), 3, accent);
+      drawThickLine(cx, cy + (dir * 11), cx - 8, cy + (dir * 3), 3, accent);
+      drawThickLine(cx, cy + (dir * 11), cx + 8, cy + (dir * 3), 3, accent);
+    } else {
+      const int8_t dir = icon == 24 ? 1 : -1;
+      drawThickLine(cx - (dir * 11), cy, cx + (dir * 11), cy, 3, accent);
+      drawThickLine(cx + (dir * 11), cy, cx + (dir * 3), cy - 8, 3, accent);
+      drawThickLine(cx + (dir * 11), cy, cx + (dir * 3), cy + 8, 3, accent);
+    }
+  } else if (icon == 25) {  // Music
+    drawThickLine(cx - 3, cy - 11, cx + 11, cy - 14, 2, accent);
+    drawThickLine(cx - 3, cy - 11, cx - 3, cy + 8, 2, accent);
+    drawThickLine(cx + 11, cy - 14, cx + 11, cy + 5, 2, accent);
+    gfx->fillCircle(cx - 8, cy + 9, 5, accent);
+    gfx->fillCircle(cx + 6, cy + 6, 5, accent);
+  } else if (icon == 26) {  // Settings
+    gfx->drawCircle(cx, cy, 12, accent); gfx->drawCircle(cx, cy, 5, accent);
+    for (uint8_t spoke = 0; spoke < 4; ++spoke) {
+      const int8_t dx = spoke % 2 == 0 ? 14 : 0;
+      const int8_t dy = spoke % 2 == 1 ? 14 : 0;
+      drawThickLine(cx - dx, cy - dy, cx + dx, cy + dy, 2, accent);
+    }
+  } else if (icon == 27) {  // Phone
+    drawThickLine(cx - 10, cy - 12, cx - 5, cy + 2, 4, accent);
+    drawThickLine(cx - 5, cy + 2, cx + 8, cy + 11, 4, accent);
+    drawThickLine(cx - 10, cy - 12, cx - 4, cy - 8, 5, accent);
+    drawThickLine(cx + 8, cy + 11, cx + 13, cy + 5, 5, accent);
+  } else if (icon == 28) {  // Car
+    gfx->drawRoundRect(cx - 14, cy - 3, 28, 13, 4, accent);
+    drawThickLine(cx - 10, cy - 3, cx - 6, cy - 10, 2, accent);
+    drawThickLine(cx - 6, cy - 10, cx + 7, cy - 10, 2, accent);
+    drawThickLine(cx + 7, cy - 10, cx + 11, cy - 3, 2, accent);
+    gfx->fillCircle(cx - 8, cy + 10, 3, accent); gfx->fillCircle(cx + 8, cy + 10, 3, accent);
+  } else if (icon == 29) {  // Brightness
+    gfx->fillCircle(cx, cy, 6, yellow);
+    for (uint8_t ray = 0; ray < 4; ++ray) {
+      const int8_t dx = ray % 2 == 0 ? 13 : 0;
+      const int8_t dy = ray % 2 == 1 ? 13 : 0;
+      drawThickLine(cx - dx, cy - dy, cx - (dx / 2), cy - (dy / 2), 2, yellow);
+      drawThickLine(cx + (dx / 2), cy + (dy / 2), cx + dx, cy + dy, 2, yellow);
+    }
+  } else if (icon == 30) {  // Bluetooth
+    drawThickLine(cx, cy - 14, cx, cy + 14, 2, accent);
+    drawThickLine(cx, cy - 14, cx + 9, cy - 6, 2, accent); drawThickLine(cx + 9, cy - 6, cx - 7, cy + 8, 2, accent);
+    drawThickLine(cx - 7, cy - 8, cx + 9, cy + 6, 2, accent); drawThickLine(cx + 9, cy + 6, cx, cy + 14, 2, accent);
+  } else if (icon == 31) {  // Wi-Fi
+    gfx->drawCircle(cx, cy + 11, 3, accent);
+    gfx->drawCircle(cx, cy + 9, 10, accent); gfx->fillRect(cx - 12, cy - 3, 24, 13, fill);
+    gfx->drawCircle(cx, cy + 7, 17, accent); gfx->fillRect(cx - 19, cy - 10, 38, 17, fill);
+  } else {  // Camera
+    gfx->drawRoundRect(cx - 14, cy - 9, 28, 20, 3, accent);
+    gfx->fillRect(cx - 6, cy - 13, 12, 5, accent);
+    gfx->drawCircle(cx, cy + 1, 7, accent);
   }
 }
 

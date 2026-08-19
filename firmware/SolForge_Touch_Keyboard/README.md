@@ -35,7 +35,7 @@ The generated bootloader, partition table, boot app, and app binaries are publis
 The SolForge page generates a 4 KB settings image and writes it to the start of the `spiffs` partition at `0x310000`. The packed settings contain:
 
 - three UTF-8 page names;
-- the display label and keyboard codes for all 18 buttons;
+- the display label, selected icon ID, and keyboard codes for all 18 buttons;
 - one optional consumer-control usage per button for mute and volume controls;
 - an FNV-1a checksum checked by the firmware during startup.
 

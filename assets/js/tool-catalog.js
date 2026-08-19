@@ -72,7 +72,7 @@
     ["developer", "DB", "MySQL 버전별 설정·변수 비교", "버전별 서버 옵션과 시스템 변수의 추가·삭제·변경을 나란히 비교합니다.", "mysql version parameter variable compare mysqld system status 설정 변수 파라미터 비교", "mysql-parameter-compare"],
     tempDbTool,
     ["developer", "npm", "npm 패키지 정보 조회", "npm Registry와 jsDelivr API로 설치, 의존성, CDN 정보를 확인합니다.", "npm package registry jsdelivr cdn dependencies downloads", "npm-package-info"],
-    ["vehicle", "CAR", "그랑 콜레오스 터치 키보드", "480×272 화면의 3×2 터치 버튼에 텐키리스·볼륨 키 조합을 지정하고 미리 봅니다.", "그랑 콜레오스 그랑콜레오스 grand koleos 차량 터치 키보드 esp32 볼륨", "grand-koleos-touch-keyboard"],
+    ["vehicle", "CAR", "그랑 콜레오스 터치 키보드", "480×272 터치 버튼에 아이콘과 키 조합을 지정하고 ESP32-S3 보드에 직접 적용합니다.", "그랑 콜레오스 그랑콜레오스 grand koleos 차량 터치 키보드 esp32 아이콘 볼륨 펌웨어", "grand-koleos-touch-keyboard"],
     ["age", "BDAY", "나와 생일이 같은 유명인", "월과 일을 선택해 같은 날 태어난 대한민국 유명인과 연예인을 최대 50명 찾습니다.", "생일 같은 유명인 연예인 배우 가수 아이돌 wikidata", "birthday-celebrities"],
     ["age", "만", "나이·만나이 계산기", "만 나이, 세는 나이, 연 나이와 성년 여부를 계산합니다.", "나이 만나이 세는나이 생년월일", "../calculators/all#age-calculator"],
     ["age", "표", "연도별 나이표", "출생연도별 나이와 전통적인 나이 용어를 확인합니다.", "나이표 환갑 칠순 출생연도", "../calculators/all#age-table"],

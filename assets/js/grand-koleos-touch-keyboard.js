@@ -11,7 +11,7 @@
     assigned: "assigned to",
     removed: "removed from",
     cleared: "Shortcut cleared for",
-    clearedAll: "All button shortcuts have been reset.",
+    clearedAll: "All button shortcuts and images have been reset.",
     unset: "Not assigned",
     touchTitle: "TOUCH KEYBOARD",
     page: "PAGE",
@@ -20,9 +20,12 @@
     volumeMute: "Mute",
     volumeDown: "Volume −",
     volumeUp: "Volume +",
+    changeIcon: "Change image",
+    iconChanged: "image changed to",
+    iconGroups: { basic: "Basic", app: "Apps", media: "Media", direction: "Directions", device: "Device" },
     pageName: (index) => `Page ${index + 1} name`,
     cardNames: ["Home", "Back", "Menu", "Favorites", "Voice", "Power"],
-    configCreating: "Creating board settings from the current page names and shortcuts...",
+    configCreating: "Creating board settings from the current page names, icons, and shortcuts...",
     firmwareLoading: "Loading the firmware package...",
     firmwareValidating: "Validating firmware files and board settings...",
     firmwareResetting: "Restarting the USB CDC device in bootloader mode...",
@@ -48,7 +51,7 @@
     assigned: "에 할당됨",
     removed: "에서 해제됨",
     cleared: "의 키 조합을 지웠습니다.",
-    clearedAll: "모든 버튼의 키 조합을 초기화했습니다.",
+    clearedAll: "모든 버튼의 키 조합과 이미지를 초기화했습니다.",
     unset: "미설정",
     touchTitle: "터치 키보드",
     page: "페이지",
@@ -57,9 +60,12 @@
     volumeMute: "음소거",
     volumeDown: "볼륨 −",
     volumeUp: "볼륨 +",
+    changeIcon: "이미지 변경",
+    iconChanged: "이미지를 다음으로 변경했습니다:",
+    iconGroups: { basic: "기본", app: "앱", media: "미디어", direction: "방향", device: "기기" },
     pageName: (index) => `${index + 1}페이지 이름`,
     cardNames: ["홈", "이전", "메뉴", "즐겨찾기", "음성", "전원"],
-    configCreating: "현재 페이지 이름과 키 조합으로 보드 설정을 만들고 있습니다...",
+    configCreating: "현재 페이지 이름과 버튼별 아이콘·키 조합으로 보드 설정을 만들고 있습니다...",
     firmwareLoading: "펌웨어 패키지를 불러오고 있습니다...",
     firmwareValidating: "펌웨어 파일과 보드 설정을 검증하고 있습니다...",
     firmwareResetting: "USB CDC 장치를 부트로더 모드로 다시 시작하고 있습니다...",
@@ -79,6 +85,100 @@
     tooManyKeys: "버튼 하나에는 일반 키 6개, 전체 키보드 항목 8개까지 지정할 수 있습니다.",
     tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다."
   };
+
+  const iconCatalog = [
+    { id: "home", code: 0, group: "basic", ko: "홈", en: "Home" },
+    { id: "back", code: 1, group: "basic", ko: "뒤로가기", en: "Back" },
+    { id: "menu", code: 2, group: "basic", ko: "메뉴", en: "Menu" },
+    { id: "favorite", code: 3, group: "basic", ko: "즐겨찾기", en: "Favorite" },
+    { id: "voice", code: 4, group: "basic", ko: "음성", en: "Voice" },
+    { id: "power", code: 5, group: "basic", ko: "전원", en: "Power" },
+    { id: "forward", code: 6, group: "basic", ko: "앞으로가기", en: "Forward" },
+    { id: "navigation", code: 7, group: "app", ko: "네비게이션", en: "Navigation" },
+    { id: "tmap", code: 8, group: "app", ko: "티맵", en: "TMAP" },
+    { id: "youtube", code: 9, group: "app", ko: "유튜브", en: "YouTube" },
+    { id: "chrome", code: 10, group: "app", ko: "크롬", en: "Chrome" },
+    { id: "volume-up", code: 11, group: "media", ko: "볼륨 키우기", en: "Volume up" },
+    { id: "volume-down", code: 12, group: "media", ko: "볼륨 줄이기", en: "Volume down" },
+    { id: "mute", code: 13, group: "media", ko: "음소거", en: "Mute" },
+    { id: "fullscreen", code: 14, group: "media", ko: "전체화면", en: "Fullscreen" },
+    { id: "forward-10", code: 15, group: "media", ko: "10초 앞으로", en: "Forward 10 seconds" },
+    { id: "replay-10", code: 16, group: "media", ko: "10초 뒤로", en: "Back 10 seconds" },
+    { id: "play-pause", code: 17, group: "media", ko: "재생/정지", en: "Play / pause" },
+    { id: "previous-track", code: 18, group: "media", ko: "이전곡", en: "Previous track" },
+    { id: "next-track", code: 19, group: "media", ko: "다음곡", en: "Next track" },
+    { id: "notification", code: 20, group: "device", ko: "알림", en: "Notification" },
+    { id: "arrow-up", code: 21, group: "direction", ko: "방향키 위", en: "Arrow up" },
+    { id: "arrow-down", code: 22, group: "direction", ko: "방향키 아래", en: "Arrow down" },
+    { id: "arrow-left", code: 23, group: "direction", ko: "방향키 왼쪽", en: "Arrow left" },
+    { id: "arrow-right", code: 24, group: "direction", ko: "방향키 오른쪽", en: "Arrow right" },
+    { id: "music", code: 25, group: "media", ko: "음표", en: "Music" },
+    { id: "settings", code: 26, group: "device", ko: "설정", en: "Settings" },
+    { id: "phone", code: 27, group: "device", ko: "전화", en: "Phone" },
+    { id: "car", code: 28, group: "device", ko: "자동차", en: "Car" },
+    { id: "brightness", code: 29, group: "device", ko: "화면 밝기", en: "Brightness" },
+    { id: "bluetooth", code: 30, group: "device", ko: "블루투스", en: "Bluetooth" },
+    { id: "wifi", code: 31, group: "device", ko: "와이파이", en: "Wi-Fi" },
+    { id: "camera", code: 32, group: "device", ko: "카메라", en: "Camera" }
+  ];
+  const iconById = new Map(iconCatalog.map((icon) => [icon.id, icon]));
+  const defaultIconIds = ["home", "back", "menu", "favorite", "voice", "power"];
+  const iconLabel = (iconId) => {
+    const icon = iconById.get(iconId) || iconCatalog[0];
+    return lang === "en" ? icon.en : icon.ko;
+  };
+
+  function iconSvg(iconId) {
+    const stroke = 'fill="none" stroke="#e8f1fb" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"';
+    const icons = {
+      home: `<path ${stroke} d="M8 22 24 8l16 14M12 20v19h24V20M20 39V28h8v11"/>`,
+      back: `<path ${stroke} d="M20 12 8 24l12 12M10 24h17c8 0 13 5 13 13"/>`,
+      menu: `<path ${stroke} d="M10 14h28M10 24h28M10 34h28"/>`,
+      favorite: `<path ${stroke} d="m24 7 5.2 10.5 11.6 1.7-8.4 8.2 2 11.6L24 33.5 13.6 39l2-11.6-8.4-8.2 11.6-1.7Z"/>`,
+      voice: `<rect x="18" y="7" width="12" height="23" rx="6" ${stroke}/><path ${stroke} d="M12 23a12 12 0 0 0 24 0M24 35v7M18 42h12"/>`,
+      power: `<path ${stroke} d="M24 6v17M15 11a17 17 0 1 0 18 0"/>`,
+      forward: `<path ${stroke} d="m28 12 12 12-12 12M38 24H21c-8 0-13 5-13 13"/>`,
+      navigation: `<circle cx="24" cy="24" r="18" ${stroke}/><path d="m32.5 14-6 15-11 5 6-15Z" fill="#38bdf8" stroke="#e8f1fb" stroke-width="2" stroke-linejoin="round"/>`,
+      tmap: `<defs><linearGradient id="tm" x1="8" y1="7" x2="40" y2="41"><stop stop-color="#ff6b45"/><stop offset="1" stop-color="#ed174c"/></linearGradient></defs><rect x="5" y="5" width="38" height="38" rx="11" fill="url(#tm)"/><path d="M14 14h20v6h-7v16h-6V20h-7Z" fill="white"/><path d="m29 10 6 5-6 5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+      youtube: `<rect x="4" y="10" width="40" height="28" rx="8" fill="#ff0033"/><path d="m21 18 11 6-11 6Z" fill="white"/>`,
+      chrome: `<circle cx="24" cy="24" r="20" fill="#fff"/><path d="M24 24 12.5 4.2A20 20 0 0 1 43 17H24Z" fill="#ea4335"/><path d="M24 24h19A20 20 0 0 1 18 43l6-19Z" fill="#34a853"/><path d="m24 24-6 19A20 20 0 0 1 12.5 4.2Z" fill="#fbbc05"/><circle cx="24" cy="24" r="9" fill="#4285f4" stroke="white" stroke-width="2"/>`,
+      "volume-up": `<path ${stroke} d="M8 20h8l10-9v26l-10-9H8Zm24-2a9 9 0 0 1 0 12M36 13a16 16 0 0 1 0 22"/>`,
+      "volume-down": `<path ${stroke} d="M8 20h8l10-9v26l-10-9H8Zm24-2a9 9 0 0 1 0 12"/>`,
+      mute: `<path ${stroke} d="M7 20h8l10-9v26l-10-9H7Zm24-3 10 14M41 17 31 31"/>`,
+      fullscreen: `<path ${stroke} d="M18 8H8v10M30 8h10v10M40 30v10H30M18 40H8V30"/>`,
+      "forward-10": `<path ${stroke} d="m33 12 7 2-2-7M39 14A18 18 0 1 0 42 30"/><text x="24" y="31" fill="#e8f1fb" font-size="15" font-weight="800" text-anchor="middle">10</text>`,
+      "replay-10": `<path ${stroke} d="m15 12-7 2 2-7M9 14A18 18 0 1 1 6 30"/><text x="24" y="31" fill="#e8f1fb" font-size="15" font-weight="800" text-anchor="middle">10</text>`,
+      "play-pause": `<path d="m8 10 16 14L8 38Z" fill="#e8f1fb"/><rect x="29" y="10" width="5" height="28" rx="2" fill="#e8f1fb"/><rect x="38" y="10" width="5" height="28" rx="2" fill="#e8f1fb"/>`,
+      "previous-track": `<rect x="8" y="10" width="4" height="28" rx="2" fill="#e8f1fb"/><path d="m38 10-22 14 22 14Z" fill="#e8f1fb"/>`,
+      "next-track": `<path d="m10 10 22 14-22 14Z" fill="#e8f1fb"/><rect x="36" y="10" width="4" height="28" rx="2" fill="#e8f1fb"/>`,
+      notification: `<path ${stroke} d="M12 34h24l-3-5V20a9 9 0 0 0-18 0v9Zm8 5a5 5 0 0 0 8 0"/>`,
+      "arrow-up": `<path ${stroke} d="m10 28 14-14 14 14M24 15v25"/>`,
+      "arrow-down": `<path ${stroke} d="m10 20 14 14 14-14M24 33V8"/>`,
+      "arrow-left": `<path ${stroke} d="M28 10 14 24l14 14M15 24h25"/>`,
+      "arrow-right": `<path ${stroke} d="m20 10 14 14-14 14M33 24H8"/>`,
+      music: `<path ${stroke} d="M20 35V13l19-4v22M20 17l19-4"/><ellipse cx="14" cy="36" rx="7" ry="5" fill="#e8f1fb"/><ellipse cx="33" cy="32" rx="7" ry="5" fill="#e8f1fb"/>`,
+      settings: `<path ${stroke} d="M24 7v5M24 36v5M7 24h5M36 24h5M12 12l4 4M32 32l4 4M36 12l-4 4M16 32l-4 4"/><circle cx="24" cy="24" r="10" ${stroke}/><circle cx="24" cy="24" r="4" fill="#e8f1fb"/>`,
+      phone: `<path ${stroke} d="M14 8 8 13c2 15 12 25 27 27l5-6-9-6-4 5c-6-3-9-6-12-12l5-4Z"/>`,
+      car: `<path ${stroke} d="m9 29 3-11h24l3 11M7 29h34v9H7Zm7 9v4M34 38v4M13 33h3M32 33h3"/>`,
+      brightness: `<circle cx="24" cy="24" r="8" fill="#facc15"/><path ${stroke} d="M24 5v6M24 37v6M5 24h6M37 24h6M11 11l4 4M33 33l4 4M37 11l-4 4M15 33l-4 4"/>`,
+      bluetooth: `<path ${stroke} d="M24 6v36l12-10-24-16 24 20-12 6"/>`,
+      wifi: `<path ${stroke} d="M7 18a26 26 0 0 1 34 0M13 25a17 17 0 0 1 22 0M19 32a8 8 0 0 1 10 0"/><circle cx="24" cy="39" r="3" fill="#e8f1fb"/>`,
+      camera: `<path ${stroke} d="M8 16h9l3-5h8l3 5h9v24H8Z"/><circle cx="24" cy="28" r="8" ${stroke}/>`
+    };
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true" focusable="false">${icons[iconId] || icons.home}</svg>`;
+  }
+
+  const canvasIconImages = new Map();
+  function drawCanvasIcon(iconId, centerX, centerY, size = 30) {
+    let image = canvasIconImages.get(iconId);
+    if (!image) {
+      image = new Image();
+      image.addEventListener("load", () => renderPreview(), { once: true });
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconSvg(iconId))}`;
+      canvasIconImages.set(iconId, image);
+    }
+    if (image.complete && image.naturalWidth) context.drawImage(image, centerX - size / 2, centerY - size / 2, size, size);
+  }
 
   const key = (id, label = id, units = 1, kind = "standard", comboLabel = id) => ({ id, label, units, kind, comboLabel });
   const gap = (units = 0.45) => ({ gap: true, units });
@@ -115,7 +215,8 @@
 
   const pageStates = Array.from({ length: 3 }, (_value, index) => ({
     name: lang === "en" ? `Page ${index + 1}` : `${index + 1} 페이지`,
-    assignments: Array.from({ length: 6 }, () => [])
+    assignments: Array.from({ length: 6 }, () => []),
+    icons: defaultIconIds.slice()
   }));
   const buttonBoxes = [];
   const navigationBoxes = [];
@@ -132,6 +233,14 @@
   const status = document.querySelector("#gkStatus");
   const assignmentList = document.querySelector("#gkAssignmentList");
   const pageNameFields = document.querySelector("#gkPageNameFields");
+  const iconEditor = document.querySelector("#gkIconEditor");
+  const selectedIcon = document.querySelector("#gkSelectedIcon");
+  const selectedIconName = document.querySelector("#gkSelectedIconName");
+  const changeIconButton = document.querySelector("#gkChangeIconButton");
+  const iconDialog = document.querySelector("#gkIconDialog");
+  const iconGroups = document.querySelector("#gkIconGroups");
+  const iconDialogClose = document.querySelector("#gkIconDialogClose");
+  const iconDialogDone = document.querySelector("#gkIconDialogDone");
   const uploadSection = document.querySelector("#gkUploadSection");
   const portButton = document.querySelector("#gkPortButton");
   const uploadButton = document.querySelector("#gkUploadButton");
@@ -147,6 +256,10 @@
 
   function currentAssignments() {
     return pageStates[activePage].assignments;
+  }
+
+  function currentIcons() {
+    return pageStates[activePage].icons;
   }
 
   function defaultPageName(index) {
@@ -197,8 +310,9 @@
     renderAll();
   }
 
-  function selectButton(index) {
+  function selectButton(index, revealIconEditor = true) {
     activeButton = index;
+    if (revealIconEditor) iconEditor.hidden = false;
     status.textContent = `${buttonText(index)} ${copy.selected}`;
     renderAll();
   }
@@ -219,6 +333,53 @@
       button.addEventListener("click", () => selectButton(Number(button.dataset.gkButton)));
     });
   }
+
+  function syncIconEditor() {
+    const iconId = currentIcons()[activeButton];
+    selectedIcon.innerHTML = iconSvg(iconId);
+    selectedIconName.textContent = iconLabel(iconId);
+    changeIconButton.setAttribute("aria-label", `${buttonText(activeButton)} · ${copy.changeIcon}`);
+  }
+
+  function renderIconPicker() {
+    const selectedId = currentIcons()[activeButton];
+    const groupOrder = ["basic", "app", "media", "direction", "device"];
+    iconGroups.innerHTML = groupOrder.map((group) => {
+      const choices = iconCatalog.filter((icon) => icon.group === group).map((icon) => {
+        const label = iconLabel(icon.id);
+        const active = icon.id === selectedId;
+        return `<button type="button" class="gk-icon-choice${active ? " active" : ""}" data-gk-icon="${escapeHtml(icon.id)}" aria-label="${escapeHtml(label)}" aria-pressed="${active}"><span class="gk-icon-choice-preview" aria-hidden="true">${iconSvg(icon.id)}</span><span>${escapeHtml(label)}</span></button>`;
+      }).join("");
+      return `<section class="gk-icon-group"><strong>${escapeHtml(copy.iconGroups[group])}</strong><div class="gk-icon-grid">${choices}</div></section>`;
+    }).join("");
+    iconGroups.querySelectorAll("[data-gk-icon]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const iconId = button.dataset.gkIcon;
+        currentIcons()[activeButton] = iconId;
+        status.textContent = `${buttonText(activeButton)} · ${copy.iconChanged} ${iconLabel(iconId)}`;
+        renderAll();
+        renderIconPicker();
+      });
+    });
+  }
+
+  function openIconPicker() {
+    renderIconPicker();
+    if (typeof iconDialog.showModal === "function") iconDialog.showModal();
+    else iconDialog.setAttribute("open", "");
+  }
+
+  function closeIconPicker() {
+    if (typeof iconDialog.close === "function") iconDialog.close();
+    else iconDialog.removeAttribute("open");
+  }
+
+  changeIconButton.addEventListener("click", openIconPicker);
+  iconDialogClose.addEventListener("click", closeIconPicker);
+  iconDialogDone.addEventListener("click", closeIconPicker);
+  iconDialog.addEventListener("click", (event) => {
+    if (event.target === iconDialog) closeIconPicker();
+  });
 
   function renderPageNameFields() {
     pageNameFields.innerHTML = pageStates.map((page, index) => `<label class="gk-page-name-field${index === activePage ? " active" : ""}" data-gk-page-field="${index}"><span>${escapeHtml(copy.pageName(index))}</span><input type="text" maxlength="12" value="${escapeHtml(page.name)}" data-gk-page-name="${index}" autocomplete="off"></label>`).join("");
@@ -381,7 +542,7 @@
       context.strokeStyle = isActive ? "#38bdf8" : "#475569";
       context.stroke();
 
-      drawTouchIcon(index, x + buttonWidth / 2, y + 21, iconColors[index]);
+      drawCanvasIcon(currentIcons()[index], x + buttonWidth / 2, y + 21, 30);
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillStyle = "#f8fafc";
@@ -425,6 +586,7 @@
     syncKeyboardState();
     syncPageNameFields();
     renderAssignmentSummary();
+    syncIconEditor();
     renderPreview();
   }
 
@@ -568,7 +730,10 @@
   });
 
   document.querySelector("#gkClearAll").addEventListener("click", () => {
-    pageStates.forEach((page) => page.assignments.forEach((keys) => keys.splice(0)));
+    pageStates.forEach((page) => {
+      page.assignments.forEach((keys) => keys.splice(0));
+      page.icons = defaultIconIds.slice();
+    });
     status.textContent = copy.clearedAll;
     renderAll();
   });
@@ -635,13 +800,13 @@
     const pageNameBytes = 40;
     const comboLabelBytes = 48;
     const storedKeyCount = 8;
-    const buttonBytes = comboLabelBytes + 1 + storedKeyCount + 2;
+    const buttonBytes = comboLabelBytes + 1 + storedKeyCount + 2 + 1;
     const pageBytes = pageNameBytes + (6 * buttonBytes);
     const payloadSize = 3 * pageBytes;
     const config = new Uint8Array(4096);
     const view = new DataView(config.buffer);
     view.setUint32(0, 0x4B474653, true);
-    view.setUint16(4, 1, true);
+    view.setUint16(4, 2, true);
     view.setUint16(6, payloadSize, true);
     view.setUint32(12, 0, true);
 
@@ -667,6 +832,7 @@
         config[buttonOffset + comboLabelBytes] = keys.length;
         keys.forEach((code, index) => { config[buttonOffset + comboLabelBytes + 1 + index] = code; });
         view.setUint16(buttonOffset + comboLabelBytes + 1 + storedKeyCount, media[0] || 0, true);
+        config[buttonOffset + comboLabelBytes + 1 + storedKeyCount + 2] = iconById.get(page.icons[buttonIndex])?.code || 0;
         buttonOffset += buttonBytes;
       });
       pageOffset += pageBytes;
