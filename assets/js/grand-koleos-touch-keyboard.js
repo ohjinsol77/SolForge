@@ -12,10 +12,11 @@
     removed: "removed from",
     cleared: "Shortcut cleared for",
     clearedAll: "All button shortcuts and images have been reset.",
+    confirmClearAll: "Reset all button shortcuts and images?",
     unset: "Not assigned",
     touchTitle: "TOUCH KEYBOARD",
     page: "PAGE",
-    pageChanged: "page selected.",
+    pageChanged: "selected.",
     mediaTitle: "MEDIA KEYS",
     volumeMute: "Mute",
     volumeDown: "Volume −",
@@ -52,10 +53,11 @@
     removed: "에서 해제됨",
     cleared: "의 키 조합을 지웠습니다.",
     clearedAll: "모든 버튼의 키 조합과 이미지를 초기화했습니다.",
+    confirmClearAll: "모든 버튼의 키 조합과 이미지를 초기화할까요?",
     unset: "미설정",
     touchTitle: "터치 키보드",
     page: "페이지",
-    pageChanged: "페이지로 이동했습니다.",
+    pageChanged: "로 이동했습니다.",
     mediaTitle: "미디어 키",
     volumeMute: "음소거",
     volumeDown: "볼륨 −",
@@ -224,6 +226,7 @@
   let activePage = 0;
   let transitioning = false;
   let pointerState = null;
+  let iconDialogReturnFocus = null;
 
   const keyboard = document.querySelector("#gkKeyboard");
   const preview = document.querySelector("#gkPreview");
@@ -304,9 +307,12 @@
       keys.splice(index, 1);
       status.textContent = lang === "en" ? `${displayKey} ${copy.removed} ${buttonText(activeButton)}.` : `${displayKey} · ${buttonText(activeButton)}${copy.removed}`;
     } else {
+      if (consumerCodes.has(keyId) && keys.some((existing) => consumerCodes.has(existing))) {
+        status.textContent = copy.tooManyMedia;
+        return;
+      }
       if (keys.length >= 3) {
         status.textContent = copy.maxThreeKeys;
-        window.alert(copy.maxThreeKeys);
         return;
       }
       keys.push(keyId);
@@ -370,6 +376,7 @@
 
   function openIconPicker() {
     renderIconPicker();
+    iconDialogReturnFocus = document.activeElement;
     if (typeof iconDialog.showModal === "function") iconDialog.showModal();
     else iconDialog.setAttribute("open", "");
   }
@@ -382,6 +389,12 @@
   changeIconButton.addEventListener("click", openIconPicker);
   iconDialogClose.addEventListener("click", closeIconPicker);
   iconDialogDone.addEventListener("click", closeIconPicker);
+  iconDialog.addEventListener("close", () => {
+    if (iconDialogReturnFocus) {
+      iconDialogReturnFocus.focus?.();
+      iconDialogReturnFocus = null;
+    }
+  });
   iconDialog.addEventListener("click", (event) => {
     if (event.target === iconDialog) closeIconPicker();
   });
@@ -617,7 +630,7 @@
     activePage = index;
     activeButton = 0;
     if (announce) {
-      status.textContent = lang === "en" ? `${displayPageName(index)} ${copy.pageChanged}` : `${displayPageName(index)} ${copy.pageChanged}`;
+      status.textContent = lang === "en" ? `${displayPageName(index)} ${copy.pageChanged}` : `${displayPageName(index)}${copy.pageChanged}`;
     }
     renderAll();
     return true;
@@ -730,6 +743,7 @@
   });
 
   document.querySelector("#gkClearAll").addEventListener("click", () => {
+    if (!window.confirm(copy.confirmClearAll)) return;
     pageStates.forEach((page) => {
       page.assignments.forEach((keys) => keys.splice(0));
       page.icons = defaultIconIds.slice();

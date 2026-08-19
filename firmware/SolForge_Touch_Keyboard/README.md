@@ -25,7 +25,7 @@ official U8g2 `bdfconv` tool when the source font or raster settings change.
 Compile with:
 
 ```powershell
-arduino-cli compile --fqbn "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,UploadMode=cdc,FlashMode=qio,FlashSize=4M,PartitionScheme=huge_app,UploadSpeed=921600" firmware/SolForge_Touch_Keyboard
+arduino-cli compile --fqbn "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,UploadMode=cdc,FlashMode=dio,FlashSize=4M,PartitionScheme=huge_app,UploadSpeed=921600" firmware/SolForge_Touch_Keyboard
 ```
 
 The generated bootloader, partition table, boot app, and app binaries are published under `assets/firmware/grand-koleos-touch-keyboard/` for the browser uploader.
