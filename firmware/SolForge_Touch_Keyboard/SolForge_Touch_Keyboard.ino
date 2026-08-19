@@ -476,11 +476,9 @@ static int8_t hitTestNavigation(int16_t x, int16_t y) {
   if (y < 219 || y >= 262) {
     return -1;
   }
-  if (x >= 10 && x < 64) return 6;
-  if (x >= 74 && x < 178) return 7;
-  if (x >= 188 && x < 292) return 8;
-  if (x >= 302 && x < 406) return 9;
-  if (x >= 416 && x < 470) return 10;
+  if (x >= 12 && x < 156) return 7;
+  if (x >= 168 && x < 312) return 8;
+  if (x >= 324 && x < 468) return 9;
   return -1;
 }
 
@@ -800,23 +798,14 @@ static void drawNavigationBox(int8_t control, int16_t x, int16_t width, const ch
   const uint16_t color = disabled ? rgb565(83, 97, 114) : textColor();
   gfx->fillRoundRect(x, 219, width, 43, 9, fill);
   gfx->drawRoundRect(x, 219, width, 43, 9, border);
-  if (control == 6 || control == 10) {
-    const int16_t cx = x + (width / 2);
-    const int16_t direction = control == 6 ? -1 : 1;
-    drawThickLine(cx + (direction * 5), 230, cx - (direction * 5), 240, 3, color);
-    drawThickLine(cx - (direction * 5), 240, cx + (direction * 5), 250, 3, color);
-  } else {
-    drawCenteredText(x + 4, 222, width - 8, 36, label, 1, color, fill);
-  }
+  drawCenteredText(x + 4, 222, width - 8, 36, label, 1, color, fill);
 }
 
 static void drawBottomNavigation() {
   gfx->fillRect(0, 210, screenWidth, 62, rgb565(21, 29, 41));
-  drawNavigationBox(6, 10, 54, "", false, currentPage == 0);
-  drawNavigationBox(7, 74, 104, configuredPageName(0), currentPage == 0, false);
-  drawNavigationBox(8, 188, 104, configuredPageName(1), currentPage == 1, false);
-  drawNavigationBox(9, 302, 104, configuredPageName(2), currentPage == 2, false);
-  drawNavigationBox(10, 416, 54, "", false, currentPage == 2);
+  drawNavigationBox(7, 12, 144, configuredPageName(0), currentPage == 0, false);
+  drawNavigationBox(8, 168, 144, configuredPageName(1), currentPage == 1, false);
+  drawNavigationBox(9, 324, 144, configuredPageName(2), currentPage == 2, false);
 }
 
 static void drawButton(uint8_t page, uint8_t index, bool pressed) {
@@ -1231,11 +1220,7 @@ static bool changePageFromSwipe(int16_t dx) {
 
 static bool activateNavigation(int8_t control) {
   const uint8_t oldPage = currentPage;
-  if (control == 6 && currentPage > 0) {
-    currentPage--;
-  } else if (control == 10 && currentPage < 2) {
-    currentPage++;
-  } else if (control >= 7 && control <= 9) {
+  if (control >= 7 && control <= 9) {
     currentPage = control - 7;
   }
   return currentPage != oldPage;

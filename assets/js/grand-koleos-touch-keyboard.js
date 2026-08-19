@@ -592,11 +592,7 @@
 
     context.fillStyle = "#151d29";
     context.fillRect(0, 210, 480, 62);
-    const bottomItems = [
-      { x: 10, width: 54, label: "‹", type: "previous", disabled: activePage === 0 },
-      ...pageStates.map((_page, index) => ({ x: 74 + index * 114, width: 104, label: displayPageName(index), type: "page", pageIndex: index, active: activePage === index })),
-      { x: 416, width: 54, label: "›", type: "next", disabled: activePage === pageStates.length - 1 }
-    ];
+    const bottomItems = pageStates.map((_page, index) => ({ x: 12 + index * 156, width: 144, label: displayPageName(index), type: "page", pageIndex: index, active: activePage === index }));
     navigationBoxes.length = 0;
     bottomItems.forEach((item) => {
       roundedRect(context, item.x, 219, item.width, 43, 9);
@@ -640,9 +636,7 @@
     }
     const navigation = navigationBoxes.find((box) => x >= box.x && x <= box.x + box.width && y >= box.y && y <= box.y + box.height);
     if (!navigation || navigation.disabled) return;
-    if (navigation.type === "previous") changePage(activePage - 1);
-    else if (navigation.type === "next") changePage(activePage + 1);
-    else changePage(navigation.pageIndex);
+    changePage(navigation.pageIndex);
   }
 
   function setPage(index, announce = true) {
