@@ -6,6 +6,9 @@
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
 #include "Arduino_Canvas.h"
+#include <AnimatedGIF.h>
+#include "boot_gif_data.h"
+#include "icon_bitmaps.h"
 #include "font/NanumGothicCoding16.h"
 
 #include "USB.h"
@@ -46,7 +49,6 @@ static constexpr uint32_t kPostSwipeGuardMs = 250;
 static constexpr uint32_t kPostMacroGuardMs = 350;
 static constexpr uint32_t kTouchReleaseGraceMs = 90;
 static constexpr bool kSwipeWrapPages = false;
-static constexpr uint32_t kBootSplashMs = 1800;
 
 Arduino_DataBus *bus = new Arduino_ESP32QSPI(
     45 /* cs */, 47 /* sck */, 21 /* d0 */, 48 /* d1 */, 40 /* d2 */, 39 /* d3 */);
@@ -614,11 +616,32 @@ static void drawKeyIcon(int16_t cx, int16_t cy, uint16_t accent, uint16_t fill) 
   gfx->fillRoundRect(cx - 24, cy - 12, 48, 24, 4, fill);
 }
 
+static constexpr uint16_t kBitmapTransparent = 0x0001;
+
+static void drawBitmapIcon(const uint16_t *pixels, int16_t x, int16_t y, uint8_t size) {
+  for (uint8_t row = 0; row < size; ++row) {
+    const uint16_t *line = &pixels[row * size];
+    int16_t col = 0;
+    while (col < size) {
+      while (col < size && line[col] == kBitmapTransparent) {
+        ++col;
+      }
+      if (col >= size) {
+        break;
+      }
+      const int16_t start = col;
+      while (col < size && line[col] != kBitmapTransparent) {
+        ++col;
+      }
+      gfx->draw16bitRGBBitmap(x + start, y + row, &line[start], col - start, 1);
+    }
+  }
+}
+
 static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, uint16_t accent, uint16_t fill) {
   (void)page;
   const uint8_t icon = configuredIconId(page, index);
   const uint16_t white = rgb565(232, 241, 251);
-  const uint16_t red = rgb565(255, 0, 51);
   const uint16_t yellow = rgb565(250, 204, 21);
 
   if (icon == 0) {  // Home
@@ -654,30 +677,11 @@ static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, 
     gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx + 4, cy + 5, accent);
     gfx->fillTriangle(cx - 5, cy + 9, cx + 10, cy - 10, cx - 1, cy - 4, white);
   } else if (icon == 8) {  // TMAP
-    const uint16_t pink = rgb565(242, 56, 183);
-    const uint16_t purple = rgb565(139, 57, 245);
-    const uint16_t teal = rgb565(54, 221, 176);
-    const uint16_t blue = rgb565(20, 98, 255);
-    gfx->fillRoundRect(cx - 15, cy - 15, 30, 30, 7, white);
-    gfx->fillRect(cx - 11, cy - 10, 8, 6, pink);
-    gfx->fillRect(cx - 3, cy - 10, 8, 6, purple);
-    gfx->fillRect(cx + 5, cy - 10, 7, 6, teal);
-    drawThickLine(cx + 9, cy - 7, cx + 3, cy - 7, 6, teal);
-    drawThickLine(cx + 3, cy - 7, cx - 2, cy - 2, 6, teal);
-    drawThickLine(cx - 2, cy - 2, cx - 2, cy + 11, 6, blue);
+    drawBitmapIcon(kIconTmap, cx - 16, cy - 16, 32);
   } else if (icon == 9) {  // YouTube
-    gfx->fillRoundRect(cx - 17, cy - 11, 34, 22, 6, red);
-    gfx->fillTriangle(cx - 4, cy - 7, cx - 4, cy + 7, cx + 8, cy, white);
+    drawBitmapIcon(kIconYoutube, cx - 16, cy - 16, 32);
   } else if (icon == 10) {  // Chrome
-    const uint16_t chromeRed = rgb565(234, 67, 53);
-    const uint16_t chromeYellow = rgb565(251, 188, 5);
-    const uint16_t chromeGreen = rgb565(52, 168, 83);
-    const uint16_t chromeBlue = rgb565(66, 133, 244);
-    gfx->fillCircle(cx, cy, 15, chromeRed);
-    gfx->fillTriangle(cx, cy, cx + 15, cy - 2, cx + 7, cy + 13, chromeYellow);
-    gfx->fillTriangle(cx, cy, cx - 13, cy + 8, cx - 7, cy - 13, chromeGreen);
-    gfx->fillCircle(cx, cy, 8, white);
-    gfx->fillCircle(cx, cy, 6, chromeBlue);
+    drawBitmapIcon(kIconChrome, cx - 16, cy - 16, 32);
   } else if (icon >= 11 && icon <= 13) {  // Volume
     gfx->fillRect(cx - 13, cy - 5, 7, 10, accent);
     gfx->fillTriangle(cx - 7, cy - 5, cx + 2, cy - 12, cx + 2, cy + 12, accent);
@@ -834,45 +838,67 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
   drawCenteredText(bx + 8, by + 49, w - 16, 22, configuredComboLabel(page, index), 1, mutedColor(), fill);
 }
 
-static void drawBootSplash() {
-  const uint16_t bg = rgb565(245, 247, 250);
-  const uint16_t dark = rgb565(15, 23, 42);
-  const uint16_t accent1 = rgb565(239, 68, 68);
-  const uint16_t accent2 = rgb565(34, 197, 94);
-  const uint16_t accent3 = rgb565(59, 130, 246);
-  const uint16_t accent4 = rgb565(245, 158, 11);
+static uint16_t gifLineBuf[kDefaultScreenWidth];
 
-  gfx->fillScreen(bg);
-  gfx->drawRect(0, 0, screenWidth, screenHeight, dark);
-  gfx->fillRect(0, 0, screenWidth, 34, dark);
-  gfx->fillRect(0, screenHeight - 34, screenWidth, 34, dark);
+static void gifDrawLine(GIFDRAW *pDraw) {
+  const uint8_t *s = pDraw->pPixels;
+  const uint16_t *pal = (const uint16_t *)pDraw->pPalette;
+  const int16_t y = (int16_t)pDraw->iY + pDraw->y;
+  int16_t x0 = pDraw->iX;
+  int16_t w = pDraw->iWidth;
+  if (y < 0 || y >= (int16_t)screenHeight || x0 >= (int16_t)screenWidth) {
+    return;
+  }
+  if (x0 < 0) {
+    w += x0;
+    s -= x0;
+    x0 = 0;
+  }
+  if (x0 + w > (int16_t)screenWidth) {
+    w = (int16_t)screenWidth - x0;
+  }
+  if (w < 1) {
+    return;
+  }
+  if (pDraw->ucHasTransparency) {
+    const uint8_t transparent = pDraw->ucTransparent;
+    int16_t i = 0;
+    while (i < w) {
+      while (i < w && s[i] == transparent) {
+        ++i;
+      }
+      if (i >= w) {
+        break;
+      }
+      const int16_t start = i;
+      uint16_t *d = gifLineBuf;
+      while (i < w && s[i] != transparent) {
+        *d++ = pal[s[i++]];
+      }
+      gfx->draw16bitRGBBitmap(x0 + start, y, gifLineBuf, i - start, 1);
+    }
+  } else {
+    uint16_t *d = gifLineBuf;
+    for (int16_t i = 0; i < w; ++i) {
+      *d++ = pal[s[i]];
+    }
+    gfx->draw16bitRGBBitmap(x0, y, gifLineBuf, w, 1);
+  }
+}
 
-  gfx->fillRect(18, 58, 136, 82, accent1);
-  gfx->fillRect(172, 58, 136, 82, accent2);
-  gfx->fillRect(326, 58, 136, 82, accent3);
-  gfx->fillRect(96, 156, 288, 48, accent4);
-
-  selectBuiltInFont(3);
-  gfx->setTextColor(bg, dark);
-  gfx->setCursor(12, 7);
-  gfx->print("JC4827W543");
-
-  selectBuiltInFont(3);
-  gfx->setTextColor(dark, bg);
-  gfx->setCursor(122, 168);
-  gfx->print("PANEL OK");
-
-  selectBuiltInFont(2);
-  gfx->setTextColor(dark, bg);
-  gfx->setCursor(78, 224);
-  gfx->print("BOOT CHECK");
-
-  selectBuiltInFont(2);
-  gfx->setTextColor(bg, dark);
-  gfx->setCursor(12, screenHeight - 27);
-  gfx->print("DISPLAY + BACKLIGHT");
-
-  gfx->flush();
+static void playBootGif() {
+  AnimatedGIF gif;
+  gif.begin(LITTLE_ENDIAN_PIXELS);
+  if (!gif.openFLASH((uint8_t *)bootGifData, (int)bootGifDataSize, gifDrawLine)) {
+    gfx->fillScreen(rgb565(8, 12, 18));
+    gfx->flush();
+    return;
+  }
+  gfx->fillScreen(rgb565(8, 12, 18));
+  while (gif.playFrame(true, NULL)) {
+    gfx->flush();
+  }
+  gif.close();
 }
 
 static void renderScreen();
@@ -1578,8 +1604,8 @@ void setup() {
   initTouch();
 
   setBacklight(true);
-  drawBootSplash();
-  delay(kBootSplashMs);
+  playBootGif();
+
 
   noteActivity();
   renderScreen();

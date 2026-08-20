@@ -2,16 +2,17 @@
 
 This Arduino sketch targets the ESP32-S3 based ESP32-4827S043C / JC4827W543C capacitive-touch display.
 
-The default 480 × 272 screen mirrors the SolForge homepage preview:
+On power-up the firmware plays an embedded boot animation (default: `grand_koleos_480x272_balanced.gif`, 480 × 272) instead of the old panel-check splash, then shows the touch UI:
 
 - `TOUCH KEYBOARD` header and three page indicators
 - 3 × 2 Home, Back, Menu, Favorites, Voice, and Power cards
-- Three page tabs plus previous and next controls
+- Page tabs at the bottom switch pages (no prev/next buttons)
 
 Required Arduino packages:
 
 - ESP32 platform 3.3.7
 - U8g2 2.36.19
+- AnimatedGIF 2.2.3 (vendored under `libraries/`, no manual install needed)
 
 The display labels use a firmware-embedded 16 px bitmap generated from NAVER
 NanumGothicCoding 2.5 Regular. It contains all 11,172 modern Hangul syllables,
@@ -22,10 +23,13 @@ by NAVER under the SIL Open Font License 1.1.
 Regenerate the header with `scripts/generate-touch-keyboard-font.py` and the
 official U8g2 `bdfconv` tool when the source font or raster settings change.
 
+Regenerate the boot animation with `scripts/generate-touch-keyboard-boot-gif.py`
+when the source GIF changes; the converter emits `boot_gif_data.cpp`/`.h`.
+
 Compile with:
 
 ```powershell
-arduino-cli compile --fqbn "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,UploadMode=cdc,FlashMode=dio,FlashSize=4M,PartitionScheme=huge_app,UploadSpeed=921600" --build-property compiler.cpp.extra_flags=-DU8G2_FONT_SUPPORT firmware/SolForge_Touch_Keyboard
+arduino-cli compile --fqbn "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,UploadMode=cdc,FlashMode=dio,FlashSize=4M,PartitionScheme=huge_app,UploadSpeed=921600" --build-property compiler.cpp.extra_flags=-DU8G2_FONT_SUPPORT --libraries firmware/SolForge_Touch_Keyboard/libraries firmware/SolForge_Touch_Keyboard
 ```
 
 The generated bootloader, partition table, boot app, and app binaries are published under `assets/firmware/grand-koleos-touch-keyboard/` for the browser uploader.
