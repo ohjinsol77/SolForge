@@ -350,14 +350,6 @@ static uint16_t mutedColor() {
   return rgb565(95, 107, 124);
 }
 
-static uint16_t headerTextColor() {
-  return rgb565(213, 221, 232);
-}
-
-static const char *pageTitle(uint8_t page) {
-  return "TOUCH KEYBOARD";
-}
-
 static int16_t buttonWidth() {
   return (screenWidth - (2 * kSideMargin) - (2 * kColumnGap)) / 3;
 }
@@ -787,7 +779,6 @@ static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, 
 static void drawHeader() {
   const uint16_t bg = pageBg(currentPage);
   gfx->fillRect(0, 0, screenWidth, kTopLayoutH, bg);
-  drawCenteredBuiltInText(0, 0, screenWidth, 29, pageTitle(currentPage), 2, textColor(), bg);
 }
 
 static void drawPageIndicator() {

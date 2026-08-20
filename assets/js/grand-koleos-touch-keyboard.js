@@ -16,7 +16,6 @@
     settingsLabel: "Settings",
     settingsLocked: "The Settings button is fixed and cannot be edited.",
     unset: "Not assigned",
-    touchTitle: "TOUCH KEYBOARD",
     page: "PAGE",
     pageChanged: "selected.",
     mediaTitle: "MEDIA KEYS",
@@ -59,7 +58,6 @@
     settingsLabel: "설정",
     settingsLocked: "설정 버튼은 고정되어 있어 수정할 수 없습니다.",
     unset: "미설정",
-    touchTitle: "터치 키보드",
     page: "페이지",
     pageChanged: "로 이동했습니다.",
     mediaTitle: "미디어 키",
@@ -544,7 +542,6 @@
     context.textBaseline = "middle";
     context.fillStyle = "#f8fafc";
     context.font = "800 16px Inter, Arial, sans-serif";
-    context.fillText(copy.touchTitle, 240, 15);
     [0, 1, 2].forEach((dot) => {
       context.beginPath();
       context.arc(228 + dot * 12, 31, 3, 0, Math.PI * 2);

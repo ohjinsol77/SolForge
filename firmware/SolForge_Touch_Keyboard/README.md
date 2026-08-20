@@ -4,7 +4,7 @@ This Arduino sketch targets the ESP32-S3 based ESP32-4827S043C / JC4827W543C cap
 
 On power-up the firmware plays an embedded boot animation (default: `grand_koleos_480x272_balanced.gif`, 480 × 272) instead of the old panel-check splash, then shows the touch UI:
 
-- `TOUCH KEYBOARD` header and three page indicators
+- No header title text; three page indicators at the top
 - 3 × 2 Home, Back, Menu, Favorites, Voice, and Power cards
 - Page tabs at the bottom switch pages (no prev/next buttons)
 
