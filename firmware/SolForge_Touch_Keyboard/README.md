@@ -2,7 +2,7 @@
 
 This Arduino sketch targets the ESP32-S3 based ESP32-4827S043C / JC4827W543C capacitive-touch display.
 
-On power-up the firmware plays an embedded boot animation (default: `grand_koleos_480x272_balanced.gif`, 480 × 272) instead of the old panel-check splash, then shows the touch UI:
+On power-up the firmware initializes the display and touch controller, then shows the touch UI:
 
 - No header title text; three page indicators at the top
 - 3 × 2 Home, Back, Menu, Favorites, Voice, and Power cards
@@ -23,8 +23,6 @@ by NAVER under the SIL Open Font License 1.1.
 Regenerate the header with `scripts/generate-touch-keyboard-font.py` and the
 official U8g2 `bdfconv` tool when the source font or raster settings change.
 
-Regenerate the boot animation with `scripts/generate-touch-keyboard-boot-gif.py`
-when the source GIF changes; the converter emits `boot_gif_data.cpp`/`.h`.
 
 Compile with:
 

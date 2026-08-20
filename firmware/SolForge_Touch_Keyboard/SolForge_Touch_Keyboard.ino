@@ -6,8 +6,6 @@
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
 #include "Arduino_Canvas.h"
-#include <AnimatedGIF.h>
-#include "boot_gif_data.h"
 #include "icon_bitmaps.h"
 #include "font/NanumGothicCoding16.h"
 
@@ -829,69 +827,6 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
   drawCenteredText(bx + 8, by + 49, w - 16, 22, configuredComboLabel(page, index), 1, mutedColor(), fill);
 }
 
-static uint16_t gifLineBuf[kDefaultScreenWidth];
-
-static void gifDrawLine(GIFDRAW *pDraw) {
-  const uint8_t *s = pDraw->pPixels;
-  const uint16_t *pal = (const uint16_t *)pDraw->pPalette;
-  const int16_t y = (int16_t)pDraw->iY + pDraw->y;
-  int16_t x0 = pDraw->iX;
-  int16_t w = pDraw->iWidth;
-  if (y < 0 || y >= (int16_t)screenHeight || x0 >= (int16_t)screenWidth) {
-    return;
-  }
-  if (x0 < 0) {
-    w += x0;
-    s -= x0;
-    x0 = 0;
-  }
-  if (x0 + w > (int16_t)screenWidth) {
-    w = (int16_t)screenWidth - x0;
-  }
-  if (w < 1) {
-    return;
-  }
-  if (pDraw->ucHasTransparency) {
-    const uint8_t transparent = pDraw->ucTransparent;
-    int16_t i = 0;
-    while (i < w) {
-      while (i < w && s[i] == transparent) {
-        ++i;
-      }
-      if (i >= w) {
-        break;
-      }
-      const int16_t start = i;
-      uint16_t *d = gifLineBuf;
-      while (i < w && s[i] != transparent) {
-        *d++ = pal[s[i++]];
-      }
-      gfx->draw16bitRGBBitmap(x0 + start, y, gifLineBuf, i - start, 1);
-    }
-  } else {
-    uint16_t *d = gifLineBuf;
-    for (int16_t i = 0; i < w; ++i) {
-      *d++ = pal[s[i]];
-    }
-    gfx->draw16bitRGBBitmap(x0, y, gifLineBuf, w, 1);
-  }
-}
-
-static void playBootGif() {
-  AnimatedGIF gif;
-  gif.begin(LITTLE_ENDIAN_PIXELS);
-  if (!gif.openFLASH((uint8_t *)bootGifData, (int)bootGifDataSize, gifDrawLine)) {
-    gfx->fillScreen(rgb565(8, 12, 18));
-    gfx->flush();
-    return;
-  }
-  gfx->fillScreen(rgb565(8, 12, 18));
-  while (gif.playFrame(true, NULL)) {
-    gfx->flush();
-  }
-  gif.close();
-}
-
 static void renderScreen();
 
 static uint16_t settingsBg() {
@@ -1595,8 +1530,6 @@ void setup() {
   initTouch();
 
   setBacklight(true);
-  playBootGif();
-
 
   noteActivity();
   renderScreen();
