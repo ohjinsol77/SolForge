@@ -1,11 +1,15 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <esp_attr.h>
 #include <esp_partition.h>
+#include <esp_system.h>
 #include <Preferences.h>
 #include "Arduino_GFX.h"
 #include "Arduino_ESP32QSPI.h"
 #include "Arduino_NV3041A.h"
 #include "Arduino_Canvas.h"
+#include <pgmspace.h>
+#include "boot_animation_data.h"
 #include "icon_bitmaps.h"
 #include "font/NanumGothicCoding16.h"
 
@@ -47,6 +51,20 @@ static constexpr uint32_t kPostSwipeGuardMs = 250;
 static constexpr uint32_t kPostMacroGuardMs = 350;
 static constexpr uint32_t kTouchReleaseGraceMs = 90;
 static constexpr bool kSwipeWrapPages = false;
+static constexpr uint32_t kBootGifGuardMagic = 0x52474232;
+static constexpr uint32_t kBootGifGuardIdle = 0;
+static constexpr uint32_t kBootGifGuardPlaying = 1;
+static constexpr uint32_t kBootGifGuardFailed = 2;
+static constexpr uint32_t kBootGifGuardComplete = 3;
+
+struct BootGifGuard {
+  uint32_t magic;
+  uint32_t state;
+};
+
+RTC_NOINIT_ATTR static BootGifGuard bootGifGuard;
+static esp_reset_reason_t bootResetReason = ESP_RST_UNKNOWN;
+static bool bootGifSkippedAfterCrash = false;
 
 Arduino_DataBus *bus = new Arduino_ESP32QSPI(
     45 /* cs */, 47 /* sck */, 21 /* d0 */, 48 /* d1 */, 40 /* d2 */, 39 /* d3 */);
@@ -1456,6 +1474,83 @@ static void initDisplay() {
   selectBuiltInFont(1);
 }
 
+static constexpr uint16_t kAnimationCommandMask = 0xC000;
+static constexpr uint16_t kAnimationCountMask = 0x3FFF;
+static constexpr uint16_t kAnimationLiteral = 0x4000;
+static constexpr uint16_t kAnimationRepeat = 0x8000;
+
+static bool applyBootAnimationFrame(const BootAnimationFrame &frame) {
+  Arduino_Canvas *canvas = static_cast<Arduino_Canvas *>(gfx);
+  uint16_t *framebuffer = canvas->getFramebuffer();
+  const uint32_t pixelCount = static_cast<uint32_t>(screenWidth) * screenHeight;
+  const uint32_t end = frame.offset + frame.wordCount;
+  uint32_t dataIndex = frame.offset;
+  uint32_t pixelIndex = 0;
+
+  while (dataIndex < end && pixelIndex < pixelCount) {
+    const uint16_t command = pgm_read_word(&bootAnimationData[dataIndex++]);
+    const uint16_t type = command & kAnimationCommandMask;
+    const uint16_t count = command & kAnimationCountMask;
+    if (count == 0 || pixelIndex + count > pixelCount) {
+      return false;
+    }
+
+    if (type == 0) {
+      pixelIndex += count;
+    } else if (type == kAnimationLiteral) {
+      if (dataIndex + count > end) {
+        return false;
+      }
+      for (uint16_t index = 0; index < count; ++index) {
+        framebuffer[pixelIndex++] = pgm_read_word(&bootAnimationData[dataIndex++]);
+      }
+    } else if (type == kAnimationRepeat) {
+      if (dataIndex >= end) {
+        return false;
+      }
+      const uint16_t color = pgm_read_word(&bootAnimationData[dataIndex++]);
+      for (uint16_t index = 0; index < count; ++index) {
+        framebuffer[pixelIndex++] = color;
+      }
+    } else {
+      return false;
+    }
+
+    if ((pixelIndex & 0x3FFF) == 0) {
+      yield();
+    }
+  }
+
+  return dataIndex == end && pixelIndex == pixelCount;
+}
+
+static void playBootGif() {
+  static constexpr uint32_t kBootGifTimeoutMs = 5000;
+  const uint32_t startedAtMs = millis();
+  uint32_t targetElapsedMs = 0;
+  Arduino_Canvas *canvas = static_cast<Arduino_Canvas *>(gfx);
+  memset(canvas->getFramebuffer(), 0, static_cast<size_t>(screenWidth) * screenHeight * sizeof(uint16_t));
+
+  for (uint16_t frameIndex = 0; frameIndex < bootAnimationFrameCount; ++frameIndex) {
+    if (millis() - startedAtMs >= kBootGifTimeoutMs) {
+      Serial.println("boot animation timeout");
+      break;
+    }
+    const BootAnimationFrame &frame = bootAnimationFrames[frameIndex];
+    if (!applyBootAnimationFrame(frame)) {
+      Serial.printf("boot animation frame %u invalid\r\n", frameIndex);
+      break;
+    }
+    gfx->flush();
+    targetElapsedMs += frame.durationMs;
+    const uint32_t elapsedMs = millis() - startedAtMs;
+    if (targetElapsedMs > elapsedMs) {
+      delay(targetElapsedMs - elapsedMs);
+    }
+    yield();
+  }
+}
+
 static void initTouch() {
   touch.begin(GT911_ADDR1);
   Wire.setClock(400000);
@@ -1514,6 +1609,18 @@ static void drawTouchDiagnostic(bool pressed, int16_t x, int16_t y) {
 }
 
 void setup() {
+  bootResetReason = esp_reset_reason();
+  if (bootGifGuard.magic != kBootGifGuardMagic) {
+    bootGifGuard.magic = kBootGifGuardMagic;
+    bootGifGuard.state = kBootGifGuardIdle;
+  }
+  if (bootGifGuard.state == kBootGifGuardPlaying || bootGifGuard.state == kBootGifGuardFailed) {
+    bootGifGuard.state = kBootGifGuardFailed;
+    bootGifSkippedAfterCrash = true;
+  } else {
+    bootGifGuard.state = kBootGifGuardPlaying;
+  }
+
   Serial.begin(115200);
   delay(50);
 
@@ -1522,6 +1629,8 @@ void setup() {
 
   loadStoredConfig();
   loadDeviceSettings();
+
+  // Keep the proven HID/CDC startup order from the stable non-animation build.
   Keyboard.begin();
   ConsumerControl.begin();
   USB.begin();
@@ -1530,9 +1639,18 @@ void setup() {
   initTouch();
 
   setBacklight(true);
+  if (!bootGifSkippedAfterCrash) {
+    playBootGif();
+  }
 
   noteActivity();
   renderScreen();
+  if (!bootGifSkippedAfterCrash) {
+    bootGifGuard.state = kBootGifGuardComplete;
+  }
+  Serial.printf("boot ready reset_reason=%d gif_skipped_after_crash=%d guard_state=%lu\r\n",
+                static_cast<int>(bootResetReason), bootGifSkippedAfterCrash,
+                static_cast<unsigned long>(bootGifGuard.state));
 }
 
 void loop() {
