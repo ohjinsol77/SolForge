@@ -11,7 +11,7 @@
 #include <pgmspace.h>
 #include "boot_animation_data.h"
 #include "icon_bitmaps.h"
-#include "font/NanumGothicCoding16.h"
+#include "font/NanumGothicCoding16Bold.h"
 
 #include "USB.h"
 #include "USBHIDConsumerControl.h"
@@ -195,10 +195,11 @@ static uint32_t lastTouchSampleMs = 0;
 static uint32_t postSwipeGuardUntilMs = 0;
 static uint32_t postMacroGuardUntilMs = 0;
 
-enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, AutoOff, RebootConfirm };
+enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, AutoOff, Orientation, RebootConfirm };
 static SettingsScreen settingsScreen = SettingsScreen::Off;
 static uint8_t backlightLevel = 8;
 static uint8_t autoOffIndex = kDefaultAutoOffIndex;
+static bool screenRotated180 = false;
 static int16_t settingsPressX = -1;
 static int16_t settingsPressY = -1;
 static int16_t settingsPressedZone = -1;
@@ -273,6 +274,7 @@ static void loadDeviceSettings() {
   settingsPrefs.begin("gk", false);
   backlightLevel = constrain(settingsPrefs.getUChar("bright", 8), 1, kBacklightLevels);
   autoOffIndex = constrain(settingsPrefs.getUChar("autoff", kDefaultAutoOffIndex), 0, 6);
+  screenRotated180 = settingsPrefs.getBool("rot180", false);
   settingsPrefs.end();
 }
 
@@ -280,7 +282,15 @@ static void saveDeviceSettings() {
   settingsPrefs.begin("gk", false);
   settingsPrefs.putUChar("bright", backlightLevel);
   settingsPrefs.putUChar("autoff", autoOffIndex);
+  settingsPrefs.putBool("rot180", screenRotated180);
   settingsPrefs.end();
+}
+
+static void applyScreenOrientation() {
+  gfx->setRotation(screenRotated180 ? 2 : 0);
+  screenWidth = gfx->width();
+  screenHeight = gfx->height();
+  touch.setRotation(screenRotated180 ? ROTATION_NORMAL : TOUCH_ROTATION);
 }
 
 static uint32_t autoOffMs() {
@@ -412,7 +422,7 @@ static void selectBuiltInFont(uint8_t size) {
 static void selectLabelFont(uint8_t size) {
 #if defined(U8G2_FONT_SUPPORT)
   gfx->setUTF8Print(true);
-  gfx->setFont(solforge_nanum_gothic_coding_16);
+  gfx->setFont(solforge_nanum_gothic_coding_16_bold);
   gfx->setTextSize(size);
 #else
   selectBuiltInFont(size + 1);
@@ -936,10 +946,10 @@ static void drawSettingsRow(int16_t y, const char *label, bool highlighted, bool
 }
 
 static void renderSettingsMenu() {
-  static const char *items[3] = {"밝기 조절", "자동 화면 꺼짐", "재부팅"};
+  static const char *items[4] = {"밝기 조절", "자동 화면 꺼짐", "화면 방향", "재부팅"};
   drawSettingsHeader("설정");
-  for (uint8_t i = 0; i < 3; ++i) {
-    drawSettingsRow(60 + i * 50, items[i], false, settingsPressedZone == (int16_t)(100 + i));
+  for (uint8_t i = 0; i < 4; ++i) {
+    drawSettingsRow(52 + i * 48, items[i], false, settingsPressedZone == (int16_t)(100 + i));
   }
 }
 
@@ -982,6 +992,12 @@ static void renderSettingsAutoOff() {
   }
 }
 
+static void renderSettingsOrientation() {
+  drawSettingsHeader("화면 방향");
+  drawSettingsRow(78, "기본 방향", !screenRotated180, settingsPressedZone == 500);
+  drawSettingsRow(136, "180도 회전", screenRotated180, settingsPressedZone == 501);
+}
+
 static void renderSettingsReboot() {
   drawSettingsHeader("재부팅");
   drawCenteredText(20, 80, screenWidth - 40, 48, "정말 재부팅 하시겠습니까?", 1, textColor(), settingsBg());
@@ -1007,6 +1023,9 @@ static void renderSettingsScreen() {
     case SettingsScreen::AutoOff:
       renderSettingsAutoOff();
       break;
+    case SettingsScreen::Orientation:
+      renderSettingsOrientation();
+      break;
     case SettingsScreen::RebootConfirm:
       renderSettingsReboot();
       break;
@@ -1025,9 +1044,9 @@ static int16_t settingsZoneAt(int16_t x, int16_t y) {
   }
   switch (settingsScreen) {
     case SettingsScreen::Menu: {
-      if (y >= 60 && y < 210) {
-        const int16_t row = (y - 60) / 50;
-        if (row < 3) return 100 + row;
+      if (y >= 52 && y < 244) {
+        const int16_t row = (y - 52) / 48;
+        if (row < 4) return 100 + row;
       }
       break;
     }
@@ -1042,6 +1061,11 @@ static int16_t settingsZoneAt(int16_t x, int16_t y) {
         const int16_t row = (y - 52) / 26;
         if (row < 7) return 300 + row;
       }
+      break;
+    }
+    case SettingsScreen::Orientation: {
+      if (y >= 78 && y < 118) return 500;
+      if (y >= 136 && y < 176) return 501;
       break;
     }
     case SettingsScreen::RebootConfirm: {
@@ -1073,10 +1097,16 @@ static void settingsTap(int16_t zone) {
   }
   switch (settingsScreen) {
     case SettingsScreen::Menu:
-      if (zone >= 100 && zone < 103) {
-        settingsScreen = zone == 100 ? SettingsScreen::Brightness
-                                     : zone == 101 ? SettingsScreen::AutoOff
-                                                   : SettingsScreen::RebootConfirm;
+      if (zone >= 100 && zone < 104) {
+        if (zone == 100) {
+          settingsScreen = SettingsScreen::Brightness;
+        } else if (zone == 101) {
+          settingsScreen = SettingsScreen::AutoOff;
+        } else if (zone == 102) {
+          settingsScreen = SettingsScreen::Orientation;
+        } else {
+          settingsScreen = SettingsScreen::RebootConfirm;
+        }
       }
       break;
     case SettingsScreen::Brightness:
@@ -1094,6 +1124,13 @@ static void settingsTap(int16_t zone) {
       if (zone >= 300 && zone < 307) {
         autoOffIndex = (uint8_t)(zone - 300);
         saveDeviceSettings();
+      }
+      break;
+    case SettingsScreen::Orientation:
+      if (zone == 500 || zone == 501) {
+        screenRotated180 = zone == 501;
+        saveDeviceSettings();
+        applyScreenOrientation();
       }
       break;
     case SettingsScreen::RebootConfirm:
@@ -1465,6 +1502,8 @@ static void initDisplay() {
     Serial.println("gfx->begin() failed");
   }
 
+  gfx->setRotation(screenRotated180 ? 2 : 0);
+
   gfx->displayOn();
   delay(120);
 
@@ -1502,7 +1541,10 @@ static bool applyBootAnimationFrame(const BootAnimationFrame &frame) {
         return false;
       }
       for (uint16_t index = 0; index < count; ++index) {
-        framebuffer[pixelIndex++] = pgm_read_word(&bootAnimationData[dataIndex++]);
+        const uint16_t color = pgm_read_word(&bootAnimationData[dataIndex++]);
+        const uint32_t destination = screenRotated180 ? pixelCount - 1 - pixelIndex : pixelIndex;
+        framebuffer[destination] = color;
+        ++pixelIndex;
       }
     } else if (type == kAnimationRepeat) {
       if (dataIndex >= end) {
@@ -1510,7 +1552,9 @@ static bool applyBootAnimationFrame(const BootAnimationFrame &frame) {
       }
       const uint16_t color = pgm_read_word(&bootAnimationData[dataIndex++]);
       for (uint16_t index = 0; index < count; ++index) {
-        framebuffer[pixelIndex++] = color;
+        const uint32_t destination = screenRotated180 ? pixelCount - 1 - pixelIndex : pixelIndex;
+        framebuffer[destination] = color;
+        ++pixelIndex;
       }
     } else {
       return false;
@@ -1554,7 +1598,7 @@ static void playBootGif() {
 static void initTouch() {
   touch.begin(GT911_ADDR1);
   Wire.setClock(400000);
-  touch.setRotation(TOUCH_ROTATION);
+  touch.setRotation(screenRotated180 ? ROTATION_NORMAL : TOUCH_ROTATION);
   touch.setResolution(screenWidth, screenHeight);
 }
 

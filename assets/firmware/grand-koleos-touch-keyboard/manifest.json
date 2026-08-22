@@ -1,6 +1,6 @@
 {
   "name": "SolForge Touch Keyboard",
-  "version": "2026.08.23-renault-rgb565-safe",
+  "version": "2026.08.23-renault-nanum16-rotate",
   "chip": "ESP32-S3",
   "board": "ESP32-4827S043C",
   "display": "JC4827W543C",
@@ -9,7 +9,7 @@
   "flashSize": "4MB",
   "configAddress": 3211264,
   "configSize": 4096,
-  "sourceSha256": "3058d184c20954fbbac789347f5eb1023ead98b921ca72ba48af4ca1c840cc8d",
+  "sourceSha256": "e8c70ae41b76816a5093db430b403198f29c50694540e1066c9ade487ae7605f",
   "files": [
     {
       "path": "bootloader.bin",
@@ -32,8 +32,8 @@
     {
       "path": "grand-koleos-macro.bin",
       "address": 65536,
-      "size": 1720304,
-      "sha256": "163bb1e074f1bd6c8e6c4a7c3194143491edf3e20e6c1859b163611f628ea0a0"
+      "size": 1733120,
+      "sha256": "ca59cc8aa475146af22dbd73630abd91ed8bb380fef0c903755e3697397a4863"
     }
   ]
 }
