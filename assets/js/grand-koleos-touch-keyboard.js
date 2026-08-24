@@ -131,6 +131,16 @@
   const settingsButtonIndex = 5;
   const settingsIconId = "settings";
   const isSettingsButton = (pageIndex, buttonIndex) => pageIndex === settingsPageIndex && buttonIndex === settingsButtonIndex;
+  const defaultAssignments = [
+    [["Win", "H"], ["Win", "B"], ["F"], ["Win", "M"], ["L"], ["Alt", "Arrow Left"]],
+    [[], [], [], [], [], []],
+    [[], [], [], [], [], []]
+  ];
+  const defaultPageIcons = [
+    ["home", "chrome", "fullscreen", "tmap", "replay-10", "back"],
+    defaultIconIds,
+    defaultIconIds
+  ];
   const iconLabel = (iconId) => {
     const icon = iconById.get(iconId) || iconCatalog[0];
     return lang === "en" ? icon.en : icon.ko;
@@ -223,8 +233,8 @@
 
   const pageStates = Array.from({ length: 3 }, (_value, index) => ({
     name: lang === "en" ? `Page ${index + 1}` : `${index + 1} 페이지`,
-    assignments: Array.from({ length: 6 }, () => []),
-    icons: defaultIconIds.slice()
+    assignments: defaultAssignments[index].map((keys) => keys.slice()),
+    icons: defaultPageIcons[index].slice()
   }));
   pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
   pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
@@ -755,9 +765,9 @@
 
   document.querySelector("#gkClearAll").addEventListener("click", () => {
     if (!window.confirm(copy.confirmClearAll)) return;
-    pageStates.forEach((page) => {
-      page.assignments.forEach((keys) => keys.splice(0));
-      page.icons = defaultIconIds.slice();
+    pageStates.forEach((page, index) => {
+      page.assignments = defaultAssignments[index].map((keys) => keys.slice());
+      page.icons = defaultPageIcons[index].slice();
     });
     pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
     pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
