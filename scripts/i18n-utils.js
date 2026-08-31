@@ -36,6 +36,7 @@ const SOURCE_HTML_FILES = [
   "tools/mysql-parameter-compare.html",
   "tools/mysql-query-prettier.html",
   "tools/npm-package-info.html",
+  "tools/new-pager.html",
   "tools/performance-lab.html",
   "tools/pip-toolbox.html",
   "tools/utility-toolbox.html",
