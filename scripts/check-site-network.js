@@ -31,6 +31,7 @@ const MAIN_AD_FREE_FILES = new Set([
   "contact.html",
   "features.html",
   "tools/grand-koleos-touch-keyboard.html",
+  "tools/google-timeline.html",
   "privacy.html",
   "terms.html",
   "tools/all.html",
@@ -211,7 +212,7 @@ for (const lang of ["ko", "en"]) {
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
 const generatedCategories = generatedCategoryRecords(toolCatalog);
-if (toolCatalog.length !== 149) fail(`Tool catalog count: ${toolCatalog.length}, expected 149`);
+if (toolCatalog.length !== 150) fail(`Tool catalog count: ${toolCatalog.length}, expected 150`);
 if (generatedTools.length !== 136) fail(`Generated focused tool count: ${generatedTools.length}, expected 136`);
 if (generatedCategories.length !== CATEGORY_IDS.length) fail(`Generated category count: ${generatedCategories.length}, expected ${CATEGORY_IDS.length}`);
 const toolTitles = new Set();
@@ -306,4 +307,4 @@ for (const site of sites) {
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
 }
 
-console.log("Checked SolForge network: 149 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");
+console.log("Checked SolForge network: 150 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");

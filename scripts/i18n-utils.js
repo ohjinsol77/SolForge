@@ -29,6 +29,7 @@ const SOURCE_HTML_FILES = [
   "tools/gaming-lab.html",
   "tools/global-stocks.html",
   "tools/grand-koleos-touch-keyboard.html",
+  "tools/google-timeline.html",
   "tools/input-training.html",
   "tools/korea-stocks.html",
   "tools/mapleland-boss-timer.html",

@@ -57,6 +57,7 @@ const AD_FREE_FILES = new Set([
   "contact.html",
   "features.html",
   "tools/grand-koleos-touch-keyboard.html",
+  "tools/google-timeline.html",
   "privacy.html",
   "terms.html",
   "tools/all.html",

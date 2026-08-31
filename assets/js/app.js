@@ -150,6 +150,7 @@
     }
 
     function setTheme(theme) {
+      if (document.documentElement.dataset.skin === "terminal") theme = "dark";
       document.documentElement.dataset.theme = theme;
       writeStorage("solforge-theme", theme);
       if (toggle) toggle.setAttribute("aria-pressed", String(theme === "dark"));
@@ -158,8 +159,13 @@
 
     function setSkin(skin) {
       document.documentElement.dataset.skin = skin;
+      if (skin === "terminal") setTheme("dark");
       writeStorage("solforge-skin", skin);
       if (skinSel) skinSel.value = skin;
+      if (toggle) {
+        toggle.disabled = skin === "terminal";
+        toggle.setAttribute("aria-disabled", String(skin === "terminal"));
+      }
     }
 
     function enhanceSkinSelect() {

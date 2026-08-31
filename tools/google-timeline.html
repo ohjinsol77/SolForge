@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="tools.google-timeline.meta.title">뽈뽈 - Google Timeline 지도 분석기 - SolForge</title>
+    <meta name="description" content="Google Maps Timeline JSON을 브라우저에서 검증하고 이동 경로, 방문지, 이동수단과 통계를 지도에서 확인합니다." data-i18n-attrs="content:tools.google-timeline.meta.description">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://solforge.cloud/tools/google-timeline.html">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260811-gamertag">
+    <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
+    <link rel="stylesheet" href="../assets/css/google-timeline.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  </head>
+  <body data-page="google-timeline" data-page-tool="google-timeline">
+    <a class="skip-link" href="#main" data-i18n="tools.google-timeline.skip">본문으로 이동</a>
+    <div class="site-shell">
+      <aside class="sidebar" aria-label="기능 메뉴" data-i18n-attrs="aria-label:tools.google-timeline.navLabel">
+        <a class="brand" href="../index.html" aria-label="SolForge 홈" data-i18n-attrs="aria-label:tools.google-timeline.homeLabel"><span class="brand-mark">SF</span><span><strong>SolForge</strong><small data-i18n="tools.google-timeline.brand">Local Data Tools</small></span></a>
+        <nav class="side-nav" data-solforge-nav></nav>
+        <div class="side-card"><strong data-i18n="tools.google-timeline.category">생활 도구</strong><span data-i18n="tools.google-timeline.sideBody">개인 위치 데이터를 브라우저에서 확인합니다.</span></div>
+      </aside>
+
+      <main class="content" id="main">
+        <header class="topbar">
+          <nav class="top-links" aria-label="사이트 정보" data-i18n-attrs="aria-label:tools.google-timeline.topNav"><a href="../features.html" data-top-link data-i18n="tools.google-timeline.features">기능소개</a><a href="../about.html" data-top-link data-i18n="tools.google-timeline.about">사이트소개</a><a href="../privacy.html" data-top-link data-i18n="tools.google-timeline.privacy">개인정보처리방침</a><a href="../contact.html" data-top-link data-i18n="tools.google-timeline.contact">문의</a></nav>
+          <div class="topbar-controls">
+            <a class="language-toggle" id="languageToggle" data-language-toggle href="/en/tools/google-timeline" aria-label="Switch to English">🇺🇸</a>
+            <select class="skin-select" id="skinSelect" aria-label="테마 스킨 선택" data-i18n-attrs="aria-label:tools.google-timeline.skinLabel"><option value="basic">Basic</option><option value="saas">SaaS</option><option value="terminal">Terminal</option></select>
+            <button class="theme-toggle" type="button" id="themeToggle" aria-pressed="false"><span class="theme-toggle-icon" aria-hidden="true"></span><span id="themeToggleLabel">Dark</span></button>
+          </div>
+        </header>
+
+        <section class="page-hero compact-hero timeline-hero">
+          <div><p class="eyebrow" data-i18n="tools.google-timeline.eyebrow">LOCAL JSON · MAP STORY</p><h1 data-i18n="tools.google-timeline.title">뽈뽈</h1><p data-i18n="tools.google-timeline.lead">Google Timeline 파일을 불러와 내가 얼마나, 어디를, 어떻게 돌아다녔는지 지도와 통계로 확인하세요.</p></div>
+          <div class="hero-panel"><div class="metric-card"><strong>LOCAL</strong><span data-i18n="tools.google-timeline.metric.local">브라우저 안에서 처리</span></div><div class="metric-card"><strong>JSON</strong><span data-i18n="tools.google-timeline.metric.json">최신·구형 형식 검사</span></div></div>
+        </section>
+
+        <section class="timeline-upload-card" aria-labelledby="timelineUploadTitle">
+          <div class="timeline-section-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.upload.eyebrow">STEP 01 · IMPORT</p><h2 id="timelineUploadTitle" data-i18n="tools.google-timeline.upload.title">Timeline JSON 가져오기</h2><p data-i18n="tools.google-timeline.upload.body">휴대폰의 Google Maps Timeline 내보내기 파일을 선택하세요. PC는 끌어 놓을 수 있고, 모바일은 파일 선택·공유 메뉴를 사용할 수 있습니다.</p></div><span class="timeline-private-badge" data-i18n="tools.google-timeline.upload.private">서버 전송 없음</span></div>
+          <label class="timeline-dropzone" id="timelineDropzone" for="timelineFile" tabindex="0">
+            <input id="timelineFile" type="file" accept=".json,application/json" hidden>
+            <span class="timeline-upload-icon" aria-hidden="true">↑</span>
+            <strong data-i18n="tools.google-timeline.upload.choose">Timeline.json 선택</strong>
+            <span data-i18n="tools.google-timeline.upload.hint">PC에서는 파일을 이 영역에 놓으세요 · 모바일에서는 파일 앱에서 선택하세요</span>
+          </label>
+          <div class="timeline-upload-actions"><button type="button" class="primary-link" id="timelineChooseButton" data-i18n="tools.google-timeline.upload.button">파일 선택</button><button type="button" class="secondary-link" id="timelineResetButton" disabled data-i18n="tools.google-timeline.upload.reset">초기화</button></div>
+          <div class="timeline-file-meta" id="timelineFileMeta" hidden></div>
+          <div class="timeline-validation" id="timelineValidation" role="status" aria-live="polite"><span class="timeline-validation-dot" aria-hidden="true"></span><span data-i18n="tools.google-timeline.validation.waiting">파일을 선택하면 Google Timeline 형식과 데이터 상태를 검사합니다.</span></div>
+          <div class="timeline-validation-details" id="timelineValidationDetails" hidden></div>
+        </section>
+
+        <section class="timeline-dashboard" id="timelineDashboard" aria-labelledby="timelineDashboardTitle" hidden>
+          <div class="timeline-section-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.dashboard.eyebrow">STEP 02 · EXPLORE</p><h2 id="timelineDashboardTitle" data-i18n="tools.google-timeline.dashboard.title">이동 기록 분석</h2><p data-i18n="tools.google-timeline.dashboard.body">파일에서 읽은 기록을 기간과 이동 방식으로 좁혀 지도와 통계로 확인합니다.</p></div><span class="timeline-data-status" id="timelineDataStatus"></span></div>
+          <div class="timeline-filters" aria-label="Timeline 필터" data-i18n-attrs="aria-label:tools.google-timeline.filters.label">
+            <div class="timeline-filter-field"><label for="timelineFrom" data-i18n="tools.google-timeline.filters.from">시작일</label><input id="timelineFrom" type="date"></div>
+            <div class="timeline-filter-field"><label for="timelineTo" data-i18n="tools.google-timeline.filters.to">종료일</label><input id="timelineTo" type="date"></div>
+            <div class="timeline-filter-field"><label for="timelineType" data-i18n="tools.google-timeline.filters.type">기록 유형</label><select id="timelineType"><option value="all" data-i18n="tools.google-timeline.filters.all">전체</option><option value="visit" data-i18n="tools.google-timeline.filters.visit">방문지</option><option value="activity" data-i18n="tools.google-timeline.filters.activity">이동</option><option value="path" data-i18n="tools.google-timeline.filters.path">경로</option></select></div>
+            <div class="timeline-filter-field"><label for="timelineMode" data-i18n="tools.google-timeline.filters.mode">이동 방식</label><select id="timelineMode"><option value="all" data-i18n="tools.google-timeline.filters.all">전체</option></select></div>
+            <div class="timeline-filter-field"><label for="timelineMinDuration" data-i18n="tools.google-timeline.filters.minDuration">최소 체류·이동(분)</label><input id="timelineMinDuration" type="number" min="0" step="1" value="0"></div>
+            <button type="button" class="secondary-link timeline-filter-reset" id="timelineFilterReset" data-i18n="tools.google-timeline.filters.reset">필터 초기화</button>
+          </div>
+
+          <div class="timeline-stat-grid" id="timelineStats"></div>
+
+          <div class="timeline-map-layout">
+            <section class="timeline-map-card" aria-labelledby="timelineMapTitle"><div class="timeline-card-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.map.eyebrow">MAP PLAYBACK</p><h3 id="timelineMapTitle" data-i18n="tools.google-timeline.map.title">이동 경로</h3></div><div class="timeline-play-actions"><button type="button" class="primary-link" id="timelinePlayButton" disabled data-i18n="tools.google-timeline.map.play">재생</button><button type="button" class="secondary-link" id="timelineFitButton" disabled data-i18n="tools.google-timeline.map.fit">전체 보기</button></div></div><div class="timeline-map" id="timelineMap"><div class="timeline-map-empty" data-i18n="tools.google-timeline.map.empty">검증된 데이터를 불러오면 지도가 표시됩니다.</div></div><div class="timeline-playback"><input id="timelineProgress" type="range" min="0" max="1000" value="0" disabled aria-label="재생 위치" data-i18n-attrs="aria-label:tools.google-timeline.map.progress"><span id="timelinePlaybackLabel">—</span></div><p class="timeline-map-credit" data-i18n="tools.google-timeline.map.credit">지도 © OpenStreetMap 기여자 · 개인 파일은 서버로 전송되지 않습니다.</p></section>
+            <aside class="timeline-insight-stack">
+              <section class="timeline-insight-card"><div class="timeline-card-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.insight.transport.eyebrow">TRANSPORT</p><h3 data-i18n="tools.google-timeline.insight.transport.title">이동 방식</h3></div></div><div class="timeline-bar-list" id="timelineTransportStats"><p class="timeline-empty-copy" data-i18n="tools.google-timeline.insight.empty">데이터를 불러오면 통계가 표시됩니다.</p></div></section>
+              <section class="timeline-insight-card"><div class="timeline-card-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.insight.weekday.eyebrow">WEEKDAY</p><h3 data-i18n="tools.google-timeline.insight.weekday.title">요일별 기록</h3></div></div><div class="timeline-weekday-list" id="timelineWeekdayStats"></div></section>
+              <section class="timeline-insight-card"><div class="timeline-card-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.insight.place.eyebrow">PLACES</p><h3 data-i18n="tools.google-timeline.insight.place.title">자주 간 곳</h3></div></div><ol class="timeline-place-list" id="timelinePlaceStats"><li class="timeline-empty-copy" data-i18n="tools.google-timeline.insight.empty">데이터를 불러오면 통계가 표시됩니다.</li></ol></section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="timeline-guide-section" aria-labelledby="timelineGuideTitle"><div class="timeline-section-heading"><div><p class="eyebrow" data-i18n="tools.google-timeline.guide.eyebrow">HOW IT WORKS</p><h2 id="timelineGuideTitle" data-i18n="tools.google-timeline.guide.title">파일은 이렇게 처리됩니다</h2></div></div><div class="timeline-guide-grid"><article><span>01</span><h3 data-i18n="tools.google-timeline.guide.format.title">형식 확인</h3><p data-i18n="tools.google-timeline.guide.format.body">semanticSegments, timelineObjects, Records.json과 locations 구조를 자동 판별합니다.</p></article><article><span>02</span><h3 data-i18n="tools.google-timeline.guide.validate.title">내용 검증</h3><p data-i18n="tools.google-timeline.guide.validate.body">시간, 좌표, 방문·이동 기록을 확인하고 오류와 경고를 분리해서 보여줍니다.</p></article><article><span>03</span><h3 data-i18n="tools.google-timeline.guide.local.title">로컬 분석</h3><p data-i18n="tools.google-timeline.guide.local.body">원본 파일은 업로드하지 않고 현재 브라우저에서만 정규화·통계·지도 표시를 수행합니다.</p></article></div></section>
+
+        <footer class="footer"><p data-i18n="tools.google-timeline.footer">뽈뽈은 Google Timeline 내보내기 파일을 브라우저에서 분석하는 SolForge 도구입니다.</p><div><a href="../about.html" data-i18n="tools.google-timeline.about">사이트소개</a><a href="../privacy.html" data-i18n="tools.google-timeline.privacy">개인정보처리방침</a><a href="../contact.html" data-i18n="tools.google-timeline.contact">문의</a></div></footer>
+      </main>
+    </div>
+    <script src="../assets/js/app.js?v=20260803-categories"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/google-timeline.js?v=20260831-v1"></script>
+  </body>
+</html>
