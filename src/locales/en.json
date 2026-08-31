@@ -3815,6 +3815,8 @@
   "tools.google-timeline.map.empty": "The map appears after verified data is loaded.",
   "tools.google-timeline.map.progress": "Playback position",
   "tools.google-timeline.map.credit": "Map © OpenStreetMap contributors · Your file is not sent to a server.",
+  "tools.google-timeline.records.eyebrow": "TIMELINE",
+  "tools.google-timeline.records.title": "Chronological records",
   "tools.google-timeline.insight.transport.eyebrow": "TRANSPORT",
   "tools.google-timeline.insight.transport.title": "Travel modes",
   "tools.google-timeline.insight.weekday.eyebrow": "WEEKDAY",

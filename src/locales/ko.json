@@ -3832,6 +3832,8 @@
   "tools.google-timeline.map.empty": "검증된 데이터를 불러오면 지도가 표시됩니다.",
   "tools.google-timeline.map.progress": "재생 위치",
   "tools.google-timeline.map.credit": "지도 © OpenStreetMap 기여자 · 개인 파일은 서버로 전송되지 않습니다.",
+  "tools.google-timeline.records.eyebrow": "TIMELINE",
+  "tools.google-timeline.records.title": "시간순 기록",
   "tools.google-timeline.insight.transport.eyebrow": "TRANSPORT",
   "tools.google-timeline.insight.transport.title": "이동 방식",
   "tools.google-timeline.insight.weekday.eyebrow": "WEEKDAY",
