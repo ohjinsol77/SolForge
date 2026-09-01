@@ -3792,6 +3792,7 @@
   "tools.google-timeline.upload.choose": "Choose Timeline.json",
   "tools.google-timeline.upload.hint": "Drop the file here on desktop · Choose it from your Files app on mobile",
   "tools.google-timeline.upload.button": "Choose file",
+  "tools.google-timeline.upload.changeFile": "Choose another file",
   "tools.google-timeline.upload.reset": "Reset",
   "tools.google-timeline.validation.waiting": "Choose a file to verify its Google Timeline structure and data.",
   "tools.google-timeline.dashboard.eyebrow": "STEP 02 · EXPLORE",
