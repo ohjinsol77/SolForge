@@ -66,6 +66,20 @@
               <div class="gk-page-name-copy"><strong id="gkPageNameTitle" data-i18n="tools.grand-koleos-touch-keyboard.pageEditor.title">페이지 이름 편집</strong><span data-i18n="tools.grand-koleos-touch-keyboard.pageEditor.body">각 페이지 이름은 아래 화면의 하단 탭에 바로 반영됩니다.</span></div>
               <div class="gk-page-name-fields" id="gkPageNameFields"></div>
             </div>
+            <div class="gk-button-theme-picker" aria-labelledby="gkButtonThemeTitle">
+              <div class="gk-button-theme-copy"><strong id="gkButtonThemeTitle" data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.title">버튼 테마 선택</strong><span data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.body">같은 버튼 배치와 설정 기능을 유지하면서 미리보기 스타일을 골라보세요.</span></div>
+              <div class="gk-button-theme-options" id="gkButtonThemeOptions" role="group" aria-label="버튼 테마" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.buttonTheme.label">
+                <button type="button" class="gk-button-theme-option active" data-gk-button-theme="classic" aria-pressed="true">
+                  <span class="gk-theme-number">01</span><span class="gk-theme-swatch gk-theme-swatch-classic" aria-hidden="true"></span><span class="gk-theme-option-copy"><strong data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.classic.title">클래식 네이비</strong><small data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.classic.body">현재 기본 테마</small></span>
+                </button>
+                <button type="button" class="gk-button-theme-option" data-gk-button-theme="light" aria-pressed="false">
+                  <span class="gk-theme-number">02</span><span class="gk-theme-swatch gk-theme-swatch-light" aria-hidden="true"></span><span class="gk-theme-option-copy"><strong data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.light.title">소프트 라이트</strong><small data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.light.body">맑고 산뜻한 밝은 테마</small></span>
+                </button>
+                <button type="button" class="gk-button-theme-option" data-gk-button-theme="dark" aria-pressed="false">
+                  <span class="gk-theme-number">03</span><span class="gk-theme-swatch gk-theme-swatch-dark" aria-hidden="true"></span><span class="gk-theme-option-copy"><strong data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.dark.title">옵시디언 글로우</strong><small data-i18n="tools.grand-koleos-touch-keyboard.buttonTheme.dark.body">차분하고 깊이 있는 어두운 테마</small></span>
+                </button>
+              </div>
+            </div>
             <div class="gk-device-frame"><canvas id="gkPreview" width="480" height="272" role="img" aria-label="480×272 터치키보드 미리보기" data-i18n-attrs="aria-label:tools.grand-koleos-touch-keyboard.previewLabel"></canvas></div>
             <div class="gk-icon-editor" id="gkIconEditor" hidden>
               <span class="gk-selected-icon" id="gkSelectedIcon" aria-hidden="true"></span>

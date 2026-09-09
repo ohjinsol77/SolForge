@@ -45,7 +45,8 @@
     bootloaderPortCancelled: "Bootloader port selection was cancelled. Click Apply current settings and select the USB JTAG/serial debug unit port.",
     tooManyKeys: "You can assign up to three keys to one button.",
     maxThreeKeys: "You can assign up to three keys to one button.",
-    tooManyMedia: "Only one volume media key can be assigned to a button."
+    tooManyMedia: "Only one volume media key can be assigned to a button.",
+    themeChanged: "Button theme changed."
   } : {
     button: "버튼",
     empty: "키 조합 없음",
@@ -87,7 +88,8 @@
     bootloaderPortCancelled: "부트로더 포트 선택이 취소됐습니다. 현재 설정을 보드에 적용을 다시 누르고 USB JTAG/serial debug unit 포트를 선택해 주세요.",
     tooManyKeys: "버튼 하나에는 키 조합을 최대 3개까지 지정할 수 있습니다.",
     maxThreeKeys: "버튼 하나에는 키 조합을 최대 3개까지만 지정할 수 있습니다.",
-    tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다."
+    tooManyMedia: "버튼 하나에는 볼륨 미디어 키를 하나만 지정할 수 있습니다.",
+    themeChanged: "버튼 테마를 변경했습니다."
   };
 
   const iconCatalog = [
@@ -141,6 +143,88 @@
     defaultIconIds,
     defaultIconIds
   ];
+
+  const buttonThemes = new Map([
+    ["classic", {
+      screen: ["#070b12", "#101824"],
+      text: "#f8fafc",
+      pageDot: "#38bdf8",
+      pageDotInactive: "#6b7280",
+      cardActive: ["#20334a", "#152a40"],
+      cardIdle: ["#1b2532", "#131c27"],
+      cardBorder: "#475569",
+      cardActiveBorder: "#38bdf8",
+      settingsText: "#38bdf8",
+      emptyText: "#64748b",
+      iconPlate: null,
+      footer: "#151d29",
+      tabActive: "#0759b7",
+      tabActiveBorder: "#1687ff",
+      tabIdle: "#1a2431",
+      tabIdleBorder: "#344154",
+      tabText: "#f8fafc",
+      tabInactiveText: "#536172",
+      radius: 12,
+      shadowBlur: 0,
+      iconColors: ["#38bdf8", "#fb5c7c", "#4ade55", "#facc15", "#a66df4", "#22d3ee"]
+    }],
+    ["light", {
+      screen: ["#f7fafc", "#e5edf5"],
+      text: "#172338",
+      pageDot: "#2563eb",
+      pageDotInactive: "#a5b4c4",
+      cardActive: ["#ffffff", "#e8f2ff"],
+      cardIdle: ["#ffffff", "#edf3f8"],
+      cardBorder: "#b7c8d8",
+      cardActiveBorder: "#2879d0",
+      settingsText: "#1d4ed8",
+      emptyText: "#718096",
+      iconPlate: "#2563eb",
+      footer: "#d8e4ee",
+      tabActive: "#2563eb",
+      tabActiveBorder: "#60a5fa",
+      tabIdle: "#f8fbfd",
+      tabIdleBorder: "#b7c8d8",
+      tabText: "#ffffff",
+      tabInactiveText: "#334155",
+      radius: 15,
+      shadowBlur: 7,
+      iconColors: ["#0369a1", "#be123c", "#15803d", "#a16207", "#7e22ce", "#0e7490"]
+    }],
+    ["dark", {
+      screen: ["#090a13", "#171326"],
+      text: "#f5f3ff",
+      pageDot: "#c084fc",
+      pageDotInactive: "#655d7c",
+      cardActive: ["#302650", "#19182f"],
+      cardIdle: ["#211d36", "#141322"],
+      cardBorder: "#4a4565",
+      cardActiveBorder: "#c084fc",
+      settingsText: "#67e8f9",
+      emptyText: "#817b9b",
+      iconPlate: null,
+      footer: "#0d0d19",
+      tabActive: "#6d28d9",
+      tabActiveBorder: "#c084fc",
+      tabIdle: "#171426",
+      tabIdleBorder: "#413a5b",
+      tabText: "#ffffff",
+      tabInactiveText: "#8c85a4",
+      radius: 16,
+      shadowBlur: 9,
+      iconColors: ["#67e8f9", "#fb7185", "#86efac", "#fde68a", "#d8b4fe", "#5eead4"]
+    }]
+  ]);
+  const buttonThemeStorageKey = "solforge-grand-koleos-button-theme";
+  const readButtonTheme = () => {
+    try {
+      const saved = window.localStorage.getItem(buttonThemeStorageKey);
+      return buttonThemes.has(saved) ? saved : "classic";
+    } catch (_error) {
+      return "classic";
+    }
+  };
+  let buttonTheme = readButtonTheme();
   const iconLabel = (iconId) => {
     const icon = iconById.get(iconId) || iconCatalog[0];
     return lang === "en" ? icon.en : icon.ko;
@@ -262,6 +346,7 @@
   const iconGroups = document.querySelector("#gkIconGroups");
   const iconDialogClose = document.querySelector("#gkIconDialogClose");
   const iconDialogDone = document.querySelector("#gkIconDialogDone");
+  const buttonThemeOptions = document.querySelectorAll("[data-gk-button-theme]");
   const uploadSection = document.querySelector("#gkUploadSection");
   const portButton = document.querySelector("#gkPortButton");
   const uploadButton = document.querySelector("#gkUploadButton");
@@ -299,6 +384,31 @@
   function comboText(index) {
     return comboTextFor(activePage, index);
   }
+
+  function syncButtonThemePicker() {
+    buttonThemeOptions.forEach((option) => {
+      const selected = option.dataset.gkButtonTheme === buttonTheme;
+      option.classList.toggle("active", selected);
+      option.setAttribute("aria-pressed", String(selected));
+    });
+  }
+
+  function selectButtonTheme(themeId, announce = true) {
+    if (!buttonThemes.has(themeId)) return;
+    buttonTheme = themeId;
+    try {
+      window.localStorage.setItem(buttonThemeStorageKey, themeId);
+    } catch (_error) {
+      // Private browsing and blocked storage should not affect the preview.
+    }
+    syncButtonThemePicker();
+    if (announce) status.textContent = copy.themeChanged;
+    renderPreview();
+  }
+
+  buttonThemeOptions.forEach((option) => {
+    option.addEventListener("click", () => selectButtonTheme(option.dataset.gkButtonTheme));
+  });
 
   function buttonText(index) {
     return `${copy.button} ${index + 1}`;
@@ -542,20 +652,21 @@
   }
 
   function renderPreview() {
+    const theme = buttonThemes.get(buttonTheme) || buttonThemes.get("classic");
     const gradient = context.createLinearGradient(0, 0, 480, 272);
-    gradient.addColorStop(0, "#070b12");
-    gradient.addColorStop(1, "#101824");
+    gradient.addColorStop(0, theme.screen[0]);
+    gradient.addColorStop(1, theme.screen[1]);
     context.fillStyle = gradient;
     context.fillRect(0, 0, 480, 272);
 
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillStyle = "#f8fafc";
+    context.fillStyle = theme.text;
     context.font = "800 16px Inter, Arial, sans-serif";
     [0, 1, 2].forEach((dot) => {
       context.beginPath();
       context.arc(228 + dot * 12, 31, 3, 0, Math.PI * 2);
-      context.fillStyle = dot === activePage ? "#38bdf8" : "#6b7280";
+      context.fillStyle = dot === activePage ? theme.pageDot : theme.pageDotInactive;
       context.fill();
     });
 
@@ -565,7 +676,6 @@
     const rowGap = 8;
     const buttonWidth = (480 - outerX * 2 - columnGap * 2) / 3;
     const buttonHeight = 76;
-    const iconColors = ["#38bdf8", "#fb5c7c", "#4ade55", "#facc15", "#a66df4", "#22d3ee"];
     buttonBoxes.length = 0;
 
     for (let index = 0; index < 6; index += 1) {
@@ -577,38 +687,48 @@
 
       const isFixed = isSettingsButton(activePage, index);
       const isActive = index === activeButton && !isFixed;
-      roundedRect(context, x, y, buttonWidth, buttonHeight, 12);
+      context.save();
+      context.shadowColor = isActive && theme.shadowBlur ? `${theme.cardActiveBorder}55` : "transparent";
+      context.shadowBlur = isActive ? theme.shadowBlur : 0;
+      context.shadowOffsetY = isActive ? 2 : 0;
+      roundedRect(context, x, y, buttonWidth, buttonHeight, theme.radius);
       const cardGradient = context.createLinearGradient(x, y, x, y + buttonHeight);
-      cardGradient.addColorStop(0, isActive ? "#20334a" : "#1b2532");
-      cardGradient.addColorStop(1, isActive ? "#152a40" : "#131c27");
+      cardGradient.addColorStop(0, isActive ? theme.cardActive[0] : theme.cardIdle[0]);
+      cardGradient.addColorStop(1, isActive ? theme.cardActive[1] : theme.cardIdle[1]);
       context.fillStyle = cardGradient;
       context.fill();
-      context.lineWidth = isActive ? 2.5 : 1.25;
-      context.strokeStyle = isActive ? "#38bdf8" : "#475569";
+      context.lineWidth = isActive ? 2.25 : 1.35;
+      context.strokeStyle = isActive ? theme.cardActiveBorder : theme.cardBorder;
       context.stroke();
+      context.restore();
 
+      if (theme.iconPlate) {
+        roundedRect(context, x + buttonWidth / 2 - 22, y + 3, 44, 44, 14);
+        context.fillStyle = isFixed ? "#334155" : theme.iconPlate;
+        context.fill();
+      }
       drawCanvasIcon(isFixed ? settingsIconId : currentIcons()[index], x + buttonWidth / 2, y + 25, 32);
 
       const assignments = currentAssignments();
       const combo = isFixed ? copy.settingsLabel : (assignments[index].length ? comboText(index) : copy.unset);
-      context.fillStyle = isFixed ? "#38bdf8" : assignments[index].length ? iconColors[index] : "#64748b";
+      context.fillStyle = isFixed ? theme.settingsText : assignments[index].length ? theme.iconColors[index] : theme.emptyText;
       const fontSize = fitFont(combo, buttonWidth - 16, 10);
       context.font = `700 ${fontSize}px Inter, Arial, sans-serif`;
       context.fillText(combo, x + buttonWidth / 2, y + 59);
     }
 
-    context.fillStyle = "#151d29";
+    context.fillStyle = theme.footer;
     context.fillRect(0, 210, 480, 62);
     const bottomItems = pageStates.map((_page, index) => ({ x: 12 + index * 156, width: 144, label: displayPageName(index), type: "page", pageIndex: index, active: activePage === index }));
     navigationBoxes.length = 0;
     bottomItems.forEach((item) => {
       roundedRect(context, item.x, 219, item.width, 43, 9);
-      context.fillStyle = item.active ? "#0759b7" : item.disabled ? "#111923" : "#1a2431";
+      context.fillStyle = item.active ? theme.tabActive : theme.tabIdle;
       context.fill();
-      context.strokeStyle = item.active ? "#1687ff" : item.disabled ? "#263140" : "#344154";
+      context.strokeStyle = item.active ? theme.tabActiveBorder : theme.tabIdleBorder;
       context.lineWidth = 1;
       context.stroke();
-      context.fillStyle = item.disabled ? "#536172" : "#f8fafc";
+      context.fillStyle = item.disabled ? theme.tabInactiveText : item.active ? theme.tabText : theme.tabInactiveText;
       const tabFontSize = item.label.length === 1 ? 28 : fitFont(item.label, item.width - 12, 12, 8);
       context.font = item.label.length === 1 ? `700 ${tabFontSize}px Inter, Arial, sans-serif` : `800 ${tabFontSize}px Inter, Arial, sans-serif`;
       context.fillText(item.label, item.x + item.width / 2, 241);
@@ -619,6 +739,7 @@
   function renderAll() {
     activeButtonOutput.textContent = `${displayPageName(activePage)} · ${buttonText(activeButton)}`;
     activeComboOutput.textContent = comboText(activeButton);
+    syncButtonThemePicker();
     syncKeyboardState();
     syncPageNameFields();
     renderAssignmentSummary();
