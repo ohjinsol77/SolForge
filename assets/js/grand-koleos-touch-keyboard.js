@@ -328,6 +328,9 @@
   let activePage = 0;
   let transitioning = false;
   let pointerState = null;
+  let buttonPressIndex = -1;
+  let buttonPressProgress = 0;
+  let buttonPressAnimationFrame = 0;
   let iconDialogReturnFocus = null;
 
   const keyboard = document.querySelector("#gkKeyboard");
@@ -404,6 +407,11 @@
     syncButtonThemePicker();
     if (announce) status.textContent = copy.themeChanged;
     renderPreview();
+    const animation = preview.animate([
+      { opacity: 0.78, filter: "brightness(1.08)" },
+      { opacity: 1, filter: "brightness(1)" }
+    ], { duration: 220, easing: "cubic-bezier(.22, 1, .36, 1)" });
+    animation.finished.catch(() => {});
   }
 
   buttonThemeOptions.forEach((option) => {
@@ -687,12 +695,15 @@
 
       const isFixed = isSettingsButton(activePage, index);
       const isActive = index === activeButton && !isFixed;
+      const pressOffset = buttonPressIndex === index && !isFixed ? 2 * buttonPressProgress : 0;
+      const paintY = y + pressOffset;
+      const paintHeight = buttonHeight - pressOffset;
       context.save();
       context.shadowColor = isActive && theme.shadowBlur ? `${theme.cardActiveBorder}55` : "transparent";
       context.shadowBlur = isActive ? theme.shadowBlur : 0;
       context.shadowOffsetY = isActive ? 2 : 0;
-      roundedRect(context, x, y, buttonWidth, buttonHeight, theme.radius);
-      const cardGradient = context.createLinearGradient(x, y, x, y + buttonHeight);
+      roundedRect(context, x, paintY, buttonWidth, paintHeight, theme.radius);
+      const cardGradient = context.createLinearGradient(x, paintY, x, paintY + paintHeight);
       cardGradient.addColorStop(0, isActive ? theme.cardActive[0] : theme.cardIdle[0]);
       cardGradient.addColorStop(1, isActive ? theme.cardActive[1] : theme.cardIdle[1]);
       context.fillStyle = cardGradient;
@@ -703,18 +714,18 @@
       context.restore();
 
       if (theme.iconPlate) {
-        roundedRect(context, x + buttonWidth / 2 - 22, y + 3, 44, 44, 14);
+        roundedRect(context, x + buttonWidth / 2 - 22, y + 3 + pressOffset * 0.5, 44, 44, 14);
         context.fillStyle = isFixed ? "#334155" : theme.iconPlate;
         context.fill();
       }
-      drawCanvasIcon(isFixed ? settingsIconId : currentIcons()[index], x + buttonWidth / 2, y + 25, 32);
+      drawCanvasIcon(isFixed ? settingsIconId : currentIcons()[index], x + buttonWidth / 2, y + 25 + pressOffset * 0.5, 32);
 
       const assignments = currentAssignments();
       const combo = isFixed ? copy.settingsLabel : (assignments[index].length ? comboText(index) : copy.unset);
       context.fillStyle = isFixed ? theme.settingsText : assignments[index].length ? theme.iconColors[index] : theme.emptyText;
       const fontSize = fitFont(combo, buttonWidth - 16, 10);
       context.font = `700 ${fontSize}px Inter, Arial, sans-serif`;
-      context.fillText(combo, x + buttonWidth / 2, y + 59);
+      context.fillText(combo, x + buttonWidth / 2, y + 59 + pressOffset);
     }
 
     context.fillStyle = theme.footer;
@@ -755,9 +766,41 @@
     };
   }
 
+  function buttonIndexAtPoint(point) {
+    return buttonBoxes.findIndex((box) => point.x >= box.x && point.x <= box.x + box.width && point.y >= box.y && point.y <= box.y + box.height);
+  }
+
+  function animateButtonPress(index, target) {
+    if (buttonPressAnimationFrame) cancelAnimationFrame(buttonPressAnimationFrame);
+    if (target > 0) buttonPressIndex = index;
+    if (buttonPressIndex < 0) return;
+    const from = buttonPressProgress;
+    const startedAt = performance.now();
+    const duration = target > 0 ? 130 : 150;
+    const frame = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      buttonPressProgress = from + (target - from) * eased;
+      renderPreview();
+      if (progress < 1) {
+        buttonPressAnimationFrame = requestAnimationFrame(frame);
+      } else {
+        buttonPressProgress = target;
+        buttonPressAnimationFrame = 0;
+        if (target === 0) buttonPressIndex = -1;
+        renderPreview();
+      }
+    };
+    buttonPressAnimationFrame = requestAnimationFrame(frame);
+  }
+
+  function releaseButtonPress() {
+    if (buttonPressIndex >= 0) animateButtonPress(buttonPressIndex, 0);
+  }
+
   function handleCanvasTap(event) {
     const { x, y } = canvasPoint(event);
-    const index = buttonBoxes.findIndex((box) => x >= box.x && x <= box.x + box.width && y >= box.y && y <= box.y + box.height);
+    const index = buttonIndexAtPoint({ x, y });
     if (index >= 0) {
       selectButton(index);
       return;
@@ -829,6 +872,9 @@
   preview.addEventListener("pointerdown", (event) => {
     if (transitioning || event.button > 0) return;
     pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, dx: 0, dy: 0, swiping: false };
+    const point = canvasPoint(event);
+    const index = buttonIndexAtPoint(point);
+    if (index >= 0 && !isSettingsButton(activePage, index)) animateButtonPress(index, 1);
     preview.setPointerCapture?.(event.pointerId);
     preview.classList.add("dragging");
   });
@@ -839,6 +885,7 @@
     pointerState.dy = event.clientY - pointerState.startY;
     if (!pointerState.swiping && Math.abs(pointerState.dx) > 7 && Math.abs(pointerState.dx) > Math.abs(pointerState.dy) * 1.15) {
       pointerState.swiping = true;
+      releaseButtonPress();
     }
     if (!pointerState.swiping) return;
     event.preventDefault();
@@ -855,6 +902,7 @@
     if (!pointerState || pointerState.id !== event.pointerId) return;
     const state = pointerState;
     pointerState = null;
+    releaseButtonPress();
     preview.classList.remove("dragging");
     preview.releasePointerCapture?.(event.pointerId);
     if (!state.swiping) {
@@ -874,6 +922,7 @@
   preview.addEventListener("pointercancel", () => {
     const renderedDx = pointerState?.renderedDx || 0;
     pointerState = null;
+    releaseButtonPress();
     preview.classList.remove("dragging");
     snapPreview(renderedDx);
   });

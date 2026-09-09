@@ -195,10 +195,11 @@ static uint32_t lastTouchSampleMs = 0;
 static uint32_t postSwipeGuardUntilMs = 0;
 static uint32_t postMacroGuardUntilMs = 0;
 
-enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, AutoOff, Orientation, RebootConfirm };
+enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, Theme, AutoOff, Orientation, RebootConfirm };
 static SettingsScreen settingsScreen = SettingsScreen::Off;
 static uint8_t backlightLevel = 8;
 static uint8_t autoOffIndex = kDefaultAutoOffIndex;
+static uint8_t buttonTheme = 0;
 static bool screenRotated180 = false;
 static int16_t settingsPressX = -1;
 static int16_t settingsPressY = -1;
@@ -274,6 +275,7 @@ static void loadDeviceSettings() {
   settingsPrefs.begin("gk", false);
   backlightLevel = constrain(settingsPrefs.getUChar("bright", 8), 1, kBacklightLevels);
   autoOffIndex = constrain(settingsPrefs.getUChar("autoff", kDefaultAutoOffIndex), 0, 6);
+  buttonTheme = constrain(settingsPrefs.getUChar("theme", 0), 0, 2);
   screenRotated180 = settingsPrefs.getBool("rot180", false);
   settingsPrefs.end();
 }
@@ -282,6 +284,7 @@ static void saveDeviceSettings() {
   settingsPrefs.begin("gk", false);
   settingsPrefs.putUChar("bright", backlightLevel);
   settingsPrefs.putUChar("autoff", autoOffIndex);
+  settingsPrefs.putUChar("theme", buttonTheme);
   settingsPrefs.putBool("rot180", screenRotated180);
   settingsPrefs.end();
 }
@@ -333,47 +336,88 @@ static uint8_t configuredIconId(uint8_t page, uint8_t button) {
   return button < 6 ? button : 0;
 }
 
+struct ButtonThemePalette {
+  uint16_t background;
+  uint16_t surface;
+  uint16_t pressed;
+  uint16_t border;
+  uint16_t activeBorder;
+  uint16_t accent;
+  uint16_t accentSoft;
+  uint16_t footer;
+  uint16_t navActive;
+  uint16_t navActiveBorder;
+  uint16_t navIdle;
+  uint16_t navIdleBorder;
+  uint16_t text;
+  uint16_t muted;
+  uint16_t shadow;
+};
+
+static const ButtonThemePalette kButtonThemes[3] = {
+    {
+      rgb565(7, 11, 18), rgb565(27, 37, 50), rgb565(32, 51, 74), rgb565(71, 85, 105),
+      rgb565(56, 189, 248), rgb565(56, 189, 248), rgb565(17, 64, 70), rgb565(21, 29, 41),
+      rgb565(7, 89, 183), rgb565(22, 135, 255), rgb565(26, 36, 49), rgb565(52, 65, 84),
+      rgb565(247, 250, 252), rgb565(95, 107, 124), rgb565(1, 3, 6)
+    },
+    {
+      rgb565(247, 250, 252), rgb565(255, 255, 255), rgb565(232, 242, 255), rgb565(183, 200, 216),
+      rgb565(40, 121, 208), rgb565(37, 99, 235), rgb565(219, 234, 254), rgb565(216, 228, 238),
+      rgb565(37, 99, 235), rgb565(96, 165, 250), rgb565(248, 251, 253), rgb565(183, 200, 216),
+      rgb565(23, 35, 56), rgb565(113, 128, 150), rgb565(148, 163, 184)
+    },
+    {
+      rgb565(9, 10, 19), rgb565(33, 29, 54), rgb565(48, 38, 80), rgb565(74, 69, 101),
+      rgb565(192, 132, 252), rgb565(103, 232, 249), rgb565(48, 38, 80), rgb565(13, 13, 25),
+      rgb565(109, 40, 217), rgb565(192, 132, 252), rgb565(23, 20, 38), rgb565(65, 58, 91),
+      rgb565(245, 243, 255), rgb565(129, 123, 155), rgb565(2, 1, 8)
+    }
+  };
+
+static uint8_t activeThemeIndex() {
+  return buttonTheme < 3 ? buttonTheme : 0;
+}
+
 static uint16_t pageBg(uint8_t page) {
-  return rgb565(7, 11, 18);
+  (void)page;
+  return kButtonThemes[activeThemeIndex()].background;
 }
 
 static uint16_t pageAccent(uint8_t page) {
-  return rgb565(56, 189, 248);
+  (void)page;
+  return kButtonThemes[activeThemeIndex()].accent;
 }
 
 static uint16_t pageAccentSoft(uint8_t page) {
-  switch (page) {
-    case 0:
-      return rgb565(17, 64, 70);
-    case 1:
-      return rgb565(74, 43, 19);
-    default:
-      return rgb565(28, 65, 39);
-  }
+  (void)page;
+  return kButtonThemes[activeThemeIndex()].accentSoft;
 }
 
 static uint16_t pageSurface(uint8_t page) {
-  return rgb565(27, 37, 50);
+  (void)page;
+  return kButtonThemes[activeThemeIndex()].surface;
 }
 
 static uint16_t buttonFill(bool pressed, uint8_t page) {
-  return pressed ? rgb565(32, 51, 74) : pageSurface(page);
+  return pressed ? kButtonThemes[activeThemeIndex()].pressed : pageSurface(page);
 }
 
 static uint16_t buttonBorder(bool pressed, uint8_t page) {
-  return pressed ? rgb565(56, 189, 248) : rgb565(71, 85, 105);
+  (void)page;
+  return pressed ? kButtonThemes[activeThemeIndex()].activeBorder : kButtonThemes[activeThemeIndex()].border;
 }
 
 static uint16_t buttonShadow() {
-  return rgb565(1, 3, 6);
+  return kButtonThemes[activeThemeIndex()].shadow;
 }
 
 static uint16_t textColor() {
-  return rgb565(247, 250, 252);
+  return kButtonThemes[activeThemeIndex()].text;
 }
 
 static uint16_t mutedColor() {
-  return rgb565(95, 107, 124);
+  return kButtonThemes[activeThemeIndex()].muted;
 }
 
 static int16_t buttonWidth() {
@@ -816,16 +860,17 @@ static void drawPageIndicator() {
 
 static void drawNavigationBox(int8_t control, int16_t x, int16_t width, const char *label, bool active, bool disabled) {
   const bool pressed = pressedButton == control;
-  const uint16_t fill = active ? rgb565(7, 89, 183) : disabled ? rgb565(17, 25, 35) : pressed ? rgb565(32, 51, 74) : rgb565(26, 36, 49);
-  const uint16_t border = active ? rgb565(22, 135, 255) : disabled ? rgb565(38, 49, 64) : rgb565(52, 65, 84);
-  const uint16_t color = disabled ? rgb565(83, 97, 114) : textColor();
+  const ButtonThemePalette &theme = kButtonThemes[activeThemeIndex()];
+  const uint16_t fill = active ? theme.navActive : disabled ? theme.background : pressed ? theme.pressed : theme.navIdle;
+  const uint16_t border = active ? theme.navActiveBorder : disabled ? theme.border : theme.navIdleBorder;
+  const uint16_t color = disabled ? theme.muted : textColor();
   gfx->fillRoundRect(x, 219, width, 43, 9, fill);
   gfx->drawRoundRect(x, 219, width, 43, 9, border);
   drawCenteredText(x + 4, 222, width - 8, 36, label, 1, color, fill);
 }
 
 static void drawBottomNavigation() {
-  gfx->fillRect(0, 210, screenWidth, 62, rgb565(21, 29, 41));
+  gfx->fillRect(0, 210, screenWidth, 62, kButtonThemes[activeThemeIndex()].footer);
   drawNavigationBox(7, 12, 144, configuredPageName(0), currentPage == 0, false);
   drawNavigationBox(8, 168, 144, configuredPageName(1), currentPage == 1, false);
   drawNavigationBox(9, 324, 144, configuredPageName(2), currentPage == 2, false);
@@ -858,27 +903,27 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
 static void renderScreen();
 
 static uint16_t settingsBg() {
-  return rgb565(8, 12, 18);
+  return kButtonThemes[activeThemeIndex()].background;
 }
 
 static uint16_t settingsPanel() {
-  return rgb565(21, 29, 41);
+  return kButtonThemes[activeThemeIndex()].surface;
 }
 
 static uint16_t settingsPanelPressed() {
-  return rgb565(32, 51, 74);
+  return kButtonThemes[activeThemeIndex()].pressed;
 }
 
 static uint16_t settingsAccent() {
-  return rgb565(56, 189, 248);
+  return kButtonThemes[activeThemeIndex()].accent;
 }
 
 static uint16_t settingsAccentFill() {
-  return rgb565(7, 89, 183);
+  return kButtonThemes[activeThemeIndex()].navActive;
 }
 
 static uint16_t settingsLine() {
-  return rgb565(52, 65, 84);
+  return kButtonThemes[activeThemeIndex()].navIdleBorder;
 }
 
 static void enterSettings() {
@@ -946,10 +991,18 @@ static void drawSettingsRow(int16_t y, const char *label, bool highlighted, bool
 }
 
 static void renderSettingsMenu() {
-  static const char *items[4] = {"밝기 조절", "자동 화면 꺼짐", "화면 방향", "재부팅"};
+  static const char *items[5] = {"밝기 조절", "버튼 테마", "자동 화면 꺼짐", "화면 방향", "재부팅"};
   drawSettingsHeader("설정");
-  for (uint8_t i = 0; i < 4; ++i) {
-    drawSettingsRow(52 + i * 48, items[i], false, settingsPressedZone == (int16_t)(100 + i));
+  for (uint8_t i = 0; i < 5; ++i) {
+    drawSettingsRow(48 + i * 38, items[i], false, settingsPressedZone == (int16_t)(100 + i));
+  }
+}
+
+static void renderSettingsTheme() {
+  static const char *items[3] = {"테마 1  클래식 네이비", "테마 2  소프트 라이트", "테마 3  옵시디언 글로우"};
+  drawSettingsHeader("버튼 테마");
+  for (uint8_t i = 0; i < 3; ++i) {
+    drawSettingsRow(62 + i * 52, items[i], buttonTheme == i, settingsPressedZone == (int16_t)(600 + i));
   }
 }
 
@@ -1020,6 +1073,9 @@ static void renderSettingsScreen() {
     case SettingsScreen::Brightness:
       renderSettingsBrightness();
       break;
+    case SettingsScreen::Theme:
+      renderSettingsTheme();
+      break;
     case SettingsScreen::AutoOff:
       renderSettingsAutoOff();
       break;
@@ -1044,15 +1100,22 @@ static int16_t settingsZoneAt(int16_t x, int16_t y) {
   }
   switch (settingsScreen) {
     case SettingsScreen::Menu: {
-      if (y >= 52 && y < 244) {
-        const int16_t row = (y - 52) / 48;
-        if (row < 4) return 100 + row;
+      if (y >= 48 && y < 238) {
+        const int16_t row = (y - 48) / 38;
+        if (row < 5 && (y - 48) % 38 < 34) return 100 + row;
       }
       break;
     }
     case SettingsScreen::Brightness: {
       if (y >= 158 && y < 210) {
         return x < screenWidth / 2 ? 200 : 201;
+      }
+      break;
+    }
+    case SettingsScreen::Theme: {
+      if (y >= 62 && y < 218) {
+        const int16_t row = (y - 62) / 52;
+        if (row < 3 && (y - 62) % 52 < 40) return 600 + row;
       }
       break;
     }
@@ -1097,12 +1160,14 @@ static void settingsTap(int16_t zone) {
   }
   switch (settingsScreen) {
     case SettingsScreen::Menu:
-      if (zone >= 100 && zone < 104) {
+      if (zone >= 100 && zone < 105) {
         if (zone == 100) {
           settingsScreen = SettingsScreen::Brightness;
         } else if (zone == 101) {
-          settingsScreen = SettingsScreen::AutoOff;
+          settingsScreen = SettingsScreen::Theme;
         } else if (zone == 102) {
+          settingsScreen = SettingsScreen::AutoOff;
+        } else if (zone == 103) {
           settingsScreen = SettingsScreen::Orientation;
         } else {
           settingsScreen = SettingsScreen::RebootConfirm;
@@ -1117,6 +1182,12 @@ static void settingsTap(int16_t zone) {
       } else if (zone == 201 && backlightLevel < kBacklightLevels) {
         backlightLevel++;
         applyBacklightDuty();
+        saveDeviceSettings();
+      }
+      break;
+    case SettingsScreen::Theme:
+      if (zone >= 600 && zone < 603) {
+        buttonTheme = static_cast<uint8_t>(zone - 600);
         saveDeviceSettings();
       }
       break;

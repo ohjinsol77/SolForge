@@ -5664,6 +5664,10 @@ th {
   transform: translateY(-1px);
 }
 
+.gk-button-theme-option:active {
+  transform: translateY(1px) scale(0.985);
+}
+
 .gk-button-theme-option:focus-visible {
   border-color: var(--brand);
   outline: 2px solid color-mix(in srgb, var(--brand) 28%, transparent);

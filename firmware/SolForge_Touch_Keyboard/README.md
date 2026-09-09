@@ -38,11 +38,12 @@ The generated bootloader, partition table, boot app, and app binaries are publis
 The last button on the third page is the fixed Settings button. Tapping it opens a settings screen with back and home navigation:
 
 - brightness: 10 PWM backlight levels, applied immediately;
+- button theme: Classic Navy, Soft Light, or Obsidian Glow, applied immediately;
 - auto screen off: 10s, 30s, 1m, 3m, 5m, 10m, or off; the first touch wakes the backlight and restarts the timer;
 - screen orientation: normal or 180-degree rotation, with matching touch-coordinate rotation;
 - reboot: confirmation prompt before `ESP.restart()`.
 
-Brightness, auto-off, and screen-orientation values are stored in NVS (namespace `gk`) and survive reboots. The firmware never sends HID key reports for the fixed Settings button.
+Brightness, button theme, auto-off, and screen-orientation values are stored in NVS (namespace `gk`) and survive reboots. The firmware never sends HID key reports for the fixed Settings button.
 
 ## Browser-generated settings
 
