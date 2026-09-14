@@ -561,6 +561,15 @@ void Arduino_Canvas::flush()
   }
 }
 
+void Arduino_Canvas::flushRows(int16_t y, int16_t height)
+{
+  if (!_output || height <= 0 || y < 0 || y + height > HEIGHT) return;
+  if (_rotation != 0 && _rotation != 2) { flush(); return; }
+  const int16_t physicalY = _rotation == 2 ? HEIGHT - y - height : y;
+  _output->draw16bitRGBBitmap(_output_x, _output_y + physicalY,
+                            _framebuffer + physicalY * WIDTH, WIDTH, height);
+}
+
 void Arduino_Canvas::flushQuad(void)
 {
   int16_t y = _output_y;

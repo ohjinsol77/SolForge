@@ -56,7 +56,11 @@ bool gfx_draw_bitmap_to_framebuffer(
     uint16_t *row = framebuffer;
     row += y * framebuffer_w; // shift framebuffer to y offset
     row += x;                 // shift framebuffer to x offset
-    if (((framebuffer_w & 1) == 0) && ((x_skip & 1) == 0) && ((bitmap_w & 1) == 0))
+    // Sliding glyphs can start on odd pixels; 32-bit copies require both
+    // pointers to be aligned, including after left-edge clipping.
+    if (((framebuffer_w & 1) == 0) && ((x_skip & 1) == 0) && ((bitmap_w & 1) == 0) &&
+        ((reinterpret_cast<uintptr_t>(row) & 3) == 0) &&
+        ((reinterpret_cast<uintptr_t>(from_bitmap) & 3) == 0))
     {
       uint32_t *row2 = (uint32_t *)row;
       uint32_t *from_bitmap2 = (uint32_t *)from_bitmap;

@@ -35,22 +35,19 @@ static constexpr uint8_t kBacklightPwmResolution = 8;
 static constexpr uint8_t kDefaultAutoOffIndex = 1;
 static constexpr uint16_t kAutoOffChoices[7] = {10, 30, 60, 180, 300, 600, 0};
 static const char *const kAutoOffLabels[7] = {"10초", "30초", "1분", "3분", "5분", "10분", "OFF"};
+static const char *const kAutoOffLabelsEn[7] = {"10s", "30s", "1m", "3m", "5m", "10m", "OFF"};
 static constexpr bool kTouchDiagnosticMode = false;
-static constexpr int16_t kTopLayoutH = 42;
-static constexpr int16_t kBottomMargin = 70;
+static constexpr int16_t kTopLayoutH = 14;
+static constexpr int16_t kBottomMargin = 62;
 static constexpr int16_t kSideMargin = 15;
 static constexpr int16_t kColumnGap = 10;
 static constexpr int16_t kRowGap = 8;
-static constexpr int16_t kDotSize = 6;
-static constexpr int16_t kDotGap = 8;
-static constexpr int16_t kSwipeThreshold = 14;
-static constexpr int16_t kSwipeIntentThreshold = 8;
-static constexpr int16_t kSwipeAxisBias = 4;
-static constexpr int16_t kTapMoveTolerance = 8;
-static constexpr uint32_t kPostSwipeGuardMs = 250;
-static constexpr uint32_t kPostMacroGuardMs = 350;
-static constexpr uint32_t kTouchReleaseGraceMs = 90;
-static constexpr bool kSwipeWrapPages = false;
+static constexpr int16_t kSwipeThreshold = 48;
+static constexpr int16_t kSwipeIntentThreshold = 12;
+static constexpr int16_t kTapMoveTolerance = 12;
+static constexpr uint32_t kTouchReleaseGraceMs = 35;
+static constexpr uint32_t kLongPressMs = 600;
+static constexpr uint32_t kRepeatMs = 150;
 static constexpr uint32_t kBootGifGuardMagic = 0x52474232;
 static constexpr uint32_t kBootGifGuardIdle = 0;
 static constexpr uint32_t kBootGifGuardPlaying = 1;
@@ -112,6 +109,28 @@ static_assert(sizeof(StoredTouchConfig) == 1216, "StoredTouchConfig layout chang
 
 static StoredTouchConfig storedConfig;
 static bool storedConfigValid = false;
+
+struct __attribute__((packed)) StoredHoldAction {
+  uint8_t mode; // 0: tap only, 1: secondary shortcut, 2: volume repeat
+  uint8_t keyCount;
+  uint8_t keys[8];
+  uint16_t consumerUsage;
+};
+struct __attribute__((packed)) InteractionConfig {
+  uint32_t magic;
+  uint16_t version;
+  uint16_t payloadSize;
+  uint32_t checksum;
+  uint32_t language;
+  StoredHoldAction actions[18];
+  uint8_t labels[21][1536]; // 128 x 24, two 4-bit alpha samples per byte
+  uint8_t icons[18][512]; // 32 x 32 tintable alpha masks; app logos retain their colors
+};
+static_assert(sizeof(StoredHoldAction) == 12, "Hold action layout changed");
+static_assert(sizeof(InteractionConfig) == 41704, "Interaction layout changed");
+static const InteractionConfig *interactionConfig = nullptr;
+static esp_partition_mmap_handle_t interactionMapping;
+static bool interactionConfigValid = false;
 
 struct MacroAction {
   const char *label;
@@ -186,14 +205,23 @@ static int16_t touchStartX = 0;
 static int16_t touchStartY = 0;
 static int16_t lastTouchX = 0;
 static int16_t lastTouchY = 0;
-static int16_t touchMinX = 0;
-static int16_t touchMaxX = 0;
-static int16_t touchMinY = 0;
-static int16_t touchMaxY = 0;
 static uint32_t lastActivityMs = 0;
 static uint32_t lastTouchSampleMs = 0;
-static uint32_t postSwipeGuardUntilMs = 0;
-static uint32_t postMacroGuardUntilMs = 0;
+static uint32_t touchStartedMs = 0;
+static uint32_t repeatAtMs = 0;
+static bool holdExecuted = false;
+static uint32_t hidReleaseAtMs = 0;
+static bool hidActive = false;
+static int16_t slideOffset = 0;
+static int16_t slideFrom = 0;
+static int16_t slideTarget = 0;
+static uint32_t slideStartedMs = 0;
+static bool slideAnimating = false;
+static bool navigationDirty = true;
+static uint32_t lastUiFrameMs = 0;
+static uint32_t feedbackUntilMs = 0;
+static int8_t feedbackButton = -1;
+static uint8_t holdProgress = 0;
 
 enum class SettingsScreen : uint8_t { Off = 0, Menu, Brightness, Theme, AutoOff, Orientation, RebootConfirm };
 static SettingsScreen settingsScreen = SettingsScreen::Off;
@@ -208,6 +236,10 @@ static int16_t settingsLastX = -1;
 static int16_t settingsLastY = -1;
 static bool settingsPressActive = false;
 static Preferences settingsPrefs;
+
+static const char *uiText(const char *ko, const char *en) {
+  return interactionConfigValid && interactionConfig->language == 1 ? en : ko;
+}
 
 static void initBacklight() {
   ledcAttach(kBacklightPin, kBacklightPwmFreq, kBacklightPwmResolution);
@@ -241,6 +273,12 @@ static uint32_t fnv1a32(const uint8_t *data, size_t length) {
 }
 
 static void loadStoredConfig() {
+  storedConfigValid = false;
+  interactionConfigValid = false;
+  if (interactionConfig != nullptr) {
+    esp_partition_munmap(interactionMapping);
+    interactionConfig = nullptr;
+  }
   const esp_partition_t *partition = esp_partition_find_first(
       ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_SPIFFS, nullptr);
   if (partition == nullptr || partition->size < sizeof(storedConfig)) {
@@ -257,6 +295,27 @@ static void loadStoredConfig() {
       storedConfig.payloadSize != payloadSize || storedConfig.checksum != checksum) {
     Serial.println("touch config invalid; using firmware defaults");
     return;
+  }
+  // Keep masks in memory-mapped flash, preserving RAM for the display framebuffer.
+  const void *mapped = nullptr;
+  if (partition->size >= sizeof(storedConfig) + sizeof(InteractionConfig) &&
+      esp_partition_mmap(partition, 0, sizeof(storedConfig) + sizeof(InteractionConfig),
+                         ESP_PARTITION_MMAP_DATA, &mapped, &interactionMapping) == ESP_OK) {
+    interactionConfig = reinterpret_cast<const InteractionConfig *>(static_cast<const uint8_t *>(mapped) + sizeof(storedConfig));
+  }
+  // Read before sanitizing the legacy block: the checksum binds both blocks.
+  if (interactionConfig != nullptr &&
+      interactionConfig->magic == 0x31584B47 && interactionConfig->version == 1 &&
+      interactionConfig->payloadSize == sizeof(InteractionConfig) - 16 && interactionConfig->language <= 1) {
+    const uint32_t extendedChecksum = fnv1a32(reinterpret_cast<const uint8_t *>(&storedConfig), sizeof(storedConfig)) ^
+        fnv1a32(reinterpret_cast<const uint8_t *>(interactionConfig) + 12, sizeof(InteractionConfig) - 12);
+    interactionConfigValid = extendedChecksum == interactionConfig->checksum;
+    for (uint8_t i = 0; i < 18 && interactionConfigValid; ++i) {
+      const StoredHoldAction &action = interactionConfig->actions[i];
+      const StoredButtonConfig &tap = storedConfig.pages[i / 6].buttons[i % 6];
+      if (action.mode > 2 || action.keyCount > 8 ||
+          (action.mode == 2 && (tap.keyCount != 0 || (tap.consumerUsage != 0xE9 && tap.consumerUsage != 0xEA)))) interactionConfigValid = false;
+    }
   }
   for (uint8_t page = 0; page < kConfigPageCount; ++page) {
     storedConfig.pages[page].name[kConfigPageNameBytes - 1] = '\0';
@@ -317,13 +376,13 @@ static const char *configuredComboLabel(uint8_t page, uint8_t button) {
     if (storedConfigValid && storedConfig.pages[2].buttons[5].comboLabel[0] != '\0') {
       return storedConfig.pages[2].buttons[5].comboLabel;
     }
-    return "설정";
+    return uiText("설정", "Settings");
   }
   if (storedConfigValid && page < kConfigPageCount && button < kConfigButtonCount) {
     const char *label = storedConfig.pages[page].buttons[button].comboLabel;
     if (label[0] != '\0') return label;
   }
-  return "미설정";
+  return uiText("미설정", "Not assigned");
 }
 
 static uint8_t configuredIconId(uint8_t page, uint8_t button) {
@@ -448,11 +507,6 @@ static int16_t buttonSpanHeight(const MacroButton &button) {
   return button.rowSpan * buttonHeight() + (button.rowSpan - 1) * kRowGap;
 }
 
-static int16_t indicatorStartX() {
-  const int16_t totalWidth = 28 + (2 * kDotSize) + (2 * kDotGap);
-  return screenWidth - kSideMargin - totalWidth;
-}
-
 static void noteActivity() {
   lastActivityMs = millis();
 }
@@ -474,43 +528,34 @@ static void selectLabelFont(uint8_t size) {
   gfx->setTextWrap(false);
 }
 
-static void sendMacro(const MacroAction &action) {
+static void releaseHid() {
   Keyboard.releaseAll();
-  delay(2);
-
-  for (uint8_t i = 0; i < action.modifierCount; ++i) {
-    Keyboard.press(action.modifiers[i]);
-  }
-
-  if (action.key != 0) {
-    Keyboard.press(action.key);
-  }
-
-  delay(kMacroHoldMs);
-  Keyboard.releaseAll();
-  noteActivity();
+  ConsumerControl.release();
+  hidActive = false;
 }
 
-static void sendConfiguredMacro(uint8_t page, uint8_t button) {
-  if (isSettingsButton(page, button)) {
-    return;
+static void sendConfiguredMacro(uint8_t page, uint8_t button, bool secondary = false) {
+  if (isSettingsButton(page, button)) return;
+  releaseHid();
+  if (secondary && interactionConfigValid) {
+    const StoredHoldAction &entry = interactionConfig->actions[page * 6 + button];
+    if (entry.consumerUsage) ConsumerControl.press(entry.consumerUsage);
+    for (uint8_t i = 0; i < entry.keyCount; ++i) if (entry.keys[i]) Keyboard.press(entry.keys[i]);
+  } else if (storedConfigValid) {
+    const StoredButtonConfig &entry = storedConfig.pages[page].buttons[button];
+    if (entry.consumerUsage) ConsumerControl.press(entry.consumerUsage);
+    for (uint8_t i = 0; i < entry.keyCount; ++i) if (entry.keys[i]) Keyboard.press(entry.keys[i]);
+  } else {
+    const MacroAction &action = kPageButtons[page][button].action;
+    for (uint8_t i = 0; i < action.modifierCount; ++i) Keyboard.press(action.modifiers[i]);
+    if (action.key) Keyboard.press(action.key);
   }
-  if (!storedConfigValid || page >= kConfigPageCount || button >= kConfigButtonCount) {
-    sendMacro(kPageButtons[page][button].action);
-    return;
-  }
-  const StoredButtonConfig &entry = storedConfig.pages[page].buttons[button];
-  Keyboard.releaseAll();
-  ConsumerControl.release();
-  delay(2);
-  if (entry.consumerUsage != 0) ConsumerControl.press(entry.consumerUsage);
-  for (uint8_t i = 0; i < entry.keyCount; ++i) {
-    if (entry.keys[i] != 0) Keyboard.press(entry.keys[i]);
-  }
-  delay(kMacroHoldMs);
-  Keyboard.releaseAll();
-  ConsumerControl.release();
+  hidActive = true;
+  hidReleaseAtMs = millis() + kMacroHoldMs;
+  feedbackButton = button;
+  feedbackUntilMs = millis() + 120;
   noteActivity();
+  uiDirty = true;
 }
 
 static bool readTouchPoint(int16_t &x, int16_t &y) {
@@ -539,7 +584,7 @@ static bool readTouchPoint(int16_t &x, int16_t &y) {
 }
 
 static int8_t hitTestNavigation(int16_t x, int16_t y) {
-  if (y < 219 || y >= 262) {
+  if (y < 220 || y >= 268) {
     return -1;
   }
   if (x >= 12 && x < 156) return 7;
@@ -553,7 +598,7 @@ static int8_t hitTestButton(uint8_t page, int16_t x, int16_t y) {
   if (navigation >= 0) {
     return navigation;
   }
-  if (y < kTopLayoutH || y >= 202) {
+  if (y < kTopLayoutH || y >= 212) {
     return -1;
   }
 
@@ -703,6 +748,10 @@ static void drawBitmapIcon(const uint16_t *pixels, int16_t x, int16_t y, uint8_t
 static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, uint16_t accent, uint16_t fill) {
   (void)page;
   const uint8_t icon = configuredIconId(page, index);
+  if (interactionConfigValid && icon != 8 && icon != 9 && icon != 10) {
+    drawSmoothIcon(page * 6 + index, cx - 16, cy - 16, accent, fill);
+    return;
+  }
   const uint16_t white = rgb565(232, 241, 251);
   const uint16_t yellow = rgb565(250, 204, 21);
 
@@ -846,37 +895,75 @@ static void drawButtonIcon(uint8_t page, uint8_t index, int16_t cx, int16_t cy, 
   }
 }
 
-static void drawHeader() {
-  const uint16_t bg = pageBg(currentPage);
-  gfx->fillRect(0, 0, screenWidth, kTopLayoutH, bg);
+static uint16_t blend565(uint16_t foreground, uint16_t background, uint8_t alpha) {
+  const uint16_t r = ((((foreground >> 11) & 31) * alpha + ((background >> 11) & 31) * (15 - alpha)) + 7) / 15;
+  const uint16_t g = ((((foreground >> 5) & 63) * alpha + ((background >> 5) & 63) * (15 - alpha)) + 7) / 15;
+  const uint16_t b = (((foreground & 31) * alpha + (background & 31) * (15 - alpha)) + 7) / 15;
+  return (r << 11) | (g << 5) | b;
 }
 
-static void drawPageIndicator() {
-  for (uint8_t i = 0; i < 3; ++i) {
-    const bool active = (i == currentPage);
-    gfx->fillCircle(228 + (i * 12), 31, 3, active ? rgb565(56, 189, 248) : rgb565(107, 114, 128));
+static void drawLabelMask(uint8_t label, int16_t x, int16_t y, uint16_t color, uint16_t background) {
+  uint16_t palette[16], line[128];
+  for (uint8_t i = 0; i < 16; ++i) palette[i] = blend565(color, background, i);
+  for (uint8_t row = 0; row < 24; ++row) {
+    for (uint8_t col = 0; col < 64; ++col) {
+      const uint8_t pixel = interactionConfig->labels[label][row * 64 + col];
+      line[col * 2] = palette[pixel >> 4];
+      line[col * 2 + 1] = palette[pixel & 15];
+    }
+    gfx->draw16bitRGBBitmap(x, y + row, line, 128, 1);
+  }
+}
+
+static void drawSoftCard(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t bg) {
+  const int16_t radius = 14;
+  gfx->fillRoundRect(x, y, w, h, radius, fill);
+  for (int16_t cy = 0; cy < radius; ++cy) {
+    for (int16_t cx = 0; cx < radius; ++cx) {
+      const float dx = radius - cx - 0.5f, dy = radius - cy - 0.5f;
+      const float coverage = constrain(radius + 0.5f - sqrtf(dx * dx + dy * dy), 0.0f, 1.0f);
+      const uint16_t color = blend565(fill, bg, (uint8_t)(coverage * 15 + 0.5f));
+      gfx->drawPixel(x + cx, y + cy, color);
+      gfx->drawPixel(x + w - 1 - cx, y + cy, color);
+      gfx->drawPixel(x + cx, y + h - 1 - cy, color);
+      gfx->drawPixel(x + w - 1 - cx, y + h - 1 - cy, color);
+    }
+  }
+}
+
+static void drawSmoothIcon(uint8_t icon, int16_t x, int16_t y, uint16_t color, uint16_t background) {
+  uint16_t palette[16], line[32];
+  for (uint8_t i = 0; i < 16; ++i) palette[i] = blend565(color, background, i);
+  for (uint8_t row = 0; row < 32; ++row) {
+    for (uint8_t col = 0; col < 16; ++col) {
+      const uint8_t pixel = interactionConfig->icons[icon][row * 16 + col];
+      line[col * 2] = palette[pixel >> 4];
+      line[col * 2 + 1] = palette[pixel & 15];
+    }
+    gfx->draw16bitRGBBitmap(x, y + row, line, 32, 1);
   }
 }
 
 static void drawNavigationBox(int8_t control, int16_t x, int16_t width, const char *label, bool active, bool disabled) {
   const bool pressed = pressedButton == control;
   const ButtonThemePalette &theme = kButtonThemes[activeThemeIndex()];
-  const uint16_t fill = active ? theme.navActive : disabled ? theme.background : pressed ? theme.pressed : theme.navIdle;
+  const uint16_t fill = active ? theme.pressed : theme.background;
   const uint16_t border = active ? theme.navActiveBorder : disabled ? theme.border : theme.navIdleBorder;
-  const uint16_t color = disabled ? theme.muted : textColor();
-  gfx->fillRoundRect(x, 219, width, 43, 9, fill);
-  gfx->drawRoundRect(x, 219, width, 43, 9, border);
-  drawCenteredText(x + 4, 222, width - 8, 36, label, 1, color, fill);
+  const uint16_t color = active ? textColor() : theme.muted;
+  gfx->fillRoundRect(x, 224, width, 38, 10, fill);
+  if (interactionConfigValid) drawLabelMask(18 + control - 7, x + (width - 128) / 2, 231, color, fill);
+  else drawCenteredText(x + 4, 225, width - 8, 36, label, 1, color, fill);
+  if (active) gfx->fillRect(x + width / 2 - 12, 264, 24, 2, theme.accent);
 }
 
 static void drawBottomNavigation() {
-  gfx->fillRect(0, 210, screenWidth, 62, kButtonThemes[activeThemeIndex()].footer);
+  gfx->fillRect(0, 212, screenWidth, 60, pageBg(currentPage));
   drawNavigationBox(7, 12, 144, configuredPageName(0), currentPage == 0, false);
   drawNavigationBox(8, 168, 144, configuredPageName(1), currentPage == 1, false);
   drawNavigationBox(9, 324, 144, configuredPageName(2), currentPage == 2, false);
 }
 
-static void drawButton(uint8_t page, uint8_t index, bool pressed) {
+static void drawButton(uint8_t page, uint8_t index, bool pressed, int16_t offset = 0) {
   const MacroButton &button = kPageButtons[page][index];
   if (!buttonIsVisible(button)) {
     return;
@@ -884,20 +971,28 @@ static void drawButton(uint8_t page, uint8_t index, bool pressed) {
 
   const int16_t w = buttonSpanWidth(button);
   const int16_t h = buttonSpanHeight(button);
-  const int16_t x = buttonX(button.column);
+  const int16_t x = buttonX(button.column) + offset;
+  if (x + w <= 0 || x >= screenWidth) return;
   const int16_t y = buttonY(button.row);
-  const uint16_t fill = buttonFill(pressed, page);
+  const bool held = page == currentPage && pressedButton == (int8_t)index;
+  const int32_t remaining = (int32_t)(feedbackUntilMs - millis());
+  const uint8_t alpha = held ? 15 : pressed && remaining > 0 ? min((int32_t)15, remaining * 15 / 120) : 0;
+  const uint16_t fill = blend565(buttonFill(true, page), buttonFill(false, page), alpha);
   const uint16_t accent = pageAccent(page);
   const int16_t bx = x;
   const int16_t by = y;
   const int16_t iconCx = bx + (w / 2);
-  const int16_t iconCy = by + 25;
+  const int16_t iconCy = by + 30;
 
-  gfx->fillRoundRect(bx, by, w, h, 12, fill);
-  gfx->drawRoundRect(bx, by, w, h, 12, buttonBorder(pressed, page));
+  drawSoftCard(bx, by, w, h, fill, pageBg(page));
 
   drawButtonIcon(page, index, iconCx, iconCy, accent, fill);
-  drawCenteredText(bx + 8, by + 49, w - 16, 22, configuredComboLabel(page, index), 1, mutedColor(), fill);
+  if (interactionConfigValid) drawLabelMask(page * 6 + index, bx + (w - 128) / 2, by + 55, textColor(), fill);
+  else drawCenteredText(bx + 8, by + 55, w - 16, 24, configuredComboLabel(page, index), 1, textColor(), fill);
+  if (interactionConfigValid && !isSettingsButton(page, index) && interactionConfig->actions[page * 6 + index].mode) {
+    const int16_t progress = pressed && page == currentPage ? max((int16_t)18, (int16_t)((w - 24) * holdProgress / 100)) : 18;
+    gfx->fillRoundRect(bx + (w - progress) / 2, by + 84, progress, 2, 1, accent);
+  }
 }
 
 static void renderScreen();
@@ -991,23 +1086,23 @@ static void drawSettingsRow(int16_t y, const char *label, bool highlighted, bool
 }
 
 static void renderSettingsMenu() {
-  static const char *items[5] = {"밝기 조절", "버튼 테마", "자동 화면 꺼짐", "화면 방향", "재부팅"};
-  drawSettingsHeader("설정");
+  const char *items[5] = {uiText("밝기 조절", "Brightness"), uiText("버튼 테마", "Button theme"), uiText("자동 화면 꺼짐", "Screen timeout"), uiText("화면 방향", "Orientation"), uiText("재부팅", "Restart")};
+  drawSettingsHeader(uiText("설정", "Settings"));
   for (uint8_t i = 0; i < 5; ++i) {
     drawSettingsRow(48 + i * 38, items[i], false, settingsPressedZone == (int16_t)(100 + i));
   }
 }
 
 static void renderSettingsTheme() {
-  static const char *items[3] = {"테마 1  클래식 네이비", "테마 2  소프트 라이트", "테마 3  옵시디언 글로우"};
-  drawSettingsHeader("버튼 테마");
+  const char *items[3] = {uiText("테마 1  클래식 네이비", "1  Classic Navy"), uiText("테마 2  소프트 라이트", "2  Soft Light"), uiText("테마 3  옵시디언 글로우", "3  Obsidian Glow")};
+  drawSettingsHeader(uiText("버튼 테마", "Button theme"));
   for (uint8_t i = 0; i < 3; ++i) {
     drawSettingsRow(62 + i * 52, items[i], buttonTheme == i, settingsPressedZone == (int16_t)(600 + i));
   }
 }
 
 static void renderSettingsBrightness() {
-  drawSettingsHeader("밝기 조절");
+  drawSettingsHeader(uiText("밝기 조절", "Brightness"));
   char value[8];
   snprintf(value, sizeof(value), "%u / %u", backlightLevel, kBacklightLevels);
   drawCenteredText(0, 64, screenWidth, 40, value, 1, textColor(), settingsBg());
@@ -1032,7 +1127,7 @@ static void renderSettingsBrightness() {
 }
 
 static void renderSettingsAutoOff() {
-  drawSettingsHeader("자동 화면 꺼짐");
+  drawSettingsHeader(uiText("자동 화면 꺼짐", "Screen timeout"));
   for (uint8_t i = 0; i < 7; ++i) {
     const bool selected = i == autoOffIndex;
     const int16_t y = 52 + i * 26;
@@ -1041,28 +1136,28 @@ static void renderSettingsAutoOff() {
     const uint16_t color = selected ? rgb565(248, 250, 252) : textColor();
     gfx->fillRoundRect(24, y, screenWidth - 48, 24, 6, fill);
     gfx->drawRoundRect(24, y, screenWidth - 48, 24, 6, border);
-    drawCenteredText(24, y, screenWidth - 48, 24, kAutoOffLabels[i], 1, color, fill);
+    drawCenteredText(24, y, screenWidth - 48, 24, uiText(kAutoOffLabels[i], kAutoOffLabelsEn[i]), 1, color, fill);
   }
 }
 
 static void renderSettingsOrientation() {
-  drawSettingsHeader("화면 방향");
-  drawSettingsRow(78, "기본 방향", !screenRotated180, settingsPressedZone == 500);
-  drawSettingsRow(136, "180도 회전", screenRotated180, settingsPressedZone == 501);
+  drawSettingsHeader(uiText("화면 방향", "Orientation"));
+  drawSettingsRow(78, uiText("기본 방향", "Normal"), !screenRotated180, settingsPressedZone == 500);
+  drawSettingsRow(136, uiText("180도 회전", "Rotate 180 degrees"), screenRotated180, settingsPressedZone == 501);
 }
 
 static void renderSettingsReboot() {
-  drawSettingsHeader("재부팅");
-  drawCenteredText(20, 80, screenWidth - 40, 48, "정말 재부팅 하시겠습니까?", 1, textColor(), settingsBg());
+  drawSettingsHeader(uiText("재부팅", "Restart"));
+  drawCenteredText(20, 80, screenWidth - 40, 48, uiText("정말 재부팅 하시겠습니까?", "Restart the device?"), 1, textColor(), settingsBg());
 
   const int16_t buttonY = 150;
   const int16_t buttonH = 52;
   gfx->fillRoundRect(60, buttonY, 160, buttonH, 10, settingsPressedZone == 400 ? settingsPanelPressed() : settingsPanel());
   gfx->drawRoundRect(60, buttonY, 160, buttonH, 10, settingsLine());
-  drawCenteredText(60, buttonY, 160, buttonH, "진행", 1, textColor(), settingsPanel());
+  drawCenteredText(60, buttonY, 160, buttonH, uiText("진행", "Restart"), 1, textColor(), settingsPanel());
   gfx->fillRoundRect(260, buttonY, 160, buttonH, 10, settingsPressedZone == 401 ? settingsPanelPressed() : settingsPanel());
   gfx->drawRoundRect(260, buttonY, 160, buttonH, 10, settingsLine());
-  drawCenteredText(260, buttonY, 160, buttonH, "취소", 1, textColor(), settingsPanel());
+  drawCenteredText(260, buttonY, 160, buttonH, uiText("취소", "Cancel"), 1, textColor(), settingsPanel());
 }
 
 static void renderSettingsScreen() {
@@ -1224,7 +1319,6 @@ static void handleSettingsTouchFrame(bool pressed, int16_t x, int16_t y) {
     noteActivity();
     settingsLastX = x;
     settingsLastY = y;
-    lastTouchSampleMs = millis();
     if (!settingsPressActive) {
       settingsPressActive = true;
       settingsPressX = x;
@@ -1253,20 +1347,27 @@ static void handleSettingsTouchFrame(bool pressed, int16_t x, int16_t y) {
 static void renderScreen() {
   if (settingsScreen != SettingsScreen::Off) {
     renderSettingsScreen();
+    navigationDirty = true;
     return;
   }
-  gfx->fillScreen(pageBg(currentPage));
-  drawHeader();
-
+  gfx->fillRect(0, 0, screenWidth, 212, pageBg(currentPage));
   for (uint8_t i = 0; i < 6; ++i) {
-    const bool pressed = (pressedButton == (int8_t)i);
-    drawButton(currentPage, i, pressed);
+    drawButton(currentPage, i, pressedButton == (int8_t)i || feedbackButton == (int8_t)i, slideOffset);
   }
-
-  drawPageIndicator();
-  drawBottomNavigation();
-  gfx->flush();
+  if (slideOffset < 0 && currentPage < 2) {
+    for (uint8_t i = 0; i < 6; ++i) drawButton(currentPage + 1, i, false, slideOffset + screenWidth);
+  } else if (slideOffset > 0 && currentPage > 0) {
+    for (uint8_t i = 0; i < 6; ++i) drawButton(currentPage - 1, i, false, slideOffset - screenWidth);
+  }
+  if (navigationDirty) {
+    drawBottomNavigation();
+    gfx->flush();
+    navigationDirty = false;
+  } else {
+    static_cast<Arduino_Canvas *>(gfx)->flushRows(0, 212);
+  }
   uiDirty = false;
+  lastUiFrameMs = millis();
 }
 
 static void wakeDisplay() {
@@ -1278,77 +1379,39 @@ static void wakeDisplay() {
   renderScreen();
 }
 
-static bool changePageFromSwipe(int16_t dx) {
-  if (dx == 0) {
-    return false;
-  }
-
-  const uint8_t oldPage = currentPage;
-  if (dx < 0) {
-    if (currentPage < 2) {
-      currentPage++;
-    } else if (kSwipeWrapPages) {
-      currentPage = 0;
-    }
-  } else {
-    if (currentPage > 0) {
-      currentPage--;
-    } else if (kSwipeWrapPages) {
-      currentPage = 2;
-    }
-  }
-
-  return currentPage != oldPage;
-}
-
-static bool activateNavigation(int8_t control) {
-  const uint8_t oldPage = currentPage;
-  if (control >= 7 && control <= 9) {
-    currentPage = control - 7;
-  }
-  return currentPage != oldPage;
-}
-
-static void finishSwipeGesture(int16_t dx) {
-  changePageFromSwipe(dx);
+static void startSlide(int8_t direction) {
+  const int16_t page = (int16_t)currentPage + direction;
+  if (page < 0 || page > 2) direction = 0;
+  slideFrom = slideOffset;
+  slideTarget = direction * -(int16_t)screenWidth;
+  slideStartedMs = millis();
+  slideAnimating = true;
+  feedbackButton = -1;
   pressedButton = -1;
-  touchStartButton = -1;
-  touchMovedTooFar = true;
-  swipeDetected = true;
-  suppressUntilRelease = true;
   uiDirty = true;
-  noteActivity();
-  postSwipeGuardUntilMs = millis() + kPostSwipeGuardMs;
-  renderScreen();
 }
 
-static int16_t dominantSwipeDelta() {
-  const int16_t leftDistance = touchStartX - touchMinX;
-  const int16_t rightDistance = touchMaxX - touchStartX;
-  const int16_t upDistance = touchStartY - touchMinY;
-  const int16_t downDistance = touchMaxY - touchStartY;
-
-  int16_t bestDelta = 0;
-  int16_t bestDistance = 0;
-
-  if (leftDistance > bestDistance) {
-    bestDistance = leftDistance;
-    bestDelta = -leftDistance;
+static void advanceAnimations() {
+  const uint32_t now = millis();
+  if (hidActive && (int32_t)(now - hidReleaseAtMs) >= 0) releaseHid();
+  if (feedbackButton >= 0 && (int32_t)(now - feedbackUntilMs) >= 0) {
+    feedbackButton = -1;
+    uiDirty = true;
   }
-  if (rightDistance > bestDistance) {
-    bestDistance = rightDistance;
-    bestDelta = rightDistance;
+  if (!slideAnimating) return;
+  const uint32_t elapsed = now - slideStartedMs;
+  if (elapsed >= 180) {
+    if (slideTarget < 0) ++currentPage;
+    else if (slideTarget > 0) --currentPage;
+    slideOffset = 0;
+    slideAnimating = false;
+    navigationDirty = true;
+  } else {
+    const float t = elapsed / 180.0f;
+    const float eased = 1 - (1 - t) * (1 - t) * (1 - t);
+    slideOffset = slideFrom + (int16_t)((slideTarget - slideFrom) * eased);
   }
-  if (upDistance > bestDistance) {
-    bestDistance = upDistance;
-    bestDelta = -upDistance;
-  }
-  if (downDistance > bestDistance) {
-    bestDistance = downDistance;
-    bestDelta = downDistance;
-  }
-
-  return bestDelta;
+  uiDirty = true;
 }
 
 static void handleSleepTimeout() {
@@ -1363,208 +1426,162 @@ static void handleSleepTimeout() {
     pressedButton = -1;
     touchStartButton = -1;
     lastTouchSampleMs = 0;
-    postMacroGuardUntilMs = 0;
+    feedbackButton = -1;
+    releaseHid();
   }
 }
 
 static void handleTouchFrame() {
-  int16_t x = 0;
-  int16_t y = 0;
+  int16_t x = 0, y = 0;
   const uint32_t now = millis();
-  const bool hasTouchSample = readTouchPoint(x, y);
-  bool pressed = hasTouchSample;
-
-  if (hasTouchSample) {
+  const bool sample = readTouchPoint(x, y);
+  bool pressed = sample;
+  if (touch.freshData && (touch.touches > 1 || touch.isLargeDetect)) {
+    releaseHid();
+    touchStartButton = pressedButton = -1;
+    suppressUntilRelease = true;
+    touchHeld = false;
+    settingsPressActive = false;
+    settingsPressedZone = -1;
+    slideOffset = 0;
+    uiDirty = true;
+    return;
+  }
+  if (sample) {
     lastTouchSampleMs = now;
-  } else if (touchHeld && (now - lastTouchSampleMs <= kTouchReleaseGraceMs)) {
+  } else if (!touch.freshData && (touchHeld || settingsPressActive) && now - lastTouchSampleMs <= kTouchReleaseGraceMs) {
     pressed = true;
     x = lastTouchX;
     y = lastTouchY;
   }
 
-  if (postMacroGuardUntilMs != 0) {
-    pressedButton = -1;
-    touchStartButton = -1;
-    touchHeld = false;
-    suppressUntilRelease = false;
-    if (pressed || now < postMacroGuardUntilMs) {
-      return;
-    }
-    postMacroGuardUntilMs = 0;
-  }
-
-  if (postSwipeGuardUntilMs != 0 && now < postSwipeGuardUntilMs) {
-    pressedButton = -1;
-    touchStartButton = -1;
-    if (!pressed) {
-      touchHeld = false;
-      suppressUntilRelease = false;
-    }
-    return;
-  }
-  postSwipeGuardUntilMs = 0;
-
   if (!backlightOn) {
-    if (pressed) {
+    if (sample) {
       touchHeld = true;
       suppressUntilRelease = true;
-      swipeDetected = false;
-      touchMovedTooFar = false;
-      pressedButton = -1;
-      touchStartButton = -1;
-      touchStartX = x;
-      touchStartY = y;
       lastTouchX = x;
       lastTouchY = y;
-      lastTouchSampleMs = now;
-      touchMinX = x;
-      touchMaxX = x;
-      touchMinY = y;
-      touchMaxY = y;
-      touchPage = currentPage;
       wakeDisplay();
     }
     return;
   }
-
-  if (settingsScreen != SettingsScreen::Off) {
-    if (suppressUntilRelease) {
-      if (!pressed) {
-        suppressUntilRelease = false;
-      }
-      return;
-    }
-    handleSettingsTouchFrame(pressed, x, y);
+  if (slideAnimating || suppressUntilRelease) {
+    if (pressed) suppressUntilRelease = true;
+    else { suppressUntilRelease = false; touchHeld = false; }
     return;
   }
-
-  if (suppressUntilRelease) {
-    if (!pressed) {
-      suppressUntilRelease = false;
-      touchHeld = false;
-    }
+  if (settingsScreen != SettingsScreen::Off) {
+    if (sample) { lastTouchX = x; lastTouchY = y; }
+    handleSettingsTouchFrame(pressed, x, y);
     return;
   }
 
   if (pressed) {
     noteActivity();
-
     if (!touchHeld) {
       touchHeld = true;
-      swipeDetected = false;
-      touchMovedTooFar = false;
-      touchStartX = x;
-      touchStartY = y;
-      lastTouchX = x;
-      lastTouchY = y;
-      touchMinX = x;
-      touchMaxX = x;
-      touchMinY = y;
-      touchMaxY = y;
+      touchStartedMs = now;
+      touchStartX = lastTouchX = x;
+      touchStartY = lastTouchY = y;
       touchPage = currentPage;
       touchStartButton = hitTestButton(currentPage, x, y);
-      pressedButton = -1;
-    } else {
-      if (!hasTouchSample) {
+      pressedButton = touchStartButton;
+      feedbackButton = -1;
+      holdExecuted = false;
+      holdProgress = 0;
+      swipeDetected = false;
+      touchMovedTooFar = false;
+      uiDirty = true;
+      return;
+    }
+    // Missing samples can bridge a brief gap, but must never trigger a hold/repeat.
+    if (!sample) return;
+    lastTouchX = x;
+    lastTouchY = y;
+    const int16_t dx = x - touchStartX, dy = y - touchStartY;
+    const int16_t absX = abs(dx), absY = abs(dy);
+    if (holdExecuted) {
+      if (hitTestButton(currentPage, x, y) != touchStartButton || max(absX, absY) > kTapMoveTolerance) {
+        releaseHid();
+        suppressUntilRelease = true;
+        pressedButton = -1;
+        uiDirty = true;
         return;
       }
-
-      lastTouchX = x;
-      lastTouchY = y;
-
-      const int16_t dx = x - touchStartX;
-      const int16_t dy = y - touchStartY;
-      const int16_t absDx = abs(dx);
-      const int16_t absDy = abs(dy);
-
-      if (x < touchMinX) {
-        touchMinX = x;
+      const StoredHoldAction &action = interactionConfig->actions[currentPage * 6 + touchStartButton];
+      if (action.mode == 2 && (int32_t)(now - repeatAtMs) >= 0) {
+        sendConfiguredMacro(currentPage, touchStartButton);
+        repeatAtMs = now + kRepeatMs;
       }
-      if (x > touchMaxX) {
-        touchMaxX = x;
-      }
-      if (y < touchMinY) {
-        touchMinY = y;
-      }
-      if (y > touchMaxY) {
-        touchMaxY = y;
-      }
-
-      const int16_t spanX = touchMaxX - touchMinX;
-      const int16_t spanY = touchMaxY - touchMinY;
-      const int16_t spanMajor = max(spanX, spanY);
-
-      if (!touchMovedTooFar && (absDx > kTapMoveTolerance || absDy > kTapMoveTolerance)) {
-        touchMovedTooFar = true;
-        pressedButton = -1;
-        touchStartButton = -1;
-        uiDirty = true;
-      }
-
-      if (!swipeDetected && spanMajor > kSwipeIntentThreshold) {
-        swipeDetected = true;
-        pressedButton = -1;
-        touchStartButton = -1;
-        touchMovedTooFar = true;
-        uiDirty = true;
-      }
-
-      if (swipeDetected && spanMajor >= kSwipeThreshold) {
-        finishSwipeGesture(dominantSwipeDelta());
+      return;
+    }
+    // A vertical gesture cancels the tap, but never changes pages.
+    if (!swipeDetected && !touchMovedTooFar && absY > kTapMoveTolerance && absY >= absX) {
+      touchMovedTooFar = true;
+      pressedButton = -1;
+      uiDirty = true;
+    }
+    if (!swipeDetected && !touchMovedTooFar && touchStartY < 212 &&
+        absX > kSwipeIntentThreshold && absX * 10 > absY * 14) {
+      swipeDetected = true;
+      pressedButton = -1;
+      holdProgress = 0;
+    }
+    if (swipeDetected) {
+      const bool boundary = (currentPage == 0 && dx > 0) || (currentPage == 2 && dx < 0);
+      slideOffset = constrain(boundary ? dx / 5 : dx, -(int16_t)screenWidth, (int16_t)screenWidth);
+      uiDirty = true;
+      return;
+    }
+    if (max(absX, absY) > kTapMoveTolerance || hitTestButton(currentPage, x, y) != touchStartButton) {
+      touchMovedTooFar = true;
+      pressedButton = -1;
+      uiDirty = true;
+    }
+    if (!touchMovedTooFar && interactionConfigValid && touchStartButton >= 0 && touchStartButton < 6 &&
+        !isSettingsButton(currentPage, touchStartButton)) {
+      const StoredHoldAction &action = interactionConfig->actions[currentPage * 6 + touchStartButton];
+      if (action.mode) {
+        const uint8_t progress = min((uint32_t)100, (now - touchStartedMs) * 100 / kLongPressMs);
+        if (progress != holdProgress) { holdProgress = progress; uiDirty = true; }
+        if (now - touchStartedMs >= kLongPressMs) {
+          holdExecuted = true;
+          sendConfiguredMacro(currentPage, touchStartButton, action.mode == 1);
+          repeatAtMs = now + kRepeatMs;
+        }
       }
     }
-
     return;
   }
 
-  if (touchHeld) {
-    touchHeld = false;
-
-    if (swipeDetected) {
-      const int16_t dx = lastTouchX - touchStartX;
-      const int16_t spanX = touchMaxX - touchMinX;
-      const int16_t spanY = touchMaxY - touchMinY;
-      if (max(spanX, spanY) >= kSwipeThreshold) {
-        changePageFromSwipe(dominantSwipeDelta());
+  if (!touchHeld) return;
+  touchHeld = false;
+  pressedButton = -1;
+  holdProgress = 0;
+  uiDirty = true;
+  if (swipeDetected) {
+    const int16_t dx = lastTouchX - touchStartX;
+    const uint32_t elapsed = max((uint32_t)1, lastTouchSampleMs - touchStartedMs);
+    const bool commit = abs(dx) >= kSwipeThreshold || (abs(dx) >= 24 && (uint32_t)abs(dx) * 100 > elapsed * 45);
+    startSlide(commit ? (dx < 0 ? 1 : -1) : 0);
+  } else if (holdExecuted) {
+    releaseHid(); // The long action replaces the tap, never runs both.
+  } else if (!touchMovedTooFar && touchStartButton >= 0 && touchPage == currentPage &&
+             hitTestButton(currentPage, lastTouchX, lastTouchY) == touchStartButton) {
+    if (touchStartButton >= 7) {
+      const int8_t target = touchStartButton - 7;
+      if (target != currentPage) {
+        // Direct tabs can skip the middle page without showing it as a destination.
+        currentPage = target;
+        navigationDirty = true;
       }
-      pressedButton = -1;
-      touchStartButton = -1;
-      uiDirty = true;
-      noteActivity();
-      postSwipeGuardUntilMs = millis() + kPostSwipeGuardMs;
-    } else if (!touchMovedTooFar && touchStartButton >= 0 && touchPage == currentPage) {
-      const int8_t releaseButton = hitTestButton(touchPage, lastTouchX, lastTouchY);
-      if (releaseButton != touchStartButton) {
-        pressedButton = -1;
-        touchStartButton = -1;
-        uiDirty = true;
-        suppressUntilRelease = false;
-        return;
-      }
-
-      const int8_t releasedControl = touchStartButton;
-      pressedButton = -1;
-      touchStartButton = -1;
-      uiDirty = true;
-      if (releasedControl >= 6) {
-        activateNavigation(releasedControl);
-        noteActivity();
-        renderScreen();
-      } else if (isSettingsButton(touchPage, releasedControl)) {
-        enterSettings();
-        postMacroGuardUntilMs = millis() + kPostMacroGuardMs;
-      } else {
-        sendConfiguredMacro(touchPage, releasedControl);
-        postMacroGuardUntilMs = millis() + kPostMacroGuardMs;
-      }
+    } else if (isSettingsButton(currentPage, touchStartButton)) {
+      enterSettings();
     } else {
-      pressedButton = -1;
-      touchStartButton = -1;
-      uiDirty = true;
+      sendConfiguredMacro(currentPage, touchStartButton);
     }
   }
-
-  suppressUntilRelease = false;
+  touchStartButton = -1;
 }
 
 static void initDisplay() {
@@ -1794,10 +1811,11 @@ void loop() {
     return;
   }
 
+  advanceAnimations();
   handleTouchFrame();
   handleSleepTimeout();
 
-  if (uiDirty && backlightOn) {
+  if (uiDirty && backlightOn && millis() - lastUiFrameMs >= 16) {
     renderScreen();
   }
 

@@ -5372,6 +5372,20 @@ th {
   text-align: right;
 }
 
+.gk-action-editor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+.gk-action-editor label { display: grid; gap: 8px; min-width: 0; }
+.gk-action-editor input, .gk-action-editor select {
+  width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--surface); color: var(--text); font: inherit;
+}
+.gk-action-editor p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: .85rem; }
+@media (max-width: 640px) { .gk-action-editor { grid-template-columns: 1fr; } }
+
 .gk-keyboard-shell {
   margin-top: 1.1rem;
   padding: 1rem;

@@ -61,9 +61,12 @@ void TAMC_GT911::read(void) {
 
   uint8_t pointInfo = readByteData(GT911_POINT_INFO);
   uint8_t bufferStatus = pointInfo >> 7 & 1;
+  freshData = bufferStatus == 1 && pointInfo != 0xFF;
+  isTouched = false;
+  if (!freshData) return;
   isLargeDetect = pointInfo >> 6 & 1;
   touches = pointInfo & 0xF;
-  isTouched = touches > 0;
+  isTouched = touches > 0 && touches <= 5;
   if (bufferStatus == 1 && isTouched) {
     for (uint8_t i = 0; i < touches; i++) {
       readBlockData(data, GT911_POINT_1 + i * 8, 7);

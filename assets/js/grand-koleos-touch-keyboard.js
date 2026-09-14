@@ -11,8 +11,8 @@
     assigned: "assigned to",
     removed: "removed from",
     cleared: "Shortcut cleared for",
-    clearedAll: "All button shortcuts and images have been reset.",
-    confirmClearAll: "Reset all button shortcuts and images?",
+    clearedAll: "All button names, shortcuts, long-press actions, and images have been reset.",
+    confirmClearAll: "Reset all button names, shortcuts, long-press actions, and images?",
     settingsLabel: "Settings",
     settingsLocked: "The Settings button is fixed and cannot be edited.",
     unset: "Not assigned",
@@ -54,8 +54,8 @@
     assigned: "에 할당됨",
     removed: "에서 해제됨",
     cleared: "의 키 조합을 지웠습니다.",
-    clearedAll: "모든 버튼의 키 조합과 이미지를 초기화했습니다.",
-    confirmClearAll: "모든 버튼의 키 조합과 이미지를 초기화할까요?",
+    clearedAll: "모든 버튼의 기능명·키 조합·길게 누르기 동작·이미지를 초기화했습니다.",
+    confirmClearAll: "모든 버튼의 기능명·키 조합·길게 누르기 동작·이미지를 초기화할까요?",
     settingsLabel: "설정",
     settingsLocked: "설정 버튼은 고정되어 있어 수정할 수 없습니다.",
     unset: "미설정",
@@ -108,8 +108,8 @@
     { id: "volume-down", code: 12, group: "media", ko: "볼륨 줄이기", en: "Volume down" },
     { id: "mute", code: 13, group: "media", ko: "음소거", en: "Mute" },
     { id: "fullscreen", code: 14, group: "media", ko: "전체화면", en: "Fullscreen" },
-    { id: "forward-10", code: 15, group: "media", ko: "10초 앞으로", en: "Forward 10 seconds" },
-    { id: "replay-10", code: 16, group: "media", ko: "10초 뒤로", en: "Back 10 seconds" },
+    { id: "forward-10", code: 15, group: "media", ko: "10초 앞으로", en: "Forward 10s" },
+    { id: "replay-10", code: 16, group: "media", ko: "10초 뒤로", en: "Back 10s" },
     { id: "play-pause", code: 17, group: "media", ko: "재생/정지", en: "Play / pause" },
     { id: "previous-track", code: 18, group: "media", ko: "이전곡", en: "Previous track" },
     { id: "next-track", code: 19, group: "media", ko: "다음곡", en: "Next track" },
@@ -271,7 +271,9 @@
   }
 
   const canvasIconImages = new Map();
-  function drawCanvasIcon(iconId, centerX, centerY, size = 30) {
+  const iconTintCanvas = document.createElement("canvas");
+  iconTintCanvas.width = iconTintCanvas.height = 64;
+  function getIconImage(iconId) {
     let image = canvasIconImages.get(iconId);
     if (!image) {
       image = new Image();
@@ -279,7 +281,23 @@
       image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconSvg(iconId))}`;
       canvasIconImages.set(iconId, image);
     }
-    if (image.complete && image.naturalWidth) context.drawImage(image, centerX - size / 2, centerY - size / 2, size, size);
+    return image;
+  }
+  function drawCanvasIcon(iconId, centerX, centerY, size = 30) {
+    const image = getIconImage(iconId);
+    if (!image.complete || !image.naturalWidth) return;
+    if (["tmap", "youtube", "chrome"].includes(iconId)) {
+      context.drawImage(image, centerX - size / 2, centerY - size / 2, size, size);
+      return;
+    }
+    const tint = iconTintCanvas.getContext("2d");
+    tint.clearRect(0, 0, 64, 64);
+    tint.drawImage(image, 0, 0, 64, 64);
+    tint.globalCompositeOperation = "source-in";
+    tint.fillStyle = (buttonThemes.get(buttonTheme) || buttonThemes.get("classic")).pageDot;
+    tint.fillRect(0, 0, 64, 64);
+    tint.globalCompositeOperation = "source-over";
+    context.drawImage(iconTintCanvas, centerX - size / 2, centerY - size / 2, size, size);
   }
 
   const key = (id, label = id, units = 1, kind = "standard", comboLabel = id) => ({ id, label, units, kind, comboLabel });
@@ -318,7 +336,10 @@
   const pageStates = Array.from({ length: 3 }, (_value, index) => ({
     name: lang === "en" ? `Page ${index + 1}` : `${index + 1} 페이지`,
     assignments: defaultAssignments[index].map((keys) => keys.slice()),
-    icons: defaultPageIcons[index].slice()
+    icons: defaultPageIcons[index].slice(),
+    labels: Array(6).fill(""),
+    holds: Array.from({ length: 6 }, () => []),
+    holdModes: Array(6).fill(0)
   }));
   pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
   pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
@@ -336,6 +357,16 @@
   const keyboard = document.querySelector("#gkKeyboard");
   const preview = document.querySelector("#gkPreview");
   const context = preview.getContext("2d");
+  const nameInput = document.querySelector("#gkButtonName");
+  const actionTarget = document.querySelector("#gkActionTarget");
+  const holdMode = document.querySelector("#gkHoldMode");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const labelFont = 'system-ui, "Malgun Gothic", sans-serif';
+  let slideOffset = 0;
+  let slideFrame = 0;
+  preview.width = 960;
+  preview.height = 544;
+  context.scale(2, 2);
   const activeButtonOutput = document.querySelector("#gkActiveButton");
   const activeComboOutput = document.querySelector("#gkActiveCombo");
   const status = document.querySelector("#gkStatus");
@@ -364,8 +395,40 @@
   let uploadBusy = false;
 
   function currentAssignments() {
-    return pageStates[activePage].assignments;
+    return actionTarget.value === "hold" ? pageStates[activePage].holds : pageStates[activePage].assignments;
   }
+
+  function displayButtonName(page, button) {
+    if (isSettingsButton(page, button)) return copy.settingsLabel;
+    return pageStates[page].labels[button].trim() || iconLabel(pageStates[page].icons[button]);
+  }
+
+  function canRepeat(page, button) {
+    const keys = pageStates[page].assignments[button];
+    return keys.length === 1 && ["Volume Up", "Volume Down"].includes(keys[0]);
+  }
+
+  function syncActionEditor() {
+    nameInput.value = pageStates[activePage].labels[activeButton];
+    const repeatAllowed = canRepeat(activePage, activeButton);
+    if (!repeatAllowed && pageStates[activePage].holdModes[activeButton] === 2) pageStates[activePage].holdModes[activeButton] = 0;
+    holdMode.value = String(pageStates[activePage].holdModes[activeButton]);
+    holdMode.querySelector('[value="2"]').disabled = !repeatAllowed;
+    actionTarget.querySelector('[value="hold"]').disabled = holdMode.value !== "1";
+    if (holdMode.value !== "1") actionTarget.value = "tap";
+  }
+
+  nameInput.addEventListener("input", () => {
+    pageStates[activePage].labels[activeButton] = nameInput.value;
+    renderPreview();
+    renderAssignmentSummary();
+  });
+  actionTarget.addEventListener("change", renderAll);
+  holdMode.addEventListener("change", () => {
+    pageStates[activePage].holdModes[activeButton] = Number(holdMode.value);
+    actionTarget.value = holdMode.value === "1" ? "hold" : "tap";
+    renderAll();
+  });
 
   function currentIcons() {
     return pageStates[activePage].icons;
@@ -385,7 +448,8 @@
   }
 
   function comboText(index) {
-    return comboTextFor(activePage, index);
+    const keys = currentAssignments()[index];
+    return keys.length ? keys.map((id) => keyLabels.get(id) || id).join(" + ") : copy.empty;
   }
 
   function syncButtonThemePicker() {
@@ -463,6 +527,7 @@
       return;
     }
     activeButton = index;
+    actionTarget.value = "tap";
     if (revealIconEditor) iconEditor.hidden = false;
     status.textContent = `${buttonText(index)} ${copy.selected}`;
     renderAll();
@@ -483,7 +548,7 @@
       if (isSettingsButton(activePage, index)) {
         return `<button type="button" class="locked" data-gk-button="${index}" disabled aria-disabled="true"><span>${escapeHtml(copy.settingsLabel)}</span><strong>${escapeHtml(copy.settingsLabel)}</strong></button>`;
       }
-      return `<button type="button" class="${index === activeButton ? "active" : ""}" data-gk-button="${index}" aria-pressed="${index === activeButton}"><span>${buttonText(index)}</span><strong>${escapeHtml(comboText(index))}</strong></button>`;
+      return `<button type="button" class="${index === activeButton ? "active" : ""}" data-gk-button="${index}" aria-pressed="${index === activeButton}"><span>${escapeHtml(displayButtonName(activePage, index))}</span><strong>${escapeHtml(comboText(index))}</strong></button>`;
     }).join("");
     assignmentList.querySelectorAll("[data-gk-button]").forEach((button) => {
       button.addEventListener("click", () => selectButton(Number(button.dataset.gkButton)));
@@ -592,6 +657,49 @@
     return size;
   }
 
+  function fittedLabel(ctx, text, maxWidth) {
+    ctx.font = `600 18px ${labelFont}`;
+    if (ctx.measureText(text).width <= maxWidth) return text;
+    const characters = Array.from(text);
+    while (characters.length && ctx.measureText(characters.join("") + "…").width > maxWidth) characters.pop();
+    return characters.join("") + "…";
+  }
+
+  // Store only the 21 visible labels as 4-bit alpha masks, not an entire CJK font.
+  function writeLabelMask(config, offset, text) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 24;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#fff";
+    ctx.fillText(fittedLabel(ctx, text, 128), 64, 12);
+    const pixels = ctx.getImageData(0, 0, 128, 24).data;
+    for (let p = 0; p < 128 * 24; p += 2) {
+      config[offset + p / 2] = (Math.round(pixels[p * 4 + 3] / 17) << 4) | Math.round(pixels[(p + 1) * 4 + 3] / 17);
+    }
+  }
+
+  async function prepareBoardConfig(address) {
+    await document.fonts.ready;
+    await Promise.all(pageStates.flatMap((page) => page.icons).map((id) => getIconImage(id).decode()));
+    return buildBoardConfig(address);
+  }
+
+  function writeIconMask(config, offset, iconId) {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 32;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const image = getIconImage(iconId);
+    if (!image.complete || !image.naturalWidth) throw new Error(copy.invalidFirmware);
+    ctx.drawImage(image, 0, 0, 32, 32);
+    const pixels = ctx.getImageData(0, 0, 32, 32).data;
+    for (let p = 0; p < 1024; p += 2) {
+      config[offset + p / 2] = (Math.round(pixels[p * 4 + 3] / 17) << 4) | Math.round(pixels[(p + 1) * 4 + 3] / 17);
+    }
+  }
+
   function drawTouchIcon(index, centerX, centerY, color) {
     context.save();
     context.strokeStyle = color;
@@ -661,93 +769,88 @@
 
   function renderPreview() {
     const theme = buttonThemes.get(buttonTheme) || buttonThemes.get("classic");
-    const gradient = context.createLinearGradient(0, 0, 480, 272);
-    gradient.addColorStop(0, theme.screen[0]);
-    gradient.addColorStop(1, theme.screen[1]);
-    context.fillStyle = gradient;
+    context.fillStyle = theme.screen[0];
     context.fillRect(0, 0, 480, 272);
 
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillStyle = theme.text;
     context.font = "800 16px Inter, Arial, sans-serif";
-    [0, 1, 2].forEach((dot) => {
-      context.beginPath();
-      context.arc(228 + dot * 12, 31, 3, 0, Math.PI * 2);
-      context.fillStyle = dot === activePage ? theme.pageDot : theme.pageDotInactive;
-      context.fill();
-    });
 
     const outerX = 15;
-    const outerY = 42;
+    const outerY = 14;
     const columnGap = 10;
     const rowGap = 8;
-    const buttonWidth = (480 - outerX * 2 - columnGap * 2) / 3;
-    const buttonHeight = 76;
+    const buttonWidth = Math.floor((480 - outerX * 2 - columnGap * 2) / 3);
+    const buttonHeight = 94;
     buttonBoxes.length = 0;
 
+    const drawPage = (pageIndex, offset) => {
+    context.save();
+    context.beginPath();
+    context.rect(0, 0, 480, 212);
+    context.clip();
+    context.translate(offset, 0);
     for (let index = 0; index < 6; index += 1) {
       const column = index % 3;
       const row = Math.floor(index / 3);
       const x = outerX + column * (buttonWidth + columnGap);
       const y = outerY + row * (buttonHeight + rowGap);
-      buttonBoxes.push({ x, y, width: buttonWidth, height: buttonHeight });
+      if (pageIndex === activePage) buttonBoxes.push({ x, y, width: buttonWidth, height: buttonHeight });
 
-      const isFixed = isSettingsButton(activePage, index);
-      const isActive = index === activeButton && !isFixed;
-      const pressOffset = buttonPressIndex === index && !isFixed ? 2 * buttonPressProgress : 0;
+      const isFixed = isSettingsButton(pageIndex, index);
+      const isActive = pageIndex === activePage && index === activeButton && !isFixed;
+      const pressOffset = pageIndex === activePage && buttonPressIndex === index && !isFixed ? 2 * buttonPressProgress : 0;
       const paintY = y + pressOffset;
       const paintHeight = buttonHeight - pressOffset;
       context.save();
-      context.shadowColor = isActive && theme.shadowBlur ? `${theme.cardActiveBorder}55` : "transparent";
-      context.shadowBlur = isActive ? theme.shadowBlur : 0;
-      context.shadowOffsetY = isActive ? 2 : 0;
-      roundedRect(context, x, paintY, buttonWidth, paintHeight, theme.radius);
-      const cardGradient = context.createLinearGradient(x, paintY, x, paintY + paintHeight);
-      cardGradient.addColorStop(0, isActive ? theme.cardActive[0] : theme.cardIdle[0]);
-      cardGradient.addColorStop(1, isActive ? theme.cardActive[1] : theme.cardIdle[1]);
-      context.fillStyle = cardGradient;
+      roundedRect(context, x, paintY, buttonWidth, paintHeight, 14);
+      context.fillStyle = isActive ? theme.cardActive[0] : theme.cardIdle[0];
       context.fill();
-      context.lineWidth = isActive ? 2.25 : 1.35;
-      context.strokeStyle = isActive ? theme.cardActiveBorder : theme.cardBorder;
-      context.stroke();
+      if (isActive) {
+        context.lineWidth = 1;
+        context.strokeStyle = theme.cardActiveBorder;
+        context.stroke();
+      }
       context.restore();
 
-      if (theme.iconPlate) {
-        roundedRect(context, x + buttonWidth / 2 - 22, y + 3 + pressOffset * 0.5, 44, 44, 14);
-        context.fillStyle = isFixed ? "#334155" : theme.iconPlate;
+      drawCanvasIcon(isFixed ? settingsIconId : pageStates[pageIndex].icons[index], x + buttonWidth / 2, y + 30 + pressOffset * 0.5, 32);
+
+      const label = fittedLabel(context, displayButtonName(pageIndex, index), 128);
+      context.fillStyle = theme.text;
+      context.fillText(label, x + buttonWidth / 2, y + 67 + pressOffset);
+      if (!isFixed && pageStates[pageIndex].holdModes[index]) {
+        context.fillStyle = theme.pageDot;
+        roundedRect(context, x + buttonWidth / 2 - 9, y + 84, 18, 2, 1);
         context.fill();
       }
-      drawCanvasIcon(isFixed ? settingsIconId : currentIcons()[index], x + buttonWidth / 2, y + 25 + pressOffset * 0.5, 32);
-
-      const assignments = currentAssignments();
-      const combo = isFixed ? copy.settingsLabel : (assignments[index].length ? comboText(index) : copy.unset);
-      context.fillStyle = isFixed ? theme.settingsText : assignments[index].length ? theme.iconColors[index] : theme.emptyText;
-      const fontSize = fitFont(combo, buttonWidth - 16, 10);
-      context.font = `700 ${fontSize}px Inter, Arial, sans-serif`;
-      context.fillText(combo, x + buttonWidth / 2, y + 59 + pressOffset);
     }
+    context.restore();
+    };
+    drawPage(activePage, slideOffset);
+    if (slideOffset < 0 && activePage < 2) drawPage(activePage + 1, slideOffset + 480);
+    if (slideOffset > 0 && activePage > 0) drawPage(activePage - 1, slideOffset - 480);
 
-    context.fillStyle = theme.footer;
-    context.fillRect(0, 210, 480, 62);
+    context.fillStyle = theme.screen[0];
+    context.fillRect(0, 212, 480, 60);
     const bottomItems = pageStates.map((_page, index) => ({ x: 12 + index * 156, width: 144, label: displayPageName(index), type: "page", pageIndex: index, active: activePage === index }));
     navigationBoxes.length = 0;
     bottomItems.forEach((item) => {
-      roundedRect(context, item.x, 219, item.width, 43, 9);
-      context.fillStyle = item.active ? theme.tabActive : theme.tabIdle;
+      roundedRect(context, item.x, 224, item.width, 38, 10);
+      context.fillStyle = item.active ? theme.cardActive[0] : theme.screen[0];
       context.fill();
-      context.strokeStyle = item.active ? theme.tabActiveBorder : theme.tabIdleBorder;
-      context.lineWidth = 1;
-      context.stroke();
-      context.fillStyle = item.disabled ? theme.tabInactiveText : item.active ? theme.tabText : theme.tabInactiveText;
-      const tabFontSize = item.label.length === 1 ? 28 : fitFont(item.label, item.width - 12, 12, 8);
-      context.font = item.label.length === 1 ? `700 ${tabFontSize}px Inter, Arial, sans-serif` : `800 ${tabFontSize}px Inter, Arial, sans-serif`;
-      context.fillText(item.label, item.x + item.width / 2, 241);
-      navigationBoxes.push({ x: item.x, y: 219, width: item.width, height: 43, type: item.type, pageIndex: item.pageIndex, disabled: item.disabled });
+      context.fillStyle = item.active ? theme.text : theme.emptyText;
+      context.fillText(fittedLabel(context, item.label, 128), item.x + item.width / 2, 243);
+      if (item.active) {
+        context.fillStyle = theme.pageDot;
+        context.fillRect(item.x + item.width / 2 - 12, 264, 24, 2);
+      }
+      navigationBoxes.push({ x: item.x, y: 220, width: item.width, height: 48, type: item.type, pageIndex: item.pageIndex, disabled: item.disabled });
     });
   }
 
   function renderAll() {
+    syncActionEditor();
     activeButtonOutput.textContent = `${displayPageName(activePage)} · ${buttonText(activeButton)}`;
     activeComboOutput.textContent = comboText(activeButton);
     syncButtonThemePicker();
@@ -761,8 +864,8 @@
   function canvasPoint(event) {
     const rect = preview.getBoundingClientRect();
     return {
-      x: (event.clientX - rect.left) * (preview.width / rect.width),
-      y: (event.clientY - rect.top) * (preview.height / rect.height)
+      x: (event.clientX - rect.left) * (480 / rect.width),
+      y: (event.clientY - rect.top) * (272 / rect.height)
     };
   }
 
@@ -776,7 +879,7 @@
     if (buttonPressIndex < 0) return;
     const from = buttonPressProgress;
     const startedAt = performance.now();
-    const duration = target > 0 ? 130 : 150;
+    const duration = reducedMotion.matches ? 1 : target > 0 ? 60 : 120;
     const frame = (now) => {
       const progress = Math.min(1, (now - startedAt) / duration);
       const eased = 1 - Math.pow(1 - progress, 3);
@@ -814,6 +917,7 @@
     if (index < 0 || index >= pageStates.length || index === activePage) return false;
     activePage = index;
     activeButton = 0;
+    actionTarget.value = "tap";
     if (announce) {
       status.textContent = lang === "en" ? `${displayPageName(index)} ${copy.pageChanged}` : `${displayPageName(index)}${copy.pageChanged}`;
     }
@@ -821,81 +925,69 @@
     return true;
   }
 
-  async function changePage(index, startOffset = 0) {
-    if (transitioning || index < 0 || index >= pageStates.length || index === activePage) {
-      snapPreview(startOffset);
-      return;
-    }
+  function animateSlide(target, done) {
+    if (slideFrame) cancelAnimationFrame(slideFrame);
+    const from = slideOffset;
+    const start = performance.now();
+    const duration = reducedMotion.matches ? 1 : 180;
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      slideOffset = from + (target - from) * (1 - Math.pow(1 - p, 3));
+      renderPreview();
+      if (p < 1) slideFrame = requestAnimationFrame(tick);
+      else {
+        slideFrame = 0;
+        slideOffset = 0;
+        transitioning = false;
+        if (done) done();
+        renderPreview();
+      }
+    };
     transitioning = true;
-    const direction = index > activePage ? 1 : -1;
-    const width = preview.getBoundingClientRect().width;
-    const travel = Math.min(width * 0.24, 150);
-    const startOpacity = Math.max(0.72, 1 - Math.abs(startOffset) / Math.max(width, 1) * 0.7);
-
-    try {
-      const exitAnimation = preview.animate([
-        { transform: `translate3d(${startOffset}px, 0, 0)`, opacity: startOpacity },
-        { transform: `translate3d(${-direction * travel}px, 0, 0)`, opacity: 0 }
-      ], { duration: startOffset ? 125 : 155, easing: "cubic-bezier(.4, 0, 1, 1)", fill: "forwards" });
-      await exitAnimation.finished;
-      exitAnimation.cancel();
-      preview.style.transform = "";
-      preview.style.opacity = "";
-      setPage(index);
-
-      const enterAnimation = preview.animate([
-        { transform: `translate3d(${direction * travel}px, 0, 0)`, opacity: 0 },
-        { transform: "translate3d(0, 0, 0)", opacity: 1 }
-      ], { duration: 240, easing: "cubic-bezier(.22, 1, .36, 1)" });
-      await enterAnimation.finished;
-    } catch (_error) {
-      setPage(index);
-    } finally {
-      preview.style.transform = "";
-      preview.style.opacity = "";
-      transitioning = false;
-    }
+    slideFrame = requestAnimationFrame(tick);
   }
 
-  function snapPreview(startOffset = 0) {
-    const opacity = Math.max(0.72, 1 - Math.abs(startOffset) / Math.max(preview.getBoundingClientRect().width, 1) * 0.7);
-    const animation = preview.animate([
-      { transform: `translate3d(${startOffset}px, 0, 0)`, opacity },
-      { transform: "translate3d(0, 0, 0)", opacity: 1 }
-    ], { duration: 220, easing: "cubic-bezier(.22, 1, .36, 1)" });
-    animation.finished.catch(() => {}).finally(() => {
-      preview.style.transform = "";
-      preview.style.opacity = "";
-    });
+  function changePage(index) {
+    if (transitioning) return;
+    if (index < 0 || index >= pageStates.length || index === activePage) {
+      animateSlide(0);
+      return;
+    }
+    animateSlide(index > activePage ? -480 : 480, () => setPage(index));
   }
 
   preview.addEventListener("pointerdown", (event) => {
-    if (transitioning || event.button > 0) return;
-    pointerState = { id: event.pointerId, startX: event.clientX, startY: event.clientY, dx: 0, dy: 0, swiping: false };
+    if (transitioning || pointerState || event.button > 0) return;
     const point = canvasPoint(event);
-    const index = buttonIndexAtPoint(point);
-    if (index >= 0 && !isSettingsButton(activePage, index)) animateButtonPress(index, 1);
+    pointerState = { id: event.pointerId, start: point, dx: 0, dy: 0, swiping: false, cancelled: false, started: performance.now(), button: buttonIndexAtPoint(point) };
+    if (pointerState.button >= 0 && !isSettingsButton(activePage, pointerState.button)) animateButtonPress(pointerState.button, 1);
     preview.setPointerCapture?.(event.pointerId);
     preview.classList.add("dragging");
   });
 
   preview.addEventListener("pointermove", (event) => {
     if (!pointerState || pointerState.id !== event.pointerId || transitioning) return;
-    pointerState.dx = event.clientX - pointerState.startX;
-    pointerState.dy = event.clientY - pointerState.startY;
-    if (!pointerState.swiping && Math.abs(pointerState.dx) > 7 && Math.abs(pointerState.dx) > Math.abs(pointerState.dy) * 1.15) {
-      pointerState.swiping = true;
+    const point = canvasPoint(event);
+    const state = pointerState;
+    state.dx = point.x - state.start.x;
+    state.dy = point.y - state.start.y;
+    if (!state.swiping && Math.abs(state.dy) > 12 && Math.abs(state.dy) >= Math.abs(state.dx)) state.cancelled = true;
+    if (state.cancelled) { releaseButtonPress(); return; }
+    if (!state.swiping && state.start.y < 212 && Math.abs(state.dx) > 12 && Math.abs(state.dx) > Math.abs(state.dy) * 1.4) {
+      state.swiping = true;
       releaseButtonPress();
     }
-    if (!pointerState.swiping) return;
+    if (!state.swiping) {
+      if (Math.max(Math.abs(state.dx), Math.abs(state.dy)) > 12) {
+        state.cancelled = true;
+        releaseButtonPress();
+      }
+      return;
+    }
     event.preventDefault();
-    const width = preview.getBoundingClientRect().width;
-    const atBoundary = (activePage === 0 && pointerState.dx > 0) || (activePage === pageStates.length - 1 && pointerState.dx < 0);
-    const resistedDx = atBoundary ? pointerState.dx * 0.28 : pointerState.dx;
-    const limitedDx = Math.max(-width * 0.38, Math.min(width * 0.38, resistedDx));
-    pointerState.renderedDx = limitedDx;
-    preview.style.transform = `translate3d(${limitedDx}px, 0, 0)`;
-    preview.style.opacity = String(Math.max(0.72, 1 - Math.abs(limitedDx) / Math.max(width, 1) * 0.7));
+    const boundary = (activePage === 0 && state.dx > 0) || (activePage === 2 && state.dx < 0);
+    slideOffset = Math.max(-480, Math.min(480, state.dx * (boundary ? 0.22 : 1)));
+    renderPreview();
   });
 
   preview.addEventListener("pointerup", (event) => {
@@ -905,27 +997,27 @@
     releaseButtonPress();
     preview.classList.remove("dragging");
     preview.releasePointerCapture?.(event.pointerId);
+    const point = canvasPoint(event);
     if (!state.swiping) {
-      handleCanvasTap(event);
+      if (!state.cancelled && Math.max(Math.abs(point.x - state.start.x), Math.abs(point.y - state.start.y)) <= 12 &&
+          buttonIndexAtPoint(point) === state.button) handleCanvasTap(event);
       return;
     }
-    const width = preview.getBoundingClientRect().width;
-    const threshold = Math.max(42, width * 0.11);
-    const renderedDx = state.renderedDx || 0;
-    if (Math.abs(state.dx) >= threshold) {
-      changePage(activePage + (state.dx < 0 ? 1 : -1), renderedDx);
-    } else {
-      snapPreview(renderedDx);
-    }
+    const elapsed = Math.max(1, performance.now() - state.started);
+    const commit = Math.abs(state.dx) >= 48 || (Math.abs(state.dx) >= 24 && Math.abs(state.dx) / elapsed > 0.45);
+    if (commit) changePage(activePage + (state.dx < 0 ? 1 : -1));
+    else animateSlide(0);
   });
 
-  preview.addEventListener("pointercancel", () => {
-    const renderedDx = pointerState?.renderedDx || 0;
+  function cancelPointer() {
+    if (!pointerState) return;
     pointerState = null;
     releaseButtonPress();
     preview.classList.remove("dragging");
-    snapPreview(renderedDx);
-  });
+    animateSlide(0);
+  }
+  preview.addEventListener("pointercancel", cancelPointer);
+  preview.addEventListener("lostpointercapture", cancelPointer);
 
   document.querySelector("#gkClearButton").addEventListener("click", () => {
     currentAssignments()[activeButton] = [];
@@ -938,6 +1030,9 @@
     pageStates.forEach((page, index) => {
       page.assignments = defaultAssignments[index].map((keys) => keys.slice());
       page.icons = defaultPageIcons[index].slice();
+      page.labels.fill("");
+      page.holds = Array.from({ length: 6 }, () => []);
+      page.holdModes.fill(0);
     });
     pageStates[settingsPageIndex].icons[settingsButtonIndex] = settingsIconId;
     pageStates[settingsPageIndex].assignments[settingsButtonIndex] = [];
@@ -1010,7 +1105,7 @@
     const buttonBytes = comboLabelBytes + 1 + storedKeyCount + 2 + 1;
     const pageBytes = pageNameBytes + (6 * buttonBytes);
     const payloadSize = 3 * pageBytes;
-    const config = new Uint8Array(4096);
+    const config = new Uint8Array(45056);
     const view = new DataView(config.buffer);
     view.setUint32(0, 0x4B474653, true);
     view.setUint16(4, 2, true);
@@ -1023,7 +1118,7 @@
       let buttonOffset = pageOffset + pageNameBytes;
       page.assignments.forEach((assignments, buttonIndex) => {
         const isFixed = isSettingsButton(pageIndex, buttonIndex);
-        writeFixedUtf8(config, buttonOffset, comboLabelBytes, isFixed ? copy.settingsLabel : (assignments.length ? comboTextFor(pageIndex, buttonIndex) : copy.unset));
+        writeFixedUtf8(config, buttonOffset, comboLabelBytes, displayButtonName(pageIndex, buttonIndex));
         const keys = [];
         const media = [];
         if (!isFixed) {
@@ -1048,6 +1143,35 @@
       pageOffset += pageBytes;
     });
     view.setUint32(8, fnv1a32(config.subarray(16, 16 + payloadSize)), true);
+    // The original v2 block stays intact. Optional interaction data starts at 1216.
+    const extensionOffset = 1216;
+    const actionsOffset = extensionOffset + 16;
+    const labelsOffset = actionsOffset + 18 * 12;
+    const iconsOffset = labelsOffset + 21 * 1536;
+    const extensionSize = 18 * 12 + 21 * 1536 + 18 * 512;
+    view.setUint32(extensionOffset, 0x31584B47, true);
+    view.setUint16(extensionOffset + 4, 1, true);
+    view.setUint16(extensionOffset + 6, extensionSize, true);
+    view.setUint32(extensionOffset + 12, lang === "en" ? 1 : 0, true);
+    pageStates.forEach((page, p) => {
+      page.holds.forEach((keys, b) => {
+        const offset = actionsOffset + (p * 6 + b) * 12;
+        const fixed = isSettingsButton(p, b);
+        const mode = fixed || (page.holdModes[b] === 1 && !keys.length) ? 0 : page.holdModes[b];
+        const keyboard = fixed ? [] : keys.filter((key) => !consumerCodes.has(key)).map(keyboardCode);
+        const media = fixed ? [] : keys.filter((key) => consumerCodes.has(key));
+        if (keyboard.some((code) => code === null) || keys.length > 3 || media.length > 1 || (mode === 2 && !canRepeat(p, b))) throw new Error(copy.invalidFirmware);
+        config[offset] = mode;
+        config[offset + 1] = keyboard.length;
+        keyboard.forEach((code, i) => { config[offset + 2 + i] = code; });
+        view.setUint16(offset + 10, media.length ? consumerCodes.get(media[0]) : 0, true);
+        writeLabelMask(config, labelsOffset + (p * 6 + b) * 1536, displayButtonName(p, b));
+        writeIconMask(config, iconsOffset + (p * 6 + b) * 512, page.icons[b]);
+      });
+      writeLabelMask(config, labelsOffset + (18 + p) * 1536, displayPageName(p));
+    });
+    // Bind extension and legacy data together so stale labels/actions are rejected.
+    view.setUint32(extensionOffset + 8, fnv1a32(config.subarray(0, extensionOffset)) ^ fnv1a32(config.subarray(extensionOffset + 12, actionsOffset + extensionSize)), true);
     return { data: config, address, name: lang === "en" ? "Board settings" : "보드 설정" };
   }
 
@@ -1056,6 +1180,7 @@
     const manifestResponse = await fetch(manifestUrl, { cache: "no-store" });
     if (!manifestResponse.ok) throw new Error(`Firmware manifest HTTP ${manifestResponse.status}`);
     const manifest = await manifestResponse.json();
+    if (manifest.interactionVersion !== 1 || manifest.configSize !== 45056) throw new Error(copy.invalidFirmware);
     const files = [];
     for (const entry of manifest.files || []) {
       const fileUrl = new URL(entry.path, manifestUrl);
@@ -1185,7 +1310,7 @@
       setUploadProgress(7, copy.firmwareLoading, true);
       const { manifest, files } = await loadFirmwarePackage();
       setUploadProgress(12, copy.firmwareValidating, true);
-      files.push(buildBoardConfig(Number(manifest.configAddress || 0x310000)));
+      files.push(await prepareBoardConfig(Number(manifest.configAddress || 0x310000)));
       const { ESPLoader, Transport } = await import(flasherModuleUrl);
       setUploadProgress(18, copy.firmwareResetting, true);
       selectedPort = await resetIntoBootloader(selectedPort);

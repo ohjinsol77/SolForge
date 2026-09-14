@@ -115,6 +115,7 @@ class TAMC_GT911 {
     uint8_t isLargeDetect;
     uint8_t touches = 0;
     bool isTouched = false;
+    bool freshData = false;
     TP_Point points[5];
 
   private:
