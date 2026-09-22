@@ -1,3 +1,4 @@
+import { handleAnalytics, cleanup } from './server/analytics.mjs';
 const YAHOO_CHART = "https://query1.finance.yahoo.com/v8/finance/chart";
 const COINGECKO_API = "https://api.coingecko.com/api/v3";
 const COINPAPRIKA_TICKERS = "https://api.coinpaprika.com/v1/tickers";
@@ -33,7 +34,10 @@ const BINANCE_COINS = [
 ];
 
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(cleanup(env)); },
   async fetch(request, env) {
+    const analytics = await handleAnalytics(request, env);
+    if (analytics) return analytics;
     const url = new URL(request.url);
     const isAlternateSiteHost = url.hostname === `www.${CANONICAL_HOST}` || url.hostname.endsWith(".workers.dev");
     if (isAlternateSiteHost && !url.pathname.startsWith("/api/") && (request.method === "GET" || request.method === "HEAD")) {

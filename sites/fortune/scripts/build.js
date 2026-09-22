@@ -110,7 +110,6 @@ function build() {
     nav,
     pages,
     renderFeature,
-    adsensePublisherId: "ca-pub-1625988263075960",
     buildLabel: "SolForge Fortune"
   });
   const packageRoot = path.resolve(path.dirname(require.resolve("@fullstackfamily/manseryeok")), "..");

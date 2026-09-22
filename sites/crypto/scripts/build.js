@@ -1,3 +1,4 @@
+const { renderCoupangAd } = require("../../../scripts/coupang-ads");
 const fs = require("fs");
 const path = require("path");
 const { nav, pages } = require("./content");
@@ -5,7 +6,6 @@ const { nav, pages } = require("./content");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
 const SITE_URL = "https://crypto.solforge.cloud";
-const ADSENSE_PUBLISHER_ID = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
 const locales = Object.fromEntries(
   LANGS.map((lang) => [lang, JSON.parse(fs.readFileSync(path.join(ROOT, "src", "locales", `${lang}.json`), "utf8"))])
@@ -107,7 +107,6 @@ function renderPage(lang, page) {
   const dynamicTranslations = Object.fromEntries(
     Object.entries(locales[lang]).filter(([key]) => key.startsWith("dynamic."))
   );
-  const allowAds = !["about", "privacy"].includes(page.slug);
   const schema = {
     "@context": "https://schema.org",
     "@type": page.slug === "index" ? "WebSite" : "Article",
@@ -130,7 +129,6 @@ function renderPage(lang, page) {
     <link rel="alternate" hreflang="ko" href="${SITE_URL}${route("ko", page.slug)}">
     <link rel="alternate" hreflang="en" href="${SITE_URL}${route("en", page.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}${route("ko", page.slug)}">
-    ${allowAds ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>` : ""}
     <meta property="og:type" content="${page.slug === "index" ? "website" : "article"}">
     <meta property="og:title" content="${escapeHtml(t(lang, `pages.${page.key}.meta.title`))}">
     <meta property="og:description" content="${escapeHtml(t(lang, `pages.${page.key}.meta.description`))}">
@@ -165,6 +163,7 @@ function renderPage(lang, page) {
           ${text(lang, `pages.${page.key}.hero.noteBody`, "p")}
         </aside>
       </section>
+      ${["about", "privacy"].includes(page.slug) ? "" : renderCoupangAd(lang)}
       ${page.snapshot ? renderSnapshot(lang) : ""}
       ${renderSections(lang, page)}
       ${renderReadingPath(lang, page)}
@@ -219,7 +218,7 @@ https://:version.solforge-crypto.pages.dev/*
   X-Robots-Tag: noindex
 `);
   fs.writeFileSync(path.join(DIST, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
-  fs.writeFileSync(path.join(DIST, "ads.txt"), `google.com, ${ADSENSE_PUBLISHER_ID.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
+  fs.writeFileSync(path.join(DIST, "ads.txt"), "");
 
   const sitemapUrls = pages.flatMap((page) => LANGS.map((lang) => `${SITE_URL}${route(lang, page.slug)}`));
   fs.writeFileSync(path.join(DIST, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);

@@ -1,3 +1,4 @@
+const { renderCoupangAd } = require("./coupang-ads");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -5,23 +6,13 @@ const { translate } = require("./generate-en-locale");
 
 const ROOT = path.resolve(__dirname, "..");
 const SITE_URL = "https://solforge.cloud";
-const ADSENSE_CLIENT = "ca-pub-1625988263075960";
 const LANGS = ["ko", "en"];
 const CATEGORY_ORDER = [
   "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
-const AD_FREE_TOOL_SLUGS = new Set([
-  "pip-clock",
-  "pip-timer",
-  "pip-pomodoro",
-  "pip-color",
-  "pip-image",
-  "pip-memo",
-  "mapleland-boss-timer",
-  "flashlight-tool"
-]);
+
 
 const categoryCopy = {
   ko: {
@@ -1059,9 +1050,6 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
   const sourcePage = sourcePageId(sourceHtml);
   const privacyAnswer = isExternalTool(item) ? text.externalPrivacy : text.localPrivacy;
   const description = metaDescription(item.title, item.description, lang);
-  const adScript = AD_FREE_TOOL_SLUGS.has(item.slug)
-    ? ""
-    : `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`;
   const faq = [
     { q: text.faqQ1(item.title), a: text.faqA1 },
     { q: text.faqQ2, a: privacyAnswer }
@@ -1105,7 +1093,6 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${escapeHtml(item.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${escapeHtml(item.slug)}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    ${adScript}
     <link rel="stylesheet" href="/assets/css/styles.css?v=20260811-gamertag">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
@@ -1167,6 +1154,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
           </div>
         </section>
 
+        ${renderCoupangAd(lang)}
         <section class="independent-workspace" aria-labelledby="workspace-title">
           <div class="workspace-heading"><p class="eyebrow">${escapeHtml(text.direct)}</p><h2 id="workspace-title">${escapeHtml(text.workspace)}</h2></div>
           ${markup}
@@ -1332,6 +1320,7 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
           </div>
         </section>
 
+        ${renderCoupangAd(lang)}
         <section class="directory-page category-directory" aria-labelledby="category-tools-title">
           <div class="directory-heading">
             <div><p class="eyebrow">${escapeHtml(category.label)}</p><h2 id="category-tools-title">${escapeHtml(text.chooseTool)}</h2><p>${escapeHtml(category.use)}</p></div>
@@ -1407,7 +1396,6 @@ function normalizeCatalogPageTitles(catalog, lang) {
 }
 
 module.exports = {
-  AD_FREE_TOOL_SLUGS,
   buildToolPages,
   generatedCategoryRecords,
   generatedToolRecords,

@@ -233,7 +233,7 @@ for (const language of ["ko", "en"]) {
   const expectedProductName = language === "ko" ? "DB 임시·더미 데이터 생성기" : "Database Test Data Generator";
   assert(html.includes(`rel="canonical" href="https://solforge.cloud/${language}/tempdb"`), `${language}: canonical URL missing`);
   assert(html.includes('hreflang="ko"') && html.includes('hreflang="en"') && html.includes('hreflang="x-default"'), `${language}: hreflang links missing`);
-  assert(html.includes("ca-pub-1625988263075960"), `${language}: AdSense publisher code missing`);
+  assert(!/adsbygoogle|googlesyndication|ca-pub-/.test(html), `${language}: AdSense must be disabled`);
   assert(html.includes("tempdb.js?v=20260723-3") && html.includes("tempdb.css?v=20260723-2"), `${language}: TempDB assets missing`);
   assert(!html.includes("data-i18n="), `${language}: source translation attributes should be removed from production output`);
   assert(html.includes(expectedProductName), `${language}: renamed product title missing from production page`);

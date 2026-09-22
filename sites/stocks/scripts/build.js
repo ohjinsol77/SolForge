@@ -157,7 +157,6 @@ function build() {
     renderFeature,
     clientTranslationPrefixes: ["dynamic.", "koreaDashboard.", "globalDashboard."],
     assetVersion: "20260715-1",
-    adsensePublisherId: "ca-pub-1625988263075960",
     buildLabel: "SolForge Stocks"
   });
 }

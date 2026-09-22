@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
+import { passwordMatches,handleAnalytics } from '../server/analytics.mjs';
+const c=globalThis.crypto||webcrypto;
+const enc=new TextEncoder(),salt='test-salt';const key=await c.subtle.importKey('raw',enc.encode('correct password'),'PBKDF2',false,['deriveBits']);const bits=await c.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:100000,hash:'SHA-256'},key,256);const digest=Buffer.from(bits).toString('hex');
+const passwordHash=`pbkdf2$100000$${salt}$${digest}`;
+assert.equal(await passwordMatches('correct password',passwordHash),true);assert.equal(await passwordMatches('wrong',passwordHash),false);
+let storedHash=passwordHash;let attempts=0;const sessions=new Map();
+const env={ADMIN_PASSWORD_HASH:passwordHash,ANALYTICS_SALT:'test',ANALYTICS_DB:{prepare(sql){let args;return {bind(...v){args=v;return this;},async first(){if(sql.includes('SELECT password_hash'))return {password_hash:storedHash};if(sql.includes('login_attempts'))return {count:++attempts};if(sql.includes('SELECT token')){const s=sessions.get(args[0]);return s&&s.expires>args[1]&&s.version===args[2]?{token:args[0]}:null;}},async run(){if(sql.includes('UPDATE admin_credentials')){if(storedHash!==args[2])return {meta:{changes:0}};storedHash=args[0];return {meta:{changes:1}};}if(sql.includes('INSERT INTO sessions'))sessions.set(args[0],{expires:args[1],version:args[2]});if(sql.includes('DELETE FROM sessions'))sessions.delete(args[0]);}};}}};
+const req=(path,method='GET',data,headers={})=>new Request('https://solforge.cloud'+path,{method,headers:{...(method==='POST'?{'Origin':'https://solforge.cloud','Content-Type':'application/json'}:{}),...headers},...(data?{body:JSON.stringify(data)}:{})});
+assert.equal((await handleAnalytics(req('/admin/api/stats'),env)).status,401);
+assert.equal((await handleAnalytics(req('/admin/api/login','POST',{password:'correct password'},{Origin:'https://evil.test'}),env)).status,403);
+assert.equal((await handleAnalytics(req('/admin/api/login','POST',{password:'bad'}),env)).status,401);
+const login=await handleAnalytics(req('/admin/api/login','POST',{password:'correct password'}),env);assert.equal(login.status,200);const cookie=login.headers.get('set-cookie');assert.match(cookie,/HttpOnly/);assert.match(cookie,/Secure/);assert.match(cookie,/SameSite=Strict/);assert.equal(sessions.size,1);
+const record=[...sessions.values()][0];record.version='changed';assert.equal((await handleAnalytics(req('/admin/api/stats','GET',null,{Cookie:cookie}),env)).status,401);record.version=await (await import('../server/analytics.mjs')).hash(passwordHash);const expires=record.expires;record.expires=0;assert.equal((await handleAnalytics(req('/admin/api/stats','GET',null,{Cookie:cookie}),env)).status,401);record.expires=expires;
+assert.equal((await handleAnalytics(req('/admin/api/logout','POST',null,{Cookie:cookie}),env)).status,200);assert.equal(sessions.size,0);
+assert.equal((await handleAnalytics(req('/admin/api/stats','GET',null,{Cookie:cookie}),env)).status,401);
+attempts=8;assert.equal((await handleAnalytics(req('/admin/api/login','POST',{password:'correct password'}),env)).status,429);
+assert.equal((await handleAnalytics(req('/api/analytics/event','POST',{}),env)).status,400);
+assert.equal((await handleAnalytics(req('/api/analytics/event','POST',{}, {Origin:'https://evil.test'}),env)).status,403);
+assert.equal((await handleAnalytics(req('/admin/api/stats'),{})).status,503);
+assert.equal((await handleAnalytics(new Request('https://solforge.example.workers.dev/admin/api/stats'),env)).status,404);
+console.log('Admin security tests passed: password, auth, CSRF, cookies, logout, throttling, ingestion validation, fail-closed.');
+const {readFileSync}=await import('node:fs');const {runInNewContext}=await import('node:vm');
+const tracker=readFileSync(new URL('../assets/js/analytics.js',import.meta.url),'utf8');
+for(const [pathname,expected] of [['/ko/','/ko/index.html'],['/ko/tools/mapleland-boss-timer','/ko/tools/mapleland-boss-timer.html'],['/en/tools/mapleland-boss-timer.html','/en/tools/mapleland-boss-timer.html']]){
+ const events=[];let listener;runInNewContext(tracker,{navigator:{},location:{hostname:'solforge.cloud',pathname,search:''},document:{cookie:'',referrer:'https://www.google.com/',addEventListener(type,fn){listener=fn;}},crypto:c,URL,URLSearchParams,Date,fetch(url,options){events.push(JSON.parse(options.body));return Promise.resolve();}});
+ assert.equal(events.length,1);assert.equal(events[0].path,expected);assert.equal(events[0].referrer,'www.google.com');assert.equal(events[0].keyword,'');listener({target:{closest(){return {tagName:'A',href:'https://solforge.cloud/en/'};}}});assert.equal(events[1].target,'/en/index.html');
+}
+console.log('Tracker canonical URLs verified: directory home, extensionless tools, .html pages and clicks.');
+
+attempts=0;
+const changeLogin=await handleAnalytics(req('/admin/api/login','POST',{password:'correct password'}),env);
+const changeCookie=changeLogin.headers.get('set-cookie');
+const changeData={currentPassword:'correct password',newPassword:'new secure password 123',confirmPassword:'new secure password 123'};
+assert.equal((await handleAnalytics(req('/admin/api/password','POST',changeData),env)).status,401);
+assert.equal((await handleAnalytics(req('/admin/api/password','POST',changeData,{Cookie:changeCookie,Origin:'https://evil.test'}),env)).status,403);
+assert.equal((await handleAnalytics(req('/admin/api/password','POST',{...changeData,currentPassword:'wrong'},{Cookie:changeCookie}),env)).status,403);
+assert.equal((await handleAnalytics(req('/admin/api/password','POST',{...changeData,confirmPassword:'different'},{Cookie:changeCookie}),env)).status,400);
+assert.equal((await handleAnalytics(req('/admin/api/password','POST',changeData,{Cookie:changeCookie}),env)).status,200);
+assert.equal((await handleAnalytics(req('/admin/api/stats','GET',null,{Cookie:changeCookie}),env)).status,401);
+assert.equal((await handleAnalytics(req('/admin/api/login','POST',{password:'correct password'}),env)).status,401);
+assert.equal((await handleAnalytics(req('/admin/api/login','POST',{password:changeData.newPassword}),env)).status,200);
+assert.notEqual(storedHash,changeData.newPassword);
+console.log('Password change verified: authentication, CSRF, current password, confirmation, old session revocation, old password rejection, new password login.');

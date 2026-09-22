@@ -4,11 +4,11 @@
   "private": true,
   "description": "Static developer, text, media, vehicle, and Korean life tools.",
   "scripts": {
-    "build": "node scripts/build-i18n.js && node sites/crypto/scripts/build.js && node sites/stocks/scripts/build.js && node sites/fortune/scripts/build.js",
-    "check": "node --check worker.js && node --check assets/js/app.js && node --check assets/js/tempdb.js && node --check assets/js/tool-catalog.js && node --check assets/js/mysql-parameter-compare.js && node --check assets/js/get-url-parser.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/grand-koleos-touch-keyboard.js && node --check assets/js/birthday-celebrities.js && node --check assets/js/advanced-tools.mjs && node --check assets/js/gaming-lab.js && node --check assets/js/gaming-calculators.js && node --check assets/js/device-diagnostics.js && node --check assets/js/display-diagnostics.js && node --check assets/js/exchange-rates.js && node --check assets/js/input-training.js && node --check assets/js/performance-lab.js && node --check assets/js/world-holidays.js && node --check assets/js/npm-package-info.js && node --check assets/js/crypto-sentiment.js && node --check assets/js/stock-market.js && node --check assets/js/mapleland-boss-timer.js && node --check assets/js/pip-tools.js && node scripts/check-get-url-parser.js && node scripts/check-gamertag.js && node scripts/check-tempdb.js && node --check sites/shared/build-content-site.js && node sites/crypto/scripts/check.js && node sites/stocks/scripts/check.js && node sites/fortune/scripts/check.js && node scripts/check-site-network.js",
-    "build:crypto": "node sites/crypto/scripts/build.js",
-    "build:stocks": "node sites/stocks/scripts/build.js",
-    "build:fortune": "node sites/fortune/scripts/build.js",
+    "build": "node scripts/build-i18n.js && node sites/crypto/scripts/build.js && node sites/stocks/scripts/build.js && node sites/fortune/scripts/build.js && node scripts/build-analytics.js",
+    "check": "node --check worker.js && node --check assets/js/app.js && node --check assets/js/tempdb.js && node --check assets/js/tool-catalog.js && node --check assets/js/mysql-parameter-compare.js && node --check assets/js/get-url-parser.js && node --check assets/js/utility-tools.js && node --check assets/js/file-media-tools.js && node --check assets/js/grand-koleos-touch-keyboard.js && node --check assets/js/birthday-celebrities.js && node --check assets/js/advanced-tools.mjs && node --check assets/js/gaming-lab.js && node --check assets/js/gaming-calculators.js && node --check assets/js/device-diagnostics.js && node --check assets/js/display-diagnostics.js && node --check assets/js/exchange-rates.js && node --check assets/js/input-training.js && node --check assets/js/performance-lab.js && node --check assets/js/world-holidays.js && node --check assets/js/npm-package-info.js && node --check assets/js/crypto-sentiment.js && node --check assets/js/stock-market.js && node --check assets/js/mapleland-boss-timer.js && node --check assets/js/zeus-boss-timer.js && node --check assets/js/pip-tools.js && node scripts/check-get-url-parser.js && node scripts/check-gamertag.js && node scripts/check-tempdb.js && node --check sites/shared/build-content-site.js && node sites/crypto/scripts/check.js && node sites/stocks/scripts/check.js && node sites/fortune/scripts/check.js && node scripts/build-analytics.js && node scripts/check-site-network.js && node scripts/check-ads.js && node --check server/analytics.mjs && node --check assets/js/admin.js && node --check assets/js/analytics.js && node scripts/check-admin.mjs",
+    "build:crypto": "node sites/crypto/scripts/build.js && node scripts/build-analytics.js",
+    "build:stocks": "node sites/stocks/scripts/build.js && node scripts/build-analytics.js",
+    "build:fortune": "node sites/fortune/scripts/build.js && node scripts/build-analytics.js",
     "check:crypto": "node sites/crypto/scripts/check.js",
     "check:stocks": "node sites/stocks/scripts/check.js",
     "check:fortune": "node sites/fortune/scripts/check.js",
@@ -19,7 +19,8 @@
     "deploy:fortune": "npm run build:fortune && npm exec -- wrangler pages deploy --cwd sites/fortune"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "@playwright/test": "^1.62.1",
+    "wrangler": "4.134.0"
   },
   "dependencies": {
     "@fullstackfamily/manseryeok": "^1.0.8",

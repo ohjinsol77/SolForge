@@ -263,9 +263,9 @@
   "pages.about.sections.bilingual.title": "Korean and English",
   "pages.about.sections.bilingual.body": "Core pages share the same structure in both languages, and the language switch preserves the current path.",
   "pages.about.sections.independence.title": "Editorial independence",
-  "pages.about.sections.independence.body": "No broker or stock sponsors rankings. Google AdSense ads are displayed separately from editorial material.",
+  "pages.about.sections.independence.body": "No broker or stock sponsors rankings. Coupang Partners ads are displayed separately from editorial material.",
   "pages.privacy.meta.title": "Privacy | SolForge Stocks",
-  "pages.privacy.meta.description": "How SolForge Stocks handles user input, quote APIs, hosting logs and Google advertising technologies.",
+  "pages.privacy.meta.description": "How SolForge Stocks handles user input, quote APIs, hosting logs and external advertising technologies.",
   "pages.privacy.hero.eyebrow": "PRIVACY",
   "pages.privacy.hero.title": "Minimize collection and disclose external data connections",
   "pages.privacy.hero.body": "The independent stock site currently requires no account or portfolio input. External public APIs support the index snapshot.",
@@ -281,7 +281,10 @@
   "pages.privacy.sections.hosting.title": "Hosting and access logs",
   "pages.privacy.sections.hosting.body": "Cloudflare Pages delivers content and may process basic logs for security, reliability and statistics under Cloudflare policy.",
   "pages.privacy.sections.advertising.title": "Advertising and cookies",
-  "pages.privacy.sections.advertising.body": "This site uses the Google AdSense publisher code. Google and other advertising providers may use cookies or similar technologies to serve and measure ads. Ads are managed so they do not cover market dashboards or key explanations.",
+  "pages.privacy.sections.advertising.body": "This site displays Coupang Partners advertisements and earns a commission from qualifying purchases. Loading advertisements and following their links may send connection information to external providers, whose privacy policies apply.",
   "pages.privacy.sections.contact.title": "Contact and changes",
-  "pages.privacy.sections.contact.body": "Privacy questions can be submitted through the main SolForge contact page. Processing changes will also update this page."
+  "pages.privacy.sections.contact.body": "Privacy questions can be submitted through the main SolForge contact page. Processing changes will also update this page.",
+  "ads.coupang.label": "Advertisement · Coupang Partners",
+  "ads.coupang.title": "Coupang product advertisement",
+  "ads.coupang.disclosure": "As a Coupang Partners affiliate, we earn a commission from qualifying purchases through this advertisement."
 }

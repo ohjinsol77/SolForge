@@ -1,3 +1,4 @@
+const { renderCoupangAd } = require("../../scripts/coupang-ads");
 const fs = require("fs");
 const path = require("path");
 
@@ -11,7 +12,6 @@ function buildContentSite(config) {
     renderFeature = () => "",
     clientTranslationPrefixes = ["dynamic."],
     assetVersion = "20260714-2",
-    adsensePublisherId = "",
     buildLabel = siteName
   } = config;
   const dist = path.join(root, "dist");
@@ -101,7 +101,6 @@ function buildContentSite(config) {
       publisher: { "@type": "Organization", name: "SolForge" }
     };
     const feature = renderFeature({ lang, page, text, t, escapeHtml, route });
-    const allowAds = adsensePublisherId && !["about", "privacy"].includes(page.slug);
 
     return `<!doctype html>
 <html lang="${lang}">
@@ -115,7 +114,6 @@ function buildContentSite(config) {
     <link rel="alternate" hreflang="ko" href="${siteUrl}${route("ko", page.slug)}">
     <link rel="alternate" hreflang="en" href="${siteUrl}${route("en", page.slug)}">
     <link rel="alternate" hreflang="x-default" href="${siteUrl}${route("ko", page.slug)}">
-    ${allowAds ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escapeHtml(adsensePublisherId)}" crossorigin="anonymous"></script>` : ""}
     <meta property="og:type" content="${page.slug === "index" ? "website" : "article"}">
     <meta property="og:title" content="${escapeHtml(t(lang, `pages.${page.key}.meta.title`))}">
     <meta property="og:description" content="${escapeHtml(t(lang, `pages.${page.key}.meta.description`))}">
@@ -148,6 +146,7 @@ function buildContentSite(config) {
         </div>
         <aside class="hero-note">${text(lang, `pages.${page.key}.hero.noteTitle`, "strong")}${text(lang, `pages.${page.key}.hero.noteBody`, "p")}</aside>
       </section>
+      ${["about", "privacy"].includes(page.slug) ? "" : renderCoupangAd(lang)}
       ${feature}
       ${renderSections(lang, page)}
       ${renderPath(lang, page)}
@@ -201,9 +200,7 @@ https://:version.${config.pagesProject}.pages.dev/*
   X-Robots-Tag: noindex
 `);
   fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  if (adsensePublisherId) {
-    fs.writeFileSync(path.join(dist, "ads.txt"), `google.com, ${adsensePublisherId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
-  }
+  fs.writeFileSync(path.join(dist, "ads.txt"), "");
   const sitemapUrls = pages.flatMap((page) => langs.map((lang) => `${siteUrl}${route(lang, page.slug)}`));
   fs.writeFileSync(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);
   console.log(`Built ${buildLabel}: ${pages.length * langs.length} localized pages.`);

@@ -1,3 +1,4 @@
+const { insertCoupangAd } = require("./coupang-ads");
 const fs = require("fs");
 const path = require("path");
 const acorn = require("acorn");
@@ -21,7 +22,6 @@ const {
 } = require("./i18n-utils");
 const { translate } = require("./generate-en-locale");
 const {
-  AD_FREE_TOOL_SLUGS,
   buildToolPages,
   generatedCategoryRecords,
   generatedToolRecords,
@@ -52,16 +52,12 @@ const GROUP_CONTAINER_FILES = new Set([
   "tools/pip-toolbox.html",
   "tools/utility-toolbox.html"
 ]);
+// Informational pages and retired group containers intentionally carry no ads.
 const AD_FREE_FILES = new Set([
   "about.html",
   "contact.html",
-  "features.html",
-  "tools/grand-koleos-touch-keyboard.html",
-  "tools/google-timeline.html",
   "privacy.html",
   "terms.html",
-  "tools/all.html",
-  ...[...AD_FREE_TOOL_SLUGS].map((slug) => `tools/${slug}.html`),
   ...GROUP_CONTAINER_FILES
 ]);
 
@@ -460,7 +456,8 @@ function renderFile(file, lang) {
   let html = readText(file);
   html = html.replace(/assets\/js\/app\.js(?:\?v=[^"]*)?/g, "assets/js/app.js?v=20260803-categories");
   html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20260811-gamertag");
-  if (AD_FREE_FILES.has(file)) html = removeAdSenseCode(html);
+  html = removeAdSenseCode(html);
+  if (!AD_FREE_FILES.has(file)) html = insertCoupangAd(html, lang);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);
   html = removeExistingSeo(html);
   html = translateTaggedContent(html, lang);

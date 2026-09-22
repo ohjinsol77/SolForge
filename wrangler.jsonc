@@ -1,18 +1,40 @@
 {
-  "$schema": "https://developers.cloudflare.com/workers/wrangler/configuration-schema.json",
-  "name": "solforge",
-  "main": "worker.js",
-  "compatibility_date": "2026-06-10",
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "run_worker_first": [
-      "/*",
-      "!/assets/*",
-      "!/favicon.ico",
-      "!/ads.txt",
-      "!/robots.txt",
-      "!/sitemap.xml"
-    ]
-  }
+	"$schema": "https://developers.cloudflare.com/workers/wrangler/configuration-schema.json",
+	"name": "solforge",
+	"main": "worker.js",
+	"compatibility_date": "2026-06-10",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS",
+		"run_worker_first": [
+			"/*",
+			"!/assets/*",
+			"!/favicon.ico",
+			"!/ads.txt",
+			"!/robots.txt",
+			"!/sitemap.xml"
+		]
+	},
+	"triggers": {
+		"crons": [
+			"17 19 * * *"
+		]
+	},
+	"ratelimits": [
+		{
+			"name": "ANALYTICS_LIMITER",
+			"namespace_id": "1030868",
+			"simple": {
+				"limit": 60,
+				"period": 60
+			}
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "ANALYTICS_DB",
+			"database_name": "solforge-analytics",
+			"database_id": "4acd6dcd-e6cc-4e73-9101-e99ac3e1dfd1"
+		}
+	]
 }

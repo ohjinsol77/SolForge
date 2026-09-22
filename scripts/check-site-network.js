@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const {
-  AD_FREE_TOOL_SLUGS,
   generatedCategoryRecords,
   generatedToolRecords,
   loadToolCatalog
@@ -10,9 +9,7 @@ const {
 
 const ROOT = path.resolve(__dirname, "..");
 const MAIN_URL = "https://solforge.cloud";
-const ADSENSE_CLIENT = "ca-pub-1625988263075960";
-const ADS_TXT_RECORD = `google.com, ${ADSENSE_CLIENT.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0`;
-const RETIRED_AFFILIATE_PATTERN = new RegExp(["cou", "pang"].join(""), "i");
+const ADS_TXT_RECORD = "";
 const GROUP_CONTAINER_FILES = new Set([
   "calculators/all.html",
   "tools/advanced-toolbox.html",
@@ -26,16 +23,12 @@ const GROUP_CONTAINER_FILES = new Set([
   "tools/pip-toolbox.html",
   "tools/utility-toolbox.html"
 ]);
+// Informational pages and retired group containers intentionally carry no ads.
 const MAIN_AD_FREE_FILES = new Set([
   "about.html",
   "contact.html",
-  "features.html",
-  "tools/grand-koleos-touch-keyboard.html",
-  "tools/google-timeline.html",
   "privacy.html",
   "terms.html",
-  "tools/all.html",
-  ...[...AD_FREE_TOOL_SLUGS].map((slug) => `tools/${slug}.html`),
   ...GROUP_CONTAINER_FILES
 ]);
 const GROUP_CONTAINER_ROUTES = new Set([...GROUP_CONTAINER_FILES].map((file) => file.replace(/\.html$/, "")));
@@ -44,7 +37,6 @@ const CATEGORY_IDS = [
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
-for (const category of CATEGORY_IDS) MAIN_AD_FREE_FILES.add(`tools/${category}.html`);
 const sites = [
   { name: "crypto", host: "crypto.solforge.cloud", publicHost: "crypto.solforge.cloud", pagesProject: "solforge-crypto", pages: 8, markers: ["Bitcoin", "Ethereum", "공포탐욕"] },
   { name: "stocks", host: "stocks.solforge.cloud", publicHost: "stocks.solforge.cloud", pagesProject: "solforge-stocks", pages: 9, markers: ["KOSPI", "NASDAQ Composite", "재무"] },
@@ -103,11 +95,9 @@ for (const site of sites) {
       if (canonicals.length !== 1 || canonicals[0] !== expectedCanonical) fail(`Canonical mismatch in ${fullPath}`);
       if (!sitemapUrls.has(expectedCanonical)) fail(`Canonical missing from sitemap in ${site.name}: ${expectedCanonical}`);
       if (/\bnoindex\b/i.test(html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i)?.[1] || "")) fail(`Unexpected noindex in ${fullPath}`);
-      const hasAds = html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`);
-      const shouldHaveAds = !["about.html", "privacy.html"].includes(file);
-      if (shouldHaveAds && !hasAds) fail(`AdSense publisher code missing in specialist content: ${fullPath}`);
-      if (!shouldHaveAds && hasAds) fail(`AdSense publisher code must be absent from specialist policy page: ${fullPath}`);
-      if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in specialist site: ${fullPath}`);
+      const hasAds = /adsbygoogle|googlesyndication|ca-pub-/.test(html);
+      if (hasAds) fail(`AdSense must be disabled: ${fullPath}`);
+      if (html.includes("data-coupang-ad") !== !["about.html", "privacy.html"].includes(file)) fail(`Coupang ad scope mismatch: ${fullPath}`);
       const isPersonalFortune = site.name === "fortune" && file === "personal-fortune.html";
       if (/<(?:dialog|input|textarea|select)\b/i.test(html) && !isPersonalFortune) fail(`Unexpected input or dialog in reading site: ${fullPath}`);
       const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
@@ -186,10 +176,9 @@ for (const lang of ["ko", "en"]) {
     if (!html.includes('<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">')) fail(`Favicon link missing in main site: ${fullPath}`);
     if (/\shref="[^"]*\.html(?:[?#][^"]*)?"/i.test(html)) fail(`Non-canonical HTML link in main site: ${fullPath}`);
     const pageFile = relative.replace(new RegExp(`^${lang}/`), "");
-    const hasAds = html.includes(`pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`);
-    const shouldHaveAds = !MAIN_AD_FREE_FILES.has(pageFile);
-    if (shouldHaveAds && !hasAds) fail(`AdSense publisher code missing in main content page: ${fullPath}`);
-    if (!shouldHaveAds && hasAds) fail(`AdSense publisher code must be absent from utility or policy page: ${fullPath}`);
+    const hasAds = /adsbygoogle|googlesyndication|ca-pub-/.test(html);
+    if (hasAds) fail(`AdSense must be disabled: ${fullPath}`);
+    if (html.includes("data-coupang-ad") !== !MAIN_AD_FREE_FILES.has(pageFile)) fail(`Coupang ad scope mismatch: ${fullPath}`);
     if (isIndexable) {
       const body = html.match(/<body\b[\s\S]*<\/body>/i)?.[0] || "";
       const hrefs = [...body.matchAll(/\shref="([^"]+)"/gi)].map((match) => match[1].split(/[?#]/)[0]);
@@ -205,14 +194,13 @@ for (const lang of ["ko", "en"]) {
         .replace(/<[^>]+>/g, " ");
       if (/[가-힣]/.test(visibleText)) fail(`Untranslated Korean visible on English page: ${fullPath}`);
     }
-    if (RETIRED_AFFILIATE_PATTERN.test(html)) fail(`Retired affiliate reference found in main site: ${fullPath}`);
   }
 }
 
 const toolCatalog = loadToolCatalog();
 const generatedTools = generatedToolRecords(toolCatalog);
 const generatedCategories = generatedCategoryRecords(toolCatalog);
-if (toolCatalog.length !== 150) fail(`Tool catalog count: ${toolCatalog.length}, expected 150`);
+if (toolCatalog.length !== 151) fail(`Tool catalog count: ${toolCatalog.length}, expected 151`);
 if (generatedTools.length !== 136) fail(`Generated focused tool count: ${generatedTools.length}, expected 136`);
 if (generatedCategories.length !== CATEGORY_IDS.length) fail(`Generated category count: ${generatedCategories.length}, expected ${CATEGORY_IDS.length}`);
 const toolTitles = new Set();
@@ -307,4 +295,4 @@ for (const site of sites) {
   if (!mainEn.includes(`https://${site.publicHost}/en/`)) fail(`English main missing working ${site.name} link`);
 }
 
-console.log("Checked SolForge network: 150 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");
+console.log("Checked SolForge network: 151 tools, focused pages, ad scope, sitemaps, internal links and 54 localized specialist pages.");
