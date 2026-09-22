@@ -267,10 +267,26 @@
 
   const categoryLabels = Object.fromEntries(window.SF_TOOL_CATEGORIES.map((category) => [category.id, category.label]));
 
-  function init() {
+  async function init() {
     const catalog = document.querySelector("#toolCatalog");
     if (!catalog) return;
-    catalog.innerHTML = tools.map(([category, icon, title, description, keywords, href]) => [
+    const menuConfig = await (window.SF_MENU_CONFIG_PROMISE || Promise.resolve({ admin: false, visibility: {} }));
+    const visibleTools = tools.filter((tool) => {
+      const category = tool[0];
+      const href = tool[5];
+      return window.sfMenuVisible
+        ? window.sfMenuVisible(window.sfMenuKey("tool", href), menuConfig)
+          && window.sfMenuVisible(window.sfMenuKey("category", category), menuConfig)
+        : true;
+    });
+    document.querySelectorAll("[data-tool-filter]").forEach((button) => {
+      const category = button.dataset.toolFilter;
+      const visible = category === "all"
+        ? (window.sfMenuVisible ? window.sfMenuVisible(window.sfMenuKey("directory", "all"), menuConfig) : true)
+        : (window.sfMenuVisible ? window.sfMenuVisible(window.sfMenuKey("category", category), menuConfig) : true);
+      button.hidden = !visible;
+    });
+    catalog.innerHTML = visibleTools.map(([category, icon, title, description, keywords, href]) => [
       `<a class="catalog-card" href="${href}" data-tool-card data-category="${category}" data-keywords="${escapeHtml(keywords)}">`,
       `<span class="catalog-icon icon-${iconClass(category)}">${escapeHtml(icon)}</span>`,
       '<span class="catalog-copy">',
@@ -283,12 +299,12 @@
     ].join("")).join("");
 
     const count = document.querySelector("#catalogTotal");
-    if (count) count.textContent = String(tools.length);
+    if (count) count.textContent = String(visibleTools.length);
     const visible = document.querySelector("#visibleToolCount");
-    if (visible) visible.textContent = String(tools.length);
+    if (visible) visible.textContent = String(visibleTools.length);
     document.querySelectorAll("[data-category-count]").forEach((element) => {
       const category = element.dataset.categoryCount;
-      element.textContent = String(category === "all" ? tools.length : tools.filter((tool) => tool[0] === category).length);
+      element.textContent = String(category === "all" ? visibleTools.length : visibleTools.filter((tool) => tool[0] === category).length);
     });
   }
 

@@ -13,7 +13,7 @@
     "check:stocks": "node sites/stocks/scripts/check.js",
     "check:fortune": "node sites/fortune/scripts/check.js",
     "check:browser": "playwright test tests/focused-tools.spec.js --reporter=line",
-    "deploy": "npm run build && npm exec -- wrangler deploy",
+    "deploy": "npm run build && npm exec -- wrangler d1 migrations apply solforge-analytics --remote && npm exec -- wrangler deploy",
     "deploy:crypto": "npm run build:crypto && npm exec -- wrangler pages deploy --cwd sites/crypto",
     "deploy:stocks": "npm run build:stocks && npm exec -- wrangler pages deploy --cwd sites/stocks",
     "deploy:fortune": "npm run build:fortune && npm exec -- wrangler pages deploy --cwd sites/fortune"

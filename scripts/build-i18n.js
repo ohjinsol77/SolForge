@@ -270,7 +270,7 @@ function injectLocaleScript(html, lang) {
     switchTo: lang === "ko" ? "en" : "ko",
     switchLabel: lang === "ko" ? "영어로 전환" : "Switch to Korean"
   }).replace(/</g, "\\u003c");
-  return html.replace(/<\/head>/i, `    <script>window.SF_I18N=${payload};</script>\n  </head>`);
+  return html.replace(/<\/head>/i, `    <script>window.SF_I18N=${payload};</script>\n    <script src="/assets/js/menu-visibility.js"></script>\n  </head>`);
 }
 
 function removeAdSenseCode(html) {

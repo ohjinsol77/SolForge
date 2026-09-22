@@ -196,9 +196,10 @@
     }
   }
 
-  function initNavigation() {
+  async function initNavigation() {
     const nav = $("[data-solforge-nav]") || $(".side-nav");
     if (!nav) return;
+    const menuConfig = await (window.SF_MENU_CONFIG_PROMISE || Promise.resolve({ admin: false, visibility: {} }));
     const lang = document.documentElement.lang === "en" ? "en" : "ko";
     const root = `/${lang}/`;
     const catalog = Array.isArray(window.SF_TOOL_CATALOG) ? window.SF_TOOL_CATALOG : [];
@@ -208,7 +209,18 @@
     const activeTool = catalog.find((item) => item.href.replace(/^\.\.\//, "").split("/").pop() === pageTool);
     const activeCategory = document.body.dataset.pageCategory || activeTool?.category || "";
 
-    if (!catalog.length || !categories.length) {
+    const visible = (kind, value) => window.sfMenuVisible
+      ? window.sfMenuVisible(window.sfMenuKey(kind, value), menuConfig)
+      : true;
+    const visibleCatalog = catalog.filter((item) => visible("tool", item.href) && visible("category", item.category));
+    const visibleCategories = categories.filter((category) => visible("category", category.id)
+      && visibleCatalog.some((item) => item.category === category.id));
+    if (!visible("directory", "all")) {
+      nav.innerHTML = "";
+      initMobileNavigation(nav);
+      return;
+    }
+    if (!visibleCatalog.length || !visibleCategories.length) {
       nav.innerHTML = navLink(`${root}tools/all`, "ALL", text("navDirectory"));
       initMobileNavigation(nav);
       return;
@@ -217,7 +229,7 @@
     nav.innerHTML = [
       navLink(`${root}tools/all`, "ALL", text("navDirectory")),
       `<p class="nav-title">${escapeHtml(text("navCategories"))}</p>`,
-      categories.map((category) => navCategory(category, catalog, root, activeCategory)).join("")
+      visibleCategories.map((category) => navCategory(category, visibleCatalog, root, activeCategory)).join("")
     ].join("");
     initMobileNavigation(nav);
   }

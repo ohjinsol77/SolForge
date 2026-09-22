@@ -1,5 +1,6 @@
 import { routes, titles } from './analytics-routes.mjs';
 import { adminPage } from './admin-page.mjs';
+import { menuEntries, readMenuVisibility, saveMenuVisibility } from './menu.mjs';
 const hosts = new Set(['solforge.cloud','crypto.solforge.cloud','stocks.solforge.cloud','fortune.solforge.cloud']);
 const enc = new TextEncoder();
 const hex = b => Array.from(new Uint8Array(b), x => x.toString(16).padStart(2,'0')).join('');
@@ -45,14 +46,15 @@ async function session(request,env,passwordHash){
 }
 export async function handleAnalytics(request,env) {
   const url=new URL(request.url), path=url.pathname;
-  if(path!='/api/analytics/event'&&!path.startsWith('/admin'))return null;
+  if(path!='/api/analytics/event'&&path!='/api/menu-config'&&!path.startsWith('/admin'))return null;
   try{
     if(path==='/api/analytics/event')return await collect(request,env,url);
     if(url.hostname!=='solforge.cloud'&&!['localhost','127.0.0.1'].includes(url.hostname))return json({error:'Not found'},404);
     if(!env.ANALYTICS_DB||!env.ADMIN_PASSWORD_HASH||!env.ANALYTICS_SALT)return json({error:'Admin is not configured'},503);
     if(['/admin','/admin/'].includes(path))return Response.redirect(`${url.origin}/admin/ko`,302);
     if(['/admin/ko','/admin/en'].includes(path)&&request.method==='GET')return new Response(adminPage(path.endsWith('/en')?'en':'ko'),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
-    if(request.method==='POST'&&request.headers.get('origin')!==url.origin)return json({error:'Forbidden'},403);
+    if(path==='/api/menu-config'&&request.method==='GET')return await menuConfig(request,env);
+    if((request.method==='POST'||request.method==='PUT')&&request.headers.get('origin')!==url.origin)return json({error:'Forbidden'},403);
     const passwordHash=await currentPasswordHash(env);
     if(path==='/admin/api/login'&&request.method==='POST'){
       const key=await hash(`${env.ANALYTICS_SALT}:${request.headers.get('CF-Connecting-IP')||'local'}:${Math.floor(now()/900)}`);
@@ -82,8 +84,26 @@ export async function handleAnalytics(request,env) {
       return json({ok:true},200,{'Set-Cookie':cookie('')});
     }
     if(path==='/admin/api/stats'&&request.method==='GET')return await stats(env,url);
+    if(path==='/admin/api/menu-settings'&&request.method==='GET')return await menuSettings(request,env);
+    if(path==='/admin/api/menu-settings'&&request.method==='PUT')return await updateMenuSettings(request,env);
     return json({error:'Not found'},404);
   }catch(error){return json({error: error.message==='body'?'Invalid request':'Request failed'},error.message==='body'?400:500);}
+}
+async function menuConfig(request,env){
+  const visibility=await readMenuVisibility(env);
+  let admin=false;
+  if(env.ANALYTICS_DB&&env.ADMIN_PASSWORD_HASH&&env.ANALYTICS_SALT){
+    try{const passwordHash=await currentPasswordHash(env);admin=Boolean(await session(request,env,passwordHash));}catch(_error){admin=false;}
+  }
+  return json({admin,visibility});
+}
+async function menuSettings(request,env){
+  const passwordHash=await currentPasswordHash(env);if(!await session(request,env,passwordHash))return json({error:'Unauthorized'},401);
+  return json({entries:menuEntries(),visibility:await readMenuVisibility(env)});
+}
+async function updateMenuSettings(request,env){
+  const passwordHash=await currentPasswordHash(env);if(!await session(request,env,passwordHash))return json({error:'Unauthorized'},401);
+  try{const data=await body(request);const visibility=await saveMenuVisibility(env,data.settings);return json({ok:true,visibility});}catch(error){return json({error:error.message==='body'?'Invalid request':'Invalid menu settings'},400);}
 }
 async function collect(request,env,url){
   const origin=request.headers.get('origin');let host;try{host=new URL(origin).hostname;}catch{return json({},403);}
