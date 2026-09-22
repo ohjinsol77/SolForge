@@ -722,6 +722,10 @@ const englishToolCopyOverrides = {
     title: "MapleLand Boss Timer",
     description: "Track repeating MapleLand boss patterns by slot and keep the timers visible in a PIP window on supported browsers."
   },
+  "zeus-boss-timer": {
+    title: "Zeus Boss Timer",
+    description: "Track weekly Zeus: God of Pride world boss levels, locations, spawn times, and 8-hour respawn bosses in Thessalia, Zahab, and Tartarus with a PIP countdown."
+  },
   "mysql-query-prettier": {
     title: "MySQL Query Formatter",
     description: "Format complex MySQL queries with readable line breaks, indentation, and syntax highlighting."

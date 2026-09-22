@@ -67,6 +67,7 @@
     ["pip", "IMG", "PIP 이미지 리사이즈", "로컬 이미지를 원하는 크기와 형식으로 다시 저장합니다.", "pip image resize 이미지 리사이즈", "pip-toolbox#pip-image"],
     ["pip", "MEM", "PIP 메모", "브라우저에 저장되는 간단한 메모를 PIP 창으로 띄웁니다.", "pip memo note 메모 노트", "pip-toolbox#pip-memo"],
     ["boss", "BOSS", "메이플랜드 보스타이머", "메이플랜드 보스 패턴과 스킬 쿨타임을 PIP 창으로 관리합니다.", "메이플랜드 보스 타이머 pip 혼테일 자쿰 피아누스 유혹 공무", "mapleland-boss-timer"],
+    ["boss", "ZEUS", "제우스 보스타이머", "테살리아·자하브·타르타로스 월드보스와 8시간 리스폰 보스 출현 정보를 PIP로 관리합니다.", "제우스 보스 타이머 월드보스 8시간 리스폰 테살리아 자하브 타르타로스 트라손 이오칸토스 키니라우리 알라스토르 베딕스 고르티스 트리포스 아모르포스", "zeus-boss-timer"],
     ["developer", "Q", "MySQL Query Prettier", "복잡한 SQL을 줄바꿈하고 문법을 강조합니다.", "mysql sql query prettier formatter 쿼리 정리", "mysql-query-prettier"],
     ["developer", "E", "MySQL EXPLAIN Visual", "실행 계획의 순서, 비용과 위험 지점을 분석합니다.", "mysql explain visual 인덱스 실행계획", "mysql-explain-visual"],
     ["developer", "DB", "MySQL 버전별 설정·변수 비교", "버전별 서버 옵션과 시스템 변수의 추가·삭제·변경을 나란히 비교합니다.", "mysql version parameter variable compare mysqld system status 설정 변수 파라미터 비교", "mysql-parameter-compare"],

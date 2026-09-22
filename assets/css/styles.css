@@ -6560,6 +6560,214 @@ th {
   min-width: min(100%, 280px);
 }
 
+.zeus-info-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.zeus-info-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--line));
+  border-radius: 10px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 7%, var(--surface)), var(--surface-soft));
+}
+
+.zeus-info-card strong {
+  color: var(--heading);
+  font-size: 0.95rem;
+}
+
+.zeus-info-card b {
+  color: var(--brand-strong);
+  font-size: 0.82rem;
+}
+
+.zeus-info-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.zeus-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.zeus-clock,
+.zeus-timezone {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.zeus-schedule-card {
+  border-color: color-mix(in srgb, #facc15 24%, var(--line));
+}
+
+.zeus-event-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #facc15, #f97316);
+  color: #422006;
+  font-size: 1.35rem;
+  box-shadow: 0 8px 18px color-mix(in srgb, #f59e0b 25%, transparent);
+}
+
+.zeus-event-detail {
+  display: grid;
+  gap: 0.12rem;
+  margin-top: 0.22rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.zeus-event-detail b {
+  color: var(--heading);
+  font-size: 0.82rem;
+}
+
+.zeus-card-label,
+.zeus-card-kst {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.zeus-card-kst {
+  color: var(--brand-strong);
+}
+
+.zeus-respawn-panel {
+  padding: 1rem;
+}
+
+.zeus-respawn-note {
+  margin: 0.85rem 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid color-mix(in srgb, #facc15 26%, var(--line));
+  border-radius: 9px;
+  background: color-mix(in srgb, #facc15 7%, var(--surface));
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.zeus-respawn-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.zeus-respawn-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, #a78bfa 26%, var(--line));
+  border-radius: 11px;
+  background: linear-gradient(145deg, color-mix(in srgb, #a78bfa 8%, var(--surface)), var(--surface-soft));
+}
+
+.zeus-respawn-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zeus-respawn-card-head div,
+.zeus-respawn-card-head span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.zeus-respawn-card-head strong {
+  color: var(--heading);
+}
+
+.zeus-respawn-card-head span,
+.zeus-respawn-card p,
+.zeus-respawn-card label {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.zeus-respawn-card-head b {
+  color: #a78bfa;
+  font-size: 0.72rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.zeus-respawn-card p {
+  min-height: 2.2em;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.zeus-respawn-countdown {
+  color: var(--heading);
+  font: 900 clamp(1.3rem, 3vw, 1.8rem)/1.1 "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+.zeus-respawn-card label {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.zeus-respawn-card input {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.zeus-respawn-card .secondary-link {
+  justify-self: start;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+@media (max-width: 760px) {
+  .zeus-clock,
+  .zeus-timezone {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .zeus-card-label,
+  .zeus-card-kst {
+    text-align: left;
+  }
+
+  .zeus-respawn-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 .maple-timer-shell {
   display: grid;
   grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
