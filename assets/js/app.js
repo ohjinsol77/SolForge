@@ -524,7 +524,6 @@
       .replace(/[·•._/\\-]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
-    const categoryLabels = Object.fromEntries((window.SF_TOOL_CATEGORIES || []).map((category) => [category.id, category.label]));
     const toHomeHref = (href) => href.startsWith("../") ? href.slice(3) : `tools/${href}`;
     const getMatches = () => {
       const query = normalizeSearch(input.value);
@@ -547,7 +546,7 @@
         closeSuggestions();
         return;
       }
-      suggestions.innerHTML = matches.map((tool) => `<a href="${toHomeHref(tool.href)}" role="option"><span>${escapeHtml(categoryLabels[tool.category] || "Tool")}</span><strong>${escapeHtml(tool.title)}</strong><b aria-hidden="true">→</b></a>`).join("");
+      suggestions.innerHTML = matches.map((tool) => `<a href="${toHomeHref(tool.href)}" role="option"><strong>${escapeHtml(tool.title)}</strong><b aria-hidden="true">→</b></a>`).join("");
       suggestions.hidden = false;
       input.setAttribute("aria-expanded", "true");
     };
