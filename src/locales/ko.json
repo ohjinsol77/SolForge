@@ -4109,5 +4109,9 @@
   "tools.zeus-boss-timer.text.0063": "8시간 리스폰 보스",
   "tools.zeus-boss-timer.text.0064": "마지막 처치 시각을 입력하면 보스별 다음 출현까지 남은 시간을 계산합니다.",
   "tools.zeus-boss-timer.text.0065": "리스폰 간격 · KST 기준 입력",
-  "tools.zeus-boss-timer.text.0066": "공식 콘텐츠 현황판에 표시되는 출현 지역을 기준으로 정리했습니다. 실제 출현 여부와 세부 위치는 게임 내 현황판을 최종 기준으로 확인하세요."
+  "tools.zeus-boss-timer.text.0066": "공식 콘텐츠 현황판에 표시되는 출현 지역을 기준으로 정리했습니다. 실제 출현 여부와 세부 위치는 게임 내 현황판을 최종 기준으로 확인하세요.",
+  "tools.zeus-boss-timer.text.0067": "WORLD BOSS TRACKER",
+  "tools.zeus-boss-timer.text.0068": "테살리아",
+  "tools.zeus-boss-timer.text.0069": "자하브",
+  "tools.zeus-boss-timer.text.0070": "타르타로스"
 }

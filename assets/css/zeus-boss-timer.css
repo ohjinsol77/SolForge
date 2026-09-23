@@ -1,0 +1,213 @@
+.zeus-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(360px, 1.12fr);
+  min-height: 362px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(94, 83, 177, 0.38);
+  border-radius: 22px;
+  background: #11152c;
+  box-shadow: 0 24px 56px rgba(36, 26, 84, 0.2);
+}
+
+.zeus-hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 12% 12%, rgba(126, 92, 255, 0.24), transparent 38%), linear-gradient(112deg, #101329 0%, #171937 47%, rgba(24, 25, 57, 0.4) 100%);
+  content: "";
+}
+
+.zeus-hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 4.2rem);
+  color: #f8f7ff;
+}
+
+.zeus-product-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  margin: 0;
+  color: #cfc6ff;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.zeus-badge-dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: #f6c453;
+  box-shadow: 0 0 0 5px rgba(246, 196, 83, 0.12), 0 0 20px rgba(246, 196, 83, 0.8);
+}
+
+.zeus-hero h1 {
+  max-width: 9ch;
+  margin: 1rem 0 0.8rem;
+  color: #ffffff;
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+  letter-spacing: -0.07em;
+  line-height: 0.98;
+}
+
+.zeus-hero-description {
+  max-width: 31rem;
+  margin: 0;
+  color: #c2c5dc;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.zeus-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.zeus-hero-tags span {
+  padding: 0.44rem 0.68rem;
+  border: 1px solid rgba(208, 199, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ece9ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.zeus-hero-visual {
+  position: relative;
+  min-height: 362px;
+  overflow: hidden;
+}
+
+.zeus-hero-visual::before,
+.zeus-hero-visual::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.zeus-hero-visual::before {
+  background: linear-gradient(90deg, #11152c 0%, rgba(17, 21, 44, 0.7) 12%, transparent 48%), linear-gradient(0deg, rgba(10, 12, 29, 0.55), transparent 42%);
+}
+
+.zeus-hero-visual::after {
+  background: radial-gradient(circle at 76% 26%, rgba(246, 196, 83, 0.18), transparent 24%), linear-gradient(135deg, transparent 45%, rgba(84, 62, 188, 0.2));
+  mix-blend-mode: screen;
+}
+
+.zeus-hero-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 362px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.03);
+  filter: saturate(1.08) contrast(1.02);
+}
+
+.zeus-hero-stats {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2.2rem);
+  bottom: clamp(1rem, 3vw, 2.2rem);
+  z-index: 2;
+  width: min(288px, calc(100% - 2rem));
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(15, 17, 39, 0.72);
+  box-shadow: 0 16px 36px rgba(5, 6, 20, 0.3);
+  backdrop-filter: blur(14px);
+}
+
+.zeus-stats-label {
+  margin: 0 0 0.8rem;
+  color: #d8cfff;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.zeus-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+}
+
+.zeus-stat {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.zeus-stat + .zeus-stat {
+  padding-left: 0.7rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.zeus-stat strong {
+  color: #f8cc61;
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.zeus-stat span {
+  color: #d2d5e7;
+  font-size: 0.69rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 860px) {
+  .zeus-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .zeus-hero-copy {
+    min-height: 300px;
+  }
+
+  .zeus-hero-visual {
+    min-height: 290px;
+  }
+
+  .zeus-hero-visual img {
+    min-height: 290px;
+  }
+}
+
+@media (max-width: 480px) {
+  .zeus-hero-copy {
+    padding: 1.7rem 1.35rem;
+  }
+
+  .zeus-hero h1 {
+    font-size: clamp(2.15rem, 12vw, 3.25rem);
+  }
+
+  .zeus-hero-visual {
+    min-height: 250px;
+  }
+
+  .zeus-hero-visual img {
+    min-height: 250px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zeus-hero-visual img {
+    transform: none;
+  }
+}

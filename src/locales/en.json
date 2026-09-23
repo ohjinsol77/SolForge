@@ -4109,5 +4109,9 @@
   "tools.zeus-boss-timer.text.0063": "8-hour respawn bosses",
   "tools.zeus-boss-timer.text.0064": "Enter the last defeat time to calculate the next spawn for each boss.",
   "tools.zeus-boss-timer.text.0065": "Respawn interval · Enter in KST",
-  "tools.zeus-boss-timer.text.0066": "This list follows the spawn regions shown on the official content board. Confirm live availability and exact locations on the in-game board."
+  "tools.zeus-boss-timer.text.0066": "This list follows the spawn regions shown on the official content board. Confirm live availability and exact locations on the in-game board.",
+  "tools.zeus-boss-timer.text.0067": "WORLD BOSS TRACKER",
+  "tools.zeus-boss-timer.text.0068": "Thessalia",
+  "tools.zeus-boss-timer.text.0069": "Zahab",
+  "tools.zeus-boss-timer.text.0070": "Tartarus"
 }
