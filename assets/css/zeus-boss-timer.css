@@ -51,12 +51,14 @@
 }
 
 .zeus-hero h1 {
-  max-width: 9ch;
+  max-width: 100%;
   margin: 1rem 0 0.8rem;
   color: #ffffff;
   font-size: clamp(2.25rem, 5vw, 4.25rem);
   letter-spacing: -0.07em;
   line-height: 0.98;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .zeus-hero-description {
