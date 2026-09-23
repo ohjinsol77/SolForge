@@ -356,6 +356,9 @@
           input.focus();
         }
       });
+      if (form && !cards.length) {
+        window.addEventListener("solforge:tool-catalog-ready", initToolFinder, { once: true });
+      }
       return;
     }
 

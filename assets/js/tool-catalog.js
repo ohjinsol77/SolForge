@@ -306,6 +306,7 @@
       const category = element.dataset.categoryCount;
       element.textContent = String(category === "all" ? visibleTools.length : visibleTools.filter((tool) => tool[0] === category).length);
     });
+    window.dispatchEvent(new CustomEvent("solforge:tool-catalog-ready"));
   }
 
   function iconClass(category) {
