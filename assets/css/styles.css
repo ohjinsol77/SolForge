@@ -6560,6 +6560,294 @@ th {
   min-width: min(100%, 280px);
 }
 
+/* High-traffic page heroes. Keep the existing markup and let a focused asset layer
+   add page-specific imagery without duplicating hero templates across tools. */
+.home-hero {
+  background:
+    linear-gradient(90deg, rgba(7, 14, 31, 0.97) 0%, rgba(7, 14, 31, 0.9) 40%, rgba(7, 14, 31, 0.28) 100%),
+    url("/assets/img/priority-heroes/home.png") center / cover,
+    var(--surface);
+}
+
+.home-hero .home-hero-copy,
+.home-hero .hero-brand-name,
+.home-hero .hero-brand-name small,
+.home-hero .hero-description {
+  color: #f8f9ff;
+}
+
+.home-hero .hero-brand-name small,
+.home-hero .hero-description {
+  color: #cbd4e8;
+}
+
+.home-hero .quick-launch {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(9, 17, 38, 0.72);
+  box-shadow: 0 24px 50px rgba(2, 8, 24, 0.24);
+  backdrop-filter: blur(12px);
+}
+
+.directory-hero,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero,
+body[data-page="birthday-celebrities"] .page-hero,
+body[data-page="korea-stocks"] .page-hero,
+body[data-page="world-holidays"] .page-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/directory.png");
+}
+
+body[data-page="mapleland-boss-timer"] .maple-boss-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/maple.png");
+}
+
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/vehicle.png");
+}
+
+body[data-page="birthday-celebrities"] .page-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/birthday.png");
+}
+
+body[data-page="korea-stocks"] .page-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/stocks.png");
+}
+
+body[data-page="world-holidays"] .page-hero,
+body[data-page-tool="lunar-anniversary"] .independent-tool-hero,
+body[data-page-tool="school-years"] .independent-tool-hero,
+body[data-page-tool="age-table"] .independent-tool-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/calendar.png");
+}
+
+body[data-page-tool="gamepad-test"] .independent-tool-hero,
+body[data-page-category="display"] .category-directory-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/diagnostics.png");
+}
+
+body[data-page-tool="text-diff"] .independent-tool-hero,
+body[data-page-tool="text-counter"] .independent-tool-hero {
+  --priority-hero-image: url("/assets/img/priority-heroes/text.png");
+}
+
+.directory-hero,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero,
+body[data-page="birthday-celebrities"] .page-hero,
+body[data-page="korea-stocks"] .page-hero,
+body[data-page="world-holidays"] .page-hero,
+body[data-page-tool="lunar-anniversary"] .independent-tool-hero,
+body[data-page-tool="school-years"] .independent-tool-hero,
+body[data-page-tool="age-table"] .independent-tool-hero,
+body[data-page-tool="gamepad-test"] .independent-tool-hero,
+body[data-page-category="display"] .category-directory-hero,
+body[data-page-tool="text-diff"] .independent-tool-hero,
+body[data-page-tool="text-counter"] .independent-tool-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(111, 132, 190, 0.42);
+  background: #10172c;
+  box-shadow: 0 24px 54px rgba(18, 30, 67, 0.2);
+  color: #f8f9ff;
+}
+
+.directory-hero::before,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero::before,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero::before,
+body[data-page="birthday-celebrities"] .page-hero::before,
+body[data-page="korea-stocks"] .page-hero::before,
+body[data-page="world-holidays"] .page-hero::before,
+body[data-page-tool="lunar-anniversary"] .independent-tool-hero::before,
+body[data-page-tool="school-years"] .independent-tool-hero::before,
+body[data-page-tool="age-table"] .independent-tool-hero::before,
+body[data-page-tool="gamepad-test"] .independent-tool-hero::before,
+body[data-page-category="display"] .category-directory-hero::before,
+body[data-page-tool="text-diff"] .independent-tool-hero::before,
+body[data-page-tool="text-counter"] .independent-tool-hero::before {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: -2;
+  width: 63%;
+  background: var(--priority-hero-image) center / cover no-repeat;
+  content: "";
+  opacity: 0.95;
+}
+
+.directory-hero::after,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero::after,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero::after,
+body[data-page="birthday-celebrities"] .page-hero::after,
+body[data-page="korea-stocks"] .page-hero::after,
+body[data-page="world-holidays"] .page-hero::after,
+body[data-page-tool="lunar-anniversary"] .independent-tool-hero::after,
+body[data-page-tool="school-years"] .independent-tool-hero::after,
+body[data-page-tool="age-table"] .independent-tool-hero::after,
+body[data-page-tool="gamepad-test"] .independent-tool-hero::after,
+body[data-page-category="display"] .category-directory-hero::after,
+body[data-page-tool="text-diff"] .independent-tool-hero::after,
+body[data-page-tool="text-counter"] .independent-tool-hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, #10172c 0%, rgba(16, 23, 44, 0.95) 30%, rgba(16, 23, 44, 0.54) 59%, rgba(16, 23, 44, 0.16) 100%),
+    linear-gradient(0deg, rgba(7, 11, 26, 0.58), transparent 46%);
+  content: "";
+  pointer-events: none;
+}
+
+.directory-hero > *,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero > *,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero > *,
+body[data-page="birthday-celebrities"] .page-hero > *,
+body[data-page="korea-stocks"] .page-hero > *,
+body[data-page="world-holidays"] .page-hero > *,
+body[data-page-tool="lunar-anniversary"] .independent-tool-hero > *,
+body[data-page-tool="school-years"] .independent-tool-hero > *,
+body[data-page-tool="age-table"] .independent-tool-hero > *,
+body[data-page-tool="gamepad-test"] .independent-tool-hero > *,
+body[data-page-category="display"] .category-directory-hero > *,
+body[data-page-tool="text-diff"] .independent-tool-hero > *,
+body[data-page-tool="text-counter"] .independent-tool-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.directory-hero h1,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero h1,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero h1,
+body[data-page="birthday-celebrities"] .page-hero h1,
+body[data-page="korea-stocks"] .page-hero h1,
+body[data-page="world-holidays"] .page-hero h1,
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero h1,
+body[data-page-category="display"] .category-directory-hero h1 {
+  max-width: 17ch;
+  color: #ffffff;
+  line-height: 1.05;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+.directory-hero p:not(.eyebrow),
+body[data-page="mapleland-boss-timer"] .maple-boss-hero p:not(.eyebrow),
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero p:not(.eyebrow),
+body[data-page="birthday-celebrities"] .page-hero p:not(.eyebrow),
+body[data-page="korea-stocks"] .page-hero p:not(.eyebrow),
+body[data-page="world-holidays"] .page-hero p:not(.eyebrow),
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero p:not(.eyebrow),
+body[data-page-category="display"] .category-directory-hero p:not(.eyebrow) {
+  max-width: 48rem;
+  color: #cbd4e8;
+  line-height: 1.7;
+}
+
+.directory-hero .eyebrow,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero .eyebrow,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero .eyebrow,
+body[data-page="birthday-celebrities"] .page-hero .eyebrow,
+body[data-page="korea-stocks"] .page-hero .eyebrow,
+body[data-page="world-holidays"] .page-hero .eyebrow,
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero .eyebrow,
+body[data-page-category="display"] .category-directory-hero .eyebrow {
+  color: #bfc8ff;
+}
+
+.directory-hero .hero-panel,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero .hero-panel,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero .hero-panel,
+body[data-page="birthday-celebrities"] .page-hero .birthday-hero-panel,
+body[data-page="korea-stocks"] .page-hero .hero-panel,
+body[data-page="world-holidays"] .page-hero .hero-panel,
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-facts,
+body[data-page-category="display"] .category-directory-hero .independent-tool-facts {
+  position: relative;
+  z-index: 1;
+}
+
+.directory-hero .metric-card,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero .metric-card,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero .metric-card,
+body[data-page="birthday-celebrities"] .page-hero .metric-card,
+body[data-page="korea-stocks"] .page-hero .metric-card,
+body[data-page="world-holidays"] .page-hero .metric-card,
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-facts > div,
+body[data-page-category="display"] .category-directory-hero .independent-tool-facts > div {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(10, 17, 38, 0.66);
+  box-shadow: 0 14px 30px rgba(3, 7, 20, 0.22);
+  color: #edf1ff;
+  backdrop-filter: blur(12px);
+}
+
+.directory-hero .metric-card strong,
+body[data-page="mapleland-boss-timer"] .maple-boss-hero .metric-card strong,
+body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero .metric-card strong,
+body[data-page="birthday-celebrities"] .page-hero .metric-card strong,
+body[data-page="korea-stocks"] .page-hero .metric-card strong,
+body[data-page="world-holidays"] .page-hero .metric-card strong,
+body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-facts strong,
+body[data-page-category="display"] .category-directory-hero .independent-tool-facts strong {
+  color: #f6cc68;
+  background: rgba(246, 204, 104, 0.15);
+}
+
+@media (max-width: 760px) {
+  .directory-hero,
+  body[data-page="mapleland-boss-timer"] .maple-boss-hero,
+  body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero,
+  body[data-page="birthday-celebrities"] .page-hero,
+  body[data-page="korea-stocks"] .page-hero,
+  body[data-page="world-holidays"] .page-hero,
+  body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero,
+  body[data-page-category="display"] .category-directory-hero {
+    min-height: 0;
+  }
+
+  .directory-hero::before,
+  body[data-page="mapleland-boss-timer"] .maple-boss-hero::before,
+  body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero::before,
+  body[data-page="birthday-celebrities"] .page-hero::before,
+  body[data-page="korea-stocks"] .page-hero::before,
+  body[data-page="world-holidays"] .page-hero::before,
+  body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero::before,
+  body[data-page-category="display"] .category-directory-hero::before {
+    inset: auto 0 0;
+    width: 100%;
+    height: 52%;
+    opacity: 0.62;
+    background-position: center bottom;
+  }
+
+  .directory-hero::after,
+  body[data-page="mapleland-boss-timer"] .maple-boss-hero::after,
+  body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero::after,
+  body[data-page="birthday-celebrities"] .page-hero::after,
+  body[data-page="korea-stocks"] .page-hero::after,
+  body[data-page="world-holidays"] .page-hero::after,
+  body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero::after,
+  body[data-page-category="display"] .category-directory-hero::after {
+    background: linear-gradient(180deg, #10172c 0%, rgba(16, 23, 44, 0.9) 50%, rgba(16, 23, 44, 0.28) 100%);
+  }
+
+  .directory-hero h1,
+  body[data-page="mapleland-boss-timer"] .maple-boss-hero h1,
+  body[data-page="grand-koleos-touch-keyboard"] .vehicle-tool-hero h1,
+  body[data-page="birthday-celebrities"] .page-hero h1,
+  body[data-page="korea-stocks"] .page-hero h1,
+  body[data-page="world-holidays"] .page-hero h1,
+  body:is([data-page-tool="lunar-anniversary"], [data-page-tool="school-years"], [data-page-tool="age-table"], [data-page-tool="gamepad-test"], [data-page-tool="text-diff"], [data-page-tool="text-counter"]) .independent-tool-hero h1,
+  body[data-page-category="display"] .category-directory-hero h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 9vw, 3.2rem);
+  }
+
+  .home-hero {
+    background-position: 68% center;
+  }
+}
+
 .zeus-info-list {
   display: grid;
   gap: 0.7rem;
