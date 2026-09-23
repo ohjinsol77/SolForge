@@ -1,5 +1,10 @@
 import { translations } from './admin-copy.mjs';
 
+export function adminLoginPage(lang) {
+  const t = translations[lang];
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${t.subtitle} · ${t.login}</title><link rel="stylesheet" href="/assets/css/admin.css"><script src="/assets/js/admin-login.js" defer></script></head><body><main><header><div><p class="eyebrow">${t.subtitle}</p><h1>${t.login}</h1></div><nav><a href="/admin/login/${lang === 'ko' ? 'en' : 'ko'}" aria-label="${lang === 'ko' ? 'English' : '한국어'}">${lang === 'ko' ? '🇺🇸' : '🇰🇷'}</a></nav></header><p id="status" role="status" aria-live="polite"></p><form id="login" class="panel login-panel"><label for="password">${t.password}</label><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">${t.login}</button><p class="muted">${t.notice}</p></form></main></body></html>`;
+}
+
 export function adminPage(lang) {
   const t = translations[lang];
   const text = (key) => `data-i18n="admin.${key}"`;

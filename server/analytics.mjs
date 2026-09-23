@@ -1,5 +1,5 @@
 import { routes, titles } from './analytics-routes.mjs';
-import { adminPage } from './admin-page.mjs';
+import { adminLoginPage, adminPage } from './admin-page.mjs';
 import { menuEntries, readMenuVisibility, saveMenuVisibility } from './menu.mjs';
 const hosts = new Set(['solforge.cloud','crypto.solforge.cloud','stocks.solforge.cloud','fortune.solforge.cloud']);
 const enc = new TextEncoder();
@@ -52,7 +52,13 @@ export async function handleAnalytics(request,env) {
     if(url.hostname!=='solforge.cloud'&&!['localhost','127.0.0.1'].includes(url.hostname))return json({error:'Not found'},404);
     if(!env.ANALYTICS_DB||!env.ADMIN_PASSWORD_HASH||!env.ANALYTICS_SALT)return json({error:'Admin is not configured'},503);
     if(['/admin','/admin/'].includes(path))return Response.redirect(`${url.origin}/admin/ko`,302);
-    if(['/admin/ko','/admin/en'].includes(path)&&request.method==='GET')return new Response(adminPage(path.endsWith('/en')?'en':'ko'),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
+    if(['/admin/login/ko','/admin/login/en'].includes(path)&&request.method==='GET')return new Response(adminLoginPage(path.endsWith('/en')?'en':'ko'),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
+    if(['/admin/ko','/admin/en'].includes(path)&&request.method==='GET'){
+      const adminLang=path.endsWith('/en')?'en':'ko';
+      const pagePasswordHash=await currentPasswordHash(env);
+      if(!await session(request,env,pagePasswordHash))return Response.redirect(`${url.origin}/admin/login/${adminLang}`,302);
+      return new Response(adminPage(adminLang),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"}});
+    }
     if(path==='/api/menu-config'&&request.method==='GET')return await menuConfig(request,env);
     if((request.method==='POST'||request.method==='PUT')&&request.headers.get('origin')!==url.origin)return json({error:'Forbidden'},403);
     const passwordHash=await currentPasswordHash(env);
