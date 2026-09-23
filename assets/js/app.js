@@ -345,7 +345,7 @@
 
   function initToolFinder() {
     const input = $("#toolSearch");
-    const form = $("#toolSearchForm");
+    const form = $("#toolSearchForm") || input?.closest("form");
     const cards = $$("[data-tool-card]");
     if (!input) return;
     if (!form || !cards.length) {
@@ -356,6 +356,9 @@
           input.focus();
         }
       });
+      if (form && !cards.length && window.SF_TOOL_CATALOG?.length && $("#toolSuggestions")) {
+        initHomeToolSuggestions(input, form, $("#toolSuggestions"));
+      }
       if (form && !cards.length) {
         window.addEventListener("solforge:tool-catalog-ready", initToolFinder, { once: true });
       }
@@ -511,6 +514,51 @@
       ? initialCategory
       : "all";
     selectFilter(validCategory);
+  }
+
+  function initHomeToolSuggestions(input, form, suggestions) {
+    if (form.dataset.suggestionsReady === "true") return;
+    form.dataset.suggestionsReady = "true";
+    const normalizeSearch = (value) => String(value || "")
+      .toLocaleLowerCase("ko")
+      .replace(/[·•._/\\-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const categoryLabels = Object.fromEntries((window.SF_TOOL_CATEGORIES || []).map((category) => [category.id, category.label]));
+    const toHomeHref = (href) => href.startsWith("../") ? href.slice(3) : `tools/${href}`;
+    const getMatches = () => {
+      const query = normalizeSearch(input.value);
+      if (!query) return [];
+      const terms = query.split(" ").filter(Boolean);
+      return (window.SF_TOOL_CATALOG || []).filter((tool) => {
+        const searchable = normalizeSearch(`${tool.title} ${tool.description} ${tool.keywords}`);
+        const compact = searchable.replace(/\s/g, "");
+        return terms.every((term) => searchable.includes(term) || compact.includes(term.replace(/\s/g, "")));
+      }).slice(0, 6);
+    };
+    const closeSuggestions = () => {
+      suggestions.hidden = true;
+      suggestions.innerHTML = "";
+      input.setAttribute("aria-expanded", "false");
+    };
+    const renderSuggestions = () => {
+      const matches = getMatches();
+      if (!matches.length) {
+        closeSuggestions();
+        return;
+      }
+      suggestions.innerHTML = matches.map((tool) => `<a href="${toHomeHref(tool.href)}" role="option"><span>${escapeHtml(categoryLabels[tool.category] || "Tool")}</span><strong>${escapeHtml(tool.title)}</strong><b aria-hidden="true">→</b></a>`).join("");
+      suggestions.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+    };
+    input.addEventListener("input", renderSuggestions);
+    input.addEventListener("focus", renderSuggestions);
+    document.addEventListener("click", (event) => {
+      if (!form.contains(event.target)) closeSuggestions();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.activeElement === input) closeSuggestions();
+    });
   }
 
   function initFormatter() {
