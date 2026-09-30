@@ -1,28 +1,117 @@
 <!doctype html>
 <html lang="ko">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta name="referrer" content="no-referrer">
-    <title data-i18n="private.android.title">Grand Koleos Settings Test</title>
-    <style>
-      body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 30px; }
-      h1 { font-size: 28px; margin-bottom: 10px; }
-      p { color: #aaa; margin-bottom: 30px; }
-      .btn { display: block; width: 100%; max-width: 500px; box-sizing: border-box; margin: 15px 0; padding: 22px; background: #333; color: white; text-decoration: none; text-align: center; font-size: 24px; font-weight: bold; border: 1px solid #666; border-radius: 10px; }
-      .dev { background: #5a1d1d; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1 data-i18n="private.android.heading">Android Settings Test</h1>
-      <p data-i18n="private.android.intro">일반 설정부터 순서대로 눌러보세요.</p>
-      <a class="btn" href="intent:#Intent;action=android.settings.SETTINGS;end" data-i18n="private.android.general">1. 일반 설정</a>
-      <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_SETTINGS;end" data-i18n="private.android.apps">2. 앱 설정</a>
-      <a class="btn" href="intent:#Intent;action=android.settings.WIFI_SETTINGS;end" data-i18n="private.android.wifi">3. Wi-Fi 설정</a>
-      <a class="btn" href="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end" data-i18n="private.android.display">4. 디스플레이 설정</a>
-      <a class="btn dev" href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end" data-i18n="private.android.open">5. 개발자 옵션</a>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Grand Koleos ADB / Developer Settings Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font: 16px/1.55 Arial, sans-serif; background: #111; color: #eee; }
+    h1 { font-size: 28px; margin-bottom: 10px; }
+    h2 { margin-top: 40px; padding-bottom: 8px; border-bottom: 1px solid #555; font-size: 22px; }
+    .intro,.important-note,.test { border-radius: 10px; padding: 17px; margin: 15px 0; }
+    .intro { background: #181818; border: 1px solid #444; margin-bottom: 25px; }
+    .important-note { background: #302600; border: 1px solid #7c6319; }
+    .test { background: #1b1b1b; border: 1px solid #444; }
+    .test-important { border: 2px solid #8c3838; }
+    .test-direct { border: 2px solid #8a7100; }
+    .title { font-size: 19px; font-weight: bold; margin-bottom: 8px; }
+    .priority { display: inline-block; background: #6d2323; padding: 3px 7px; border-radius: 5px; font-size: 12px; margin-left: 6px; }
+    .action { background: #101010; border-radius: 5px; padding: 8px; color: #aaa; font: 12px monospace; overflow-wrap: anywhere; margin: 10px 0; }
+    .explain { background: #242424; border-radius: 7px; padding: 12px; margin: 10px 0; font-size: 14px; }
+    .good { color: #7fd28a; } .bad { color: #ff9696; } .warn { color: #e5c36a; }
+    a.button { display: block; text-align: center; padding: 16px; margin-top: 12px; background: #333; border: 1px solid #666; border-radius: 8px; color: white; text-decoration: none; font-size: 18px; font-weight: bold; }
+    .test-important a.button { background: #632424; } .test-direct a.button { background: #554500; }
+    .status { display: flex; gap: 8px; margin-top: 12px; }
+    .status button,.reset { padding: 10px; border: 1px solid #555; border-radius: 6px; background: #292929; color: white; font-size: 14px; }
+    .status button { flex: 1; } .result { margin-top: 9px; color: #bbb; font-size: 14px; }
+    .reset { width: 100%; margin: 20px 0 35px; padding: 15px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Grand Koleos ADB / Developer Settings Test</h1>
+  <div class="intro"><b>목적</b><br><br>Grand Koleos / RCOS 차량 브라우저에서 Android 내부 Settings 화면을 직접 호출할 수 있는지 확인하는 진단 페이지입니다.<br><br>확인할 항목: Developer Options, USB Debugging, Wireless Debugging, ADB 관련 설정.<br><br><b>테스트 방법</b><br>OPEN 버튼을 누른 뒤 설정 화면이 열리면 <b>열림</b>, 아무 반응이 없으면 <b>안 열림</b>, 오류나 페이지를 열 수 없다는 메시지가 나오면 <b>오류</b>를 누르세요. 설정 화면이 열리면 사진을 찍어두세요.</div>
+  <div class="important-note"><b>중요</b><br><br>먼저 1-1 기본 Android Settings가 열리는지 확인하세요. 기본 설정도 열리지 않으면 개발자 옵션 자체의 문제보다 Whale / RCOS가 Android Intent 실행을 차단했을 가능성이 큽니다.<br><br>우선순위: <b>1-1 → 1-2 → 2-1 → 2-2 → 2-3 → 3-1 → 4-1 → 5-3 → 6-5</b></div>
+  <div id="tests"></div>
+  <h2>7. 결과 해석</h2>
+  <div class="intro">
+    <b>CASE 1</b><br>기본 Settings도 전부 안 열림<br>→ Whale이 Intent 실행을 막거나 RCOS가 외부 Activity 실행을 차단했을 가능성이 큽니다.<br><br><hr><br>
+    <b>CASE 2</b><br>기본 Settings는 열리는데 Developer Options만 안 열림<br>→ Developer Options Activity가 비활성화됐을 수 있습니다. Engineering / Factory 메뉴에서 활성화 경로를 찾아보세요.<br><br><hr><br>
+    <b>CASE 3</b><br>Device Info가 열림<br>→ Build Number / Android Version / Software Version을 확인하고 기존 Renault 설정과 다른 Build Number가 있는지 살펴보세요.<br><br><hr><br>
+    <b>CASE 4</b><br>2-3 또는 3-1이 열림<br>→ Android Automotive Developer Options에 접근했을 가능성이 높습니다. USB / Wireless Debugging을 확인하세요.<br><br><hr><br>
+    <b>CASE 5</b><br>USB Settings가 열림<br>→ USB Mode / Debug / ADB / MTP 메뉴를 확인하세요.<br><br><hr><br>
+    <b>CASE 6</b><br>Install Unknown Apps가 열림<br>→ APK 직접 설치 경로가 활성화되어 있을 수 있습니다.<br><br><hr><br>
+    <b>CASE 7</b><br>특수 권한 화면도 대부분 열림<br>→ 브라우저 Intent 제한은 크지 않을 수 있습니다. RCOS 내부 패키지명이나 Activity 이름을 찾는 방향으로 진행하세요.
+  </div>
+  <button class="reset" id="reset">테스트 결과 전체 초기화</button>
+  <script>
+    const groups = [
+      { title: "1. 기본 Android Settings 테스트", tests: [
+        { id:"settings", title:"1-1. Android 전체 설정", action:"android.settings.SETTINGS", priority:"가장 먼저", explain:"<b>무엇을 테스트하나?</b><br>차량 브라우저가 Android 기본 Settings Activity를 실행할 수 있는지 확인합니다.<br><br><b class='good'>열렸을 때</b><br>Renault 차량 설정이 아닌 Android 또는 Android Automotive 형태의 설정 화면이 나올 수 있습니다. 열리면 브라우저에서 Android Intent를 전달할 수 있다는 뜻입니다.<br><br><b class='bad'>안 열리면</b><br>Whale 또는 RCOS에서 Intent 실행을 막았을 수 있습니다.<br><br><b>다음</b><br>열렸든 안 열렸든 1-2도 테스트하세요.", href:"intent:#Intent;action=android.settings.SETTINGS;end" },
+        { id:"settings_pkg", title:"1-2. Android Settings + 패키지 직접 지정", action:"android.settings.SETTINGS + package=com.android.settings", explain:"<b>무엇을 테스트하나?</b><br>Android Settings 패키지를 직접 지정해 같은 설정 화면을 요청합니다.<br><br><b class='good'>1-1은 실패하고 이것만 열리면</b><br>일반 Intent 매칭은 제한되지만 패키지를 지정하면 실행할 수 있다는 뜻입니다.<br><br><b class='bad'>둘 다 실패하면</b><br>com.android.settings가 없거나 비활성화됐거나 외부 Activity 실행이 차단됐을 수 있습니다.", href:"intent:#Intent;action=android.settings.SETTINGS;package=com.android.settings;end" },
+        { id:"apps", title:"1-3. 설치된 앱 설정", action:"android.settings.APPLICATION_SETTINGS", explain:"<b>무엇을 테스트하나?</b><br>설치 앱 목록 또는 앱 관리 화면에 접근할 수 있는지 확인합니다.<br><br>Car, Vehicle, Factory, Engineering, Developer, Settings, ECARX, Debug, Test와 비슷한 이름을 찾아보세요. 화면이 나오면 사진을 찍어두세요.", href:"intent:#Intent;action=android.settings.APPLICATION_SETTINGS;end" },
+        { id:"security", title:"1-4. Security Settings", action:"android.settings.SECURITY_SETTINGS", explain:"<b>무엇을 테스트하나?</b><br>Android 보안 설정 접근 여부를 확인합니다.<br><br>열리면 Unknown Sources / Install unknown apps / Device admin / Credentials가 있는지 확인하세요. ADB를 직접 켜는 화면은 아니며 Settings에 얼마나 접근할 수 있는지 판단합니다.", href:"intent:#Intent;action=android.settings.SECURITY_SETTINGS;end" }
+      ]},
+      { title:"2. Developer Options 핵심 테스트", tests:[
+        { id:"dev1", title:"2-1. Developer Options 표준 Android Action", action:"android.settings.APPLICATION_DEVELOPMENT_SETTINGS", priority:"핵심", important:true, explain:"<b>무엇을 테스트하나?</b><br>Android Developer Options 화면을 직접 요청합니다.<br><br><b class='good'>성공하면</b><br>개발자 옵션 화면에서 USB debugging, Wireless debugging, USB configuration, ADB 항목을 찾아보세요.<br><br><b class='bad'>기본 Settings는 열리는데 이것만 안 열리면</b><br>Developer Options Activity만 비활성화됐을 수 있습니다.", href:"intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end" },
+        { id:"dev2", title:"2-2. Developer Options + com.android.settings", action:"android.settings.APPLICATION_DEVELOPMENT_SETTINGS + package=com.android.settings", important:true, explain:"<b>무엇을 테스트하나?</b><br>Developer Options Intent를 Android Settings 패키지에 직접 전달합니다.<br><br><b class='good'>2-1 실패 / 2-2 성공</b><br>Intent 자동 매칭은 제한되지만 패키지를 지정하면 실행할 수 있다는 뜻입니다. 성공하면 USB 또는 Wireless debugging을 찾으세요.", href:"intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;package=com.android.settings;end" },
+        { id:"dev3", title:"2-3. Android Automotive Developer Options", action:"package=com.android.car.developeroptions", priority:"매우 중요", important:true, explain:"<b>무엇을 테스트하나?</b><br>Android Automotive용 Developer Options 패키지를 직접 호출합니다. Grand Koleos가 AOSP Automotive 구조라면 이 방식이 더 정확할 수 있습니다.<br><br><b class='good'>열리면</b><br>차량용 개발자 옵션에서 ADB, USB / Wireless Debugging, Developer mode, Bug report를 찾아보세요.<br><br><b class='bad'>패키지 오류</b><br>RCOS에서 패키지 이름을 바꿨거나 해당 AOSP 패키지를 사용하지 않을 수 있습니다.", href:"intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;package=com.android.car.developeroptions;end" },
+        { id:"dev4", title:"2-4. 구형 / 호환 Developer Action", action:"com.android.settings.APPLICATION_DEVELOPMENT_SETTINGS", important:true, explain:"Android 버전 및 OEM 구현 차이를 확인하기 위한 보조 Action입니다. 앞선 개발자 옵션 테스트가 실패해도 시도해 보세요.", href:"intent:#Intent;action=com.android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end" }
+      ]},
+      { title:"3. Developer Activity 직접 호출", note:"여기부터는 Action 대신 Android 내부 Activity 이름을 직접 지정합니다. 일반 Developer Intent가 필터링되어도 직접 호출이 가능한지 확인합니다.", tests:[
+        { id:"car_dev_direct", title:"3-1. Android Automotive Developer Activity 직접 호출", action:"com.android.car.developeroptions/.CarDevelopmentSettingsDashboardActivity", priority:"핵심", direct:true, explain:"<b>무엇을 테스트하나?</b><br>AOSP Android Automotive Developer Options Activity를 이름으로 실행합니다.<br><br><b class='good'>성공하면</b><br>개발자 옵션에서 USB / Wireless debugging을 확인하세요. 2번보다 직접적인 호출이 성공한 것입니다.<br><br><b class='bad'>실패하면</b><br>Activity 비활성화, RCOS의 패키지명 또는 Activity명 변경, 브라우저의 직접 호출 차단일 수 있습니다.", href:"intent:#Intent;component=com.android.car.developeroptions/.CarDevelopmentSettingsDashboardActivity;end" },
+        { id:"android_dev_direct", title:"3-2. 일반 Android Developer Activity 직접 호출", action:"com.android.settings/.Settings$DevelopmentSettingsDashboardActivity", direct:true, explain:"AOSP Android Settings의 Developer Options Activity 후보를 직접 실행합니다. RCOS가 Automotive용이 아니라 일반 Settings 기반이면 열릴 수 있습니다.", href:"intent:#Intent;component=com.android.settings/.Settings$DevelopmentSettingsDashboardActivity;end" }
+      ]},
+      { title:"4. About / Device Information", tests:[
+        { id:"deviceinfo", title:"4-1. Device Info / About", action:"android.settings.DEVICE_INFO_SETTINGS", important:true, explain:"<b>왜 중요한가?</b><br>일반 Android에서는 About 화면의 Build Number를 여러 번 눌러 Developer Mode를 활성화합니다. 차량 설정에서 기능이 숨겨져 있어도 Android 원본 화면에 다른 Build Number가 있을 수 있습니다.<br><br><b class='good'>열리면 확인할 것</b><br>Build number, Android version, Kernel version, Software version을 확인하세요. 기존 Renault 설정에 나온 Build Number와 다른 항목이 있는지도 살펴보세요.", href:"intent:#Intent;action=android.settings.DEVICE_INFO_SETTINGS;end" },
+        { id:"deviceinfo_pkg", title:"4-2. Device Info + com.android.settings 지정", action:"android.settings.DEVICE_INFO_SETTINGS + package=com.android.settings", explain:"4-1과 같지만 Android Settings 패키지를 직접 지정합니다. 4-1이 실패해도 테스트해 보세요.", href:"intent:#Intent;action=android.settings.DEVICE_INFO_SETTINGS;package=com.android.settings;end" }
+      ]},
+      { title:"5. USB / Network 관련 설정", tests:[
+        { id:"wireless", title:"5-1. Wireless Settings", action:"android.settings.WIRELESS_SETTINGS", explain:"무선 네트워크 설정을 엽니다. ADB 화면은 아니지만 Android 원본 네트워크 설정에 접근 가능한지 확인합니다.", href:"intent:#Intent;action=android.settings.WIRELESS_SETTINGS;end" },
+        { id:"wifi", title:"5-2. Wi-Fi Settings", action:"android.settings.WIFI_SETTINGS", explain:"Android Wi-Fi 설정을 요청합니다. 차량 고유 Wi-Fi 화면이 아닌 Android 원본 설정이 나오면 숨겨진 Android Settings에 접근할 수 있다는 의미입니다.", href:"intent:#Intent;action=android.settings.WIFI_SETTINGS;end" },
+        { id:"usb", title:"5-3. USB Settings 후보", action:"android.settings.USB_SETTINGS", priority:"확인 필요", direct:true, explain:"USB 설정 후보 Action입니다. Android 버전이나 제조사에 따라 없을 수 있습니다.<br><br><b class='good'>열리면 확인할 것</b><br>USB mode, USB configuration, MTP, File Transfer, ADB, Debugging.<br><br><b class='warn'>오류가 나도 이상한 것은 아닙니다.</b>", href:"intent:#Intent;action=android.settings.USB_SETTINGS;end" }
+      ]},
+      { title:"6. 특수 권한 / 시스템 접근 테스트", tests:[
+        { id:"accessibility", title:"6-1. Accessibility Settings", action:"android.settings.ACCESSIBILITY_SETTINGS", explain:"접근성 설정을 엽니다. 화면 자체보다 브라우저에서 시스템 Settings Activity를 실행할 수 있는 범위를 판단합니다.", href:"intent:#Intent;action=android.settings.ACCESSIBILITY_SETTINGS;end" },
+        { id:"usage", title:"6-2. Usage Access", action:"android.settings.USAGE_ACCESS_SETTINGS", explain:"앱 사용 정보 접근 권한 설정을 요청합니다. 특수 접근 설정 화면이 외부 Intent로 열리는지 확인합니다.", href:"intent:#Intent;action=android.settings.USAGE_ACCESS_SETTINGS;end" },
+        { id:"overlay", title:"6-3. Overlay Permission", action:"android.settings.action.MANAGE_OVERLAY_PERMISSION", explain:"‘다른 앱 위에 표시’ 권한 화면입니다. 열리면 Android Settings의 특수 권한 화면까지 접근할 수 있다는 뜻입니다.", href:"intent:#Intent;action=android.settings.action.MANAGE_OVERLAY_PERMISSION;end" },
+        { id:"write", title:"6-4. Modify System Settings", action:"android.settings.action.MANAGE_WRITE_SETTINGS", explain:"앱의 시스템 설정 변경 권한 화면입니다. ADB 권한은 아니지만 특수 권한 관리 화면 접근 여부를 확인합니다.", href:"intent:#Intent;action=android.settings.action.MANAGE_WRITE_SETTINGS;end" },
+        { id:"unknown", title:"6-5. Install Unknown Apps", action:"android.settings.MANAGE_UNKNOWN_APP_SOURCES", priority:"관심", explain:"APK 설치 제한과 관련된 설정입니다. 열리면 Whale 또는 다른 앱이 ‘알 수 없는 앱 설치’ 권한 대상에 나타나는지 확인하세요. ADB와 직접 관련은 없지만 APK 설치 경로를 판단하는 데 유용합니다.", href:"intent:#Intent;action=android.settings.MANAGE_UNKNOWN_APP_SOURCES;end" }
+      ]}
+    ];
+    const host = document.getElementById("tests");
+    for (const group of groups) {
+      const heading = document.createElement("h2"); heading.textContent = group.title; host.append(heading);
+      if (group.note) { const note = document.createElement("div"); note.className = "important-note"; note.innerHTML = group.note; host.append(note); }
+      for (const test of group.tests) {
+        const card = document.createElement("section"); card.className = `test${test.important ? " test-important" : ""}${test.direct ? " test-direct" : ""}`;
+        const title = document.createElement("div"); title.className = "title"; title.textContent = test.title + (test.priority ? ` · ${test.priority}` : "");
+        const action = document.createElement("div"); action.className = "action"; action.textContent = test.action;
+        const explain = document.createElement("div"); explain.className = "explain"; explain.innerHTML = test.explain;
+        const link = document.createElement("a"); link.className = "button"; link.href = test.href; link.textContent = `OPEN ${test.title.replace(/^\d+-\d+\.\s*/, "")}`;
+        const status = document.createElement("div"); status.className = "status";
+        const result = document.createElement("div"); result.className = "result"; result.id = `result-${test.id}`;
+        for (const [value, label] of [["OPEN","열림"],["BLOCK","안 열림"],["ERROR","오류"]]) {
+          const button = document.createElement("button"); button.type = "button"; button.textContent = label;
+          button.addEventListener("click", () => { localStorage.setItem(`adbtest_${test.id}`, value); showResult(test.id); }); status.append(button);
+        }
+        card.append(title, action, explain, link, status, result); host.append(card); showResult(test.id);
+      }
+    }
+    function showResult(id) {
+      const result = localStorage.getItem(`adbtest_${id}`);
+      const labels = { OPEN:"✅ 열림", BLOCK:"❌ 안 열림", ERROR:"⚠ 오류" };
+      document.getElementById(`result-${id}`).textContent = `현재 기록: ${labels[result] || "미테스트"}`;
+    }
+    document.getElementById("reset").addEventListener("click", () => {
+      if (!confirm("모든 테스트 결과를 초기화할까요?")) return;
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i); if (key && key.startsWith("adbtest_")) localStorage.removeItem(key);
+      }
+      location.reload();
+    });
+  </script>
+</body>
 </html>

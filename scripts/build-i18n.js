@@ -507,6 +507,7 @@ function writeRootRedirect() {
 </html>
 `);
   const redirects = [
+    "/jinsol /jinsol.html 200",
     "/ /ko/ 301",
     "/index /ko/ 301",
     "/index.html /ko/ 301",
@@ -612,7 +613,7 @@ function writeRootRedirect() {
 }
 
 function writeHeaders() {
-  writeText("dist/_headers", `/android-settings-7c4f9a2d*
+  writeText("dist/_headers", `/jinsol*
   X-Robots-Tag: noindex, nofollow, noarchive
   Referrer-Policy: no-referrer
   Cache-Control: no-store
@@ -693,7 +694,7 @@ writeSitemap();
 
 // Direct-link-only Korean page: deliberately outside public page/catalog and
 // analytics generation, with no alternate-language or discovery links.
-writeText("dist/android-settings-7c4f9a2d.html",
+writeText("dist/jinsol.html",
   translateTaggedContent(readText("private/android-settings.html"), "ko")
     .replace(/\sdata-i18n="[^"]*"/g, ""));
 
