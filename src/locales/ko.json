@@ -1,4 +1,12 @@
 {
+  "private.android.title": "Grand Koleos Settings Test",
+  "private.android.heading": "Android Settings Test",
+  "private.android.intro": "일반 설정부터 순서대로 눌러보세요.",
+  "private.android.general": "1. 일반 설정",
+  "private.android.apps": "2. 앱 설정",
+  "private.android.wifi": "3. Wi-Fi 설정",
+  "private.android.display": "4. 디스플레이 설정",
+  "private.android.open": "5. 개발자 옵션",
   "about.attr.aria-label.0002": "기능 메뉴",
   "about.attr.aria-label.0003": "SolForge 홈",
   "about.attr.aria-label.0021": "사이트 정보",

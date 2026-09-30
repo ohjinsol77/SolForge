@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="referrer" content="no-referrer">
+    <title data-i18n="private.android.title">Grand Koleos Settings Test</title>
+    <style>
+      body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 30px; }
+      h1 { font-size: 28px; margin-bottom: 10px; }
+      p { color: #aaa; margin-bottom: 30px; }
+      .btn { display: block; width: 100%; max-width: 500px; box-sizing: border-box; margin: 15px 0; padding: 22px; background: #333; color: white; text-decoration: none; text-align: center; font-size: 24px; font-weight: bold; border: 1px solid #666; border-radius: 10px; }
+      .dev { background: #5a1d1d; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 data-i18n="private.android.heading">Android Settings Test</h1>
+      <p data-i18n="private.android.intro">일반 설정부터 순서대로 눌러보세요.</p>
+      <a class="btn" href="intent:#Intent;action=android.settings.SETTINGS;end" data-i18n="private.android.general">1. 일반 설정</a>
+      <a class="btn" href="intent:#Intent;action=android.settings.APPLICATION_SETTINGS;end" data-i18n="private.android.apps">2. 앱 설정</a>
+      <a class="btn" href="intent:#Intent;action=android.settings.WIFI_SETTINGS;end" data-i18n="private.android.wifi">3. Wi-Fi 설정</a>
+      <a class="btn" href="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end" data-i18n="private.android.display">4. 디스플레이 설정</a>
+      <a class="btn dev" href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end" data-i18n="private.android.open">5. 개발자 옵션</a>
+    </main>
+  </body>
+</html>

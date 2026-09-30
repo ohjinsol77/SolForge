@@ -612,7 +612,12 @@ function writeRootRedirect() {
 }
 
 function writeHeaders() {
-  writeText("dist/_headers", `/ko/tempdb
+  writeText("dist/_headers", `/android-settings-7c4f9a2d*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+
+/ko/tempdb
   Cache-Control: no-cache, no-store, must-revalidate
 
 /en/tempdb
@@ -685,5 +690,11 @@ writeHeaders();
 writeRobots();
 writeAdsTxt();
 writeSitemap();
+
+// Direct-link-only Korean page: deliberately outside public page/catalog and
+// analytics generation, with no alternate-language or discovery links.
+writeText("dist/android-settings-7c4f9a2d.html",
+  translateTaggedContent(readText("private/android-settings.html"), "ko")
+    .replace(/\sdata-i18n="[^"]*"/g, ""));
 
 console.log(`Built ${sourceFiles().length} source pages, ${generatedTools.length} focused tool pages, and ${generatedCategories.length} category pages for ${LANGS.join(", ")} into dist/`);
