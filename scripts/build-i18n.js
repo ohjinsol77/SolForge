@@ -507,7 +507,6 @@ function writeRootRedirect() {
 </html>
 `);
   const redirects = [
-    "/jinsol /jinsol.html 200",
     "/ /ko/ 301",
     "/index /ko/ 301",
     "/index.html /ko/ 301",
@@ -694,7 +693,7 @@ writeSitemap();
 
 // Direct-link-only Korean page: deliberately outside public page/catalog and
 // analytics generation, with no alternate-language or discovery links.
-writeText("dist/jinsol.html",
+writeText("dist/jinsol/index.html",
   translateTaggedContent(readText("private/android-settings.html"), "ko")
     .replace(/\sdata-i18n="[^"]*"/g, ""));
 
