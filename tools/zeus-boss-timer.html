@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260715-ads">
     <link rel="stylesheet" href="../assets/css/theme-saas.css?v=20260624-2">
     <link rel="stylesheet" href="../assets/css/theme-terminal.css?v=20260624-2">
-    <link rel="stylesheet" href="../assets/css/zeus-boss-timer.css?v=20261022-1">
+    <link rel="stylesheet" href="../assets/css/zeus-boss-timer.css?v=20261022-2">
   </head>
   <body data-page="zeus-boss-timer">
     <a class="skip-link" href="#main"><span data-i18n="tools.zeus-boss-timer.text.0001">본문으로 이동</span></a>
@@ -48,8 +48,8 @@
             <div class="zeus-hero-stats">
               <p class="zeus-stats-label"><span data-i18n="tools.zeus-boss-timer.text.0067">WORLD BOSS TRACKER</span></p>
               <div class="zeus-stat-grid">
-                <div class="zeus-stat"><strong>5</strong><span data-i18n="tools.zeus-boss-timer.text.0022">주간 정시 월드보스</span></div>
-                <div class="zeus-stat"><strong>8</strong><span data-i18n="tools.zeus-boss-timer.text.0023">8시간 리스폰 추적 보스</span></div>
+                <div class="zeus-stat"><strong>18</strong><span data-i18n="tools.zeus-boss-timer.text.0022">전체 보스</span></div>
+                <div class="zeus-stat"><strong>6</strong><span data-i18n="tools.zeus-boss-timer.text.0023">정시 출현 보스</span></div>
               </div>
             </div>
           </div>
@@ -57,15 +57,16 @@
 
         <section class="maple-timer-shell" data-zeus-boss-timer>
           <div class="maple-timer-stage">
-            <section class="maple-slot-panel zeus-boss-board" aria-labelledby="zeusBossDirectoryTitle">
-              <div class="maple-slot-toolbar"><div><p class="eyebrow"><span data-i18n="tools.zeus-boss-timer.text.0024">World Content</span></p><h2 id="zeusBossDirectoryTitle"><span data-i18n="tools.zeus-boss-timer.text.0071">전체 보스 목록</span><span class="zeus-boss-count" id="zeusBossCount"></span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0072">제공된 게임 내 콘텐츠 현황판의 보스를 이름 중복 없이 정리했습니다.</span></p></div><span class="zeus-timezone" data-i18n="tools.zeus-boss-timer.text.0073">카드를 눌러도 게임 화면은 열리지 않습니다</span></div>
-              <div class="zeus-boss-directory" id="zeusBossDirectory" role="list" aria-label="전체 보스 목록" data-i18n-attrs="aria-label:tools.zeus-boss-timer.attr.aria-label.0017"></div>
+            <section class="maple-timer-setup zeus-pip-settings" aria-labelledby="zeusPipTitle">
+              <div class="utility-panel-heading compact-heading"><div><p class="eyebrow">PIP</p><h2 id="zeusPipTitle" data-i18n="tools.zeus-boss-timer.ui.pipSettings">PIP 표시 설정</h2><p data-i18n="tools.zeus-boss-timer.ui.instructions">① 카드에서 PIP 표시 선택 → ② 필요한 보스 시간 설정 → ③ PIP 열기</p></div><button type="button" class="primary-link" id="openZeusPip" data-i18n="tools.zeus-boss-timer.text.0039">PIP 열기</button></div>
+              <div class="zeus-selection-toolbar"><button type="button" data-pip-select="all" data-i18n="tools.zeus-boss-timer.ui.selectAll">전체 선택</button><button type="button" data-pip-select="none" data-i18n="tools.zeus-boss-timer.ui.selectNone">전체 해제</button><strong id="zeusPipSelection" role="status"></strong></div>
+              <div class="zeus-toolbar"><label class="maple-check"><input id="zeusIncludeRifts" type="checkbox" checked><span data-i18n="tools.zeus-boss-timer.ui.includeRifts">심연의 틈 포함</span></label><label class="maple-check"><input id="zeusBeepEnabled" type="checkbox" checked><span data-i18n="tools.zeus-boss-timer.text.0040">선택한 보스 비프 알림</span></label><label class="maple-check"><input id="zeusTtsEnabled" type="checkbox"><span data-i18n="tools.zeus-boss-timer.text.0041">선택한 보스 음성 알림</span></label></div>
+              <p class="zeus-clock" id="zeusClock"></p><div class="maple-support-note" id="zeusPipSupport"></div>
             </section>
 
-            <section class="maple-timer-setup">
-              <div class="utility-panel-heading compact-heading"><div><p class="eyebrow"><span data-i18n="tools.zeus-boss-timer.text.0027">Schedule Timer</span></p><h2><span data-i18n="tools.zeus-boss-timer.text.0028">다음 출현 카운트다운</span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0029">한국 시간 기준으로 각 월드보스와 심연의 틈까지 남은 시간을 표시합니다.</span></p></div><button type="button" class="primary-link" id="openZeusPip"><span data-i18n="tools.zeus-boss-timer.text.0039">PIP 띄우기</span></button></div>
-              <div class="maple-support-note" id="zeusPipSupport"></div>
-              <div class="zeus-toolbar"><label class="maple-check"><input id="zeusBeepEnabled" type="checkbox" checked><span data-i18n="tools.zeus-boss-timer.text.0040">출현 시 비프 알림</span></label><label class="maple-check"><input id="zeusTtsEnabled" type="checkbox"><span data-i18n="tools.zeus-boss-timer.text.0041">출현 시 음성 알림</span></label><span class="zeus-clock" id="zeusClock"></span></div>
+            <section class="maple-slot-panel zeus-boss-board" aria-labelledby="zeusBossDirectoryTitle">
+              <div class="maple-slot-toolbar"><div><p class="eyebrow"><span data-i18n="tools.zeus-boss-timer.text.0024">World Content</span></p><h2 id="zeusBossDirectoryTitle"><span data-i18n="tools.zeus-boss-timer.text.0071">전체 보스 목록</span><span class="zeus-boss-count" id="zeusBossCount"></span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0072">이름·레벨·장소·일정을 확인하고 보스별 타이머를 설정하세요.</span></p></div><span class="zeus-timezone" data-i18n="tools.zeus-boss-timer.text.0073">모든 시각은 한국 시간(KST) 기준</span></div>
+              <div class="zeus-boss-directory" id="zeusBossDirectory" role="list" aria-label="전체 보스 목록" data-i18n-attrs="aria-label:tools.zeus-boss-timer.attr.aria-label.0017"></div>
             </section>
 
             <section class="maple-slot-panel">
@@ -75,7 +76,7 @@
 
             <section class="info-section maple-guide-section"><div class="policy-list">
               <article class="article-card"><h2><span data-i18n="tools.zeus-boss-timer.text.0045">보스 정보 기준</span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0046">이 목록은 제공된 게임 내 콘텐츠 현황판을 기준으로 하며, 이름이 같은 보스는 한 번만 표시합니다. 레벨과 출현 지역은 각 카드에서 확인하세요.</span></p></article>
-              <article class="article-card"><h2><span data-i18n="tools.zeus-boss-timer.text.0047">리스폰 보스 계산 방법</span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0048">8시간 리스폰으로 표시된 카드에 마지막 처치 시각을 입력하면 다음 출현 시각을 계산합니다.</span></p></article>
+              <article class="article-card"><h2><span data-i18n="tools.zeus-boss-timer.text.0047">보스 시간 설정 방법</span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0048">정시 보스는 요일 시간표로 자동 계산합니다. 나머지 보스는 게임 현황판의 남은 시간 또는 다음 출현 시각을 입력하세요. 시간 설정을 저장하면 PIP에도 반영됩니다.</span></p></article>
               <article class="article-card"><h2><span data-i18n="tools.zeus-boss-timer.text.0049">자료 출처</span></h2><p><span data-i18n="tools.zeus-boss-timer.text.0050">공식 게임 가이드와 2026년 9월 업데이트 이후 공개된 공략 자료를 대조했습니다. 업데이트에 따라 시간·장소·레벨 정보가 바뀔 수 있으므로 게임 내 콘텐츠 현황판을 최종 기준으로 사용하세요.</span> <a href="https://zeus.com2us.com/guide/game" target="_blank" rel="noreferrer"><span data-i18n="tools.zeus-boss-timer.text.0051">공식 게임 가이드</span></a> · <a href="https://www.zeusguide.kr/guide/tartaros/" target="_blank" rel="noreferrer"><span data-i18n="tools.zeus-boss-timer.text.0052">공개 공략 자료</span></a></p></article>
             </div></section>
           </div>
@@ -85,7 +86,41 @@
       </main>
     </div>
     <div class="toast" id="zeusTimerToast" role="status" aria-live="polite"></div>
+    <div id="zeusTimerCopy" hidden>
+      <span data-zeus-copy="title" data-i18n="tools.zeus-boss-timer.text.0020">제우스 보스타이머</span>
+      <span data-zeus-copy="scheduleLabel" data-i18n="tools.zeus-boss-timer.ui.scheduleLabel">출현 일정</span>
+      <span data-zeus-copy="nextSpawn" data-i18n="tools.zeus-boss-timer.ui.nextSpawn">다음 출현</span>
+      <span data-zeus-copy="respawnSchedule" data-i18n="tools.zeus-boss-timer.ui.respawnSchedule">처치 후 재출현 · 게임 현황판 기준</span>
+      <span data-zeus-copy="daily" data-i18n="tools.zeus-boss-timer.ui.daily">매일</span>
+      <span data-zeus-copy="showInPip" data-i18n="tools.zeus-boss-timer.ui.showInPip">PIP에 표시</span>
+      <span data-zeus-copy="editTimer" data-i18n="tools.zeus-boss-timer.ui.editTimer">시간 설정</span>
+      <span data-zeus-copy="timerMode" data-i18n="tools.zeus-boss-timer.ui.timerMode">계산 방식</span>
+      <span data-zeus-copy="autoSchedule" data-i18n="tools.zeus-boss-timer.ui.autoSchedule">요일 시간표 자동 계산</span>
+      <span data-zeus-copy="remainingMode" data-i18n="tools.zeus-boss-timer.ui.remainingMode">게임에 표시된 남은 시간</span>
+      <span data-zeus-copy="datetimeMode" data-i18n="tools.zeus-boss-timer.ui.datetimeMode">다음 출현 시각 직접 입력</span>
+      <span data-zeus-copy="hours" data-i18n="tools.zeus-boss-timer.ui.hours">시간</span>
+      <span data-zeus-copy="minutes" data-i18n="tools.zeus-boss-timer.ui.minutes">분</span>
+      <span data-zeus-copy="save" data-i18n="tools.zeus-boss-timer.ui.save">시간 저장</span>
+      <span data-zeus-copy="reset" data-i18n="tools.zeus-boss-timer.ui.reset">기본값 복원</span>
+      <span data-zeus-copy="enterTime" data-i18n="tools.zeus-boss-timer.ui.enterTime">게임 현황판의 남은 시간을 입력하세요</span>
+      <span data-zeus-copy="unset" data-i18n="tools.zeus-boss-timer.ui.unset">시간 미설정</span>
+      <span data-zeus-copy="timeReached" data-i18n="tools.zeus-boss-timer.ui.timeReached">출현 시각 도달</span>
+      <span data-zeus-copy="customTimer" data-i18n="tools.zeus-boss-timer.ui.customTimer">직접 설정한 시간</span>
+      <span data-zeus-copy="customSchedule" data-i18n="tools.zeus-boss-timer.ui.customSchedule">직접 설정 · 게임 현황판 기준</span>
+      <span data-zeus-copy="automatic" data-i18n="tools.zeus-boss-timer.ui.automatic">시간표 자동 계산</span>
+      <span data-zeus-copy="selected" data-i18n="tools.zeus-boss-timer.ui.selected">PIP 선택</span>
+      <span data-zeus-copy="ready" data-i18n="tools.zeus-boss-timer.ui.ready">설정 완료</span>
+      <span data-zeus-copy="invalidTime" data-i18n="tools.zeus-boss-timer.ui.invalidTime">0보다 큰 남은 시간 또는 미래 출현 시각을 입력하세요.</span>
+      <span data-zeus-copy="saved" data-i18n="tools.zeus-boss-timer.ui.saved">저장했습니다. PIP에도 반영됩니다.</span>
+      <span data-zeus-copy="storageError" data-i18n="tools.zeus-boss-timer.ui.storageError">저장할 수 없습니다. 브라우저 저장소 설정을 확인하세요.</span>
+      <span data-zeus-copy="pipSupported" data-i18n="tools.zeus-boss-timer.ui.pipSupported">PIP 열기를 누르면 선택한 보스의 이미지와 타이머가 항상 위에 표시되는 작은 창으로 열립니다.</span>
+      <span data-zeus-copy="pipFallback" data-i18n="tools.zeus-boss-timer.ui.pipFallback">이 브라우저에서는 별도의 작은 창으로 열립니다. 항상 위에 고정되는 PIP는 PC Chrome 또는 Edge에서 사용할 수 있습니다.</span>
+      <span data-zeus-copy="openPopup" data-i18n="tools.zeus-boss-timer.ui.openPopup">작은 창 열기</span>
+      <span data-zeus-copy="pipHint" data-i18n="tools.zeus-boss-timer.ui.pipHint">원래 페이지에서 보스 선택과 시간을 변경할 수 있습니다.</span>
+      <span data-zeus-copy="selectHint" data-i18n="tools.zeus-boss-timer.ui.selectHint">원래 페이지에서 PIP에 표시할 보스를 선택하세요.</span>
+      <span data-zeus-copy="pipError" data-i18n="tools.zeus-boss-timer.ui.pipError">작은 창을 열지 못했습니다. 브라우저의 팝업 허용 설정을 확인하세요.</span>
+    </div>
     <script src="../assets/js/app.js?v=20260612-5"></script>
-    <script src="../assets/js/zeus-boss-timer.js?v=20261022-1"></script>
+    <script src="../assets/js/zeus-boss-timer.js?v=20261022-2"></script>
   </body>
 </html>

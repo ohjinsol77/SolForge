@@ -137,18 +137,15 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
 
 .zeus-boss-tile {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  min-height: 142px;
   overflow: hidden;
   border: 1px solid rgba(210, 191, 143, 0.33);
   border-radius: 5px;
   background: #11151b;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.42);
   isolation: isolate;
-}
-
-.zeus-boss-tile.is-respawn {
-  min-height: 226px;
 }
 
 .zeus-boss-tile::before {
@@ -160,7 +157,14 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
   content: "";
 }
 
-.zeus-boss-tile img,
+.zeus-boss-portrait {
+  position: relative;
+  min-height: 156px;
+  background: #151b23;
+  isolation: isolate;
+}
+
+.zeus-boss-portrait img,
 .zeus-boss-tile-shade {
   position: absolute;
   inset: 0;
@@ -168,11 +172,11 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
   height: 100%;
 }
 
-.zeus-boss-tile img {
-  z-index: -2;
+.zeus-boss-portrait img {
+  z-index: 0;
   object-fit: cover;
-  object-position: center;
-  opacity: 0.86;
+  object-position: center 38%;
+  opacity: 1;
   transition: transform 180ms ease, opacity 180ms ease;
 }
 
@@ -182,29 +186,37 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
 }
 
 .zeus-boss-tile-shade {
-  z-index: -1;
-  background: linear-gradient(90deg, rgba(8, 10, 14, 0.94) 0%, rgba(8, 10, 14, 0.75) 39%, rgba(8, 10, 14, 0.08) 100%), linear-gradient(0deg, rgba(7, 9, 12, 0.52), transparent 75%);
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(8, 10, 14, 0.88), rgba(8, 10, 14, 0.42) 45%, transparent 85%), linear-gradient(0deg, rgba(7, 9, 12, 0.75), transparent 65%);
+  pointer-events: none;
 }
 
 .zeus-boss-tile-copy {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 0.58rem 0.62rem;
+  flex: 1;
+  gap: 0.7rem;
+  padding: 0.8rem;
   color: #f2f0e9;
   text-shadow: 0 1px 4px #000;
 }
 
 .zeus-boss-tile-heading {
+  position: relative;
+  z-index: 2;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.35rem 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: 78%;
+  padding: 0.9rem;
+  color: #fff;
+  text-shadow: 0 1px 4px #000;
 }
 
-.zeus-boss-tile-heading strong {
+.zeus-boss-tile-heading h3 {
+  margin: 0;
   font-size: clamp(0.83rem, 1.2vw, 1rem);
   font-weight: 850;
   line-height: 1.2;
@@ -218,9 +230,8 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
   white-space: nowrap;
 }
 
-.zeus-boss-tile-copy p {
-  max-width: 76%;
-  margin: auto 0 0;
+.zeus-boss-tile-heading p {
+  margin: 0;
   color: #d2d3d4;
   font-size: 0.72rem;
   font-weight: 700;
@@ -233,8 +244,8 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
   align-items: flex-end;
   justify-content: space-between;
   gap: 0.45rem;
-  margin-top: auto;
-  padding-top: 0.4rem;
+  min-height: 2.5rem;
+  padding-top: 0.7rem;
   border-top: 1px solid rgba(226, 201, 121, 0.24);
 }
 
@@ -258,28 +269,49 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
 
 .zeus-tile-timer strong {
   color: #fff4c9;
-  font: 900 clamp(1rem, 1.7vw, 1.35rem)/1 "SFMono-Regular", Consolas, monospace;
+  font: 900 clamp(1.1rem, 1.7vw, 1.5rem)/1 "SFMono-Regular", Consolas, monospace;
   white-space: nowrap;
 }
 
-.zeus-tile-respawn {
+.zeus-boss-facts {
   display: grid;
-  gap: 0.35rem;
-  margin-top: 0.42rem;
+  gap: 0.65rem;
+  min-height: 4.7rem;
+  margin: 0;
 }
 
-.zeus-tile-respawn label {
+.zeus-boss-facts > div {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.4rem;
+  align-items: start;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.zeus-boss-facts dt { color: #aeb7c6; }
+.zeus-boss-facts dd { margin: 0; overflow-wrap: anywhere; }
+.zeus-boss-actions label { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.8rem; }
+.zeus-boss-actions input { accent-color: #e2c979; width: 1rem; height: 1rem; }
+.zeus-timer-editor { border-top: 1px solid #3e4148; padding-top: 0.6rem; }
+.zeus-timer-editor summary { cursor: pointer; color: #f2d47f; font-size: 0.8rem; font-weight: 700; }
+.zeus-timer-editor form { display: grid; gap: 0.6rem; padding-top: 0.6rem; }
+.zeus-timer-editor label {
   display: grid;
   gap: 0.2rem;
   color: #e1ded6;
-  font-size: 0.65rem;
+  min-width: 0;
+  font-size: 0.75rem;
   font-weight: 750;
 }
 
-.zeus-tile-respawn input {
+.zeus-timer-editor input,
+.zeus-timer-editor select {
+  box-sizing: border-box;
   width: 100%;
-  min-height: 1.9rem;
-  padding: 0.24rem 0.38rem;
+  min-width: 0;
+  min-height: 2.4rem;
+  padding: 0.4rem;
   border: 1px solid rgba(255, 255, 255, 0.27);
   border-radius: 4px;
   background: rgba(10, 12, 16, 0.82);
@@ -288,25 +320,29 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
   color-scheme: dark;
 }
 
-.zeus-tile-respawn .secondary-link {
-  justify-self: start;
-  padding: 0.24rem 0.45rem;
+.zeus-editor-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.zeus-remaining-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.zeus-timer-editor [hidden] { display: none; }
+.zeus-timer-editor [data-form-status] { margin: 0; color: #f2d47f; font-size: 0.75rem; line-height: 1.5; }
+.zeus-timer-editor button {
+  padding: 0.5rem 0.6rem;
   border: 1px solid rgba(226, 201, 121, 0.38);
   border-radius: 4px;
   background: rgba(11, 13, 17, 0.82);
   color: #f2d47f;
   cursor: pointer;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 800;
 }
 
-.zeus-tile-untracked {
-  margin-top: auto;
-  padding-top: 0.35rem;
-  color: #d2d3d4;
-  font-size: 0.66rem;
-  line-height: 1.3;
-}
+.zeus-selection-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0.8rem 0; }
+.zeus-selection-toolbar button { padding: 0.5rem 0.8rem; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); color: var(--text); cursor: pointer; }
+.zeus-selection-toolbar strong { font-size: 0.8rem; }
+.zeus-pip-settings .maple-support-note { margin-top: 0.6rem; }
+.zeus-pip-settings .zeus-clock { margin: 0.8rem 0 0; }
+.zeus-pip-settings button:disabled { opacity: 0.5; cursor: not-allowed; }
+.zeus-rift-card { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; padding: 1rem; border: 1px solid var(--line); border-radius: 5px; font-size: 0.85rem; }
+.zeus-rift-card b { font: 800 1.2rem Consolas, monospace; }
 
 .zeus-hero-visual::before,
 .zeus-hero-visual::after {
@@ -431,9 +467,6 @@ body[data-page="zeus-boss-timer"] .maple-timer-shell {
     grid-template-columns: 1fr;
   }
 
-  .zeus-boss-tile {
-    min-height: 150px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
