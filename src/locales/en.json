@@ -4116,7 +4116,7 @@
   "tools.zeus-boss-timer.text.0069": "Zahab",
   "tools.zeus-boss-timer.text.0070": "Tartarus",
   "tools.zeus-boss-timer.text.0071": "Complete boss list",
-  "tools.zeus-boss-timer.text.0072": "Check every boss name, level, location, and schedule, then set individual timers.",
+  "tools.zeus-boss-timer.text.0072": "Sorted by shortest remaining time, with bosses whose time is not set at the end.",
   "tools.zeus-boss-timer.text.0073": "All times use Korea Standard Time (KST)",
   "tools.zeus-boss-timer.attr.aria-label.0017": "Complete boss list",
   "tools.zeus-boss-timer.ui.pipSettings": "PIP display settings",
@@ -4152,7 +4152,7 @@
   "tools.zeus-boss-timer.ui.pipSupported": "Open PIP to display selected boss images and timers in a small, always-on-top window.",
   "tools.zeus-boss-timer.ui.pipFallback": "This browser opens a separate small window. Always-on-top PIP is available in desktop Chrome or Edge.",
   "tools.zeus-boss-timer.ui.openPopup": "Open small window",
-  "tools.zeus-boss-timer.ui.pipHint": "Change boss selection and timers on the original page.",
+  "tools.zeus-boss-timer.ui.pipHint": "Soonest first; unset timers last. Change boss selection and timers on the original page.",
   "tools.zeus-boss-timer.ui.selectHint": "Select bosses for PIP on the original page.",
   "tools.zeus-boss-timer.ui.pipError": "Could not open the small window. Check your browser popup permissions."
 }

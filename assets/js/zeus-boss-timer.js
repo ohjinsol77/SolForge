@@ -103,7 +103,7 @@
 
   function render() {
     const now = Date.now();
-    const states = BOSSES.concat(RIFTS).map((boss) => getState(boss, now));
+    const states = BOSSES.concat(RIFTS).map((boss) => getState(boss, now)).sort(compareRemaining);
     for (const state of states) {
       const card = state.boss.hour === undefined ? $(`[data-zeus-boss-id="${state.boss.id}"]`, els.directory) : $(`[data-zeus-event="${state.boss.id}"]`, els.list);
       $("[data-next-time]", card).textContent = state.target === null ? text("enterTime") : formatDate(new Date(state.target));
@@ -113,6 +113,8 @@
       const row = $("[data-schedule]", card);
       if (row) row.textContent = state.manual ? text("customSchedule") : schedule(state.boss);
     }
+    orderCards(els.directory, states.filter((state) => state.boss.hour === undefined), "data-zeus-boss-id");
+    orderCards(els.list, states.filter((state) => state.boss.hour !== undefined), "data-zeus-event");
     els.clock.textContent = `${formatDate(new Date(now))} KST`;
     const picked = states.filter((state) => state.boss.hour === undefined ? selected.has(state.boss.id) : els.rifts.checked);
     els.selection.textContent = `${text("selected")} ${picked.length} · ${text("ready")} ${picked.filter((state) => state.target !== null).length}`;
@@ -120,6 +122,24 @@
     checkAlarms(picked, now);
     updatePip(picked);
     lastTick = now;
+  }
+
+  function compareRemaining(a, b) {
+    if (a.diff === null) return b.diff === null ? 0 : 1;
+    if (b.diff === null) return -1;
+    return Math.max(0, a.diff) - Math.max(0, b.diff);
+  }
+
+  function orderCards(container, states, attribute) {
+    const focused = container.contains(container.ownerDocument.activeElement) ? container.ownerDocument.activeElement : null;
+    states.forEach((state, index) => {
+      const card = container.querySelector(`[${attribute}="${state.boss.id}"]`);
+      const current = container.children[index] || null;
+      if (card === current) return;
+      if (typeof container.moveBefore === "function") container.moveBefore(card, current);
+      else container.insertBefore(card, current);
+    });
+    if (focused && focused !== container.ownerDocument.activeElement) focused.focus({ preventScroll: true });
   }
 
   function handleChange(event) {
@@ -213,11 +233,12 @@
     if (!pipWindow || pipWindow.closed) return;
     const list = pipWindow.document.getElementById("pipZeusList");
     if (!list) return;
-    const key = states.map((state) => state.boss.id).join("|");
+    const key = states.map((state) => state.boss.id).sort().join("|");
     if (pipKey !== key) {
       list.innerHTML = states.length ? states.map(({ boss }) => `<article data-pip-id="${boss.id}">${boss.hour === undefined ? `<img src="${imageUrl(boss)}" alt="">` : '<span class="pip-rift" aria-hidden="true">⚡</span>'}<div><strong>${choose(boss.title)}</strong><small>${boss.level ? `${choose(boss.level)} · ` : ""}${choose(boss.place)}</small><small data-pip-schedule></small><small data-pip-time></small><b data-pip-countdown></b></div></article>`).join("") : `<p>${text("selectHint")}</p>`;
       pipKey = key;
     }
+    orderCards(list, states, "data-pip-id");
     for (const state of states) {
       const card = list.querySelector(`[data-pip-id="${state.boss.id}"]`);
       $("[data-pip-schedule]", card).textContent = state.manual ? text("customSchedule") : schedule(state.boss);

@@ -4124,7 +4124,7 @@
   "tools.zeus-boss-timer.text.0069": "자하브",
   "tools.zeus-boss-timer.text.0070": "타르타로스",
   "tools.zeus-boss-timer.text.0071": "전체 보스 목록",
-  "tools.zeus-boss-timer.text.0072": "이름·레벨·장소·일정을 확인하고 보스별 타이머를 설정하세요.",
+  "tools.zeus-boss-timer.text.0072": "남은 시간이 짧은 순으로 표시하며, 시간 미설정 보스는 맨 뒤에 배치합니다.",
   "tools.zeus-boss-timer.text.0073": "모든 시각은 한국 시간(KST) 기준",
   "tools.zeus-boss-timer.attr.aria-label.0017": "전체 보스 목록",
   "tools.zeus-boss-timer.ui.pipSettings": "PIP 표시 설정",
@@ -4160,7 +4160,7 @@
   "tools.zeus-boss-timer.ui.pipSupported": "PIP 열기를 누르면 선택한 보스의 이미지와 타이머가 항상 위에 표시되는 작은 창으로 열립니다.",
   "tools.zeus-boss-timer.ui.pipFallback": "이 브라우저에서는 별도의 작은 창으로 열립니다. 항상 위에 고정되는 PIP는 PC Chrome 또는 Edge에서 사용할 수 있습니다.",
   "tools.zeus-boss-timer.ui.openPopup": "작은 창 열기",
-  "tools.zeus-boss-timer.ui.pipHint": "원래 페이지에서 보스 선택과 시간을 변경할 수 있습니다.",
+  "tools.zeus-boss-timer.ui.pipHint": "남은 시간순 · 미설정은 맨 뒤. 보스 선택과 시간은 원래 페이지에서 변경하세요.",
   "tools.zeus-boss-timer.ui.selectHint": "원래 페이지에서 PIP에 표시할 보스를 선택하세요.",
   "tools.zeus-boss-timer.ui.pipError": "작은 창을 열지 못했습니다. 브라우저의 팝업 허용 설정을 확인하세요."
 }
