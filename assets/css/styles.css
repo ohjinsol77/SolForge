@@ -1683,6 +1683,218 @@ th {
   background: color-mix(in srgb, var(--surface-soft) 65%, transparent);
 }
 
+.arena-ranking,
+.arena-methodology {
+  min-width: 0;
+}
+
+.arena-section-heading,
+.arena-toolbar,
+.arena-controls,
+.arena-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.arena-section-heading {
+  margin: 1.25rem 0 0.9rem;
+}
+
+.arena-section-heading h2 {
+  margin: 0.2rem 0 0;
+}
+
+.arena-tabs-wrap {
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.arena-group-tabs,
+.arena-subtabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.arena-group-tabs button,
+.arena-subtabs button {
+  flex: 0 0 auto;
+  min-height: 42px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.arena-group-tabs button[aria-selected="true"] {
+  border-color: #176b59;
+  background: #176b59;
+  color: #fff;
+}
+
+.arena-subtabs {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+}
+
+.arena-subtabs button {
+  min-height: 36px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+.arena-subtabs button[aria-selected="true"] {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: var(--accent-soft);
+}
+
+.arena-toolbar {
+  margin: 1rem 0 0.55rem;
+  padding: 0.9rem 0.2rem;
+}
+
+.arena-data-summary {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.arena-data-summary span {
+  font-weight: 750;
+}
+
+.arena-data-summary small,
+.arena-model-name + small,
+.arena-score small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.arena-controls {
+  justify-content: flex-end;
+}
+
+.arena-controls input {
+  width: min(280px, 40vw);
+}
+
+.arena-status {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  background: var(--surface-soft);
+}
+
+.arena-status[data-state="error"] {
+  color: var(--danger, #b42318);
+}
+
+.arena-table-wrap {
+  margin-top: 0.7rem;
+}
+
+.arena-table {
+  min-width: 760px;
+}
+
+.arena-table th,
+.arena-table td {
+  vertical-align: middle;
+}
+
+.arena-table tbody th {
+  min-width: 220px;
+  text-align: left;
+}
+
+.arena-model-name,
+.arena-model-name + small,
+.arena-score small {
+  display: block;
+}
+
+.arena-model-name + small {
+  margin-top: 0.2rem;
+  font-weight: 400;
+}
+
+.arena-rank,
+.arena-score {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.arena-score small {
+  margin-top: 0.2rem;
+}
+
+.arena-pagination {
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.arena-pagination span {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.arena-attribution {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.arena-hero-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  gap: 0.7rem;
+}
+
+.arena-hero-panel .metric-card strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .arena-section-heading,
+  .arena-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .arena-controls {
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .arena-controls input {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .arena-controls button {
+    width: 100%;
+  }
+
+  .arena-hero-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .notice-card {
   display: flex;
   justify-content: space-between;
