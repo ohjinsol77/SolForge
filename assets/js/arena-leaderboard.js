@@ -20,8 +20,7 @@
     agent_bash_reliability_no_prereq: "사전 조건 없는 터미널 신뢰도", agent_praise_complaint: "칭찬·불만 처리", agent_steerability: "지시 반영 능력",
     agent_task_outcome_explicit: "작업 완료 여부", agent_tool_hallucination: "도구 사용 정확도"
   };
-  const PAGE_SIZE = 25;
-  const state = { data: null, group: "text", config: "text", page: 1, query: "", busy: false };
+  const state = { data: null, group: "text", config: "text", query: "", busy: false };
   const $ = (selector) => document.querySelector(selector);
   const lang = document.documentElement.lang === "en" ? "en" : "ko";
   const numberFormat = new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 });
@@ -50,7 +49,6 @@
     $("#arenaSubTabs").innerHTML = group.configs.map((config) => `<button type="button" role="tab" aria-selected="${config === state.config}" aria-controls="arenaTableWrap" data-arena-config="${config}">${escapeHtml(text(CONFIG_LABELS[config]))}</button>`).join("");
     $("#arenaSubTabs").querySelectorAll("[data-arena-config]").forEach((button) => button.addEventListener("click", () => {
       state.config = button.dataset.arenaConfig;
-      state.page = 1;
       renderSubTabs();
       renderRows();
     }));
@@ -60,7 +58,6 @@
     if (!GROUPS.some((group) => group.id === id)) return;
     state.group = id;
     state.config = GROUPS.find((group) => group.id === id).configs[0];
-    state.page = 1;
     renderGroupTabs();
     renderRows();
   }
@@ -68,17 +65,9 @@
   function bindEvents() {
     $("#arenaSearch").addEventListener("input", (event) => {
       state.query = event.target.value.trim().toLocaleLowerCase(lang);
-      state.page = 1;
       renderRows();
     });
     $("#arenaReload").addEventListener("click", () => loadData());
-    $("#arenaPagination").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-arena-page]");
-      if (!button || button.disabled) return;
-      state.page = Number(button.dataset.arenaPage);
-      renderRows();
-      $("#arenaRankingTitle").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   }
 
   async function loadData() {
@@ -109,16 +98,12 @@
       const content = `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase(lang);
       return content.includes(state.query);
     });
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    state.page = Math.min(state.page, totalPages);
-    const pageRows = filtered.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
     $("#arenaDatasetName").textContent = text(CONFIG_LABELS[state.config]);
     $("#arenaModelCount").textContent = numberFormat.format(filtered.length);
-    $("#arenaRows").innerHTML = pageRows.map(renderRow).join("");
-    $("#arenaTableWrap").hidden = !pageRows.length;
+    $("#arenaRows").innerHTML = filtered.map(renderRow).join("");
+    $("#arenaTableWrap").hidden = !filtered.length;
     if (!state.data) return;
-    setStatus(pageRows.length ? "" : text(state.query ? "검색 결과가 없습니다." : "이 순위에 표시할 항목이 없습니다."), pageRows.length ? "ready" : "empty");
-    renderPagination(totalPages);
+    setStatus(filtered.length ? "" : text(state.query ? "검색 결과가 없습니다." : "이 순위에 표시할 항목이 없습니다."), filtered.length ? "ready" : "empty");
   }
 
   function renderRow(row) {
@@ -130,18 +115,7 @@
       ? `<small>${escapeHtml(text("95% 신뢰 구간"))} ${numberFormat.format(Number(low))}–${numberFormat.format(Number(high))}</small>`
       : "";
     const sampleLabel = row.vote_count != null ? text("표") : row.observation_count != null ? text("관측") : text("세션");
-    return `<tr><td class="arena-rank">${escapeHtml(row.rank ?? "—")}</td><th scope="row"><span class="arena-model-name">${escapeHtml(row.model_name || "—")}</span><small>${escapeHtml(row.license || text("라이선스 정보 없음"))}</small></th><td>${escapeHtml(row.organization || "—")}</td><td class="arena-score">${score == null ? "—" : numberFormat.format(Number(score))}${interval}</td><td>${sample == null ? "—" : `${numberFormat.format(Number(sample))} ${escapeHtml(sampleLabel)}`}</td><td>${escapeHtml(row.license || "—")}</td></tr>`;
-  }
-
-  function renderPagination(totalPages) {
-    const root = $("#arenaPagination");
-    if (totalPages <= 1) {
-      root.innerHTML = "";
-      return;
-    }
-    const previous = Math.max(1, state.page - 1);
-    const next = Math.min(totalPages, state.page + 1);
-    root.innerHTML = `<button type="button" class="ghost-button" data-arena-page="${previous}" ${state.page === 1 ? "disabled" : ""}>${escapeHtml(text("이전"))}</button><span>${escapeHtml(text("페이지"))} ${state.page} / ${totalPages}</span><button type="button" class="ghost-button" data-arena-page="${next}" ${state.page === totalPages ? "disabled" : ""}>${escapeHtml(text("다음"))}</button>`;
+    return `<tr><td class="arena-rank" data-label="${escapeHtml(text("순위"))}">${escapeHtml(row.rank ?? "—")}</td><th scope="row" data-label="${escapeHtml(text("모델"))}"><span class="arena-model-name">${escapeHtml(row.model_name || "—")}</span><small>${escapeHtml(row.license || text("라이선스 정보 없음"))}</small></th><td data-label="${escapeHtml(text("개발사"))}">${escapeHtml(row.organization || "—")}</td><td class="arena-score" data-label="${escapeHtml(text("점수"))}">${score == null ? "—" : numberFormat.format(Number(score))}${interval}</td><td data-label="${escapeHtml(text("평가 수"))}">${sample == null ? "—" : `${numberFormat.format(Number(sample))} ${escapeHtml(sampleLabel)}`}</td><td data-label="${escapeHtml(text("라이선스"))}">${escapeHtml(row.license || "—")}</td></tr>`;
   }
 
   function setStatus(message, type) {

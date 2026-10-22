@@ -1690,8 +1690,7 @@ th {
 
 .arena-section-heading,
 .arena-toolbar,
-.arena-controls,
-.arena-pagination {
+.arena-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1805,24 +1804,26 @@ th {
 
 .arena-table-wrap {
   max-width: 100%;
+  max-height: none;
   margin-top: 0.7rem;
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
 }
 
 .arena-table {
-  min-width: 760px;
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
 }
 
 .arena-table th,
 .arena-table td {
   vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .arena-table tbody th {
-  min-width: 220px;
+  min-width: 0;
   text-align: left;
 }
 
@@ -1840,21 +1841,11 @@ th {
 .arena-rank,
 .arena-score {
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 .arena-score small {
   margin-top: 0.2rem;
-}
-
-.arena-pagination {
-  justify-content: center;
-  margin: 1rem 0;
-}
-
-.arena-pagination span {
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  white-space: normal;
 }
 
 .arena-attribution {
@@ -1897,6 +1888,74 @@ th {
 
   .arena-hero-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .arena-table,
+  .arena-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .arena-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .arena-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.8rem;
+    margin-bottom: 0.75rem;
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  .arena-table tbody th,
+  .arena-table tbody td {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.35rem 0;
+    border: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .arena-table tbody th::before,
+  .arena-table tbody td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 750;
+  }
+
+  .arena-table tbody th {
+    grid-column: 1 / -1;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .arena-table tbody td.arena-rank {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-column: 1 / -1;
+    justify-self: start;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: 0.45rem;
+    background: var(--surface-soft);
   }
 }
 
