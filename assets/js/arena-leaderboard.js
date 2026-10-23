@@ -3,7 +3,8 @@
 
   const GROUPS = [
     { id: "text", label: "대화", configs: ["text", "text_style_control", "text_factuality"] },
-    { id: "coding", label: "코딩", configs: ["webdev"] },
+    { id: "coding", label: "코딩", configs: ["coding"] },
+    { id: "webdev", label: "웹 개발", configs: ["webdev"] },
     { id: "vision", label: "비전·문서", configs: ["vision", "vision_style_control", "document", "document_style_control"] },
     { id: "search", label: "검색", configs: ["search", "search_style_control", "search_factuality"] },
     { id: "image", label: "이미지", configs: ["text_to_image", "image_edit"] },
@@ -11,6 +12,7 @@
     { id: "agent", label: "에이전트", configs: ["agent", "agent_bash_recovery_steps", "agent_bash_reliability", "agent_bash_reliability_no_prereq", "agent_praise_complaint", "agent_steerability", "agent_task_outcome_explicit", "agent_tool_hallucination"] }
   ];
   const CONFIG_LABELS = {
+    coding: "코딩", webdev: "웹 개발",
     text: "일반 대화", text_style_control: "문체 제어", text_factuality: "사실성",
     webdev: "웹 개발", vision: "이미지 이해", vision_style_control: "문체 제어", document: "문서 이해", document_style_control: "문서 문체 제어",
     search: "웹 검색", search_style_control: "문체 제어", search_factuality: "사실성",
