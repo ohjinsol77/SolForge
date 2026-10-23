@@ -48,7 +48,7 @@ export default {
     if (event.cron === "17 19 * * *") ctx.waitUntil(cleanup(env));
     if (event.cron === ARENA_REFRESH_CRON) ctx.waitUntil(refreshArenaSnapshot(env));
   },
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const analytics = await handleAnalytics(request, env);
     if (analytics) return analytics;
     const url = new URL(request.url);
@@ -61,11 +61,21 @@ export default {
       return Response.redirect(canonicalUrl, 301);
     }
     if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, url, env);
+    if (url.pathname === "/api/arena-refresh") return arenaRefresh(request, env, ctx);
     if (url.pathname === "/api/yahoo-chart") return yahooChart(request, url);
     if (url.pathname.startsWith("/api/crypto/")) return cryptoData(request, url);
     return env.ASSETS.fetch(request);
   }
 };
+
+async function arenaRefresh(request, env, ctx) {
+  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, { Allow: "POST" });
+  const expected = env.ARENA_REFRESH_TOKEN;
+  const provided = request.headers.get("authorization") || "";
+  if (!expected || provided !== `Bearer ${expected}`) return json({ error: "Unauthorized." }, 401);
+  ctx.waitUntil(refreshArenaSnapshot(env));
+  return json({ status: "refresh_started" }, 202);
+}
 
 async function arenaLeaderboard(request, url, env) {
   if (request.method !== "GET") {
