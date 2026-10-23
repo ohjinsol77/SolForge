@@ -70,7 +70,7 @@ export default {
 
 async function arenaRefresh(request, env, ctx) {
   if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, { Allow: "POST" });
-  const expected = env.ARENA_REFRESH_TOKEN;
+  const expected = String(env.ARENA_REFRESH_TOKEN || "").trim();
   const provided = request.headers.get("authorization") || "";
   if (!expected || provided !== `Bearer ${expected}`) return json({ error: "Unauthorized." }, 401);
   ctx.waitUntil(refreshArenaSnapshot(env));
