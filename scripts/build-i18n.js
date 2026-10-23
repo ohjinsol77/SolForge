@@ -455,7 +455,7 @@ function transformJsForRuntimeI18n(map) {
 function renderFile(file, lang) {
   let html = readText(file);
   html = html.replace(/assets\/js\/app\.js(?:\?v=[^"]*)?/g, "assets/js/app.js?v=20260803-categories");
-  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20260811-gamertag");
+  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20261023-arena-pages");
   html = removeAdSenseCode(html);
   if (!AD_FREE_FILES.has(file)) html = insertCoupangAd(html, lang);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);

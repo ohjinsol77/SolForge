@@ -4181,7 +4181,7 @@
   "tools.arena-leaderboard.text.search-placeholder": "Search a model or organization",
   "tools.arena-leaderboard.text.reload": "Reload rankings",
   "tools.arena-leaderboard.text.loading": "Checking the latest public rankings.",
-  "tools.arena-leaderboard.text.attribution": "Rankings and scores come from Arena's public dataset. Every leaderboard shows its top 30 entries; evaluation methods and sample sizes vary by category.",
+  "tools.arena-leaderboard.text.attribution": "Rankings and scores come from Arena's public dataset. Each leaderboard includes all available entries, shown 30 per page; evaluation methods and sample sizes vary by category.",
   "tools.arena-leaderboard.text.method-eyebrow": "ABOUT THE RANKINGS",
   "tools.arena-leaderboard.text.method-title": "About the rankings and data",
   "tools.arena-leaderboard.text.method-live-title": "Human preference votes",

@@ -20,7 +20,8 @@
     agent_bash_reliability_no_prereq: "사전 조건 없는 터미널 신뢰도", agent_praise_complaint: "칭찬·불만 처리", agent_steerability: "지시 반영 능력",
     agent_task_outcome_explicit: "작업 완료 여부", agent_tool_hallucination: "도구 사용 정확도"
   };
-  const state = { data: null, group: "text", config: "text", query: "", busy: false };
+  const PAGE_SIZE = 30;
+  const state = { data: null, group: "text", config: "text", page: 1, query: "", requestId: 0 };
   const $ = (selector) => document.querySelector(selector);
   const lang = document.documentElement.lang === "en" ? "en" : "ko";
   const numberFormat = new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 });
@@ -49,8 +50,9 @@
     $("#arenaSubTabs").innerHTML = group.configs.map((config) => `<button type="button" role="tab" aria-selected="${config === state.config}" aria-controls="arenaTableWrap" data-arena-config="${config}">${escapeHtml(text(CONFIG_LABELS[config]))}</button>`).join("");
     $("#arenaSubTabs").querySelectorAll("[data-arena-config]").forEach((button) => button.addEventListener("click", () => {
       state.config = button.dataset.arenaConfig;
+      state.page = 1;
       renderSubTabs();
-      renderRows();
+      loadData(1);
     }));
   }
 
@@ -58,8 +60,9 @@
     if (!GROUPS.some((group) => group.id === id)) return;
     state.group = id;
     state.config = GROUPS.find((group) => group.id === id).configs[0];
+    state.page = 1;
     renderGroupTabs();
-    renderRows();
+    loadData(1);
   }
 
   function bindEvents() {
@@ -68,42 +71,54 @@
       renderRows();
     });
     $("#arenaReload").addEventListener("click", () => loadData());
+    $("#arenaPagination").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-arena-page]");
+      const page = Number(button?.dataset.arenaPage);
+      if (!Number.isSafeInteger(page) || page < 1 || page === state.page) return;
+      loadData(page);
+      $("#arenaRankingTitle").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
-  async function loadData() {
-    if (state.busy) return;
-    state.busy = true;
+  async function loadData(page = state.page) {
+    const requestId = ++state.requestId;
+    const config = state.config;
+    state.page = page;
     setStatus(text("최신 공개 순위를 확인하고 있습니다."), "loading");
+    $("#arenaTableWrap").hidden = true;
+    $("#arenaPagination").hidden = true;
     $("#arenaReload").disabled = true;
     try {
-      const response = await fetch("/api/arena-leaderboard", { headers: { accept: "application/json" }, cache: "no-store" });
+      const query = new URLSearchParams({ config, page: String(page) });
+      const response = await fetch(`/api/arena-leaderboard?${query}`, { headers: { accept: "application/json" }, cache: "no-store" });
       const payload = await response.json();
-      if (!response.ok || !payload?.configs) throw new Error(payload?.error || "Arena 데이터를 불러오지 못했습니다.");
+      if (!response.ok || !Array.isArray(payload?.rows)) throw new Error(payload?.error || "Arena 데이터를 불러오지 못했습니다.");
+      if (requestId !== state.requestId) return;
       state.data = payload;
-      const dates = Object.values(payload.configs).flat().map((row) => row.leaderboard_publish_date).filter(Boolean).sort();
+      const dates = payload.rows.map((row) => row.leaderboard_publish_date).filter(Boolean).sort();
       $("#arenaSourceDate").textContent = dates.at(-1) ? formatDate(dates.at(-1)) : "—";
       $("#arenaUpdatedAt").textContent = `${text("SolForge 확인 시각")}: ${formatDateTime(payload.fetchedAt)}`;
       renderRows();
     } catch (error) {
-      setStatus(text(error.message || "순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."), "error");
+      if (requestId === state.requestId) setStatus(text(error.message || "순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."), "error");
     } finally {
-      state.busy = false;
-      $("#arenaReload").disabled = false;
+      if (requestId === state.requestId) $("#arenaReload").disabled = false;
     }
   }
 
   function renderRows() {
-    const rows = Array.isArray(state.data?.configs?.[state.config]) ? state.data.configs[state.config] : [];
+    const rows = Array.isArray(state.data?.rows) ? state.data.rows : [];
     const filtered = rows.filter((row) => {
       const content = `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase(lang);
       return content.includes(state.query);
     });
     $("#arenaDatasetName").textContent = text(CONFIG_LABELS[state.config]);
-    $("#arenaModelCount").textContent = numberFormat.format(filtered.length);
+    $("#arenaModelCount").textContent = state.data ? numberFormat.format(state.data.totalRows) : "—";
     $("#arenaRows").innerHTML = filtered.map(renderRow).join("");
     $("#arenaTableWrap").hidden = !filtered.length;
     if (!state.data) return;
     setStatus(filtered.length ? "" : text(state.query ? "검색 결과가 없습니다." : "이 순위에 표시할 항목이 없습니다."), filtered.length ? "ready" : "empty");
+    renderPagination(Math.ceil((Number(state.data.totalRows) || 0) / PAGE_SIZE));
   }
 
   function renderRow(row) {
@@ -116,6 +131,25 @@
       : "";
     const sampleLabel = row.vote_count != null ? text("표") : row.observation_count != null ? text("관측") : text("세션");
     return `<tr><td class="arena-rank" data-label="${escapeHtml(text("순위"))}">${escapeHtml(row.rank ?? "—")}</td><th scope="row" data-label="${escapeHtml(text("모델"))}"><span class="arena-model-name">${escapeHtml(row.model_name || "—")}</span><small>${escapeHtml(row.license || text("라이선스 정보 없음"))}</small></th><td data-label="${escapeHtml(text("개발사"))}">${escapeHtml(row.organization || "—")}</td><td class="arena-score" data-label="${escapeHtml(text("점수"))}">${score == null ? "—" : numberFormat.format(Number(score))}${interval}</td><td data-label="${escapeHtml(text("평가 수"))}">${sample == null ? "—" : `${numberFormat.format(Number(sample))} ${escapeHtml(sampleLabel)}`}</td><td data-label="${escapeHtml(text("라이선스"))}">${escapeHtml(row.license || "—")}</td></tr>`;
+  }
+
+  function renderPagination(totalPages) {
+    const root = $("#arenaPagination");
+    if (totalPages <= 1) {
+      root.innerHTML = "";
+      root.hidden = true;
+      return;
+    }
+    const start = Math.max(2, state.page - 2);
+    const end = Math.min(totalPages - 1, state.page + 2);
+    const pages = totalPages <= 7
+      ? Array.from({ length: totalPages }, (_, index) => index + 1)
+      : [1, ...(start > 2 ? ["ellipsis-start"] : []), ...Array.from({ length: end - start + 1 }, (_, index) => start + index), ...(end < totalPages - 1 ? ["ellipsis-end"] : []), totalPages];
+    root.innerHTML = pages.map((page) => {
+      if (typeof page !== "number") return '<span class="arena-page-ellipsis" aria-hidden="true">…</span>';
+      return `<button type="button" class="arena-page-button" data-arena-page="${page}" aria-label="${escapeHtml(text("페이지"))} ${page}" ${page === state.page ? 'aria-current="page"' : ""}>${page}</button>`;
+    }).join("");
+    root.hidden = false;
   }
 
   function setStatus(message, type) {

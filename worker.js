@@ -43,7 +43,6 @@ const BINANCE_COINS = [
 
 export default {
   async scheduled(event, env, ctx) {
-    if (event.cron === "0 */2 * * *") ctx.waitUntil(refreshArenaLeaderboard(env));
     if (event.cron === "17 19 * * *") ctx.waitUntil(cleanup(env));
   },
   async fetch(request, env) {
@@ -58,84 +57,53 @@ export default {
       canonicalUrl.port = "";
       return Response.redirect(canonicalUrl, 301);
     }
-    if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, env);
+    if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, url);
     if (url.pathname === "/api/yahoo-chart") return yahooChart(request, url);
     if (url.pathname.startsWith("/api/crypto/")) return cryptoData(request, url);
     return env.ASSETS.fetch(request);
   }
 };
 
-async function arenaLeaderboard(request, env) {
+async function arenaLeaderboard(request, url) {
   if (request.method !== "GET") {
     return json({ error: "Method not allowed." }, 405, { Allow: "GET" });
   }
-  if (!env.ANALYTICS_DB) return json({ error: "Leaderboard storage is unavailable." }, 503);
-
-  try {
-    let cached = await env.ANALYTICS_DB.prepare(
-      "SELECT payload, updated_at FROM arena_leaderboard_cache WHERE id=1"
-    ).first();
-    if (!cached) {
-      await refreshArenaLeaderboard(env);
-      cached = await env.ANALYTICS_DB.prepare(
-        "SELECT payload, updated_at FROM arena_leaderboard_cache WHERE id=1"
-      ).first();
-    }
-    if (!cached) return json({ error: "Arena data is temporarily unavailable." }, 502);
-    return json(JSON.parse(cached.payload), 200, {
-      "Cache-Control": "public, max-age=300, s-maxage=300",
-      "X-Data-Updated-At": String(cached.updated_at)
-    });
-  } catch (_error) {
-    return json({ error: "Arena data is temporarily unavailable." }, 503);
+  const config = url.searchParams.get("config") || "text";
+  const page = Number(url.searchParams.get("page") || "1");
+  const pageSize = 30;
+  if (!ARENA_CONFIGS.includes(config)) return json({ error: "Unknown Arena ranking category." }, 400);
+  if (!Number.isSafeInteger(page) || page < 1 || page > 100_000) {
+    return json({ error: "Invalid leaderboard page." }, 400);
   }
-}
 
-async function refreshArenaLeaderboard(env) {
-  if (!env.ANALYTICS_DB) throw new Error("Leaderboard storage is unavailable.");
-  const rowsByConfig = {};
-  let nextConfig = 0;
-  const workers = Array.from({ length: 6 }, async () => {
-    while (nextConfig < ARENA_CONFIGS.length) {
-      const config = ARENA_CONFIGS[nextConfig++];
-      rowsByConfig[config] = await fetchArenaConfig(config);
-    }
-  });
-  await Promise.all(workers);
-
-  const snapshot = {
-    source: "Arena Leaderboard Dataset",
-    sourceUrl: "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
-    fetchedAt: new Date().toISOString(),
-    configs: rowsByConfig
-  };
-  const updatedAt = Math.floor(Date.now() / 1000);
-  await env.ANALYTICS_DB.prepare(
-    "INSERT INTO arena_leaderboard_cache (id, payload, updated_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload, updated_at=excluded.updated_at"
-  ).bind(JSON.stringify(snapshot), updatedAt).run();
-  return snapshot;
-}
-
-async function fetchArenaConfig(config) {
   const upstream = new URL("https://datasets-server.huggingface.co/rows");
   upstream.searchParams.set("dataset", ARENA_DATASET);
   upstream.searchParams.set("config", config);
   upstream.searchParams.set("split", "latest");
-  upstream.searchParams.set("offset", "0");
-  // Arena's text leaderboard alone contains more than 11,000 rows. Fetching
-  // every page exceeds a Worker invocation's outbound-request budget, so keep
-  // the current top 30 for each ranking configuration (the dataset is rank-sorted).
-  upstream.searchParams.set("length", "30");
-  const response = await fetch(upstream, {
-    headers: { accept: "application/json" },
-    signal: AbortSignal.timeout(15000)
-  });
-  if (!response.ok) throw new Error(`Arena dataset returned HTTP ${response.status}.`);
-  const page = await response.json();
-  if (!Array.isArray(page.rows)) throw new Error("Arena dataset response was invalid.");
-  return page.rows
-    .map((entry) => entry?.row)
-    .filter((row) => row && typeof row === "object");
+  upstream.searchParams.set("offset", String((page - 1) * pageSize));
+  upstream.searchParams.set("length", String(pageSize));
+  try {
+    const response = await fetch(upstream, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(15000),
+      cf: { cacheEverything: true, cacheTtl: 7200 }
+    });
+    if (!response.ok) throw new Error(`Arena dataset returned HTTP ${response.status}.`);
+    const result = await response.json();
+    if (!Array.isArray(result.rows)) throw new Error("Arena dataset response was invalid.");
+    return json({
+      source: "Arena Leaderboard Dataset",
+      sourceUrl: "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      fetchedAt: new Date().toISOString(),
+      config,
+      page,
+      pageSize,
+      totalRows: Number(result.num_rows_total) || 0,
+      rows: result.rows.map((entry) => entry?.row).filter((row) => row && typeof row === "object")
+    }, 200, { "Cache-Control": "public, max-age=300, s-maxage=7200" });
+  } catch (_error) {
+    return json({ error: "Arena data is temporarily unavailable." }, 503);
+  }
 }
 
 async function yahooChart(request, url) {
