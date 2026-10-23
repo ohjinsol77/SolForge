@@ -60,14 +60,14 @@ export default {
       canonicalUrl.port = "";
       return Response.redirect(canonicalUrl, 301);
     }
-    if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, url);
+    if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, url, env);
     if (url.pathname === "/api/yahoo-chart") return yahooChart(request, url);
     if (url.pathname.startsWith("/api/crypto/")) return cryptoData(request, url);
     return env.ASSETS.fetch(request);
   }
 };
 
-async function arenaLeaderboard(request, url) {
+async function arenaLeaderboard(request, url, env) {
   if (request.method !== "GET") {
     return json({ error: "Method not allowed." }, 405, { Allow: "GET" });
   }
