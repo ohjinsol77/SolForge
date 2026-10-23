@@ -101,7 +101,8 @@ async function arenaLeaderboard(request, url) {
       query: search,
       rows: matched.slice(start, start + pageSize)
     }, 200, { "Cache-Control": "public, max-age=300, s-maxage=7200" });
-  } catch (_error) {
+  } catch (error) {
+    console.error("Arena snapshot read failed.", error);
     return json({ error: "Arena data is temporarily unavailable." }, 503);
   }
 }
