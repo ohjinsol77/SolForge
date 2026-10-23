@@ -66,9 +66,12 @@
   }
 
   function bindEvents() {
+    let searchTimer;
     $("#arenaSearch").addEventListener("input", (event) => {
-      state.query = event.target.value.trim().toLocaleLowerCase(lang);
-      renderRows();
+      state.query = event.target.value.trim();
+      state.page = 1;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadData(1), 300);
     });
     $("#arenaReload").addEventListener("click", () => loadData());
     $("#arenaPagination").addEventListener("click", (event) => {
@@ -90,6 +93,7 @@
     $("#arenaReload").disabled = true;
     try {
       const query = new URLSearchParams({ config, page: String(page) });
+      if (state.query) query.set("q", state.query);
       const response = await fetch(`/api/arena-leaderboard?${query}`, { headers: { accept: "application/json" }, cache: "no-store" });
       const payload = await response.json();
       if (!response.ok || !Array.isArray(payload?.rows)) throw new Error(payload?.error || "Arena 데이터를 불러오지 못했습니다.");
@@ -108,16 +112,12 @@
 
   function renderRows() {
     const rows = Array.isArray(state.data?.rows) ? state.data.rows : [];
-    const filtered = rows.filter((row) => {
-      const content = `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase(lang);
-      return content.includes(state.query);
-    });
     $("#arenaDatasetName").textContent = text(CONFIG_LABELS[state.config]);
     $("#arenaModelCount").textContent = state.data ? numberFormat.format(state.data.totalRows) : "—";
-    $("#arenaRows").innerHTML = filtered.map(renderRow).join("");
-    $("#arenaTableWrap").hidden = !filtered.length;
+    $("#arenaRows").innerHTML = rows.map(renderRow).join("");
+    $("#arenaTableWrap").hidden = !rows.length;
     if (!state.data) return;
-    setStatus(filtered.length ? "" : text(state.query ? "검색 결과가 없습니다." : "이 순위에 표시할 항목이 없습니다."), filtered.length ? "ready" : "empty");
+    setStatus(rows.length ? "" : text(state.query ? "검색 결과가 없습니다." : "이 순위에 표시할 항목이 없습니다."), rows.length ? "ready" : "empty");
     renderPagination(Math.ceil((Number(state.data.totalRows) || 0) / PAGE_SIZE));
   }
 

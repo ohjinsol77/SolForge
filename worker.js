@@ -70,18 +70,20 @@ async function arenaLeaderboard(request, url) {
   }
   const config = url.searchParams.get("config") || "text";
   const page = Number(url.searchParams.get("page") || "1");
+  const search = (url.searchParams.get("q") || "").trim().slice(0, 120);
   const pageSize = 30;
   if (!ARENA_CONFIGS.includes(config)) return json({ error: "Unknown Arena ranking category." }, 400);
   if (!Number.isSafeInteger(page) || page < 1 || page > 100_000) {
     return json({ error: "Invalid leaderboard page." }, 400);
   }
 
-  const upstream = new URL("https://datasets-server.huggingface.co/rows");
+  const upstream = new URL(`https://datasets-server.huggingface.co/${search ? "search" : "rows"}`);
   upstream.searchParams.set("dataset", ARENA_DATASET);
   upstream.searchParams.set("config", config);
   upstream.searchParams.set("split", "latest");
   upstream.searchParams.set("offset", String((page - 1) * pageSize));
   upstream.searchParams.set("length", String(pageSize));
+  if (search) upstream.searchParams.set("query", search);
   try {
     const response = await fetch(upstream, {
       headers: { accept: "application/json" },
@@ -98,7 +100,8 @@ async function arenaLeaderboard(request, url) {
       config,
       page,
       pageSize,
-      totalRows: Number(result.num_rows_total) || 0,
+      totalRows: Number(result.num_rows_total ?? result.num_rows) || 0,
+      query: search,
       rows: result.rows.map((entry) => entry?.row).filter((row) => row && typeof row === "object")
     }, 200, { "Cache-Control": "public, max-age=300, s-maxage=7200" });
   } catch (_error) {
