@@ -28,3 +28,11 @@ Apply the remote migration before publishing the Worker: `npm exec -- wrangler d
 The tools are listed under `/ko/tools/challenge` and `/en/tools/challenge`; their existing tool/result URLs stay valid.
 
 For a full local integration test, apply local migrations, start `npm exec -- wrangler dev --local --port 8787`, and run `node tests/game-rankings-integration.cjs`. It writes only to local D1 and covers timed play, nickname submission, stored scores, rankings, result pages and Open Graph metadata. Run `node tests/navigation-layout.cjs` to verify both languages, three skins and four viewport sizes.
+
+## Fictional example records
+
+`scripts/game-example-records.mjs` prepares 13 named examples per game (39 total), with scores computed from the same metrics as real submissions. These are synthetic examples, not measured participants or estimates of the SolForge user average. Reaction times (226–329 ms) are centered near the 273 ms browser-test median published at https://humanbenchmark.com/tests/reactiontime/statistics. CPS (4.3–6.8) and aim scores (19.88–40.33) are illustrative values for our fixed rules; no measured population average is claimed.
+
+Every example uses a reserved `example-v1-` result/player ID and an explicit marker in details. The API, leaderboard, shared page and Open Graph title identify examples. Apply these only after deploying the example labels. Generate SQL with `node scripts/game-example-records.mjs --sql test-results/game-examples.sql`, then explicitly apply that file to D1. Inserts are idempotent, preserve existing results, use the real preparation time and are never refreshed by a build/deploy. They age out of the 30-day leaderboard normally.
+
+To remove only this example set: `DELETE FROM game_results WHERE id LIKE 'example-v1-%' AND player LIKE 'example-v1-player-%' AND json_extract(details, '$.source') = 'fictional-example-v1';`

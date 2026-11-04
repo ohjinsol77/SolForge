@@ -4264,5 +4264,7 @@
   "challenge.label": "챌린지",
   "challenge.description": "같은 규칙으로 CPS, 에임과 반응속도에 도전하고 최근 30일 랭킹과 결과 링크를 공유하세요.",
   "challenge.use": "고정된 시간과 측정 규칙으로 기록에 도전하고 닉네임을 등록해 다른 사용자와 비교할 때 유용합니다.",
-  "challenge.limit": "기기와 입력 지연은 다를 수 있습니다. 랭킹 등록과 조회에는 서버 연결이 필요합니다."
+  "challenge.limit": "기기와 입력 지연은 다를 수 있습니다. 랭킹 등록과 조회에는 서버 연결이 필요합니다.",
+  "games.example.label": "예시 기록",
+  "games.example.notice": "실제 이용자가 제출한 기록이 아닌 예시입니다."
 }

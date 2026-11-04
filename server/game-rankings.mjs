@@ -11,11 +11,11 @@ export async function gameRankings(request, env) {
   const id = url.searchParams.get('result');
   if (id) {
    const result = await db.prepare('SELECT id,game,nickname,score,details,created FROM game_results WHERE id=? AND game=?').bind(id,game).first();
-   return result ? reply({result}) : reply({error:'missing'},404);
+   return result ? reply({result:{...result,example:result.id.startsWith('example-v1-')}}) : reply({error:'missing'},404);
   }
   const order = game === 'reaction-test' ? 'ASC' : 'DESC';
   const rows = await db.prepare(`WITH best AS (SELECT id,nickname,score,created,ROW_NUMBER() OVER(PARTITION BY player ORDER BY score ${order},created ASC,id ASC) AS n FROM game_results WHERE game=? AND rules='v1' AND created>=?) SELECT id,nickname,score,created FROM best WHERE n=1 ORDER BY score ${order},created ASC,id ASC LIMIT 100`).bind(game,now-30*86400000).all();
-  return reply({rows:rows.results, since:now-30*86400000});
+  return reply({rows:rows.results.map(row=>({...row,example:row.id.startsWith('example-v1-')})), since:now-30*86400000});
  }
  if (request.method !== 'POST') return reply({error:'method'},405,{Allow:'GET, POST'});
  if (request.headers.get('origin') !== url.origin || !request.headers.get('content-type')?.startsWith('application/json')) return reply({error:'origin'},403);
@@ -76,7 +76,8 @@ export async function sharedGamePage(request, env) {
   const row = await env.ANALYTICS_DB.prepare('SELECT nickname,score FROM game_results WHERE id=? AND game=?').bind(id,match[2]).first();
   if (!row) return null;
   const en=match[1]==='en', unit=match[2]==='reaction-test'?'ms':match[2]==='cps-test'?'CPS':en?'points':'점';
-  const title=`${row.nickname} · ${row.score} ${unit} | SolForge`;
+  const prefix=id.startsWith('example-v1-')?(en?'Example result · ':'예시 기록 · '):'';
+  const title=`${prefix}${row.nickname} · ${row.score} ${unit} | SolForge`;
   const description=en?'Challenge my score under the same rules and join the last 30 days leaderboard.':'동일한 규칙으로 내 기록에 도전하고 최근 30일 리더보드에 참여하세요.';
   const response=await env.ASSETS.fetch(request);
   const transformed=new HTMLRewriter()

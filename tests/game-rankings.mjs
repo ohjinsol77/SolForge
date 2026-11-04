@@ -51,3 +51,19 @@ test('zero scores can be shared without invalid numeric values',async()=>{
   const response=await request(game,{session,nickname:'Zero',details});assert.equal(response.status,200);assert.equal((await response.json()).result.score,0);
  }
 });
+
+test('examples are labelled, formula-consistent, idempotent and never overwrite genuine records',async()=>{
+ const {exampleRecords,exampleSql}=await import('../scripts/game-example-records.mjs');
+ const {sql,request}=setup();const records=exampleRecords();
+ assert.equal(records.length,39);assert.equal(new Set(records.map(r=>r.nickname)).size,13);
+ sql.exec(exampleSql(records));sql.exec(exampleSql(records));
+ assert.equal(sql.prepare('SELECT COUNT(*) n FROM game_results').get().n,39);
+ for(const game of ['cps-test','aim-trainer','reaction-test']){
+  const {rows}=await (await request(game)).json();assert.equal(rows.length,13);assert.ok(rows.every(r=>r.example));
+  const {result}=await (await request(game,null,`&result=${rows[0].id}`)).json();assert.equal(result.example,true);
+  for(const r of records.filter(r=>r.game===game)){
+   const d=JSON.parse(r.details);const score=game==='cps-test'?d.clicks/10:game==='aim-trainer'?Math.round(d.hits*d.hits/(d.hits+d.misses)*100)/100:Math.round(d.trials.reduce((a,b)=>a+b)/5);
+   assert.equal(r.score,score);
+  }
+ }
+});

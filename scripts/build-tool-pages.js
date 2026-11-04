@@ -484,7 +484,7 @@ function extractScripts(html) {
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
     let src = match[1];
     if (/assets\/js\//.test(src)) {
-      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-rankings" : "20261104-navigation"}`;
+      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-examples" : "20261104-navigation"}`;
     }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);

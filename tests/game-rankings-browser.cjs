@@ -8,13 +8,15 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),
  for(const lang of ['ko','en'])for(const game of ['cps-test','aim-trainer','reaction-test']){
   const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/api/game-rankings?*',async route=>{const q=new URL(route.request().url()).searchParams,body=route.request().postDataJSON();
-   const result={id:'shared-id',game,nickname:'Champion',score:game==='reaction-test'?210:12.5,created:Date.now()};
+   const result={id:'shared-id',game,nickname:'Champion',example:!body,score:game==='reaction-test'?210:12.5,created:Date.now()};
    await route.fulfill({json:body?.action==='start'?{id:'session-id'}:body||q.has('result')?{result}:{rows:[result]}});
   });
   await page.route(/googlesyndication|doubleclick|google-analytics/,r=>r.abort());
   await page.goto(`${base}/${lang}/tools/${game}?result=shared-id`,{waitUntil:"domcontentloaded"});
   await page.getByText('Champion ·',{exact:false}).waitFor();
   assert.equal(await page.locator('#rankNickname').count(),1);
+  assert.equal(await page.locator('small[data-i18n="games.example.label"]').count(),1);
+  assert.ok((await page.locator('#tool-workspace').innerText()).includes(lang==='en'?'This is an example, not a result submitted by a real player.':'실제 이용자가 제출한 기록이 아닌 예시입니다.'));
   assert.ok((await page.locator('#tool-workspace').innerText()).includes(lang==='en'?'Official ranked challenge':'공식 기록 도전'));
   assert.equal(await page.locator('#languageToggle').getAttribute('href'),`/${lang==='en'?'ko':'en'}/tools/${game}?result=shared-id`);
   if(game==='cps-test'){
