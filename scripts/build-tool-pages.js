@@ -474,7 +474,7 @@ function extractScripts(html) {
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
     let src = match[1];
     if (/assets\/js\//.test(src)) {
-      src = `${src.replace(/\?v=.*$/, "")}?v=20260811-gamertag`;
+      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-rankings" : "20260811-gamertag"}`;
     }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
@@ -1044,11 +1044,14 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
   const category = categoryCopy[lang][item.category] || categoryCopy[lang].developer;
   const canonical = `${SITE_URL}/${lang}/tools/${item.slug}`;
   const otherLang = lang === "ko" ? "en" : "ko";
+  const rankedGame = ["cps-test", "aim-trainer", "reaction-test"].includes(item.slug);
+  const rankedCopy = require(`../src/locales/${lang}.json`);
   const controls = extractControls(section);
-  const markup = prepareToolMarkup(section, item.slug);
+  const ruleKey = { "cps-test": "001", "aim-trainer": "002", "reaction-test": "003" }[item.slug];
+  const markup = rankedGame ? `<section class="tool-section generated-tool-section"><article class="utility-panel active" id="tool-workspace" data-gaming-panel><h2 data-i18n="games.ranked.000">${escapeHtml(rankedCopy["games.ranked.000"])}</h2><p data-i18n="games.ranked.${ruleKey}">${escapeHtml(rankedCopy[`games.ranked.${ruleKey}`])}</p><p data-i18n="games.ranked.011">${escapeHtml(rankedCopy["games.ranked.011"])}</p></article></section>` : prepareToolMarkup(section, item.slug);
   const scripts = extractScripts(sourceHtml);
   const sourcePage = sourcePageId(sourceHtml);
-  const privacyAnswer = isExternalTool(item) ? text.externalPrivacy : text.localPrivacy;
+  const privacyAnswer = rankedGame ? require(`../src/locales/${lang}.json`)["games.privacy"] : isExternalTool(item) ? text.externalPrivacy : text.localPrivacy;
   const description = metaDescription(item.title, item.description, lang);
   const faq = [
     { q: text.faqQ1(item.title), a: text.faqA1 },
@@ -1165,9 +1168,9 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
             <div><p class="eyebrow">${escapeHtml(text.guideEyebrow)}</p><h2 id="guide-title">${escapeHtml(text.howTitle(item.title))}</h2><p>${escapeHtml(text.howIntro(item.title, item.description))}</p></div>
           </div>
           <div class="guide-step-grid">
-            <article><span>1</span><p>${escapeHtml(text.firstStep(controls.labels))}</p></article>
-            <article><span>2</span><p>${escapeHtml(text.secondStep(controls.buttons))}</p></article>
-            <article><span>3</span><p>${escapeHtml(text.thirdStep)}</p></article>
+            <article><span>1</span><p>${escapeHtml(rankedGame ? rankedCopy["games.guide.start"] : text.firstStep(controls.labels))}</p></article>
+            <article><span>2</span><p>${escapeHtml(rankedGame ? rankedCopy["games.guide.finish"] : text.secondStep(controls.buttons))}</p></article>
+            <article><span>3</span><p>${escapeHtml(rankedGame ? rankedCopy["games.guide.share"] : text.thirdStep)}</p></article>
           </div>
           <div class="policy-list independent-policy-list">
             <article class="article-card"><h3>${escapeHtml(text.useTitle)}</h3><p>${escapeHtml(category.use)} ${escapeHtml(item.description)}</p></article>

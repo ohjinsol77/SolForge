@@ -1,3 +1,4 @@
+import { gameRankings, cleanupGames, sharedGamePage } from './server/game-rankings.mjs';
 import { handleAnalytics, cleanup } from './server/analytics.mjs';
 const YAHOO_CHART = "https://query1.finance.yahoo.com/v8/finance/chart";
 const COINGECKO_API = "https://api.coingecko.com/api/v3";
@@ -45,7 +46,7 @@ const BINANCE_COINS = [
 
 export default {
   async scheduled(event, env, ctx) {
-    if (event.cron === "17 19 * * *") ctx.waitUntil(cleanup(env));
+    if (event.cron === "17 19 * * *") ctx.waitUntil(Promise.all([cleanup(env), cleanupGames(env)]));
     if (event.cron === ARENA_REFRESH_CRON) ctx.waitUntil(refreshArenaSnapshot(env));
   },
   async fetch(request, env, ctx) {
@@ -60,10 +61,13 @@ export default {
       canonicalUrl.port = "";
       return Response.redirect(canonicalUrl, 301);
     }
+    if (url.pathname === "/api/game-rankings") return gameRankings(request, env);
     if (url.pathname === "/api/arena-leaderboard") return arenaLeaderboard(request, url, env);
     if (url.pathname === "/api/arena-refresh") return arenaRefresh(request, env, ctx);
     if (url.pathname === "/api/yahoo-chart") return yahooChart(request, url);
     if (url.pathname.startsWith("/api/crypto/")) return cryptoData(request, url);
+    const shared = await sharedGamePage(request, env);
+    if (shared) return shared;
     return env.ASSETS.fetch(request);
   }
 };
