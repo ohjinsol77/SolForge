@@ -484,7 +484,7 @@ function extractScripts(html) {
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
     let src = match[1];
     if (/assets\/js\//.test(src)) {
-      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-examples" : "20261104-navigation"}`;
+      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-names" : "20261104-names"}`;
     }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
@@ -1106,9 +1106,9 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${escapeHtml(item.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${escapeHtml(item.slug)}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-navigation">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-names">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
-    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-navigation">
+    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-names">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="${escapeHtml(item.title)} - SolForge">
@@ -1210,7 +1210,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
       </main>
     </div>
     <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
-    <script src="/assets/js/tool-catalog.js?v=20261104-navigation"></script>
+    <script src="/assets/js/tool-catalog.js?v=20261104-names"></script>
     ${scripts}
   </body>
 </html>
@@ -1273,9 +1273,9 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${categoryId}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${categoryId}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-navigation">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-names">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
-    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-navigation">
+    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-names">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="${escapeHtml(title)} - SolForge">
@@ -1356,8 +1356,8 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
       </main>
     </div>
     <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
-    <script src="/assets/js/tool-catalog.js?v=20261104-navigation"></script>
-    <script src="/assets/js/app.js?v=20261104-navigation"></script>
+    <script src="/assets/js/tool-catalog.js?v=20261104-names"></script>
+    <script src="/assets/js/app.js?v=20261104-names"></script>
   </body>
 </html>
 `;

@@ -1597,20 +1597,13 @@
     return new Date(year, monthIndex, 1 + offset + (ordinal - 1) * 7);
   }
 
-  function initFunNames() {
+  async function initFunNames() {
+    const {funNamesForDate}=await import("/assets/js/fun-names.mjs?v=20261104-names");
     const form = $("#funNameForm");
     $("#funNameBirth").value = "1995-01-01";
-    const indianA = ["고요한", "푸른", "빛나는", "용감한", "따뜻한", "자유로운", "깊은", "빠른", "은빛", "붉은", "새벽의", "별을 보는"];
-    const indianB = ["바람", "강", "달", "산", "구름", "불꽃", "호수", "숲", "노을", "파도", "별", "하늘"];
-    const indianC = ["의 노래", "의 발걸음", "을 지키는 이", "과 걷는 이", "의 친구", "을 깨우는 이", "의 숨결", "을 품은 이"];
-    const chosunA = ["한양", "남산", "청계", "북촌", "서촌", "강릉", "담양", "전주", "경주", "제주", "해주", "평양"];
-    const chosunB = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임"];
-    const chosunC = ["도령", "낭자", "선비", "대감", "별감", "참봉", "훈장", "객주", "화공", "의원"];
     const render = () => {
       const date = dateFromInput($("#funNameBirth").value);
-      const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
-      const indian = `${indianA[(date.getMonth()) % indianA.length]} ${indianB[(date.getDate() - 1) % indianB.length]}${indianC[seed % indianC.length]}`;
-      const chosun = `${chosunA[date.getMonth() % chosunA.length]} ${chosunB[seed % chosunB.length]}${chosunC[(date.getDate() - 1) % chosunC.length]}`;
+      const {indian,chosun}=funNamesForDate(date,document.documentElement.lang);
       const style = $("#funNameStyle").value;
       $("#funNameResult").innerHTML = resultBlock(style === "indian" ? indian : chosun, style === "indian" ? "인디언식 재미 이름" : "조선식 재미 이름", [
         ["생년월일", formatKoreanDate(date)],

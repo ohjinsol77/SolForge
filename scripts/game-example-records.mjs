@@ -1,5 +1,6 @@
 import { writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { randomFunNickname } from '../assets/js/fun-names.mjs';
 
 // Fictional examples, not measured participants or a representative population sample.
 // Reaction times are centered near the browser-test reference at
@@ -14,24 +15,31 @@ const players = [
  ['루프탑',60,39,5,262]
 ];
 export function exampleRecords(created = Date.now()) {
- return players.flatMap(([nickname,clicks,hits,misses,reaction], index) => {
-  const player = `example-v1-player-${String(index + 1).padStart(2,'0')}`;
+ const used = new Set();
+ return players.flatMap(([_name,clicks,hits,misses,reaction], index) => {
   const games = [
    ['cps-test',clicks / 10,{clicks}],
    ['aim-trainer',Math.round(hits * hits / (hits + misses) * 100) / 100,{hits,misses}],
    ['reaction-test',reaction,{trials:[reaction-14,reaction+9,reaction-5,reaction+18,reaction-8]}]
   ];
-  return games.map(([game,score,details]) => ({
+  return games.map(([game,score,details]) => {
+   let nickname;
+   do { nickname=randomFunNickname(Math.random()<0.25 ? "en" : "ko"); } while(used.has(nickname));
+   used.add(nickname);
+   const player=`example-v1-player-${game}-${String(index+1).padStart(2,"0")}`;
+   const registered=created-Math.floor((0.1+Math.random()*28.4)*86400000);
+   return ({
    id:`example-v1-${game}-${String(index + 1).padStart(2,'0')}`,
-   player,game,nickname,score,created,
+   player,game,nickname,score,created:registered,
    details:JSON.stringify({...details,example:true,source:'fictional-example-v1'})
-  }));
+  });
+  });
  });
 }
 export function exampleSql(records) {
  const literal = value => typeof value === 'number' ? String(value) : `'${String(value).replaceAll("'","''")}'`;
  return '-- Explicitly labelled fictional examples. Idempotent; never overwrite real records.\n' + records.map(r =>
-  `INSERT OR IGNORE INTO game_results(id,player,game,nickname,score,details,created,rules) VALUES (${[r.id,r.player,r.game,r.nickname,r.score,r.details,r.created,'v1'].map(literal).join(',')});`
+  `INSERT INTO game_results(id,player,game,nickname,score,details,created,rules) VALUES (${[r.id,r.player,r.game,r.nickname,r.score,r.details,r.created,'v1'].map(literal).join(',')}) ON CONFLICT(id) DO UPDATE SET player=excluded.player,nickname=excluded.nickname,created=excluded.created,score=excluded.score,details=excluded.details WHERE game_results.player LIKE 'example-v1-player-%' AND json_extract(game_results.details,'$.source')='fictional-example-v1';`
  ).join('\n') + '\n';
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

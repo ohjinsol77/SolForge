@@ -289,7 +289,7 @@ function injectToolCatalogScripts(html) {
   if (/assets\/js\/tool-catalog\.js/.test(html)) return html;
   const scripts = [
     '<script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>',
-    '<script src="/assets/js/tool-catalog.js?v=20261104-navigation"></script>'
+    '<script src="/assets/js/tool-catalog.js?v=20261104-names"></script>'
   ].join("\n    ");
   return html.replace(
     /(<script\b[^>]*\bsrc="[^"]*assets\/js\/app\.js[^"]*"[^>]*><\/script>)/i,
@@ -454,8 +454,8 @@ function transformJsForRuntimeI18n(map) {
 
 function renderFile(file, lang) {
   let html = readText(file);
-  html = html.replace(/(assets\/(?:js\/(?:app|tool-catalog)\.js|css\/theme-terminal\.css))(?:\?v=[^"\s>]*)?/g, "$1?v=20261104-navigation");
-  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20261104-navigation");
+  html = html.replace(/(assets\/(?:js\/(?:app|tool-catalog)\.js|css\/theme-terminal\.css))(?:\?v=[^"\s>]*)?/g, "$1?v=20261104-names");
+  html = html.replace(/assets\/css\/styles\.css(?:\?v=[^"]*)?/g, "assets/css/styles.css?v=20261104-names");
   html = removeAdSenseCode(html);
   if (!AD_FREE_FILES.has(file)) html = insertCoupangAd(html, lang);
   html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}">`);

@@ -55,15 +55,23 @@ test('zero scores can be shared without invalid numeric values',async()=>{
 test('examples are labelled, formula-consistent, idempotent and never overwrite genuine records',async()=>{
  const {exampleRecords,exampleSql}=await import('../scripts/game-example-records.mjs');
  const {sql,request}=setup();const records=exampleRecords();
- assert.equal(records.length,39);assert.equal(new Set(records.map(r=>r.nickname)).size,13);
+ assert.equal(records.length,39);assert.equal(new Set(records.map(r=>r.nickname)).size,39);
  sql.exec(exampleSql(records));sql.exec(exampleSql(records));
  assert.equal(sql.prepare('SELECT COUNT(*) n FROM game_results').get().n,39);
  for(const game of ['cps-test','aim-trainer','reaction-test']){
   const {rows}=await (await request(game)).json();assert.equal(rows.length,13);assert.ok(rows.every(r=>r.example));
+  assert.equal(new Set(records.map(r=>r.player)).size,39);
+  assert.ok(records.every(r=>r.created<Date.now() && r.created>Date.now()-30*86400000));
   const {result}=await (await request(game,null,`&result=${rows[0].id}`)).json();assert.equal(result.example,true);
   for(const r of records.filter(r=>r.game===game)){
    const d=JSON.parse(r.details);const score=game==='cps-test'?d.clicks/10:game==='aim-trainer'?Math.round(d.hits*d.hits/(d.hits+d.misses)*100)/100:Math.round(d.trials.reduce((a,b)=>a+b)/5);
    assert.equal(r.score,score);
   }
  }
+});
+
+test('shared fun-name logic preserves existing date results and produces valid nicknames',async()=>{
+ const {funNamesForDate,randomFunNickname}=await import('../assets/js/fun-names.mjs');
+ assert.deepEqual(funNamesForDate(new Date(1995,0,1)),{indian:'고요한 바람의 친구',chosun:'한양 박도령'});
+ for(const lang of ['ko','en']) for(let i=0;i<100;i++) assert.match(randomFunNickname(lang),/^[\p{L}\p{N}_ .-]{2,20}$/u);
 });

@@ -76,8 +76,7 @@ export async function sharedGamePage(request, env) {
   const row = await env.ANALYTICS_DB.prepare('SELECT nickname,score FROM game_results WHERE id=? AND game=?').bind(id,match[2]).first();
   if (!row) return null;
   const en=match[1]==='en', unit=match[2]==='reaction-test'?'ms':match[2]==='cps-test'?'CPS':en?'points':'점';
-  const prefix=id.startsWith('example-v1-')?(en?'Example result · ':'예시 기록 · '):'';
-  const title=`${prefix}${row.nickname} · ${row.score} ${unit} | SolForge`;
+  const title=`${row.nickname} · ${row.score} ${unit} | SolForge`;
   const description=en?'Challenge my score under the same rules and join the last 30 days leaderboard.':'동일한 규칙으로 내 기록에 도전하고 최근 30일 리더보드에 참여하세요.';
   const response=await env.ASSETS.fetch(request);
   const transformed=new HTMLRewriter()

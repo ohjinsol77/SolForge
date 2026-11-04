@@ -23,7 +23,7 @@
     if ($("#gamingSearch")) initWorkbench();
     if (["cps-test", "aim-trainer", "reaction-test"].includes(focusedTool)) {
       const script = document.createElement("script");
-      script.src = "/assets/js/game-rankings.js?v=20261104-examples";
+      script.src = "/assets/js/game-rankings.js?v=20261104-names";
       document.body.append(script);
       return;
     }

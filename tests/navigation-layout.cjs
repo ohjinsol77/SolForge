@@ -4,7 +4,7 @@ const http = require('node:http'), fs = require('node:fs'), path = require('node
  const server = http.createServer((req,res) => {
   let file = path.join(process.cwd(), 'dist', decodeURIComponent(new URL(req.url,'http://localhost').pathname));
   if (!path.extname(file)) file += '.html';
-  try {res.setHeader('Content-Type', file.endsWith('.js') ? 'application/javascript' : file.endsWith('.css') ? 'text/css' : 'text/html'); res.end(fs.readFileSync(file));} catch {res.writeHead(404);res.end();}
+  try {res.setHeader('Content-Type', /\.m?js$/.test(file) ? 'application/javascript' : file.endsWith('.css') ? 'text/css' : 'text/html'); res.end(fs.readFileSync(file));} catch {res.writeHead(404);res.end();}
  });
  await new Promise(resolve => server.listen(0,'127.0.0.1',resolve));
  const base = `http://127.0.0.1:${server.address().port}`;
