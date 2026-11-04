@@ -424,11 +424,14 @@ button {
   top: 0;
   align-self: start;
   height: 100vh;
+  height: 100dvh;
   padding: 1.35rem;
   border-right: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(18px);
   overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior-y: contain;
 }
 
 :root[data-theme="dark"] .sidebar {
@@ -1545,9 +1548,9 @@ th {
 .nav-submenu {
   display: grid;
   gap: 0.2rem;
-  max-height: min(46vh, 420px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* Let the sidebar (or mobile menu) own scrolling, without nested scroll areas. */
+  max-height: none;
+  overflow: visible;
   padding: 0 0.42rem 0.45rem;
 }
 

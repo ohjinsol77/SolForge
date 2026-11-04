@@ -20,3 +20,11 @@ node tests/game-rankings-browser.cjs
 ```
 
 The browser check uses mock API responses to verify bilingual rendering, language switching, fixed arena size, CPS completion and sharing. Server tests use an in-memory SQLite adapter to exercise real migration SQL and ranking queries. Production deployment is separate from pushing the source.
+
+## Deployment verification
+
+Apply the remote migration before publishing the Worker: `npm exec -- wrangler d1 migrations apply solforge-analytics --remote`. A source push or bare `wrangler deploy` does not apply D1 migrations. Run `npm run check:games:live` after deployment; `npm run deploy` now includes this real-service check. This verifies all three D1-backed leaderboard queries, rather than relying on browser mocks.
+
+The tools are listed under `/ko/tools/challenge` and `/en/tools/challenge`; their existing tool/result URLs stay valid.
+
+For a full local integration test, apply local migrations, start `npm exec -- wrangler dev --local --port 8787`, and run `node tests/game-rankings-integration.cjs`. It writes only to local D1 and covers timed play, nickname submission, stored scores, rankings, result pages and Open Graph metadata. Run `node tests/navigation-layout.cjs` to verify both languages, three skins and four viewport sizes.

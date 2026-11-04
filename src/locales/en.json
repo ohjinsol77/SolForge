@@ -4252,5 +4252,9 @@
   "games.privacy": "When you submit a CPS, aim or reaction ranking, your nickname, score, measurement details and submission time are stored on the server and shown publicly through the leaderboard and result link. Results are retained for up to one year and challenge sessions for up to one day. A browser identity cookie lasts one year; your nickname is saved in this browser. Clearing cookies creates a new identity.",
   "games.guide.start": "Press Start challenge. Everyone uses the same duration and target size.",
   "games.guide.finish": "Complete the test. Reaction time is the average of five trials. Switching tabs or resizing cancels the attempt.",
-  "games.guide.share": "Submit your result with a nickname, then share the result link showing your score."
+  "games.guide.share": "Submit your result with a nickname, then share the result link showing your score.",
+  "challenge.label": "Challenges",
+  "challenge.description": "Challenge your CPS, aim and reaction time under the same rules, then compare the last 30 days rankings and share your result.",
+  "challenge.use": "Set a score under fixed timing and measurement rules, then register a nickname to compare with other players.",
+  "challenge.limit": "Device and input latency can vary. Submitting and loading rankings requires a server connection."
 }

@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, "..");
 const SITE_URL = "https://solforge.cloud";
 const LANGS = ["ko", "en"];
 const CATEGORY_ORDER = [
-  "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
+  "developer", "text", "media", "vehicle", "pip", "boss", "challenge", "gameplay", "game-calculator",
   "device", "display", "input", "performance", "finance", "life", "age",
   "date", "lunar", "calendar"
 ];
@@ -46,9 +46,14 @@ const categoryCopy = {
       use: "차량과 차종에 맞춘 보조 기능을 별도의 페이지에서 사용할 수 있습니다.",
       limit: "차량 운행 중 화면 조작은 피하고 안전한 장소에 정차한 상태에서 사용하세요."
     },
+    challenge: {
+      label: require("../src/locales/ko.json")["challenge.label"],
+      use: require("../src/locales/ko.json")["challenge.use"],
+      limit: require("../src/locales/ko.json")["challenge.limit"]
+    },
     gameplay: {
       label: "게임 플레이 테스트",
-      use: "클릭, 반응속도와 에임처럼 플레이에 직접 연결되는 입력을 같은 환경에서 반복 측정할 때 유용합니다.",
+      use: "우클릭, 스크롤과 키보드처럼 플레이에 직접 연결되는 입력 상태를 점검할 때 유용합니다.",
       limit: "브라우저 이벤트 주기, 장치 드라이버, 화면 주사율과 시스템 부하에 따라 측정값이 달라질 수 있습니다."
     },
     "game-calculator": {
@@ -138,9 +143,14 @@ const categoryCopy = {
       use: "Use focused helper pages designed for a specific vehicle or model.",
       limit: "Do not operate the screen while driving. Use vehicle tools only while safely parked."
     },
+    challenge: {
+      label: require("../src/locales/en.json")["challenge.label"],
+      use: require("../src/locales/en.json")["challenge.use"],
+      limit: require("../src/locales/en.json")["challenge.limit"]
+    },
     gameplay: {
       label: "Gameplay Tests",
-      use: "Useful for repeating play-related input checks such as clicking, reaction time, and aim in the same environment.",
+      use: "Useful for checking right clicks, scrolling and keyboard input during play.",
       limit: "Results may vary with browser event timing, device drivers, refresh rate, and current system load."
     },
     "game-calculator": {
@@ -474,7 +484,7 @@ function extractScripts(html) {
   for (const match of html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/gi)) {
     let src = match[1];
     if (/assets\/js\//.test(src)) {
-      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-rankings" : "20260811-gamertag"}`;
+      src = `${src.replace(/\?v=.*$/, "")}?v=${src.includes("gaming-lab.js") ? "20261104-rankings" : "20261104-navigation"}`;
     }
     if (/pagead2\.googlesyndication\.com|i18n-dynamic\.js/.test(src)) continue;
     if (!scripts.includes(src)) scripts.push(src);
@@ -1096,9 +1106,9 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${escapeHtml(item.slug)}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${escapeHtml(item.slug)}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260811-gamertag">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-navigation">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
-    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
+    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-navigation">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="${escapeHtml(item.title)} - SolForge">
@@ -1200,7 +1210,7 @@ function renderToolPage({ rawItem, catalog, lang, sourceHtml, section }) {
       </main>
     </div>
     <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
-    <script src="/assets/js/tool-catalog.js?v=20260803-categories"></script>
+    <script src="/assets/js/tool-catalog.js?v=20261104-navigation"></script>
     ${scripts}
   </body>
 </html>
@@ -1263,9 +1273,9 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
     <link rel="alternate" hreflang="en" href="${SITE_URL}/en/tools/${categoryId}">
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}/ko/tools/${categoryId}">
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=20260811-gamertag">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=20261104-navigation">
     <link rel="stylesheet" href="/assets/css/theme-saas.css?v=20260624-2">
-    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20260624-2">
+    <link rel="stylesheet" href="/assets/css/theme-terminal.css?v=20261104-navigation">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SolForge">
     <meta property="og:title" content="${escapeHtml(title)} - SolForge">
@@ -1346,8 +1356,8 @@ function renderCategoryPage({ catalog, lang, categoryId }) {
       </main>
     </div>
     <script src="/assets/js/tool-copy-en.js?v=20260803-categories"></script>
-    <script src="/assets/js/tool-catalog.js?v=20260803-categories"></script>
-    <script src="/assets/js/app.js?v=20260803-categories"></script>
+    <script src="/assets/js/tool-catalog.js?v=20261104-navigation"></script>
+    <script src="/assets/js/app.js?v=20261104-navigation"></script>
   </body>
 </html>
 `;

@@ -12,7 +12,7 @@
     : ["developer", "DB", "DB 임시·더미 데이터 생성기", "DB 생성문에서 컬럼을 인식하고 규칙에 맞는 SQL, JSON, CSV, MongoDB, Redis 테스트 데이터를 만듭니다.", "tempdb temp db 임시데이터 임시 데이터 더미데이터 더미 데이터 가짜데이터 가짜 데이터 테스트데이터 테스트 데이터 목데이터 목 데이터 mock data mockdata dummy data dummydata test data testdata 스키마 테이블 생성문 mysql postgresql postgres mongodb mongo oracle mssql redis sql json csv", "../tempdb"];
   const lang = document.documentElement.lang === "en" ? "en" : "ko";
   const categoryOrder = [
-    "developer", "text", "media", "vehicle", "pip", "boss", "gameplay", "game-calculator",
+    "developer", "text", "media", "vehicle", "pip", "boss", "challenge", "gameplay", "game-calculator",
     "device", "display", "input", "performance", "finance", "life", "age",
     "date", "lunar", "calendar"
   ];
@@ -24,7 +24,8 @@
       vehicle: ["CAR", "차량 도구", "차량에서 활용할 수 있는 보조 기능을 차종과 목적에 따라 선택합니다."],
       pip: ["PIP", "PIP 작업 도구", "시계, 타이머, 메모와 이미지 도구를 각각 독립된 PIP 기능으로 실행합니다."],
       boss: ["BOSS", "게임 타이머", "게임 진행 중 필요한 패턴과 재사용 시간을 별도의 타이머로 관리합니다."],
-      gameplay: ["GAME", "게임 플레이 테스트", "클릭, 반응속도, 에임과 기본 입력 상태를 목적에 맞는 개별 테스트로 확인합니다."],
+      challenge: ["RANK", "챌린지", "같은 규칙으로 CPS, 에임과 반응속도에 도전하고 최근 30일 랭킹과 결과 링크를 공유하세요."],
+      gameplay: ["GAME", "게임 플레이 테스트", "우클릭, 키보드와 기본 입력 상태를 목적에 맞는 개별 테스트로 확인합니다."],
       "game-calculator": ["CALC", "게임 계산 도구", "감도, FOV, TTK, 화면 비율과 하드웨어 수치를 각각 계산합니다."],
       device: ["DEVICE", "장치 진단", "오디오, 카메라, 게임패드와 센서 상태를 장치별 진단 도구에서 확인합니다."],
       display: ["DISPLAY", "화면 진단", "색상, 명암, 불량 화소와 화면 움직임을 패턴별 독립 테스트로 점검합니다."],
@@ -44,7 +45,8 @@
       vehicle: ["CAR", "Vehicle Tools", "Choose vehicle-specific helper tools by model and purpose."],
       pip: ["PIP", "PIP Workflow Tools", "Run clocks, timers, notes, and image helpers as separate Picture-in-Picture tools."],
       boss: ["BOSS", "Game Timers", "Track game patterns and cooldowns with a dedicated timer."],
-      gameplay: ["GAME", "Gameplay Tests", "Check clicking, reaction time, aim, and basic input behavior with focused tests."],
+      challenge: ["RANK", "Challenges", "Challenge your CPS, aim and reaction time under the same rules, then compare the last 30 days rankings and share your result."],
+      gameplay: ["GAME", "Gameplay Tests", "Check right clicks, keyboards and basic input behavior with focused tests."],
       "game-calculator": ["CALC", "Gaming Calculators", "Calculate sensitivity, FOV, TTK, aspect ratios, and hardware values with separate tools."],
       device: ["DEVICE", "Device Diagnostics", "Check audio, cameras, gamepads, and sensors with a diagnostic for each device."],
       display: ["DISPLAY", "Display Diagnostics", "Inspect color, contrast, pixels, and motion with separate display test patterns."],
@@ -223,6 +225,7 @@
     "performance-lab": "performance"
   };
   const categorizedTools = sourceTools.map((tool) => {
+    if (["gaming-lab#cps-test", "gaming-lab#aim-trainer", "gaming-lab#reaction-test"].includes(tool[5])) return ["challenge", ...tool.slice(1)];
     const sourcePage = tool[5].split("#")[0];
     return categoryBySource[sourcePage] ? [categoryBySource[sourcePage], ...tool.slice(1)] : tool;
   });
@@ -311,7 +314,7 @@
   }
 
   function iconClass(category) {
-    if (category === "gameplay" || category === "game-calculator" || category === "device" || category === "display" || category === "input" || category === "performance") return "game";
+    if (category === "challenge" || category === "gameplay" || category === "game-calculator" || category === "device" || category === "display" || category === "input" || category === "performance") return "game";
     if (category === "pip" || category === "boss" || category === "developer" || category === "text" || category === "life" || category === "media" || category === "vehicle" || category === "finance") return category;
     if (category === "date") return "date";
     if (category === "lunar") return "lunar";
