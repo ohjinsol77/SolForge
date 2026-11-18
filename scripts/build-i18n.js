@@ -357,7 +357,10 @@ function collectStringNodes(source) {
       });
     }
   });
+  // Keep language-specific data (such as Korean number words) verbatim.
+  const verbatim = [...source.matchAll(/\/\* i18n:verbatim \*\/([\s\S]*?)\/\* i18n:end \*\//g)];
   return nodes
+    .filter((node) => !verbatim.some((match) => node.start >= match.index && node.end <= match.index + match[0].length))
     .sort((a, b) => a.start - b.start || b.end - a.end)
     .filter((node, index, sorted) => {
       const previous = sorted[index - 1];

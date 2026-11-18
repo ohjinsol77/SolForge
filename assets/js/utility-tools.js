@@ -223,7 +223,7 @@
         parseError = error.message;
       }
       output.innerHTML = resultBlock(
-        numeric === null ? "숫자 금액을 확인하세요." : `${numberToKoreanMoney(numeric)}원`,
+        numeric === null ? "숫자 금액을 확인하세요." : /* i18n:verbatim */ `${numberToKoreanMoney(numeric)}원` /* i18n:end */,
         numeric === null ? "" : `${numeric.toLocaleString("ko-KR")}원`,
         [
           ["한글 → 숫자", parseError || `${parsed.toLocaleString("ko-KR")}원`],
@@ -871,6 +871,7 @@
     }).join("");
   }
 
+  /* i18n:verbatim */
   function numberToKoreanMoney(value) {
     if (!Number.isSafeInteger(value)) return "지원 범위 초과";
     if (value === 0) return "영";
@@ -896,6 +897,8 @@
     }).reverse().join("");
     return `${negative ? "마이너스 " : ""}${output}`;
   }
+
+  /* i18n:end */
 
   function koreanMoneyToNumber(text) {
     const normalized = text.replace(/[,\s원]/g, "").replace(/^마이너스/, "-");

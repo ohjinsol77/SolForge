@@ -1595,6 +1595,10 @@ th {
   grid-template-columns: minmax(0, 1fr) minmax(220px, 28%);
 }
 
+.page-hero.guide-intro {
+  display: block;
+}
+
 .compact-hero h1 {
   font-size: clamp(1.8rem, 3.3vw, 2.8rem);
 }
