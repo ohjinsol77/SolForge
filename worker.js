@@ -1,3 +1,4 @@
+import { parquetReadObjects } from "hyparquet";
 import { gameRankings, cleanupGames, sharedGamePage } from './server/game-rankings.mjs';
 import { handleAnalytics, cleanup } from './server/analytics.mjs';
 const YAHOO_CHART = "https://query1.finance.yahoo.com/v8/finance/chart";
@@ -95,10 +96,13 @@ async function arenaLeaderboard(request, url, env) {
   }
 
   try {
-    const active = await env.ANALYTICS_DB.prepare("SELECT snapshot_id, updated_at FROM arena_leaderboard_active WHERE id = 1").first();
-    if (!active?.snapshot_id) return json({ error: "Arena snapshot is not ready yet." }, 503);
-    const storedPages = await env.ANALYTICS_DB.prepare("SELECT payload FROM arena_leaderboard_pages WHERE snapshot_id = ? AND config = ? ORDER BY page").bind(active.snapshot_id, config).all();
-    const allRows = (storedPages.results || []).flatMap((item) => JSON.parse(item.payload));
+    const { results: storedPages } = await env.ANALYTICS_DB.prepare(
+      "SELECT active.updated_at, pages.payload FROM arena_leaderboard_active AS active " +
+      "LEFT JOIN arena_leaderboard_pages AS pages ON pages.snapshot_id = active.snapshot_id AND pages.config = ? " +
+      "WHERE active.id = 1 ORDER BY pages.page"
+    ).bind(config).all();
+    if (!storedPages.length) return json({ error: "Arena snapshot is not ready yet." }, 503);
+    const allRows = storedPages.flatMap(({ payload }) => payload ? JSON.parse(payload) : []);
     const normalizedSearch = search.toLocaleLowerCase();
     const matched = normalizedSearch
       ? allRows.filter((row) => `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase().includes(normalizedSearch))
@@ -107,7 +111,7 @@ async function arenaLeaderboard(request, url, env) {
     return json({
       source: "Arena Leaderboard Dataset",
       sourceUrl: "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
-      fetchedAt: new Date(active.updated_at * 1000).toISOString(),
+      fetchedAt: new Date(storedPages[0].updated_at * 1000).toISOString(),
       config,
       page,
       pageSize,
@@ -123,42 +127,36 @@ async function arenaLeaderboard(request, url, env) {
 
 async function refreshArenaSnapshot(env) {
   try {
-    const pagesToFetch = [];
+    const snapshotId = crypto.randomUUID();
+    const statements = [];
+    const pageSize = 2000;
     for (const config of ARENA_CONFIGS) {
-      const upstream = new URL("https://datasets-server.huggingface.co/rows");
-      upstream.searchParams.set("dataset", ARENA_DATASET);
-      upstream.searchParams.set("config", config);
-      upstream.searchParams.set("split", "latest");
-      upstream.searchParams.set("offset", "0");
-      upstream.searchParams.set("length", "100");
-      const response = await fetch(upstream, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(25000) });
+      const source = `https://huggingface.co/datasets/${ARENA_DATASET}/resolve/main/${config}/latest-00000-of-00001.parquet`;
+      const response = await fetch(source, { signal: AbortSignal.timeout(25000) });
+      // Arena can remove a category from the public dataset between refreshes.
+      if (response.status === 404) {
+        console.warn(`Arena category is no longer available: ${config}`);
+        continue;
+      }
       if (!response.ok) throw new Error(`Arena ${config} request failed: ${response.status}`);
-      const result = await response.json();
-      const totalRows = Number(result.num_rows_total) || 0;
-      pagesToFetch.push({ config, page: 0, url: upstream, rows: (result.rows || []).map((entry) => entry?.row).filter((row) => row && typeof row === "object"), totalRows });
-      for (let offset = 100; offset < totalRows; offset += 100) {
-        const pageUrl = new URL(upstream);
-        pageUrl.searchParams.set("offset", String(offset));
-        pagesToFetch.push({ config, page: offset / 100, url: pageUrl });
+
+      // Read the complete published split without making one request per 100 rows.
+      const rows = await parquetReadObjects({ file: await response.arrayBuffer() });
+      for (let offset = 0; offset < rows.length; offset += pageSize) {
+        const payload = JSON.stringify(rows.slice(offset, offset + pageSize), (_, value) =>
+          typeof value === "bigint" ? Number(value) : value
+        );
+        statements.push(env.ANALYTICS_DB.prepare("INSERT INTO arena_leaderboard_pages (snapshot_id, config, page, payload) VALUES (?, ?, ?, ?)").bind(snapshotId, config, offset / pageSize, payload));
       }
     }
-    const pagesWithoutRows = pagesToFetch.filter((item) => !item.rows);
-    for (let index = 0; index < pagesWithoutRows.length; index += 12) {
-      const batch = pagesWithoutRows.slice(index, index + 12);
-      const fetched = await Promise.all(batch.map(async (item) => {
-        const response = await fetch(item.url, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(25000) });
-        if (!response.ok) throw new Error(`Arena ${item.config} page ${item.page + 1} failed: ${response.status}`);
-        const result = await response.json();
-        return (result.rows || []).map((entry) => entry?.row).filter((row) => row && typeof row === "object");
-      }));
-      batch.forEach((item, batchIndex) => { item.rows = fetched[batchIndex]; });
-    }
-    const snapshotId = crypto.randomUUID();
+    if (!statements.length) throw new Error("No Arena ranking rows were available.");
+
     const updatedAt = Math.floor(Date.now() / 1000);
-    const statements = pagesToFetch.map((item) => env.ANALYTICS_DB.prepare("INSERT INTO arena_leaderboard_pages (snapshot_id, config, page, payload) VALUES (?, ?, ?, ?)").bind(snapshotId, item.config, item.page, JSON.stringify(item.rows)));
-    for (let index = 0; index < statements.length; index += 50) await env.ANALYTICS_DB.batch(statements.slice(index, index + 50));
-    await env.ANALYTICS_DB.prepare("INSERT INTO arena_leaderboard_active (id, snapshot_id, updated_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET snapshot_id = excluded.snapshot_id, updated_at = excluded.updated_at").bind(snapshotId, updatedAt).run();
-    await env.ANALYTICS_DB.prepare("DELETE FROM arena_leaderboard_pages WHERE snapshot_id != ?").bind(snapshotId).run();
+    statements.push(
+      env.ANALYTICS_DB.prepare("INSERT INTO arena_leaderboard_active (id, snapshot_id, updated_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET snapshot_id = excluded.snapshot_id, updated_at = excluded.updated_at").bind(snapshotId, updatedAt),
+      env.ANALYTICS_DB.prepare("DELETE FROM arena_leaderboard_pages WHERE snapshot_id != ?").bind(snapshotId)
+    );
+    await env.ANALYTICS_DB.batch(statements);
   } catch (error) {
     console.error("Arena snapshot refresh failed; keeping previous snapshot.", error);
   }
