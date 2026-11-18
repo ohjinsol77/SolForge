@@ -9,7 +9,7 @@
     { id: "search", label: "검색", configs: ["search", "search_style_control", "search_factuality"] },
     { id: "image", label: "이미지", configs: ["text_to_image", "image_edit"] },
     { id: "video", label: "영상", configs: ["text_to_video", "image_to_video", "video_edit"] },
-    { id: "agent", label: "에이전트", configs: ["agent", "agent_bash_recovery_steps", "agent_bash_reliability", "agent_bash_reliability_no_prereq", "agent_praise_complaint", "agent_steerability", "agent_task_outcome_explicit", "agent_tool_hallucination"] }
+    { id: "agent", label: "에이전트", configs: ["agent", "agent_bash_recovery_steps", "agent_bash_reliability", "agent_praise_complaint", "agent_steerability", "agent_task_outcome_explicit", "agent_tool_hallucination"] }
   ];
   const CONFIG_LABELS = {
     coding: "코딩", webdev: "웹 개발",
@@ -19,7 +19,7 @@
     text_to_image: "텍스트로 이미지 생성", image_edit: "이미지 편집",
     text_to_video: "텍스트로 영상 생성", image_to_video: "이미지로 영상 생성", video_edit: "영상 편집",
     agent: "종합 에이전트", agent_bash_recovery_steps: "터미널 오류 복구", agent_bash_reliability: "터미널 작업 신뢰도",
-    agent_bash_reliability_no_prereq: "사전 조건 없는 터미널 신뢰도", agent_praise_complaint: "칭찬·불만 처리", agent_steerability: "지시 반영 능력",
+    agent_praise_complaint: "칭찬·불만 처리", agent_steerability: "지시 반영 능력",
     agent_task_outcome_explicit: "작업 완료 여부", agent_tool_hallucination: "도구 사용 정확도"
   };
   const PAGE_SIZE = 30;

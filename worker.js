@@ -100,13 +100,14 @@ async function arenaLeaderboard(request, url, env) {
       "SELECT active.updated_at, pages.payload FROM arena_leaderboard_active AS active " +
       "LEFT JOIN arena_leaderboard_pages AS pages ON pages.snapshot_id = active.snapshot_id AND pages.config = ? " +
       "WHERE active.id = 1 ORDER BY pages.page"
-    ).bind(config).all();
+    ).bind(config === "coding" ? "text" : config).all();
     if (!storedPages.length) return json({ error: "Arena snapshot is not ready yet." }, 503);
     const allRows = storedPages.flatMap(({ payload }) => payload ? JSON.parse(payload) : []);
     const normalizedSearch = search.toLocaleLowerCase();
+    const rankingRows = config === "coding" ? allRows.filter((row) => row.category === "coding") : allRows;
     const matched = normalizedSearch
-      ? allRows.filter((row) => `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase().includes(normalizedSearch))
-      : allRows;
+      ? rankingRows.filter((row) => `${row.model_name || ""} ${row.organization || ""} ${row.license || ""}`.toLocaleLowerCase().includes(normalizedSearch))
+      : rankingRows;
     const start = (page - 1) * pageSize;
     return json({
       source: "Arena Leaderboard Dataset",
